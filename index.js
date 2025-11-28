@@ -88,9 +88,9 @@ function createArtistCard(artist, isKorean = true) {
 
     return `
         <a href="editor.html?id=${artist.id}"
-            class="block h-64 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
+            class="block rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
             style="animation-delay: ${POPULAR_ARTISTS.indexOf(artist) * 0.1}s">
-            <div class="h-36 bg-${artist.color}-100 relative overflow-hidden">
+            <div class="aspect-video bg-${artist.color}-100 relative overflow-hidden">
                 <img src="${artist.thumbnail}" alt="${artist.name} (${artist.englishName}) 주요 순간"
                     class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                     loading="lazy"

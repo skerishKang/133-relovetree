@@ -127,488 +127,807 @@
 
         .custom-scroll::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
-        }
-    </style>
-</head>
+            <svg id="connections">< !-- Nodes injected here --></svg></div></div>< !-- Floating Action Button --><button onclick="createNewNode()"
+            class="fixed bottom-8 right-8 w-16 h-16 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40 group"><svg class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg><span class="absolute -top-10 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">새로운 순간 추가</span></button>< !-- Unified Detail Modal --><dialog id="detail-modal" class="bg-white"><div class="flex flex-col md:flex-row h-full">< !-- Left: Video Player --> <div class="w-full md:w-2/3 bg-black flex items-center justify-center relative group" > <iframe id="detail-video" class="w-full h-full aspect-video" src="" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe> < !-- Fallback / External Link Button --> <a id="external-link" href="#" target="_blank"
+                class="absolute bottom-4 right-4 bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur transition-colors flex items-center gap-1 z-20" > <span>YouTube에서 보기</span> <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" ></path> </svg> </a> <div class="absolute top-4 left-4 z-10" > <button onclick="closeModal('detail-modal')"
+                class="bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur transition-colors md:hidden" > <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12" ></path> </svg> </button> </div> </div> < !-- Right: Details & Moments --> <div class="w-full md:w-1/3 flex flex-col h-full border-l border-slate-200 bg-white" > < !-- Header --> <div class="p-5 border-b border-slate-100 flex justify-between items-start shrink-0" > <div> <h2 id="detail-title" class="text-xl font-bold text-slate-900 leading-tight mb-1" >Title</h2> <p id="detail-date" class="text-sm text-slate-500" >Date</p> </div> <div class="flex gap-2" > <button onclick="enableEditMode()"
+                class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                title="Edit Info" > <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" > </path> </svg> </button> <button onclick="closeModal('detail-modal')"
+                class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors hidden md:block" > <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12" ></path> </svg> </button> </div> </div> < !-- Edit Form (Hidden by default) --> <div id="edit-form" class="hidden p-5 bg-slate-50 border-b border-slate-200 shrink-0" > <form onsubmit="saveNodeDetails(event)" class="space-y-3" > <input type="hidden" id="edit-node-id" > <div> <label class="block text-xs font-bold text-slate-500 uppercase mb-1" >제목</label> <input type="text" id="edit-title"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" > </div> <div> <label class="block text-xs font-bold text-slate-500 uppercase mb-1" >날짜</label> <input type="date" id="edit-date"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" > </div> <div> <label class="block text-xs font-bold text-slate-500 uppercase mb-1" >유튜브 URL</label> <input type="text" id="edit-video"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" > </div> <div class="flex justify-end gap-2 pt-2" > <button type="button" onclick="disableEditMode()"
+                class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200 rounded-lg" >취소</button> <button type="submit"
+                class="px-3 py-1.5 text-xs font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-lg" >저장</button> </div> </form> </div> < !-- Moments List --> <div class="flex-1 overflow-y-auto custom-scroll p-5 space-y-4 bg-slate-50/50" id="moments-list" > < !-- Moments injected here --> </div> < !-- Add Moment Input --> <div class="p-4 bg-white border-t border-slate-200 shrink-0" > <form onsubmit="addMomentFromDetail(event)" class="flex flex-col gap-3" > <div class="flex gap-2" > <input type="text" id="new-moment-time" placeholder="0:00"
+                class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center" > <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
+                class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" > </div> <div class="flex justify-between items-center" > <div class="flex gap-1" > <label class="cursor-pointer" ><input type="radio" name="new-moment-feeling" value="love"
+                class="peer sr-only" checked><span class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-pink-100 peer-checked:text-pink-600 hover:bg-pink-50 transition-colors" >😍</span></label> <label class="cursor-pointer" ><input type="radio" name="new-moment-feeling" value="tear"
+                class="peer sr-only" ><span class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-blue-100 peer-checked:text-blue-600 hover:bg-blue-50 transition-colors" >😭</span></label> <label class="cursor-pointer" ><input type="radio" name="new-moment-feeling"
+                value="funny" class="peer sr-only" ><span class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-yellow-100 peer-checked:text-yellow-600 hover:bg-yellow-50 transition-colors" >🤣</span></label> <label class="cursor-pointer" ><input type="radio" name="new-moment-feeling"
+                value="shock" class="peer sr-only" ><span class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-purple-100 peer-checked:text-purple-600 hover:bg-purple-50 transition-colors" >😲</span></label> </div> <button type="submit"
+                class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-xl transition-colors shadow-sm" >등록</button> </div> </form> </div> </div> </div> </dialog> <script> // --- Translations ---
+                let isKorean=true;
 
-<body>
+            const translations= {
+                ko: {
+                    treeTitle: "나의 러브트리",
+                        langBtn: "English",
+                        placeholderComment: "이 순간에 대한 코멘트...",
+                        btnRegister: "등록",
+                        editTitle: "제목",
+                        editDate: "날짜",
+                        editVideo: "유튜브 URL",
+                        btnCancel: "취소",
+                        btnSave: "저장",
+                        btnReset: "초기화"
+                }
 
-    <!-- Header -->
-    <div
-        class="fixed top-0 left-0 w-full h-16 bg-white/90 backdrop-blur border-b border-slate-200 z-50 flex items-center justify-between px-6 shadow-sm">
-        <div class="flex items-center gap-4">
-            <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity" title="홈으로 돌아가기">
-                <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                        </path>
-                    </svg>
-                </div>
-                <h1 class="font-bold text-lg text-slate-800 font-display" id="tree-title">My LoveTree</h1>
-            </a>
-        </div>
-        <div class="flex items-center gap-4">
-            <!-- Reset Button -->
-            <button onclick="resetLayout()"
-                class="text-xs font-bold text-slate-500 hover:text-brand-600 bg-slate-100 hover:bg-brand-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                    </path>
-                </svg>
-                <span id="btn-reset">Reset</span>
-            </button>
-
-            <div class="h-6 w-px bg-slate-200"></div>
-
-            <button onclick="toggleLanguage()"
-                class="text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors"
-                id="lang-btn">English</button>
-            <div class="h-6 w-px bg-slate-200"></div>
-            <div class="flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                <button onclick="zoomOut()" class="p-1.5 hover:bg-white rounded-full transition-all shadow-sm"
-                    title="Zoom Out"><svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                    </svg></button>
-                <span id="zoom-level" class="text-xs font-bold text-slate-500 w-10 text-center font-mono">100%</span>
-                <button onclick="zoomIn()" class="p-1.5 hover:bg-white rounded-full transition-all shadow-sm"
-                    title="Zoom In"><svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg></button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Canvas -->
-    <div id="wrapper">
-        <div id="canvas">
-            <svg id="connections">
-                <!-- Nodes injected here -->
-            </svg>
-        </div>
-    </div>
-
-    <!-- Floating Action Button -->
-    <button onclick="createNewNode()"
-        class="fixed bottom-8 right-8 w-16 h-16 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40 group">
-        <svg class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        <span
-            class="absolute -top-10 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">새로운
-            순간 추가</span>
-    </button>
-
-    <!-- Unified Detail Modal -->
-    <dialog id="detail-modal" class="bg-white">
-        <div class="flex flex-col md:flex-row h-full">
-            <!-- Left: Video Player -->
-            <div class="w-full md:w-2/3 bg-black flex items-center justify-center relative group">
-                <iframe id="detail-video" class="w-full h-full aspect-video" src="" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
-
-                <!-- Fallback / External Link Button -->
-                <a id="external-link" href="#" target="_blank"
-                    class="absolute bottom-4 right-4 bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur transition-colors flex items-center gap-1 z-20">
-                    <span>YouTube에서 보기</span>
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                    </svg>
-                </a>
-
-                <div class="absolute top-4 left-4 z-10">
-                    <button onclick="closeModal('detail-modal')"
-                        class="bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur transition-colors md:hidden">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right: Details & Moments -->
-            <div class="w-full md:w-1/3 flex flex-col h-full border-l border-slate-200 bg-white">
-
-                <!-- Header -->
-                <div class="p-5 border-b border-slate-100 flex justify-between items-start shrink-0">
-                    <div>
-                        <h2 id="detail-title" class="text-xl font-bold text-slate-900 leading-tight mb-1">Title</h2>
-                        <p id="detail-date" class="text-sm text-slate-500">Date</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="enableEditMode()"
-                            class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
-                            title="Edit Info">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                </path>
-                            </svg>
-                        </button>
-                        <button onclick="closeModal('detail-modal')"
-                            class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors hidden md:block">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Edit Form (Hidden by default) -->
-                <div id="edit-form" class="hidden p-5 bg-slate-50 border-b border-slate-200 shrink-0">
-                    <form onsubmit="saveNodeDetails(event)" class="space-y-3">
-                        <input type="hidden" id="edit-node-id">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">제목</label>
-                            <input type="text" id="edit-title"
-                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">날짜</label>
-                            <input type="date" id="edit-date"
-                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">유튜브 URL</label>
-                            <input type="text" id="edit-video"
-                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-                        <div class="flex justify-end gap-2 pt-2">
-                            <button type="button" onclick="disableEditMode()"
-                                class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200 rounded-lg">취소</button>
-                            <button type="submit"
-                                class="px-3 py-1.5 text-xs font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-lg">저장</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Moments List -->
-                <div class="flex-1 overflow-y-auto custom-scroll p-5 space-y-4 bg-slate-50/50" id="moments-list">
-                    <!-- Moments injected here -->
-                </div>
-
-                <!-- Add Moment Input -->
-                <div class="p-4 bg-white border-t border-slate-200 shrink-0">
-                    <form onsubmit="addMomentFromDetail(event)" class="flex flex-col gap-3">
-                        <div class="flex gap-2">
-                            <input type="text" id="new-moment-time" placeholder="0:00"
-                                class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center">
-                            <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
-                                class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex gap-1">
-                                <label class="cursor-pointer"><input type="radio" name="new-moment-feeling" value="love"
-                                        class="peer sr-only" checked><span
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-pink-100 peer-checked:text-pink-600 hover:bg-pink-50 transition-colors">😍</span></label>
-                                <label class="cursor-pointer"><input type="radio" name="new-moment-feeling" value="tear"
-                                        class="peer sr-only"><span
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-blue-100 peer-checked:text-blue-600 hover:bg-blue-50 transition-colors">😭</span></label>
-                                <label class="cursor-pointer"><input type="radio" name="new-moment-feeling"
-                                        value="funny" class="peer sr-only"><span
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-yellow-100 peer-checked:text-yellow-600 hover:bg-yellow-50 transition-colors">🤣</span></label>
-                                <label class="cursor-pointer"><input type="radio" name="new-moment-feeling"
-                                        value="shock" class="peer sr-only"><span
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 peer-checked:bg-purple-100 peer-checked:text-purple-600 hover:bg-purple-50 transition-colors">😲</span></label>
-                            </div>
-                            <button type="submit"
-                                class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-xl transition-colors shadow-sm">등록</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </dialog>
-
-    <script>
-        // --- Translations ---
-        let isKorean = true;
-        const translations = {
-            ko: {
-                treeTitle: "나의 러브트리",
-                langBtn: "English",
-                placeholderComment: "이 순간에 대한 코멘트...",
-                btnRegister: "등록",
-                editTitle: "제목",
-                editDate: "날짜",
-                editVideo: "유튜브 URL",
-                btnCancel: "취소",
-                btnSave: "저장",
-                btnReset: "초기화"
-            },
-            en: {
-                treeTitle: "My LoveTree",
-                langBtn: "한국어",
-                placeholderComment: "Comment on this moment...",
-                btnRegister: "Add",
-                editTitle: "Title",
-                editDate: "Date",
-                editVideo: "YouTube URL",
-                btnCancel: "Cancel",
-                btnSave: "Save",
-                btnReset: "Reset"
+                ,
+                en: {
+                    treeTitle: "My LoveTree",
+                        langBtn: "한국어",
+                        placeholderComment: "Comment on this moment...",
+                        btnRegister: "Add",
+                        editTitle: "Title",
+                        editDate: "Date",
+                        editVideo: "YouTube URL",
+                        btnCancel: "Cancel",
+                        btnSave: "Save",
+                        btnReset: "Reset"
+                }
             }
-        };
 
-        function toggleLanguage() {
-            isKorean = !isKorean;
-            const t = isKorean ? translations.ko : translations.en;
+            ;
 
-            document.getElementById('tree-title').innerText = t.treeTitle;
-            document.getElementById('lang-btn').innerText = t.langBtn;
-            document.getElementById('new-moment-text').placeholder = t.placeholderComment;
-            document.querySelector('button[type="submit"]').innerText = t.btnRegister;
-            document.getElementById('btn-reset').innerText = t.btnReset;
+            function toggleLanguage() {
+                isKorean= !isKorean;
+                const t=isKorean ? translations.ko: translations.en;
 
-            render();
+                document.getElementById('tree-title').innerText=t.treeTitle;
+                document.getElementById('lang-btn').innerText=t.langBtn;
+                document.getElementById('new-moment-text').placeholder=t.placeholderComment;
+                document.querySelector('button[type="submit"]').innerText=t.btnRegister;
+                document.getElementById('btn-reset').innerText=t.btnReset;
+
+                render();
+            }
+
+            // --- Data ---
+            const dummyData= {
+                'bts': {
+
+                    name: '방탄소년단 (BTS)',
+                    nodes: [ {
+
+                        id: 1,
+                        x: 100,
+                        y: 100,
+                        title: '데뷔 무대 (No More Dream)',
+                        date: '2013-06-13',
+                        videoId: 'rBG5L7UsUxA',
+                        moments: [ {
+                            time: '0:10', text: '전설의 시작', feeling: 'love'
+                        }
+
+                        ]
+                    }
+
+                    ,
+                    {
+
+                    id: 2,
+                    x: 500,
+                    y: 300,
+                    title: '첫 1위 (I Need U)',
+                    date: '2015-05-05',
+                    videoId: 'NMdTd9e-LEI',
+                    moments: [ {
+                        time: '2:30', text: '눈물바다 ㅠㅠ', feeling: 'tear'
+                    }
+
+                    ]
+                }
+
+                ,
+                {
+
+                id: 3,
+                x: 900,
+                y: 100,
+                title: 'Dynamite 빌보드 1위',
+                date: '2020-08-21',
+                videoId: 'gdZLi9oWNZg',
+                moments: [ {
+                    time: '1:00', text: '자랑스럽다', feeling: 'love'
+                }
+
+                ]
+            }
+
+            ],
+            edges: [ {
+                from: 1, to: 2
+            }
+
+            ,
+            {
+            from: 2, to: 3
         }
 
-        // --- Data ---
-        const dummyData = {
-            'bts': {
-                name: '방탄소년단 (BTS)',
-                nodes: [
-                    { id: 1, x: 100, y: 100, title: '데뷔 무대 (No More Dream)', date: '2013-06-13', videoId: 'rBG5L7UsUxA', moments: [{ time: '0:10', text: '전설의 시작', feeling: 'love' }] },
-                    { id: 2, x: 500, y: 300, title: '첫 1위 (I Need U)', date: '2015-05-05', videoId: 'NMdTd9e-LEI', moments: [{ time: '2:30', text: '눈물바다 ㅠㅠ', feeling: 'tear' }] },
-                    { id: 3, x: 900, y: 100, title: 'Dynamite 빌보드 1위', date: '2020-08-21', videoId: 'gdZLi9oWNZg', moments: [{ time: '1:00', text: '자랑스럽다', feeling: 'love' }] }
-                ],
-                edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }]
-            },
-            'hearts2hearts': {
-                name: '하츠투하츠 (Hearts2Hearts)',
-                nodes: [
-                    { id: 1, x: 100, y: 100, title: 'The Chase (Debut)', date: '2025-02-24', videoId: 'kxUA2wwYiME', moments: [{ time: '0:05', text: '비주얼 쇼크...', feeling: 'shock' }] },
-                    { id: 2, x: 500, y: 300, title: '첫 음악방송 1위', date: '2025-03-15', videoId: 'kxUA2wwYiME', moments: [{ time: '3:20', text: '눈물바다 ㅠㅠ', feeling: 'tear' }] }
-                ],
-                edges: [{ from: 1, to: 2 }]
-            },
-            'illit': {
-                name: '아일릿 (ILLIT)',
-                nodes: [
-                    { id: 1, x: 100, y: 100, title: 'Magnetic 데뷔', date: '2024-03-25', videoId: 'Vk5-c_v4gMU', moments: [{ time: '0:30', text: '슈퍼 이끌림~', feeling: 'love' }] },
-                    { id: 2, x: 500, y: 200, title: 'Lucky Girl Syndrome', date: '2024-04-10', videoId: 'UCmgGZbfjmk', moments: [{ time: '1:10', text: '안무 너무 귀여워', feeling: 'love' }] }
-                ],
-                edges: [{ from: 1, to: 2 }]
-            },
-            'seventeen': {
-                name: '세븐틴 (Seventeen)',
-                nodes: [
-                    { id: 1, x: 100, y: 100, title: '손오공 (Super)', date: '2023-04-24', videoId: 'Y6cGBh_TSIc', moments: [{ time: '2:45', text: '칼군무 미쳤다', feeling: 'shock' }] },
-                    { id: 2, x: 500, y: 300, title: 'MAESTRO 컴백', date: '2024-04-29', videoId: 'ThI0pBAbFnk', moments: [{ time: '3:00', text: '지휘하는 안무 대박', feeling: 'love' }] }
-                ],
-                edges: [{ from: 1, to: 2 }]
-            },
-            'straykids': {
-                name: '스키즈 (Stray Kids)',
-                nodes: [
-                    { id: 1, x: 100, y: 100, title: '神메뉴 (God\'s Menu)', date: '2020-06-17', videoId: 'TQTlCHxyuu8', moments: [{ time: '1:20', text: '네 손님~', feeling: 'love' }] },
-                    { id: 2, x: 500, y: 300, title: '락 (LALALALA)', date: '2023-11-10', videoId: 'DTAQd-qA8Q4', moments: [{ time: '2:10', text: '에너지 폭발', feeling: 'shock' }] }
-                ],
-                edges: [{ from: 1, to: 2 }]
-            },
-            'leejunyoung': {
-                name: '이준영 (Lee Jun-young)',
-                nodes: [
-                    { id: 1, x: 100, y: 100, title: '궁금해 (Curious About U)', date: '2019-12-05', videoId: 'K4y_y2BfSgI', moments: [{ time: '0:00', text: '솔로 가수 이준영!', feeling: 'love' }] },
-                    { id: 2, x: 500, y: 300, title: '너의 밤이 되어줄게 (연기)', date: '2021-11-07', videoId: 'B-e_nK8Q3-M', moments: [{ time: '0:00', text: '연기 천재 만재', feeling: 'love' }] }
-                ],
-                edges: [{ from: 1, to: 2 }]
+        ]
+        }
+
+        ,
+        'hearts2hearts': {
+
+            name: '하츠투하츠 (Hearts2Hearts)',
+            nodes: [ {
+
+                id: 1,
+                x: 100,
+                y: 100,
+                title: 'The Chase (Debut)',
+                date: '2025-02-24',
+                videoId: 'kxUA2wwYiME',
+                moments: [ {
+                    time: '0:05', text: '비주얼 쇼크...', feeling: 'shock'
+                }
+
+                ]
             }
-        };
+
+            ,
+            {
+
+            id: 2,
+            x: 500,
+            y: 300,
+            title: '첫 음악방송 1위',
+            date: '2025-03-15',
+            videoId: 'kxUA2wwYiME',
+            moments: [ {
+                time: '3:20', text: '눈물바다 ㅠㅠ', feeling: 'tear'
+            }
+
+            ]
+        }
+
+        ],
+        edges: [ {
+            from: 1, to: 2
+        }
+
+        ]
+        }
+
+        ,
+        'illit': {
+
+            name: '아일릿 (ILLIT)',
+            nodes: [ {
+
+                id: 1,
+                x: 100,
+                y: 100,
+                title: 'Magnetic 데뷔',
+                date: '2024-03-25',
+                videoId: 'Vk5-c_v4gMU',
+                moments: [ {
+                    time: '0:30', text: '슈퍼 이끌림~', feeling: 'love'
+                }
+
+                ]
+            }
+
+            ,
+            {
+
+            id: 2,
+            x: 500,
+            y: 200,
+            title: 'Lucky Girl Syndrome',
+            date: '2024-04-10',
+            videoId: 'UCmgGZbfjmk',
+            moments: [ {
+                time: '1:10', text: '안무 너무 귀여워', feeling: 'love'
+            }
+
+            ]
+        }
+
+        ],
+        edges: [ {
+            from: 1, to: 2
+        }
+
+        ]
+        }
+
+        ,
+        'seventeen': {
+
+            name: '세븐틴 (Seventeen)',
+            nodes: [ {
+
+                id: 1,
+                x: 100,
+                y: 100,
+                title: '손오공 (Super)',
+                date: '2023-04-24',
+                videoId: 'Y6cGBh_TSIc',
+                moments: [ {
+                    time: '2:45', text: '칼군무 미쳤다', feeling: 'shock'
+                }
+
+                ]
+            }
+
+            ,
+            {
+
+            id: 2,
+            x: 500,
+            y: 300,
+            title: 'MAESTRO 컴백',
+            date: '2024-04-29',
+            videoId: 'ThI0pBAbFnk',
+            moments: [ {
+                time: '3:00', text: '지휘하는 안무 대박', feeling: 'love'
+            }
+
+            ]
+        }
+
+        ],
+        edges: [ {
+            from: 1, to: 2
+        }
+
+        ]
+        }
+
+        ,
+        'straykids': {
+
+            name: '스키즈 (Stray Kids)',
+            nodes: [ {
+
+                id: 1,
+                x: 100,
+                y: 100,
+                title: '神메뉴 (God\'s Menu)',
+                date: '2020-06-17',
+                videoId: 'TQTlCHxyuu8',
+                moments: [ {
+                    time: '1:20', text: '네 손님~', feeling: 'love'
+                }
+
+                ]
+            }
+
+            ,
+            {
+
+            id: 2,
+            x: 500,
+            y: 300,
+            title: '락 (LALALALA)',
+            date: '2023-11-10',
+            videoId: 'DTAQd-qA8Q4',
+            moments: [ {
+                time: '2:10', text: '에너지 폭발', feeling: 'shock'
+            }
+
+            ]
+        }
+
+        ],
+        edges: [ {
+            from: 1, to: 2
+        }
+
+        ]
+        }
+
+        ,
+        'leejunyoung': {
+
+            name: '이준영 (Lee Jun-young)',
+            nodes: [ {
+
+                id: 1,
+                x: 100,
+                y: 100,
+                title: '궁금해 (Curious About U)',
+                date: '2019-12-05',
+                videoId: 'K4y_y2BfSgI',
+                moments: [ {
+                    time: '0:00', text: '솔로 가수 이준영!', feeling: 'love'
+                }
+
+                ]
+            }
+
+            ,
+            {
+
+            id: 2,
+            x: 500,
+            y: 300,
+            title: '너의 밤이 되어줄게 (연기)',
+            date: '2021-11-07',
+            videoId: 'B-e_nK8Q3-M',
+            moments: [ {
+                time: '0:00', text: '연기 천재 만재', feeling: 'love'
+            }
+
+            ]
+        }
+
+        ],
+        edges: [ {
+            from: 1, to: 2
+        }
+
+        ]
+        }
+        }
+
+        ;
 
         // --- State & Logic ---
-        const urlParams = new URLSearchParams(window.location.search);
-        const treeId = urlParams.get('id');
+        const urlParams=new URLSearchParams(window.location.search);
+        const treeId=urlParams.get('id');
 
-        const initialData = dummyData[treeId] || {
-            name: treeId ? decodeURIComponent(treeId) : 'My Tree',
-            nodes: [],
-            edges: []
-        };
+        const initialData=dummyData[treeId] || {
+            name: treeId ? decodeURIComponent(treeId): 'My Tree',
+                nodes: [],
+                edges: []
+        }
+
+        ;
 
         if (treeId && dummyData[treeId]) {
-            document.getElementById('tree-title').innerText = dummyData[treeId].name;
-        } else if (treeId) {
-            document.getElementById('tree-title').innerText = decodeURIComponent(treeId) + " Tree";
+            document.getElementById('tree-title').innerText=dummyData[treeId].name;
+        }
+
+        else if (treeId) {
+            document.getElementById('tree-title').innerText=decodeURIComponent(treeId)+" Tree";
         }
 
         // Deep copy for reset
-        const originalNodes = JSON.parse(JSON.stringify(initialData.nodes.length > 0 ? initialData.nodes : [
-            { id: 1, x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 100, title: '여정의 시작', date: new Date().toISOString().split('T')[0], videoId: '', moments: [] }
-        ]));
+        const originalNodes=JSON.parse(JSON.stringify(initialData.nodes.length > 0 ? initialData.nodes : [ {
+                    id: 1, x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 100, title: '여정의 시작', date: new Date().toISOString().split('T')[0], videoId: '', moments: []
+                }
 
-        const state = {
+                ]));
+
+        const state= {
+
             nodes: JSON.parse(JSON.stringify(originalNodes)),
             edges: initialData.edges,
-            transform: { x: 0, y: 0, k: 1 },
+            transform: {
+                x: 0, y: 0, k: 1
+            }
+
+            ,
             isDragging: false,
             isPanning: false,
             selectedNode: null,
-            dragStart: { x: 0, y: 0 },
-            activeNodeId: null
-        };
+            dragStart: {
+                x: 0, y: 0
+            }
 
-        const canvas = document.getElementById('canvas');
-        const connections = document.getElementById('connections');
+            ,
+            activeNodeId: null
+        }
+
+        ;
+
+        const canvas=document.getElementById('canvas');
+        const connections=document.getElementById('connections');
 
         function render() {
-            canvas.style.transform = `translate(${state.transform.x}px, ${state.transform.y}px) scale(${state.transform.k})`;
-            document.getElementById('zoom-level').innerText = Math.round(state.transform.k * 100) + '%';
+            canvas.style.transform=`translate($ {
+                    state.transform.x
+                }
 
-            connections.innerHTML = '';
-            document.querySelectorAll('.node').forEach(el => el.remove());
+                px, $ {
+                    state.transform.y
+                }
 
-            state.edges.forEach(edge => {
-                const from = state.nodes.find(n => n.id === edge.from);
-                const to = state.nodes.find(n => n.id === edge.to);
-                if (from && to) drawConnection(from, to);
-            });
+                px) scale($ {
+                    state.transform.k
+                })`;
+            document.getElementById('zoom-level').innerText=Math.round(state.transform.k * 100)+'%';
 
-            state.nodes.forEach(node => {
-                const el = document.createElement('div');
-                el.className = `node ${state.selectedNode === node.id ? 'selected' : ''}`;
-                el.style.left = node.x + 'px';
-                el.style.top = node.y + 'px';
+            connections.innerHTML='';
+            document.querySelectorAll('.node').forEach(el=> el.remove());
 
-                const thumb = node.videoId
-                    ? `https://img.youtube.com/vi/${node.videoId}/hqdefault.jpg`
+            state.edges.forEach(edge=> {
+                    const from=state.nodes.find(n=> n.id===edge.from);
+                    const to=state.nodes.find(n=> n.id===edge.to);
+                    if (from && to) drawConnection(from, to);
+                });
+
+            state.nodes.forEach(node=> {
+                    const el=document.createElement('div');
+
+                    el.className=`node $ {
+                        state.selectedNode===node.id ? 'selected' : ''
+                    }
+
+                    `;
+                    el.style.left=node.x + 'px';
+                    el.style.top=node.y + 'px';
+
+                    const thumb=node.videoId ? `https: //img.youtube.com/vi/${node.videoId}/hqdefault.jpg`
                     : 'https://via.placeholder.com/280x157?text=No+Video';
 
-                el.innerHTML = `
-                    <div class="h-40 bg-slate-200 relative group">
-                        <img src="${thumb}" class="w-full h-full object-cover" draggable="false">
-                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
-                        <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur">
-                            ${node.moments.length} Moments
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-slate-800 text-lg leading-tight line-clamp-1 mb-1">${node.title}</h3>
-                        <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
-                    </div>
-                    <!-- Connect Handles -->
-            if (moments.length === 0) {
-                list.innerHTML = `< div class="text-center text-slate-400 text-sm py-10" > 아직 기록된 순간이 없습니다.< br > 영상을 보며 감정을 남겨보세요!</div > `;
+                    el.innerHTML=` <div class="h-40 bg-slate-200 relative group" > <img src="${thumb}" class="w-full h-full object-cover" draggable="false" > <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" ></div> <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur" > $ {
+                        node.moments.length
+                    }
+
+                    Moments </div> </div> <div class="p-4" > <h3 class="font-bold text-slate-800 text-lg leading-tight line-clamp-1 mb-1" >$ {
+                        node.title
+                    }
+
+                    </h3> <p class="text-xs text-slate-400 font-medium" >$ {
+                        node.date || ''
+                    }
+
+                    </p> </div> < !-- Connect Handles --> <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30" title="Drag to connect" > <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" ></path></svg> </div> `;
+
+                    el.onmousedown=(e)=> startDragNode(e, node);
+
+                    el.onclick=(e)=> {
+                        if ( !state.isDragging) {
+                            e.stopPropagation();
+                            openDetailModal(node);
+                        }
+                    }
+
+                    ;
+
+                    canvas.appendChild(el);
+                });
+        }
+
+        function drawConnection(from, to) {
+            const path=document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const startX=from.x+280;
+            const startY=from.y+100;
+            const endX=to.x;
+            const endY=to.y+100;
+
+            const cp1X=startX+(endX - startX) * 0.5;
+            const cp1Y=startY;
+            const cp2X=endX - (endX - startX) * 0.5;
+            const cp2Y=endY;
+
+            const d=`M $ {
+                startX
+            }
+
+            $ {
+                startY
+            }
+
+            C $ {
+                cp1X
+            }
+
+            $ {
+                cp1Y
+            }
+
+            ,
+            $ {
+                cp2X
+            }
+
+            $ {
+                cp2Y
+            }
+
+            ,
+            $ {
+                endX
+            }
+
+            $ {
+                endY
+            }
+
+            `;
+
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', '#cbd5e1');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('fill', 'none');
+            connections.appendChild(path);
+        }
+
+        // --- Interactions ---
+        let dragStartX=0;
+        let dragStartY=0;
+        let isDraggingNode=false;
+
+        function startDragNode(e, node) {
+            if (e.target.closest('.absolute')) return; // Don't drag if clicking handle
+            e.stopPropagation();
+            isDraggingNode=true;
+            state.selectedNode=node.id;
+            dragStartX=e.clientX;
+            dragStartY=e.clientY;
+
+            state.dragStart= {
+                x: e.clientX / state.transform.k - node.x,
+                    y: e.clientY / state.transform.k - node.y
+            }
+
+            ;
+            // Do NOT set state.isDragging = true here yet
+        }
+
+        window.onmousemove=(e)=> {
+            if (isDraggingNode && state.selectedNode) {
+                // Check threshold to distinguish click from drag
+                const dist=Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY);
+
+                if (dist > 5) {
+                    state.isDragging=true;
+                }
+
+                if (state.isDragging) {
+                    const node=state.nodes.find(n=> n.id===state.selectedNode);
+
+                    if (node) {
+                        node.x=e.clientX / state.transform.k - state.dragStart.x;
+                        node.y=e.clientY / state.transform.k - state.dragStart.y;
+                        render();
+                    }
+                }
+            }
+
+            else if (state.isPanning) {
+                state.transform.x+=e.movementX;
+                state.transform.y+=e.movementY;
+                render();
+            }
+        }
+
+        ;
+
+        window.onmouseup=()=> {
+
+            // Delay clearing slightly to allow node.onmouseup to fire with correct state
+            setTimeout(()=> {
+                    isDraggingNode=false;
+                    state.isDragging=false;
+                    state.isPanning=false;
+                }
+
+                , 0);
+        }
+
+        ;
+
+        document.getElementById('wrapper').onmousedown=(e)=> {
+            if (e.target.id==='wrapper' || e.target.id==='canvas') {
+                state.isPanning=true;
+                state.selectedNode=null;
+                render();
+            }
+        }
+
+        ;
+
+        document.getElementById('wrapper').onwheel=(e)=> {
+            e.preventDefault();
+            const delta=e.deltaY>0 ? 0.9: 1.1;
+            state.transform.k=Math.max(0.1, Math.min(3, state.transform.k * delta));
+            render();
+        }
+
+        ;
+
+        function zoomIn() {
+            state.transform.k *=1.2;
+            render();
+        }
+
+        function zoomOut() {
+            state.transform.k *=0.8;
+            render();
+        }
+
+        function resetLayout() {
+            if (confirm(isKorean ? '모든 노드의 위치를 초기화하시겠습니까?' : 'Reset all node positions?')) {
+                state.nodes=JSON.parse(JSON.stringify(originalNodes));
+
+                state.transform= {
+                    x: 0, y: 0, k: 1
+                }
+
+                ;
+                render();
+            }
+        }
+
+        // --- Unified Detail Modal & Other Logic ---
+        function openDetailModal(node) {
+            state.activeNodeId=node.id;
+            document.getElementById('detail-title').innerText=node.title;
+            document.getElementById('detail-date').innerText=node.date;
+            document.getElementById('edit-title').value=node.title;
+            document.getElementById('edit-date').value=node.date;
+            document.getElementById('edit-video').value=node.videoId ? `https: //youtu.be/${node.videoId}` : '';
+
+            // Set video iframe src
+            if (node.videoId) {
+                document.getElementById('detail-video').src=`https: //www.youtube-nocookie.com/embed/${node.videoId}?playsinline=1&rel=0&modestbranding=1&autoplay=1`;
+                document.getElementById('external-link').href=`https: //www.youtube.com/watch?v=${node.videoId}`;
+                document.getElementById('external-link').classList.remove('hidden');
+            }
+
+            else {
+                document.getElementById('detail-video').src='';
+                document.getElementById('external-link').classList.add('hidden');
+            }
+
+            renderMomentsList(node.moments);
+            const modal=document.getElementById('detail-modal');
+            modal.showModal();
+        }
+
+        function renderMomentsList(moments) {
+            const list=document.getElementById('moments-list');
+            list.innerHTML='';
+
+            if (moments.length===0) {
+                list.innerHTML=`<div class="text-center text-slate-400 text-sm py-10">아직 기록된 순간이 없습니다.<br>영상을 보며 감정을 남겨보세요 !</div>`;
                 return;
             }
-            moments.forEach(m => {
-                const el = document.createElement('div');
-                el.className = 'flex gap-3 items-start';
-                el.innerHTML = `
-                    < div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm text-lg" >
-                        ${ getFeelingEmoji(m.feeling) }
-                    </div >
-                    <div class="flex-1 bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded cursor-pointer hover:bg-brand-100" onclick="seekVideo('${m.time}')">${m.time}</span>
-                            <span class="text-[10px] text-slate-400">User</span>
-                        </div>
-                        <p class="text-sm text-slate-700 leading-snug">${m.text}</p>
-                    </div>
-                `;
-                list.appendChild(el);
-            });
+
+            moments.forEach(m=> {
+                    const el=document.createElement('div');
+                    el.className='flex gap-3 items-start';
+
+                    el.innerHTML=` <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm text-lg" > $ {
+                        getFeelingEmoji(m.feeling)
+                    }
+
+                    </div> <div class="flex-1 bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm border border-slate-100" > <div class="flex justify-between items-center mb-1" > <span class="text-xs font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded cursor-pointer hover:bg-brand-100" onclick="seekVideo('${m.time}')" >$ {
+                        m.time
+                    }
+
+                    </span> <span class="text-[10px] text-slate-400" >User</span> </div> <p class="text-sm text-slate-700 leading-snug" >$ {
+                        m.text
+                    }
+
+                    </p> </div> `;
+                    list.appendChild(el);
+                });
         }
 
         function getFeelingEmoji(feeling) {
-            const map = { love: '😍', tear: '😭', funny: '🤣', shock: '😲' };
+            const map= {
+                love: '😍', tear: '😭', funny: '🤣', shock: '😲'
+            }
+
+            ;
             return map[feeling] || '😊';
         }
 
         function seekVideo(timeStr) {
-            const parts = timeStr.split(':').map(Number);
-            let seconds = 0;
-            if (parts.length === 2) seconds = parts[0] * 60 + parts[1];
-            if (parts.length === 3) seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+            const parts=timeStr.split(':').map(Number);
+            let seconds=0;
+            if (parts.length===2) seconds=parts[0] * 60+parts[1];
+            if (parts.length===3) seconds=parts[0] * 3600+parts[1] * 60+parts[2];
 
-            const iframe = document.getElementById('detail-video');
-            let src = iframe.src;
-            src = src.replace(/[?&]start=\d+/, '');
-            src += (src.includes('?') ? '&' : '?') + `start = ${ seconds }& autoplay=1`;
-            iframe.src = src;
+            const iframe=document.getElementById('detail-video');
+            let src=iframe.src;
+            src=src.replace(/[?&]start=\d+/, '');
+
+            src+=(src.includes('?') ? '&' : '?')+`start=$ {
+                seconds
+            }
+
+            &autoplay=1`;
+            iframe.src=src;
         }
 
         function addMomentFromDetail(e) {
             e.preventDefault();
-            const time = document.getElementById('new-moment-time').value;
-            const text = document.getElementById('new-moment-text').value;
-            const feeling = document.querySelector('input[name="new-moment-feeling"]:checked').value;
+            const time=document.getElementById('new-moment-time').value;
+            const text=document.getElementById('new-moment-text').value;
+            const feeling=document.querySelector('input[name="new-moment-feeling"]:checked').value;
 
-            if (!time || !text) return;
+            if ( !time || !text) return;
 
-            const node = state.nodes.find(n => n.id === state.activeNodeId);
+            const node=state.nodes.find(n=> n.id===state.activeNodeId);
+
             if (node) {
-                node.moments.push({ time, text, feeling });
-                renderMomentsList(node.moments);
-                render();
-                document.getElementById('new-moment-text').value = '';
-                document.getElementById('new-moment-time').value = '';
-            }
+                node.moments.push({
+                    time, text, feeling
+                });
+            renderMomentsList(node.moments);
+            render();
+            document.getElementById('new-moment-text').value='';
+            document.getElementById('new-moment-time').value='';
+        }
         }
 
-        function enableEditMode() { document.getElementById('edit-form').classList.remove('hidden'); }
-        function disableEditMode() { document.getElementById('edit-form').classList.add('hidden'); }
+        function enableEditMode() {
+            document.getElementById('edit-form').classList.remove('hidden');
+        }
+
+        function disableEditMode() {
+            document.getElementById('edit-form').classList.add('hidden');
+        }
+
         function saveNodeDetails(e) {
             e.preventDefault();
-            const title = document.getElementById('edit-title').value;
-            const date = document.getElementById('edit-date').value;
-            const videoUrl = document.getElementById('edit-video').value;
+            const title=document.getElementById('edit-title').value;
+            const date=document.getElementById('edit-date').value;
+            const videoUrl=document.getElementById('edit-video').value;
 
-            let videoId = '';
-            const match = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/);
-            if (match) videoId = match[1];
+            let videoId='';
+            const match=videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/);
+ if (match) videoId=match[1];
 
-            const node = state.nodes.find(n => n.id === state.activeNodeId);
-            if (node) {
-                node.title = title;
-                node.date = date;
-                if (videoId) node.videoId = videoId;
+                    const node=state.nodes.find(n=> n.id===state.activeNodeId);
 
-                document.getElementById('detail-title').innerText = title;
-                document.getElementById('detail-date').innerText = date;
-                if (videoId) {
-                    document.getElementById('detail-video').src = `https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1&rel=0&modestbranding=1`;
-                document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}`;
-                document.getElementById('external-link').classList.remove('hidden');
-            }
+                    if (node) {
+                        node.title=title;
+                        node.date=date;
+                        if (videoId) node.videoId=videoId;
+
+                        document.getElementById('detail-title').innerText=title;
+                        document.getElementById('detail-date').innerText=date;
+
+                        if (videoId) {
+                            document.getElementById('detail-video').src=`https: //www.youtube-nocookie.com/embed/${videoId}?playsinline=1&rel=0&modestbranding=1`;
+                            document.getElementById('external-link').href=`https: //www.youtube.com/watch?v=${videoId}`;
+                            document.getElementById('external-link').classList.remove('hidden');
+                        }
+
+                        render();
+                        disableEditMode();
+                    }
+                }
+
+                function createNewNode() {
+                    const newNode= {
+                        id: Date.now(),
+                        x: -state.transform.x / state.transform.k + window.innerWidth / 2 / state.transform.k - 140,
+                        y: -state.transform.y / state.transform.k + window.innerHeight / 2 / state.transform.k - 100,
+                        title: 'New Moment',
+                        date: new Date().toISOString().split('T')[0],
+                        videoId: '',
+                        moments: []
+                    }
+
+                    ;
+                    state.nodes.push(newNode);
+                    state.activeNodeId=newNode.id;
+                    render();
+                    openDetailModal(newNode);
+                }
+
+                function closeModal(id) {
+                    document.getElementById(id).close();
+                    document.getElementById('detail-video').src='';
+                }
 
                 render();
-            disableEditMode();
-        }
-        }
 
-        function createNewNode() {
-            const newNode = {
-                id: Date.now(),
-                x: -state.transform.x / state.transform.k + window.innerWidth / 2 / state.transform.k - 140,
-                y: -state.transform.y / state.transform.k + window.innerHeight / 2 / state.transform.k - 100,
-                title: 'New Moment',
-                date: new Date().toISOString().split('T')[0],
-                videoId: '',
-                moments: []
-            };
-            state.nodes.push(newNode);
-            state.activeNodeId = newNode.id;
-            render();
-            openDetailModal(newNode);
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).close();
-            document.getElementById('detail-video').src = '';
-        }
-
-        render();
-
-    </script>
-</body>
-
-</html>
+                </script> </body> </html>
