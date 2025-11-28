@@ -7,10 +7,9 @@
     <!-- Critical for YouTube Embeds -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>LoveTree Editor</title>
-    <script>window.tailwind={warn:false}</script>
+    <script>window.tailwind = { warn: false }</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
-
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
         rel="stylesheet">
     <script>
@@ -488,6 +487,29 @@
                 el.className = `node ${state.selectedNode === node.id ? 'selected' : ''}`;
                 el.style.left = node.x + 'px';
                 el.style.top = node.y + 'px';
+
+                const thumb = node.videoId
+                    ? `https://img.youtube.com/vi/${node.videoId}/hqdefault.jpg`
+                    : 'https://via.placeholder.com/280x157?text=No+Video';
+
+                el.innerHTML = `
+                    <div class="h-40 bg-slate-200 relative group">
+                        <img src="${thumb}" class="w-full h-full object-cover" draggable="false">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                        <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur">
+                            ${node.moments.length} Moments
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight line-clamp-1 mb-1">${node.title}</h3>
+                        <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
+                    </div>
+                    <!-- Connect Handles -->
+                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30" title="Drag to connect">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </div>
+                `;
+
                 el.onclick = (e) => {
                     if (!state.isDragging) {
                         e.stopPropagation();
