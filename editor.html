@@ -9,6 +9,7 @@
     <title>LoveTree Editor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
+
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
         rel="stylesheet">
     <script>
@@ -486,14 +487,15 @@
                 el.className = `node ${state.selectedNode === node.id ? 'selected' : ''}`;
                 el.style.left = node.x + 'px';
                 el.style.top = node.y + 'px';
-                if (!state.isDragging) {
-                    e.stopPropagation();
-                    openDetailModal(node);
-                }
-            };
+                el.onclick = (e) => {
+                    if (!state.isDragging) {
+                        e.stopPropagation();
+                        openDetailModal(node);
+                    }
+                };
 
-            canvas.appendChild(el);
-        });
+                canvas.appendChild(el);
+            });
         }
 
         function drawConnection(from, to) {
