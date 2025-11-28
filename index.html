@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relovetree - 나의 덕질 기록</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'Outfit', 'sans-serif'],
+                        display: ['Outfit', '"Noto Sans KR"', 'sans-serif']
+                    },
+                    colors: { brand: { 50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e', 600: '#e11d48' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        dialog {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+
+    <!-- Nav -->
+    <nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div
+                    class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                        </path>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold font-display tracking-tight text-slate-800">Relovetree</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleLanguage()"
+                    class="text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors"
+                    id="lang-btn">English</button>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-400 to-brand-400 shadow-md"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <header class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2" id="page-title">나의 러브트리</h1>
+            <p class="text-slate-500 text-lg" id="page-subtitle">사랑에 빠진 모든 순간을 기록하세요.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <!-- Create Card -->
+            <button onclick="openCreateModal()"
+                class="h-72 rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-4 hover:border-brand-500 hover:bg-brand-50/50 transition-all group cursor-pointer">
+                <div
+                    class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-500 transition-colors shadow-sm group-hover:shadow-md">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <span class="font-semibold text-lg text-slate-600 group-hover:text-brand-600" id="btn-create">새로운 트리
+                    만들기</span>
+            </button>
+
+            <!-- IU Card -->
+            <a href="editor.html?id=iu"
+                class="block h-72 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group">
+                <div class="h-40 bg-purple-100 relative overflow-hidden">
+                    <img src="https://img.youtube.com/vi/v7bnOxV4jAc/mqdefault.jpg"
+                        class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                    <div
+                        class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-purple-600 shadow-sm">
+                        K-Pop</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 group-hover:text-brand-600 transition-colors">아이유
+                        (IU)</h3>
+                    <p class="text-sm text-slate-500 mb-4">마지막 업데이트: 2시간 전</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white"></div>
+                            <div class="w-8 h-8 rounded-full bg-slate-300 border-2 border-white"></div>
+                        </div>
+                        <span class="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded-full">+12개의
+                            순간</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- BTS Card -->
+            <a href="editor.html?id=bts"
+                class="block h-72 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group">
+                <div class="h-40 bg-pink-100 relative overflow-hidden">
+                    <img src="https://img.youtube.com/vi/gwMa6gpoE9I/mqdefault.jpg"
+                        class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                    <div
+                        class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-pink-600 shadow-sm">
+                        Global</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 group-hover:text-brand-600 transition-colors">방탄소년단
+                        (BTS)</h3>
+                    <p class="text-sm text-slate-500 mb-4">마지막 업데이트: 어제</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded-full">54개의 순간
+                            기록됨</span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Create Modal -->
+    <dialog id="create-modal" class="p-0 w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 mb-2" id="modal-title">누구의 팬이신가요?</h3>
+            <p class="text-slate-500 text-sm mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
+
+            <form method="dialog" onsubmit="handleCreate(event)">
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-name">아티스트 이름</label>
+                    <input type="text" id="artist-name"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                        placeholder="예: 뉴진스, 임영웅..." required>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('create-modal').close()"
+                        class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
+                        id="btn-cancel">취소</button>
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
+                        id="btn-start">시작하기</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script>
+        let isKorean = true;
+        const translations = {
+            ko: {
+                title: "나의 러브트리",
+                subtitle: "사랑에 빠진 모든 순간을 기록하세요.",
+                create: "새로운 트리 만들기",
+                modalTitle: "누구의 팬이신가요?",
+                modalDesc: "아티스트의 이름을 입력하여 새로운 여정을 시작하세요.",
+                labelName: "아티스트 이름",
+                cancel: "취소",
+                start: "시작하기",
+                langBtn: "English"
+            },
+            en: {
+                title: "My LoveTrees",
+                subtitle: "Record your falling-in-love moments.",
+                create: "Create New Tree",
+                modalTitle: "Who is your artist?",
+                modalDesc: "Enter the artist name to start a new journey.",
+                labelName: "Artist Name",
+                cancel: "Cancel",
+                start: "Start Journey",
+                langBtn: "한국어"
+            }
+        };
+
+        function toggleLanguage() {
+            isKorean = !isKorean;
+            const t = isKorean ? translations.ko : translations.en;
+
+            document.getElementById('page-title').innerText = t.title;
+            document.getElementById('page-subtitle').innerText = t.subtitle;
+            document.getElementById('btn-create').innerText = t.create;
+            document.getElementById('modal-title').innerText = t.modalTitle;
+            document.getElementById('modal-desc').innerText = t.modalDesc;
+            document.getElementById('label-name').innerText = t.labelName;
+            document.getElementById('btn-cancel').innerText = t.cancel;
+            document.getElementById('btn-start').innerText = t.start;
+            document.getElementById('lang-btn').innerText = t.langBtn;
+        }
+
+        function openCreateModal() {
+            document.getElementById('artist-name').value = '';
+            document.getElementById('create-modal').showModal();
+        }
+
+        function handleCreate(e) {
+            e.preventDefault(); // Prevent default form submission
+            const name = document.getElementById('artist-name').value;
+            if (name) {
+                window.location.href = `editor.html?id=${encodeURIComponent(name)}`;
+            }
+        }
+    </script>
+</body>
+
+</html>

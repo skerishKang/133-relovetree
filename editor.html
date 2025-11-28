@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoveTree Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'Outfit', 'sans-serif'],
+                        display: ['Outfit', '"Noto Sans KR"', 'sans-serif']
+                    },
+                    colors: {
+                        brand: { 50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e', 600: '#e11d48' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+
+        #canvas {
+            width: 100vw;
+            height: 100vh;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            cursor: grab;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        #canvas:active {
+            cursor: grabbing;
+        }
+
+        .node {
+            position: absolute;
+            width: 320px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .node:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            z-index: 10;
+        }
+
+        .node.selected {
+            border-color: #f43f5e;
+            ring: 4px solid rgba(244, 63, 94, 0.2);
+            z-index: 20;
+        }
+
+        .moment-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-weight: 600;
+        }
+
+        .tag-love {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tag-tear {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .tag-funny {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .tag-shock {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        /* Modal Animation */
+        dialog {
+            border: none;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            animation: modal-pop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            animation: fade-in 0.3s ease;
+        }
+
+        @keyframes modal-pop {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div
+        class="fixed top-0 left-0 w-full h-16 bg-white/90 backdrop-blur border-b border-slate-200 z-50 flex items-center justify-between px-6 shadow-sm">
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="p-2 hover:bg-slate-100 rounded-full transition-colors group"
+                title="Back to Home">
+                <svg class="w-5 h-5 text-slate-500 group-hover:text-brand-600" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </a>
+            <h1 class="font-bold text-lg text-slate-800 font-display" id="tree-title">My LoveTree</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleLanguage()"
+                class="text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors"
+                id="lang-btn">English</button>
+            <div class="h-6 w-px bg-slate-200"></div>
+            <div class="flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                <button onclick="zoomOut()" class="p-1.5 hover:bg-white rounded-full transition-all shadow-sm"><svg
+                        class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                    </svg></button>
+                <span id="zoom-level" class="text-xs font-bold text-slate-500 w-10 text-center font-mono">100%</span>
+                <button onclick="zoomIn()" class="p-1.5 hover:bg-white rounded-full transition-all shadow-sm"><svg
+                        class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="wrapper" style="width: 100vw; height: 100vh; overflow: hidden;">
+        <div id="canvas">
+            <svg id="connections"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible;"></svg>
+            <!-- Nodes injected here -->
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button onclick="openNodeModal()"
+        class="fixed bottom-8 right-8 w-16 h-16 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40 group">
+        <svg class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span
+            class="absolute -top-10 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">새로운
+            순간 추가</span>
+    </button>
+
+    <!-- Node Edit Modal -->
+    <dialog id="node-modal">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-900" id="modal-title-node">새로운 순간 기록하기</h2>
+                <button onclick="closeModal('node-modal')" class="text-slate-400 hover:text-slate-600"><svg
+                        class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg></button>
+            </div>
+
+            <form onsubmit="saveNode(event)" class="space-y-5">
+                <input type="hidden" id="edit-node-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-video">유튜브 영상 URL</label>
+                    <div class="relative">
+                        <input type="text" id="node-video" placeholder="https://youtu.be/..."
+                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                            onchange="previewThumbnail(this.value)">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3.5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div id="thumbnail-preview"
+                        class="mt-3 h-40 bg-slate-100 rounded-xl overflow-hidden hidden border border-slate-200">
+                        <img src="" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-title">제목</label>
+                    <input type="text" id="node-title" placeholder="예: 첫 1위, 레전드 직캠"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-date">날짜</label>
+                    <input type="date" id="node-date"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('node-modal')"
+                        class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
+                        id="btn-cancel-node">취소</button>
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
+                        id="btn-save-node">저장하기</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Moment Add Modal -->
+    <dialog id="moment-modal">
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-slate-900 mb-4" id="modal-title-moment">이 순간의 감정 기록하기</h2>
+            <form onsubmit="saveMoment(event)" class="space-y-4">
+                <input type="hidden" id="moment-node-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-time">타임스탬프</label>
+                    <input type="text" id="moment-time" placeholder="예: 1:23"
+                        class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-comment">코멘트</label>
+                    <input type="text" id="moment-text" placeholder="이 부분이 진짜 미쳤음..."
+                        class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-feeling">감정</label>
+                    <div class="flex gap-2">
+                        <label class="cursor-pointer"><input type="radio" name="feeling" value="love"
+                                class="peer sr-only" checked><span
+                                class="px-3 py-1 rounded-full bg-slate-100 text-slate-500 peer-checked:bg-pink-100 peer-checked:text-pink-600 peer-checked:ring-1 peer-checked:ring-pink-300 transition-all">설렘</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="feeling" value="tear"
+                                class="peer sr-only"><span
+                                class="px-3 py-1 rounded-full bg-slate-100 text-slate-500 peer-checked:bg-blue-100 peer-checked:text-blue-600 peer-checked:ring-1 peer-checked:ring-blue-300 transition-all">눈물</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="feeling" value="funny"
+                                class="peer sr-only"><span
+                                class="px-3 py-1 rounded-full bg-slate-100 text-slate-500 peer-checked:bg-yellow-100 peer-checked:text-yellow-600 peer-checked:ring-1 peer-checked:ring-yellow-300 transition-all">웃음</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="feeling" value="shock"
+                                class="peer sr-only"><span
+                                class="px-3 py-1 rounded-full bg-slate-100 text-slate-500 peer-checked:bg-purple-100 peer-checked:text-purple-600 peer-checked:ring-1 peer-checked:ring-purple-300 transition-all">충격</span></label>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('moment-modal')"
+                        class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg"
+                        id="btn-cancel-moment">취소</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-brand-500 text-white font-bold rounded-lg hover:bg-brand-600"
+                        id="btn-save-moment">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Video Player Modal -->
+    <dialog id="video-modal"
+        class="bg-black p-0 overflow-hidden max-w-4xl w-full aspect-video rounded-none md:rounded-2xl shadow-2xl">
+        <div class="relative w-full h-full">
+            <iframe id="video-frame" class="w-full h-full" src="" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            <button onclick="closeVideo()"
+                class="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center backdrop-blur transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </dialog>
+
+    <script>
+        // --- Translations ---
+        let isKorean = true;
+        const translations = {
+            ko: {
+                treeTitle: "나의 러브트리",
+                langBtn: "English",
+                modalTitleNode: "새로운 순간 기록하기",
+                labelVideo: "유튜브 영상 URL",
+                labelTitle: "제목",
+                labelDate: "날짜",
+                btnCancel: "취소",
+                btnSave: "저장하기",
+                modalTitleMoment: "이 순간의 감정 기록하기",
+                labelTime: "타임스탬프",
+                labelComment: "코멘트",
+                labelFeeling: "감정",
+                btnAdd: "추가하기",
+                addMomentBtn: "순간 추가"
+            },
+            en: {
+                treeTitle: "My LoveTree",
+                langBtn: "한국어",
+                modalTitleNode: "Record New Moment",
+                labelVideo: "YouTube Video URL",
+                labelTitle: "Title",
+                labelDate: "Date",
+                btnCancel: "Cancel",
+                btnSave: "Save",
+                modalTitleMoment: "Record Feeling",
+                labelTime: "Timestamp",
+                labelComment: "Comment",
+                labelFeeling: "Feeling",
+                btnAdd: "Add",
+                addMomentBtn: "Add Moment"
+            }
+        };
+
+        function toggleLanguage() {
+            isKorean = !isKorean;
+            const t = isKorean ? translations.ko : translations.en;
+
+            document.getElementById('tree-title').innerText = t.treeTitle;
+            document.getElementById('lang-btn').innerText = t.langBtn;
+            document.getElementById('modal-title-node').innerText = t.modalTitleNode;
+            document.getElementById('label-video').innerText = t.labelVideo;
+            document.getElementById('label-title').innerText = t.labelTitle;
+            document.getElementById('label-date').innerText = t.labelDate;
+            document.getElementById('btn-cancel-node').innerText = t.btnCancel;
+            document.getElementById('btn-save-node').innerText = t.btnSave;
+
+            document.getElementById('modal-title-moment').innerText = t.modalTitleMoment;
+            document.getElementById('label-time').innerText = t.labelTime;
+            document.getElementById('label-comment').innerText = t.labelComment;
+            document.getElementById('label-feeling').innerText = t.labelFeeling;
+            document.getElementById('btn-cancel-moment').innerText = t.btnCancel;
+            document.getElementById('btn-save-moment').innerText = t.btnAdd;
+
+            render(); // Re-render to update dynamic text
+        }
+
+        // --- State & Logic ---
+        const state = {
+            nodes: [
+                { id: 1, x: 100, y: 100, title: '데뷔 무대 (Debut)', date: '2013-06-13', videoId: 'rBG5L7UsUxA', moments: [{ time: '0:10', text: '전설의 시작', feeling: 'love' }] },
+                { id: 2, x: 500, y: 300, title: '첫 1위의 순간', date: '2015-05-05', videoId: 'NMdTd9e-LEI', moments: [{ time: '2:30', text: '멤버들 우는거 봐 ㅠㅠ', feeling: 'tear' }] }
+            ],
+            edges: [{ from: 1, to: 2 }],
+            transform: { x: 0, y: 0, k: 1 },
+            isDragging: false,
+            isPanning: false,
+            selectedNode: null,
+            dragStart: { x: 0, y: 0 }
+        };
+
+        const canvas = document.getElementById('canvas');
+        const connections = document.getElementById('connections');
+
+        function render() {
+            canvas.style.transform = `translate(${state.transform.x}px, ${state.transform.y}px) scale(${state.transform.k})`;
+            document.getElementById('zoom-level').innerText = Math.round(state.transform.k * 100) + '%';
+
+            connections.innerHTML = '';
+            document.querySelectorAll('.node').forEach(el => el.remove());
+
+            state.edges.forEach(edge => {
+                const from = state.nodes.find(n => n.id === edge.from);
+                const to = state.nodes.find(n => n.id === edge.to);
+                if (from && to) drawConnection(from, to);
+            });
+
+            state.nodes.forEach(node => {
+                const el = document.createElement('div');
+                el.className = `node ${state.selectedNode === node.id ? 'selected' : ''}`;
+                el.style.left = node.x + 'px';
+                el.style.top = node.y + 'px';
+
+                const thumb = node.videoId
+                    ? `https://img.youtube.com/vi/${node.videoId}/mqdefault.jpg`
+                    : 'https://via.placeholder.com/320x180?text=No+Video';
+
+                const t = isKorean ? translations.ko : translations.en;
+
+                el.innerHTML = `
+                    <div class="h-44 bg-slate-200 relative group cursor-pointer" onclick="playVideo('${node.videoId}', event)">
+                        <img src="${thumb}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                            <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-brand-600 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-slate-800 text-lg leading-tight line-clamp-2">${node.title}</h3>
+                            <span class="text-xs text-slate-400 font-medium shrink-0 ml-2 mt-1">${node.date || ''}</span>
+                        </div>
+                        <div class="space-y-2 mb-4">
+                            ${node.moments.map(m => `
+                                <div class="flex items-start gap-2 text-sm text-slate-600 bg-slate-50 p-2.5 rounded-xl hover:bg-slate-100 transition-colors">
+                                    <span class="font-mono text-xs text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded shrink-0 mt-0.5">${m.time}</span>
+                                    <span class="flex-1 leading-snug break-words">${m.text}</span>
+                                    <span class="moment-tag tag-${m.feeling} shrink-0">${getFeelingText(m.feeling)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="openMomentModal(${node.id}, event)" class="w-full py-2 text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            ${t.addMomentBtn}
+                        </button>
+                    </div>
+                    <!-- Connect Handles -->
+                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30" title="Drag to connect">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </div>
+                `;
+
+                el.onmousedown = (e) => startDragNode(e, node);
+                el.onclick = (e) => { e.stopPropagation(); selectNode(node.id); };
+                el.ondblclick = (e) => { e.stopPropagation(); openNodeModal(node); };
+
+                canvas.appendChild(el);
+            });
+        }
+
+        function getFeelingText(feeling) {
+            const map = { love: '설렘', tear: '눈물', funny: '웃음', shock: '충격' };
+            return map[feeling] || feeling;
+        }
+
+        function drawConnection(from, to) {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const startX = from.x + 320; // Right side
+            const startY = from.y + 120; // Center height
+            const endX = to.x;
+            const endY = to.y + 120;
+
+            const cp1X = startX + (endX - startX) * 0.5;
+            const cp1Y = startY;
+            const cp2X = endX - (endX - startX) * 0.5;
+            const cp2Y = endY;
+
+            const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', '#cbd5e1');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('fill', 'none');
+            connections.appendChild(path);
+        }
+
+        // --- Video Player ---
+        function playVideo(videoId, e) {
+            e.stopPropagation();
+            if (!videoId) return;
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('video-frame');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            modal.showModal();
+        }
+
+        function closeVideo() {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('video-frame');
+            iframe.src = '';
+            modal.close();
+        }
+
+        // --- Modals ---
+        function openNodeModal(node = null) {
+            const form = document.querySelector('#node-modal form');
+            form.reset();
+            document.getElementById('thumbnail-preview').classList.add('hidden');
+
+            if (node) {
+                document.getElementById('edit-node-id').value = node.id;
+                document.getElementById('node-title').value = node.title;
+                document.getElementById('node-date').value = node.date;
+                document.getElementById('node-video').value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
+                if (node.videoId) previewThumbnail(`https://youtu.be/${node.videoId}`);
+            } else {
+                document.getElementById('edit-node-id').value = '';
+            }
+            document.getElementById('node-modal').showModal();
+        }
+
+        function openMomentModal(nodeId, e) {
+            e.stopPropagation();
+            document.getElementById('moment-node-id').value = nodeId;
+            document.getElementById('moment-text').value = '';
+            document.getElementById('moment-time').value = '';
+            document.getElementById('moment-modal').showModal();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).close();
+        }
+
+        function saveNode(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-node-id').value;
+            const title = document.getElementById('node-title').value;
+            const date = document.getElementById('node-date').value;
+            const videoUrl = document.getElementById('node-video').value;
+
+            let videoId = '';
+            const match = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/);
+            if (match) videoId = match[1];
+
+            if (id) {
+                const node = state.nodes.find(n => n.id == id);
+                if (node) {
+                    node.title = title;
+                    node.date = date;
+                    node.videoId = videoId;
+                }
+            } else {
+                const newNode = {
+                    id: Date.now(),
+                    x: -state.transform.x / state.transform.k + window.innerWidth / 2 / state.transform.k - 160,
+                    y: -state.transform.y / state.transform.k + window.innerHeight / 2 / state.transform.k - 100,
+                    title: title,
+                    date: date,
+                    videoId: videoId,
+                    moments: []
+                };
+                state.nodes.push(newNode);
+                if (state.selectedNode) state.edges.push({ from: state.selectedNode, to: newNode.id });
+                state.selectedNode = newNode.id;
+            }
+            closeModal('node-modal');
+            render();
+        }
+
+        function saveMoment(e) {
+            e.preventDefault();
+            const nodeId = parseInt(document.getElementById('moment-node-id').value);
+            const time = document.getElementById('moment-time').value;
+            const text = document.getElementById('moment-text').value;
+            const feeling = document.querySelector('input[name="feeling"]:checked').value;
+
+            const node = state.nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.moments.push({ time, text, feeling });
+                render();
+            }
+            closeModal('moment-modal');
+        }
+
+        function previewThumbnail(url) {
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/);
+            const preview = document.getElementById('thumbnail-preview');
+            if (match) {
+                preview.querySelector('img').src = `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        // --- Interactions ---
+        function startDragNode(e, node) {
+            if (e.target.closest('button') || e.target.closest('.moment-tag')) return;
+            e.stopPropagation();
+            state.isDragging = true;
+            state.selectedNode = node.id;
+            state.dragStart = {
+                x: e.clientX / state.transform.k - node.x,
+                y: e.clientY / state.transform.k - node.y
+            };
+            render();
+        }
+
+        window.onmousemove = (e) => {
+            if (state.isDragging && state.selectedNode) {
+                const node = state.nodes.find(n => n.id === state.selectedNode);
+                if (node) {
+                    node.x = e.clientX / state.transform.k - state.dragStart.x;
+                    node.y = e.clientY / state.transform.k - state.dragStart.y;
+                    render();
+                }
+            } else if (state.isPanning) {
+                state.transform.x += e.movementX;
+                state.transform.y += e.movementY;
+                render();
+            }
+        };
+
+        window.onmouseup = () => { state.isDragging = false; state.isPanning = false; };
+        document.getElementById('wrapper').onmousedown = (e) => {
+            if (e.target.id === 'wrapper' || e.target.id === 'canvas') {
+                state.isPanning = true;
+                state.selectedNode = null;
+                render();
+            }
+        };
+        document.getElementById('wrapper').onwheel = (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            state.transform.k = Math.max(0.1, Math.min(3, state.transform.k * delta));
+            render();
+        };
+
+        function selectNode(id) { state.selectedNode = id; render(); }
+        function zoomIn() { state.transform.k *= 1.2; render(); }
+        function zoomOut() { state.transform.k *= 0.8; render(); }
+
+        // Init
+        const urlParams = new URLSearchParams(window.location.search);
+        const treeName = urlParams.get('id');
+        if (treeName) document.getElementById('tree-title').innerText = decodeURIComponent(treeName).toUpperCase() + " Tree";
+
+        render();
+
+    </script>
+</body>
+
+</html>
