@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: '"Noto Sans KR"', 'Outfit', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-500 hover:bg-brand-600 text-white font-medium px-4 py-2 rounded-xl transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl transition-colors;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all;
+  }
+
+  .node {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200 cursor-pointer transition-all duration-200;
+  }
+
+  .node:hover {
+    @apply shadow-xl -translate-y-1;
+  }
+
+  .node.selected {
+    @apply border-brand-500 shadow-lg;
+  }
+}
+
+@layer utilities {
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .scrollbar-thin {
+    /* Using webkit-scrollbar for better cross-browser compatibility */
+    /* scrollbar-width and scrollbar-color not supported in Safari/older Chrome */
+  }
+
+  .custom-scrollbar {
+    /* Webkit scrollbar styles */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  #wrapper {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #connections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+}

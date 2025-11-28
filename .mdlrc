@@ -1,0 +1,19 @@
+{
+  "default": true,
+  "MD022": {
+    "lines_below": 1,
+    "lines_above": 1
+  },
+  "MD032": {
+    "list_items": true
+  },
+  "MD041": {
+    "level": 1,
+    "front_matter_title": ""
+  },
+  "exclude": [
+    "node_modules/**",
+    "package-lock.json",
+    "yarn.lock"
+  ]
+}
