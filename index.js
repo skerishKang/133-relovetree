@@ -33,20 +33,60 @@ const POPULAR_ARTISTS = [
         id: 'straykids',
         name: '스트레이 키즈',
         englishName: 'Stray Kids',
-        * @param { Object } artist - Artist data
-    * @param { boolean } isKorean - Language preference
-    * @returns { string } - HTML string
-    */
-function createArtistCard(artist, isKorean = true) {
-        const errorFallbackColor = {
-            purple: '#e9d5ff',
-            blue: '#dbeafe',
-            red: '#fecaca',
-            green: '#dcfce7',
-            pink: '#fce7f3'
-        }[artist.color] || '#f1f5f9';
+        category: 'Group',
+        thumbnail: 'https://img.youtube.com/vi/EaswWiwMVs8/hqdefault.jpg',
+        moments: 87,
+        lastUpdate: '4시간 전',
+        color: 'red'
+    },
+    {
+        id: 'leejunyoung',
+        name: '이준영',
+        englishName: 'Lee Jun-young',
+        category: 'Solo',
+        thumbnail: 'https://img.youtube.com/vi/gwMa6gpoE9I/hqdefault.jpg',
+        moments: 23,
+        lastUpdate: '6시간 전',
+        color: 'green'
+    },
+    {
+        id: 'hearts2hearts',
+        name: '하츠투하츠',
+        englishName: 'Hearts2Hearts',
+        category: 'Group',
+        thumbnail: 'https://img.youtube.com/vi/9M7k9ZV67c0/hqdefault.jpg',
+        moments: 45,
+        lastUpdate: '1시간 전',
+        color: 'pink'
+    },
+    {
+        id: 'illit',
+        name: '아일릿',
+        englishName: 'ILLIT',
+        category: 'Group',
+        thumbnail: 'https://img.youtube.com/vi/uyRMRbWAUro/hqdefault.jpg',
+        moments: 62,
+        lastUpdate: '30분 전',
+        color: 'purple'
+    }
+];
 
-        return `
+/**
+ * Create artist card HTML
+ * @param {Object} artist - Artist data
+ * @param {boolean} isKorean - Language preference
+ * @returns {string} - HTML string
+ */
+function createArtistCard(artist, isKorean = true) {
+    const errorFallbackColor = {
+        purple: '#e9d5ff',
+        blue: '#dbeafe',
+        red: '#fecaca',
+        green: '#dcfce7',
+        pink: '#fce7f3'
+    }[artist.color] || '#f1f5f9';
+
+    return `
         <a href="editor.html?id=${artist.id}"
             class="block h-64 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
             style="animation-delay: ${POPULAR_ARTISTS.indexOf(artist) * 0.1}s">
@@ -71,7 +111,7 @@ function createArtistCard(artist, isKorean = true) {
             </div>
         </a>
     `;
-    }
+}
 
 /**
  * Create popular artist list item HTML
@@ -80,16 +120,16 @@ function createArtistCard(artist, isKorean = true) {
  * @returns {string} - HTML string
  */
 function createPopularArtistItem(artist, index) {
-        const rankColor = index < 1 ? 'text-brand-500' : index < 3 ? 'text-slate-700' : 'text-slate-400';
-        const errorFallbackColor = {
-            purple: '#e9d5ff',
-            blue: '#dbeafe',
-            red: '#fecaca',
-            green: '#dcfce7',
-            pink: '#fce7f3'
-        }[artist.color] || '#f1f5f9';
+    const rankColor = index < 1 ? 'text-brand-500' : index < 3 ? 'text-slate-700' : 'text-slate-400';
+    const errorFallbackColor = {
+        purple: '#e9d5ff',
+        blue: '#dbeafe',
+        red: '#fecaca',
+        green: '#dcfce7',
+        pink: '#fce7f3'
+    }[artist.color] || '#f1f5f9';
 
-        return `
+    return `
         <li class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
             onclick="location.href='editor.html?id=${artist.id}'"
             role="button"
@@ -109,33 +149,33 @@ function createPopularArtistItem(artist, index) {
             </div>
         </li>
     `;
-    }
+}
 
 /**
  * Render all artist cards
  */
 function renderArtistCards() {
-        if (!elements.artistCardsContainer) return;
+    if (!elements.artistCardsContainer) return;
 
-        const cardsHTML = POPULAR_ARTISTS.map((artist, index) => {
-            return createArtistCard(artist, isKorean);
-        }).join('');
+    const cardsHTML = POPULAR_ARTISTS.map((artist, index) => {
+        return createArtistCard(artist, isKorean);
+    }).join('');
 
-        elements.artistCardsContainer.innerHTML = cardsHTML;
-    }
+    elements.artistCardsContainer.innerHTML = cardsHTML;
+}
 
 /**
  * Render popular artists list
  */
 function renderPopularArtistsList() {
-        if (!elements.popularArtistsList) return;
+    if (!elements.popularArtistsList) return;
 
-        const listItemsHTML = POPULAR_ARTISTS.map((artist, index) => {
-            return createPopularArtistItem(artist, index);
-        }).join('');
+    const listItemsHTML = POPULAR_ARTISTS.map((artist, index) => {
+        return createPopularArtistItem(artist, index);
+    }).join('');
 
-        elements.popularArtistsList.innerHTML = listItemsHTML;
-    }
+    elements.popularArtistsList.innerHTML = listItemsHTML;
+}
 
 // ================== LANGUAGE AND TRANSLATIONS ==================
 
@@ -411,5 +451,9 @@ document.addEventListener('visibilitychange', () => {
 window.toggleLanguage = toggleLanguage;
 window.openCreateModal = openCreateModal;
 window.handleCreate = handleCreate;
-window.closeModal = closeModal;
+// Note: closeModal and hideError are globally available from shared.js
+// These assignments are no longer needed since functions are imported from shared.js
+window.closeModal = function (modalId) {
+    closeModal(modalId || 'create-modal');
+};
 window.hideError = hideError;

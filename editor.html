@@ -495,144 +495,17 @@
                         <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
                     </div>
                     <!-- Connect Handles -->
-                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30" title="Drag to connect">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </div>
-                `;
-
-                el.onclick = (e) => {
-                    if (!state.isDragging) {
-                        e.stopPropagation();
-                        openDetailModal(node);
-                    }
-                };
-
-                canvas.appendChild(el);
-            });
-        }
-
-        function drawConnection(from, to) {
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            const startX = from.x + 280;
-            const startY = from.y + 100;
-            const endX = to.x;
-            const endY = to.y + 100;
-
-            const cp1X = startX + (endX - startX) * 0.5;
-            const cp1Y = startY;
-            const cp2X = endX - (endX - startX) * 0.5;
-            const cp2Y = endY;
-
-            const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
-
-            path.setAttribute('d', d);
-            path.setAttribute('stroke', '#cbd5e1');
-            path.setAttribute('stroke-width', '3');
-            path.setAttribute('fill', 'none');
-            connections.appendChild(path);
-        }
-
-        // --- Interactions ---
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let isDraggingNode = false;
-
-        function startDragNode(e, node) {
-            if (e.target.closest('.absolute')) return; // Don't drag if clicking handle
-            e.stopPropagation();
-            isDraggingNode = true;
-            state.selectedNode = node.id;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            state.dragStart = {
-                x: e.clientX / state.transform.k - node.x,
-                y: e.clientY / state.transform.k - node.y
-            };
-            // Do NOT set state.isDragging = true here yet
-        }
-
-        window.onmousemove = (e) => {
-            if (isDraggingNode && state.selectedNode) {
-                // Check threshold to distinguish click from drag
-                const dist = Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY);
-                if (dist > 5) {
-                    state.isDragging = true;
-                }
-
-                if (state.isDragging) {
-                    const node = state.nodes.find(n => n.id === state.selectedNode);
-                    if (node) {
-                        node.x = e.clientX / state.transform.k - state.dragStart.x;
-                        node.y = e.clientY / state.transform.k - state.dragStart.y;
-                        render();
-                    }
-                }
-            } else if (state.isPanning) {
-                state.transform.x += e.movementX;
-                state.transform.y += e.movementY;
-                render();
-            }
-        };
-
-        window.onmouseup = () => {
-            // Delay clearing slightly to allow node.onmouseup to fire with correct state
-            setTimeout(() => {
-                isDraggingNode = false;
-                state.isDragging = false;
-                state.isPanning = false;
-            }, 0);
-        };
-
-        document.getElementById('wrapper').onmousedown = (e) => {
-            if (e.target.id === 'wrapper' || e.target.id === 'canvas') {
-                state.isPanning = true;
-                state.selectedNode = null;
-                render();
-            }
-        };
-        document.getElementById('wrapper').onwheel = (e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            state.transform.k = Math.max(0.1, Math.min(3, state.transform.k * delta));
-            render();
-        };
-
-        function zoomIn() { state.transform.k *= 1.2; render(); }
-        function zoomOut() { state.transform.k *= 0.8; render(); }
-
-        function resetLayout() {
-            if (confirm(isKorean ? '모든 노드의 위치를 초기화하시겠습니까?' : 'Reset all node positions?')) {
-                state.nodes = JSON.parse(JSON.stringify(originalNodes));
-                state.transform = { x: 0, y: 0, k: 1 };
-                render();
-            }
-        }
-
-        // --- Unified Detail Modal & Other Logic (Same as before) ---
-        function openDetailModal(node) {
-            state.activeNodeId = node.id;
-            document.getElementById('edit-title').value = node.title;
-            document.getElementById('edit-date').value = node.date;
-            document.getElementById('edit-video').value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
-
-            renderMomentsList(node.moments);
-            modal.showModal();
-        }
-
-        function renderMomentsList(moments) {
-            const list = document.getElementById('moments-list');
-            list.innerHTML = '';
             if (moments.length === 0) {
-                list.innerHTML = `<div class="text-center text-slate-400 text-sm py-10">아직 기록된 순간이 없습니다.<br>영상을 보며 감정을 남겨보세요!</div>`;
+                list.innerHTML = `< div class="text-center text-slate-400 text-sm py-10" > 아직 기록된 순간이 없습니다.< br > 영상을 보며 감정을 남겨보세요!</div > `;
                 return;
             }
             moments.forEach(m => {
                 const el = document.createElement('div');
                 el.className = 'flex gap-3 items-start';
                 el.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm text-lg">
-                        ${getFeelingEmoji(m.feeling)}
-                    </div>
+                    < div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm text-lg" >
+                        ${ getFeelingEmoji(m.feeling) }
+                    </div >
                     <div class="flex-1 bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm border border-slate-100">
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-xs font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded cursor-pointer hover:bg-brand-100" onclick="seekVideo('${m.time}')">${m.time}</span>
@@ -659,7 +532,7 @@
             const iframe = document.getElementById('detail-video');
             let src = iframe.src;
             src = src.replace(/[?&]start=\d+/, '');
-            src += (src.includes('?') ? '&' : '?') + `start=${seconds}&autoplay=1`;
+            src += (src.includes('?') ? '&' : '?') + `start = ${ seconds }& autoplay=1`;
             iframe.src = src;
         }
 
@@ -703,13 +576,13 @@
                 document.getElementById('detail-date').innerText = date;
                 if (videoId) {
                     document.getElementById('detail-video').src = `https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1&rel=0&modestbranding=1`;
-                    document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}`;
-                    document.getElementById('external-link').classList.remove('hidden');
-                }
+                document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}`;
+                document.getElementById('external-link').classList.remove('hidden');
+            }
 
                 render();
-                disableEditMode();
-            }
+            disableEditMode();
+        }
         }
 
         function createNewNode() {

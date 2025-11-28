@@ -31,5 +31,8 @@
   "bugs": {
     "url": "https://github.com/skerishKang/133-relovetree/issues"
   },
-  "homepage": "https://github.com/skerishKang/133-relovetree#readme"
+  "homepage": "https://github.com/skerishKang/133-relovetree#readme",
+  "dependencies": {
+    "@modelcontextprotocol/server-filesystem": "^2025.11.25"
+  }
 }
