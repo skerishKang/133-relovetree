@@ -88,7 +88,7 @@ function createArtistCard(artist, isKorean = true) {
 
     return `
         <a href="editor.html?id=${artist.id}"
-            class="block rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
+            class="block h-64 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
             style="animation-delay: ${POPULAR_ARTISTS.indexOf(artist) * 0.1}s">
             <div class="aspect-video bg-${artist.color}-100 relative overflow-hidden">
                 <img src="${artist.thumbnail}" alt="${artist.name} (${artist.englishName}) 주요 순간"
@@ -138,7 +138,7 @@ function createPopularArtistItem(artist, index) {
             aria-label="${artist.name} 러브트리 보기">
             <span class="font-bold ${rankColor} w-4 text-center" aria-hidden="true">${index + 1}</span>
             <div class="w-8 h-8 rounded-full bg-${artist.color}-100 overflow-hidden">
-                <img src="${artist.thumbnail}" alt="${artist.name}" 
+                <img src="${artist.thumbnail}" alt="${artist.name}"
                      class="w-full h-full object-cover"
                      loading="lazy"
                      onerror="this.style.display='none'; this.parentNode.style.backgroundColor='${errorFallbackColor}'">
@@ -151,9 +151,6 @@ function createPopularArtistItem(artist, index) {
     `;
 }
 
-/**
- * Render all artist cards
- */
 function renderArtistCards() {
     if (!elements.artistCardsContainer) return;
 
