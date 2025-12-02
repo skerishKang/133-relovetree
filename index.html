@@ -43,8 +43,24 @@
     <!-- Critical CSS for performance -->
     <style>
         /* Critical styles for above-the-fold content */
+        :root {
+            /* 
+             * [배경 이미지 변경하는 곳]
+             * 아래 url(...) 안에 원하는 이미지 주소를 넣으세요.
+             * 데스크탑과 모바일 모두 이 이미지가 적용됩니다.
+             */
+            --main-bg-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop');
+        }
+
         body {
             background-color: #f8fafc;
+            /* 배경 이미지 공통 적용 */
+            background-image: var(--main-bg-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+
             font-display: swap;
         }
 
@@ -175,9 +191,8 @@
 
         /* 모바일 프리뷰 모드에서 글래스모피즘 카드 + 외부 배경 */
         body.mobile-preview {
-            /* 2번 이미지 참조: 외부 배경이 보이도록 설정 (예시: 해변 느낌의 그라디언트 또는 이미지) */
-            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop') no-repeat center center fixed;
-            background-size: cover;
+            /* body에 이미 적용된 배경 이미지를 그대로 사용하되, 필요시 오버레이 등을 추가할 수 있음 */
+            /* 배경 설정은 위 body 블록에서 통합 관리됨 */
         }
 
         body.mobile-preview #mobile-shell {
@@ -214,6 +229,10 @@
             padding: 20px 16px 30px;
             overflow: hidden;
             /* 내부 스크롤이 프레임을 넘지 않도록 */
+
+            /* 1번 요청: 내부 스크롤 문제 해결을 위한 Flex 설정 */
+            display: flex;
+            flex-direction: column;
         }
 
         /* 노치/하단 막대 제거 (이미지처럼 중앙 카드만 부드럽게 보이도록) */
@@ -264,16 +283,38 @@
         /* 모바일 프리뷰에서는 버거 메뉴 오버레이가 전체 배경을 어둡게 덮지 않도록 */
         body.mobile-preview #mobile-menu-panel {
             background: transparent;
+            /* 모바일 프레임 안으로 제한하려면 추가 조정이 필요하지만, 
+               현재 구조상 fixed라 전체 화면을 덮음. 
+               일단 투명하게 해서 배경이 보이게 처리 */
         }
 
         body.mobile-preview main#main-content {
             max-width: 100%;
             padding: 18px 16px 24px;
-            max-height: calc(100vh - 190px);
+
+            /* 1번 요청: 스크롤 문제 해결 */
+            flex: 1;
+            /* 남은 공간 모두 차지 */
+            height: auto;
+            max-height: none;
+            /* 기존 제한 해제 */
             overflow-y: auto;
+            /* 내부 스크롤 */
             overflow-x: hidden;
+
+            /* 스크롤바 숨기기 (선택사항, 깔끔하게 보이려면) */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+
             background-color: transparent;
             /* 안쪽은 완전 투명, 바깥 글래스가 받쳐줌 */
+        }
+
+        /* Chrome, Safari, Opera 스크롤바 숨기기 */
+        body.mobile-preview main#main-content::-webkit-scrollbar {
+            display: none;
         }
 
         /* 모바일 프리뷰에서 러브트리 카드 영역들을 세로형(유튜브 스타일) 리스트로 표시 */
@@ -586,10 +627,8 @@
             // 데스크탑/모바일 프리뷰 모드 body 클래스 토글
             if (isDesktop) {
                 document.body.classList.remove('mobile-preview');
-                document.body.style.backgroundColor = '#f8fafc';
             } else {
                 document.body.classList.add('mobile-preview');
-                document.body.style.backgroundColor = '';
             }
 
             // 모바일 프리뷰 모드에서는 인기 러브트리 사이드바 숨김
