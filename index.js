@@ -610,9 +610,13 @@ function initPage() {
 
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPage);
+    document.addEventListener('DOMContentLoaded', () => {
+        initPage();
+        loadBackgroundPreference();
+    });
 } else {
     initPage();
+    loadBackgroundPreference();
 }
 
 // Handle page visibility change for performance

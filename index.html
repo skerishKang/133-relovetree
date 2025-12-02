@@ -434,15 +434,29 @@
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full"></span>
                 </button>
-                <div
-                    class="bg-slate-100/80 backdrop-blur px-1.5 py-1 rounded-lg text-[11px] text-slate-600 flex items-center gap-1 border border-slate-200">
-                    <button id="viewport-desktop-btn" onclick="setViewportMode('desktop')"
-                        class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
-                        데스크탑
-                    </button>
-                    <button id="viewport-mobile-btn" onclick="setViewportMode('mobile')"
-                        class="px-2 py-0.5 rounded-md text-slate-600 bg-white hover:text-slate-800 hover:bg-slate-100 text-[11px]">
-                        모바일
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
+                        <button onclick="setViewportMode('desktop')" id="viewport-desktop-btn"
+                            class="px-3 py-1.5 rounded-md text-sm font-medium transition-all bg-slate-800 text-white shadow-sm">
+                            데스크탑
+                        </button>
+                        <button onclick="setViewportMode('mobile')" id="viewport-mobile-btn"
+                            class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition-all">
+                            모바일
+                        </button>
+                    </div>
+
+                    <!-- Settings Button -->
+                    <button onclick="openSettingsModal()"
+                        class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
+                        title="테마 설정">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -589,6 +603,130 @@
                         id="btn-start">시작하기</button>
                 </div>
             </form>
+        </div>
+    </dialog>
+
+    <!-- Settings Modal -->
+    <dialog id="settings-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-900">테마 설정</h3>
+                <button onclick="closeModal('settings-modal')"
+                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Presets -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">추천 배경</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button
+                            onclick="setBackground('image', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop')"
+                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="Beach">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            </div>
+                        </button>
+                        <button
+                            onclick="setBackground('image', 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')"
+                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="Space">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            </div>
+                        </button>
+                        <button
+                            onclick="setBackground('image', 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=2592&auto=format&fit=crop')"
+                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="Nature">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            </div>
+                        </button>
+                        <button
+                            onclick="setBackground('image', 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop')"
+                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="City">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            </div>
+                        </button>
+                        <button
+                            onclick="setBackground('image', 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2072&auto=format&fit=crop')"
+                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="Sunset">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            </div>
+                        </button>
+                        <button
+                            onclick="setBackground('image', 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop')"
+                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            <img src="https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="Abstract">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solid Colors -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">단색 배경</label>
+                    <div class="flex gap-3 flex-wrap">
+                        <button onclick="setBackground('color', '#f8fafc')"
+                            class="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="기본 (Slate 50)"></button>
+                        <button onclick="setBackground('color', '#ffffff')"
+                            class="w-10 h-10 rounded-full bg-white border border-slate-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="화이트"></button>
+                        <button onclick="setBackground('color', '#1e293b')"
+                            class="w-10 h-10 rounded-full bg-slate-800 border border-slate-600 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="다크"></button>
+                        <button onclick="setBackground('color', '#fdf2f8')"
+                            class="w-10 h-10 rounded-full bg-pink-50 border border-pink-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="핑크"></button>
+                        <button onclick="setBackground('color', '#f0f9ff')"
+                            class="w-10 h-10 rounded-full bg-sky-50 border border-sky-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="스카이"></button>
+                        <button onclick="setBackground('color', '#f0fdf4')"
+                            class="w-10 h-10 rounded-full bg-green-50 border border-green-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="그린"></button>
+                    </div>
+                </div>
+
+                <!-- Custom URL -->
+                <div>
+                    <label for="custom-bg-url"
+                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">이미지 주소 직접
+                        입력</label>
+                    <div class="flex gap-2">
+                        <input type="url" id="custom-bg-url" placeholder="https://..."
+                            class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+                        <button onclick="applyCustomBackground()"
+                            class="px-4 py-2 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-700 transition-colors">적용</button>
+                    </div>
+                </div>
+
+                <!-- Reset -->
+                <div class="pt-4 border-t border-slate-100">
+                    <button onclick="resetBackground()"
+                        class="w-full py-3 text-slate-500 font-medium hover:text-brand-600 hover:bg-slate-50 rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                        초기화
+                    </button>
+                </div>
+            </div>
         </div>
     </dialog>
 
