@@ -20,7 +20,8 @@
 
     <style>
         body {
-            background-color: #f1f5f9;
+            /* 인덱스와 동일한 기본 배경색으로 고정 */
+            background-color: #f8fafc;
             overflow: hidden;
             font-family: 'Noto Sans KR', sans-serif;
         }
@@ -728,7 +729,6 @@
                 wrapper.style.margin = '0';
                 wrapper.style.borderRadius = '0';
                 wrapper.style.boxShadow = 'none';
-                document.body.style.backgroundColor = '#f1f5f9';
             } else {
                 wrapper.style.width = '430px';
                 wrapper.style.maxWidth = '100vw';
@@ -737,8 +737,10 @@
                 wrapper.style.margin = '16px auto';
                 wrapper.style.borderRadius = '24px';
                 wrapper.style.boxShadow = '0 20px 40px rgba(15,23,42,0.45)';
-                document.body.style.backgroundColor = '#0f172a';
             }
+
+            // 인덱스와 동일하게, 데스크탑/모바일 모두 body 배경은 고정(#f8fafc)
+            document.body.style.backgroundColor = '#f8fafc';
 
             if (desktopBtn && mobileBtn) {
                 if (mode === 'desktop') {

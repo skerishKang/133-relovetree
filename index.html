@@ -175,29 +175,45 @@
 
         /* 모바일 프리뷰 모드에서 글래스모피즘 카드 + 외부 배경 */
         body.mobile-preview {
-            /* 내부 #f8fafc 톤과 잘 맞는 부드러운 그라디언트 */
-            background: radial-gradient(circle at top left, #e5edf7, #f8fafc, #e2e8f0);
+            /* 2번 이미지 참조: 외부 배경이 보이도록 설정 (예시: 해변 느낌의 그라디언트 또는 이미지) */
+            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
         }
 
         body.mobile-preview #mobile-shell {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
+            /* 중앙 정렬 */
             padding: 32px 0;
+            min-height: 100vh;
+            /* 화면 전체 높이 사용 */
         }
 
         body.mobile-preview #mobile-shell-inner {
             position: relative;
+            /* 최신 아이폰 (iPhone 15/16 Pro) 크기 참조: 393px width */
             width: 393px;
+            height: 852px;
+            /* iPhone 15 Pro height */
             max-width: calc(100vw - 32px);
-            border-radius: 40px;
-            /* 1번 요청: 투명도 조절 (더 투명하게) */
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 28px 70px rgba(15, 23, 42, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 18px 14px 26px;
+            max-height: calc(100vh - 64px);
+
+            /* 테두리 및 둥근 모서리 (아이폰 스타일) */
+            border-radius: 55px;
+            border: 8px solid rgba(255, 255, 255, 0.4);
+            /* 프레임 느낌 */
+
+            /* 글래스모피즘 효과 */
+            background: rgba(255, 255, 255, 0.25);
+            /* 내부 반투명 */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
+
+            padding: 20px 16px 30px;
+            overflow: hidden;
+            /* 내부 스크롤이 프레임을 넘지 않도록 */
         }
 
         /* 노치/하단 막대 제거 (이미지처럼 중앙 카드만 부드럽게 보이도록) */
@@ -243,6 +259,11 @@
 
         body:not(.mobile-preview) #mobile-menu-floating {
             display: none;
+        }
+
+        /* 모바일 프리뷰에서는 버거 메뉴 오버레이가 전체 배경을 어둡게 덮지 않도록 */
+        body.mobile-preview #mobile-menu-panel {
+            background: transparent;
         }
 
         body.mobile-preview main#main-content {
@@ -533,66 +554,40 @@
     <!-- JavaScript Modules -->
     <script>
         let viewportMode = 'desktop';
-
-        function setViewportMode(mode) {
-            if (mode !== 'desktop' && mode !== 'mobile') return;
+        tMode(mode) {
+            if (mod            ile') return;
             viewportMode = mode;
 
-            const navInner = document.getElementById('nav-inner');
-            const mainLayout = document.getElementById('main-content');
-            const desktopBtn = document.getElementById('viewport-desktop-btn');
-            const mobileBtn = document.getElementById('viewport-mobile-btn');
-            const aside = document.querySelector('aside[aria-label="인기 러브트리 순위"]');
+                 .getElementById('nav-i            yout = document.getElementById('main-content');
+                   .getElementById('viewport-desktop-btn');
+            const m            Id('viewport-mobile-btn');
+            const aside = document.queryS            트리 순위"]');
 
             const applyWidth = (el, isDesktop) => {
-                if (!el) return;
-                if (isDesktop) {
-                    el.style.maxWidth = '72rem';
-                    el.style.marginLeft = '';
-                    el.style.marginRight = '';
-                } else {
-                    el.style.maxWidth = '430px';
-                    el.style.marginLeft = 'auto';
-                    el.style.marginRight = 'auto';
-                }
+                             if (isDesktop) {
+                    el.style.maxWidth = '            tyle.marginLeft = '';
+                                           } else {                th = '430px';
+                       auto';
+                    el                         }
             };
 
-            const isDesktop = mode === 'desktop';
+                       ktop';
 
-            applyWidth(navInner, isDesktop);
-            applyWidth(mainLayout, isDesktop);
+            applyWi                  applyWi                     // 데스크탑/모바일 프리뷰 모드 body 클래스                             document.body.classLis                        document.body.style.backgro                el            dy.c                            document.body.style.bac            
 
-            // 데스크탑/모바일 프리뷰 모드 body 클래스 토글
-            if (isDesktop) {
-                document.body.classList.remove('mobile-preview');
-                document.body.style.backgroundColor = '#f8fafc';
-            } else {
-                document.body.classList.add('mobile-preview');
-                document.body.style.backgroundColor = '';
+            // 모바일 프리뷰 모드에서는 인기            ide) {
+                aside.style.d            ;
             }
 
-            // 모바일 프리뷰 모드에서는 인기 러브트리 사이드바 숨김
-            if (aside) {
-                aside.style.display = isDesktop ? '' : 'none';
-            }
-
-            // 버튼 스타일 토글
-            if (desktopBtn && mobileBtn) {
-                if (isDesktop) {
-                    desktopBtn.classList.add('bg-slate-800', 'text-white');
-                    desktopBtn.classList.remove('bg-white', 'text-slate-600');
-                    mobileBtn.classList.remove('bg-slate-800', 'text-white');
-                    mobileBtn.classList.add('bg-white', 'text-slate-600');
+            //            opBtn && mobileBt                {
+                    desktopBtn.classList.add('bg                            desktopBtn.classList.remove('bg-white                                     e-800', 'text-white');
+                    mobi                t-slate-600');
                 } else {
-                    mobileBtn.classList.add('bg-slate-800', 'text-white');
-                    mobileBtn.classList.remove('bg-white', 'text-slate-600');
-                    desktopBtn.classList.remove('bg-slate-800', 'text-white');
-                    desktopBtn.classList.add('bg-white', 'text-slate-600');
-                }
-            }
-        }
+              sLi            te');
+                    mobileB            'text-slate-6                .classList.remove('bg-slate-800', 'text-white')            .cl            ate-600');
+                    }
 
-        window.addEventListener('load', () => setViewportMode('desktop'));
+        window.addEven                ode('desktop'));
     </script>
     <script src="src/shared.js"></script>
     <script src="index.js"></script>
