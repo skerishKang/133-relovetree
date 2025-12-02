@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoveTree – 심플 홈</title>
+    <style>
+        :root {
+            color-scheme: light;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f6fb;
+            color: #1f2937;
+        }
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #9333ea;
+        }
+        .brand span {
+            color: #0f172a;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 16px;
+            margin: 0;
+            padding: 0;
+            color: #475467;
+            font-size: 0.95rem;
+        }
+        nav li {
+            cursor: pointer;
+        }
+        .hero {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 24px 20px;
+            background: linear-gradient(135deg, #fce7f3, #ede9fe);
+            border-radius: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .hero h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+            color: #0f172a;
+        }
+        .hero p {
+            margin: 0;
+            line-height: 1.5;
+            color: #475467;
+        }
+        .hero button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 999px;
+            background: #7c3aed;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hero button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
+        }
+        .layout {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 24px;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .artist-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        .artist-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+        }
+        .artist-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+        .artist-card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+        .artist-card p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: #475467;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            font-size: 0.85rem;
+            color: #0f172a;
+        }
+        .sidebar {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+        }
+        .sidebar h2 {
+            margin: 0 0 16px;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+        ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        li:hover {
+            transform: translateX(4px);
+            background: #f8fafc;
+        }
+        li span.rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            background: #e2e8f0;
+        }
+        li .info {
+            flex: 1;
+        }
+        li .info strong {
+            display: block;
+            color: #0f172a;
+        }
+        li .info small {
+            color: #64748b;
+        }
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 960px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            header {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="brand"> <span>LoveTree</span></div>
+            <nav>
+                <ul>
+                    <li>홈</li>
+                    <li>러브트리 만들기</li>
+                    <li>커뮤니티</li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>팬의 사랑을 담은 가장 단순한 타임라인</h1>
+            <p>유튜브 순간을 기록하고 공유하는 과정을 복잡한 도구 없이도 손쉽게 만들 수 있도록 설계했습니다.</p>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:flex-start;">
+            <button id="btnCreate">새 러브트리 만들기</button>
+        </div>
+    </section>
+
+    <div class="layout">
+        <section>
+            <div class="cards-grid" id="artistCards"></div>
+        </section>
+        <aside class="sidebar">
+            <h2>인기 러브트리</h2>
+            <ol id="artistRanking"></ol>
+        </aside>
+    </div>
+
+    <footer>
+        2025 LoveTree. 팬의 사랑을 기록하는 더 나은 방법을 만듭니다.
+    </footer>
+
+    <script>
+        const ARTISTS = {
+            bts: {
+                id: 'bts',
+                name: '방탄소년단',
+                englishName: 'BTS',
+                category: 'Legend',
+                heroVideo: 'gwMa6gpoE9I',
+                thumbnail: 'https://img.youtube.com/vi/gwMa6gpoE9I/hqdefault.jpg',
+                summary: '글로벌 팬덤과 함께 성장한 7인 보이그룹. 데뷔 이후 매 순간을 기록한 대표 러브트리.',
+                moments: 108,
+                lastUpdate: '방금 전',
+                color: '#8b5cf6'
+            },
+            seventeen: {
+                id: 'seventeen',
+                name: '세븐틴',
+                englishName: 'Seventeen',
+                category: 'Group',
+                heroVideo: 'ThI0pBAbFnk',
+                thumbnail: 'https://img.youtube.com/vi/ThI0pBAbFnk/hqdefault.jpg',
+                summary: '퍼포먼스와 자작곡으로 사랑받는 13인 체제 그룹. 세밀한 순간이 많은 타임라인.',
+                moments: 95,
+                lastUpdate: '2시간 전',
+                color: '#2563eb'
+            },
+            straykids: {
+                id: 'straykids',
+                name: '스트레이 키즈',
+                englishName: 'Stray Kids',
+                category: 'Group',
+                heroVideo: 'EaswWiwMVs8',
+                thumbnail: 'https://img.youtube.com/vi/EaswWiwMVs8/hqdefault.jpg',
+                summary: '자체 프로듀싱과 에너지 넘치는 무대로 유명한 4세대 대표 그룹.',
+                moments: 87,
+                lastUpdate: '4시간 전',
+                color: '#ef4444'
+            },
+            leejunyoung: {
+                id: 'leejunyoung',
+                name: '이준영',
+                englishName: 'Lee Jun-young',
+                category: 'Solo',
+                heroVideo: 'PPgQOxtnUao',
+                thumbnail: 'https://img.youtube.com/vi/PPgQOxtnUao/hqdefault.jpg',
+                summary: '배우와 보컬을 동시에 보여주는 올라운더 솔로 아티스트.',
+                moments: 23,
+                lastUpdate: '6시간 전',
+                color: '#22c55e'
+            },
+            hearts2hearts: {
+                id: 'hearts2hearts',
+                name: '하츠투하츠',
+                englishName: 'Hearts2Hearts',
+                category: 'Group',
+                heroVideo: 'kxUA2wwYiME',
+                thumbnail: 'https://img.youtube.com/vi/kxUA2wwYiME/hqdefault.jpg',
+                summary: '데뷔와 동시에 큰 화제를 모은 5인 신예 걸그룹.',
+                moments: 45,
+                lastUpdate: '1시간 전',
+                color: '#ec4899'
+            },
+            illit: {
+                id: 'illit',
+                name: '아일릿',
+                englishName: 'ILLIT',
+                category: 'Group',
+                heroVideo: 'Vk5-c_v4gMU',
+                thumbnail: 'https://img.youtube.com/vi/Vk5-c_v4gMU/hqdefault.jpg',
+                summary: '감각적인 퍼포먼스로 주목받는 4세대 걸그룹.',
+                moments: 62,
+                lastUpdate: '30분 전',
+                color: '#a855f7'
+            }
+        };
+
+        const artistList = Object.values(ARTISTS);
+        const cardsContainer = document.getElementById('artistCards');
+        const rankingContainer = document.getElementById('artistRanking');
+        const createButton = document.getElementById('btnCreate');
+
+        createButton.addEventListener('click', () => {
+            alert('이 버전에서는 러브트리 생성 기능이 빠져 있습니다. 프로토타입 플레이스홀더입니다.');
+        });
+
+        function renderCards() {
+            cardsContainer.innerHTML = '';
+            artistList.forEach((artist) => {
+                const card = document.createElement('article');
+                card.className = 'artist-card';
+                card.innerHTML = `
+                    <img src="${artist.thumbnail}" alt="${artist.name}" loading="lazy" />
+                    <div class="badge" style="background:${artist.color}15; color:${artist.color};">
+                        ${artist.category}
+                    </div>
+                    <div>
+                        <h3>${artist.name} <small style="color:#94a3b8; font-weight:500;">(${artist.englishName})</small></h3>
+                        <p>${artist.summary}</p>
+                    </div>
+                    <div class="stats-row">
+                        <span>순간 ${artist.moments}개</span>
+                        <span>업데이트 ${artist.lastUpdate}</span>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    window.location.href = `editor.html?id=${artist.id}`;
+                });
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function renderRanking() {
+            rankingContainer.innerHTML = '';
+            artistList
+                .slice()
+                .sort((a, b) => b.moments - a.moments)
+                .forEach((artist, index) => {
+                    const row = document.createElement('li');
+                    row.innerHTML = `
+                        <span class="rank" style="background:${artist.color};">${index + 1}</span>
+                        <div class="info">
+                            <strong>${artist.name}</strong>
+                            <small>${artist.englishName}</small>
+                        </div>
+                        <span style="font-size:0.8rem; color:#475467;">${artist.moments} moments</span>
+                    `;
+                    row.addEventListener('click', () => {
+                        window.location.href = `editor.html?id=${artist.id}`;
+                    });
+                    rankingContainer.appendChild(row);
+                });
+        }
+
+        renderCards();
+        renderRanking();
+    </script>
+</body>
+</html>

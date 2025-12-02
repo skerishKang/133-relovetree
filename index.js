@@ -142,9 +142,9 @@ function createArtistCard(artist) {
     return `
         <a href="editor.html?id=${artist.id}"
             data-artist-id="${artist.id}"
-            class="block h-64 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
+            class="tree-card block rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
             style="animation-delay: ${POPULAR_ARTISTS.indexOf(artist) * 0.1}s">
-            <div class="aspect-video bg-${artist.color}-100 relative overflow-hidden">
+            <div class="aspect-video bg-${artist.color}-100 relative overflow-hidden group-hover:shadow-inner">
                 <img src="${thumbnailSrc}" alt="${artist.name} (${artist.englishName}) 주요 순간"
                     class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                     loading="lazy"
@@ -152,6 +152,16 @@ function createArtistCard(artist) {
                     referrerpolicy="no-referrer"
                     onerror="this.onerror=null; this.src='${DEFAULT_THUMBNAIL}'; this.parentNode.style.backgroundColor='${fallbackColor}';">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                
+                <!-- 5번 요청: 재생 버튼 오버레이 추가 -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                    <div class="w-12 h-12 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center border border-white/50 shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                </div>
+
                 <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-${artist.color}-600 shadow-sm">
                     ${artist.category}
                 </div>
@@ -503,6 +513,49 @@ function cacheElements() {
 // Global elements object
 let elements = {};
 
+// ================== MOBILE SHELL / MENU HELPERS ==================
+
+/**
+ * 모바일 햄버거 메뉴 열기/닫기
+ */
+function setMobileMenuVisible(visible) {
+    const panel = document.getElementById('mobile-menu-panel');
+    if (!panel) return;
+    if (visible) {
+        panel.classList.remove('hidden');
+    } else {
+        panel.classList.add('hidden');
+    }
+}
+
+function toggleMobileMenu() {
+    const panel = document.getElementById('mobile-menu-panel');
+    if (!panel) return;
+    const isHidden = panel.classList.contains('hidden');
+    setMobileMenuVisible(isHidden);
+}
+
+function navigateToHome() {
+    setMobileMenuVisible(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollToMyTrees() {
+    setMobileMenuVisible(false);
+    const section = document.getElementById('my-trees-section');
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function scrollToAllTrees() {
+    setMobileMenuVisible(false);
+    const title = document.getElementById('all-trees-title');
+    if (title) {
+        title.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
 // ================== INITIALIZATION ==================
 
 /**
@@ -585,4 +638,8 @@ window.toggleLanguage = toggleLanguage;
 window.openCreateModal = openCreateModal;
 window.handleCreate = handleCreate;
 window.handleProfileClick = handleProfileClick;
+window.toggleMobileMenu = toggleMobileMenu;
+window.navigateToHome = navigateToHome;
+window.scrollToMyTrees = scrollToMyTrees;
+window.scrollToAllTrees = scrollToAllTrees;
 // closeModal, hideError already exposed via shared.js

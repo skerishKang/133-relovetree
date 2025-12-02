@@ -140,7 +140,7 @@
 <body>
 
     <!-- Top Bar -->
-    <div class="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center pointer-events-none">
+    <div class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 py-3 flex flex-wrap md:flex-nowrap justify-between items-center gap-2 pointer-events-none">
         <div class="pointer-events-auto flex items-center gap-3">
             <a href="index.html"
                 class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 p-2 rounded-xl hover:bg-white transition-colors text-slate-500 hover:text-brand-500">
@@ -150,11 +150,31 @@
                 </svg>
             </a>
             <h1 id="tree-title"
-                class="text-2xl font-bold text-slate-800 drop-shadow-sm bg-white/80 backdrop-blur px-4 py-1.5 rounded-xl border border-slate-200">
+                class="text-lg md:text-2xl font-bold text-slate-800 drop-shadow-sm bg-white/80 backdrop-blur px-3 md:px-4 py-1.5 rounded-xl border border-slate-200 max-w-[55vw] md:max-w-none truncate">
                 나의 러브트리
             </h1>
         </div>
-        <div class="pointer-events-auto flex gap-2">
+        <div class="pointer-events-auto flex flex-wrap md:flex-nowrap gap-2 items-center justify-end">
+            <div class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
+                <button id="mode-tree-btn" onclick="setEditorMode('tree')"
+                    class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
+                    트리
+                </button>
+                <button id="mode-timeline-btn" onclick="setEditorMode('timeline')"
+                    class="px-2 py-0.5 rounded-md text-slate-600 bg-slate-100 hover:text-slate-800 hover:bg-slate-200 text-[11px]">
+                    리스트
+                </button>
+            </div>
+            <div class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
+                <button id="viewport-desktop-btn" onclick="setViewportMode('desktop')"
+                    class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
+                    데스크탑
+                </button>
+                <button id="viewport-mobile-btn" onclick="setViewportMode('mobile')"
+                    class="px-2 py-0.5 rounded-md text-slate-600 bg-slate-100 hover:text-slate-800 hover:bg-slate-200 text-[11px]">
+                    모바일
+                </button>
+            </div>
             <div
                 class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-mono text-slate-500 flex items-center gap-2">
                 <span>ZOOM</span>
@@ -192,6 +212,7 @@
             </svg>
             <!-- Nodes injected here -->
         </div>
+        <div id="timeline" class="hidden w-full h-full overflow-y-auto pt-20 pb-24 bg-slate-100/80"></div>
     </div>
 
     <!-- Floating Action Button -->
@@ -212,9 +233,23 @@
         <div class="flex flex-col md:flex-row h-full">
             <!-- Left: Video Player -->
             <div class="w-full md:w-2/3 bg-black flex items-center justify-center relative group">
-                <iframe id="detail-video" class="w-full h-full aspect-video" src="" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
+                <div id="video-shell"
+                    class="w-full max-w-3xl mx-auto aspect-video relative flex items-center justify-center">
+                    <div id="video-placeholder"
+                        class="w-full h-full flex flex-col items-center justify-center text-slate-200 gap-3 cursor-pointer select-none">
+                        <div
+                            class="w-16 h-16 rounded-full border-2 border-white/60 flex items-center justify-center bg-black/40 shadow-lg">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium">영상을 보려면 클릭하세요</p>
+                        <p class="text-xs text-slate-400">썸네일은 숨기고, 재생 시에만 영상을 불러옵니다.</p>
+                    </div>
+                    <iframe id="detail-video" class="w-full h-full absolute inset-0 hidden" src="" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </div>
 
                 <!-- Fallback / External Link Button -->
                 <a id="external-link" href="#" target="_blank"
@@ -248,15 +283,25 @@
                     <div class="flex gap-2">
                         <button onclick="enableEditMode()"
                             class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
-                            title="Edit Info">
+                            title="수정">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
                                 </path>
                             </svg>
                         </button>
+                        <button onclick="deleteNode()"
+                            class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="삭제">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                        </button>
                         <button onclick="closeModal('detail-modal')"
-                            class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors hidden md:block">
+                            class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors hidden md:block"
+                            title="닫기">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12"></path>
@@ -546,34 +591,72 @@
                     if (docSnap.exists) {
                         console.log("Document data:", docSnap.data());
                         const data = docSnap.data();
-                        // Merge with state
-                        state.nodes = data.nodes || [];
-                        state.edges = data.edges || [];
-                        document.getElementById('tree-title').innerText = data.name || initialData.name;
+                        const hasNodes = Array.isArray(data.nodes) && data.nodes.length > 0;
+
+                        if (hasNodes) {
+                            state.nodes = data.nodes;
+                            state.edges = data.edges || [];
+                            document.getElementById('tree-title').innerText = data.name || initialData.name;
+                        } else {
+                            console.log("Document has no nodes. Falling back to local or initial data.");
+                            const stored = localStorage.getItem(STORAGE_KEY);
+                            if (stored) {
+                                const localData = JSON.parse(stored);
+                                state.nodes = localData.nodes || [];
+                                state.edges = localData.edges || [];
+                                document.getElementById('tree-title').innerText = localData.name || initialData.name;
+                            } else {
+                                state.nodes = JSON.parse(JSON.stringify(originalNodes));
+                                state.edges = data.edges || initialData.edges || [];
+                                document.getElementById('tree-title').innerText = data.name || initialData.name;
+                            }
+                        }
                         render();
                     } else {
                         console.log("No such document! Using initial data.");
-                        // If no data in Firebase, try LocalStorage
+                        // If no data in Firebase, try LocalStorage first
                         const stored = localStorage.getItem(STORAGE_KEY);
                         if (stored) {
                             const localData = JSON.parse(stored);
-                            state.nodes = localData.nodes;
-                            state.edges = localData.edges;
-                            document.getElementById('tree-title').innerText = localData.name;
-                            render();
+                            state.nodes = localData.nodes || [];
+                            state.edges = localData.edges || [];
+                            document.getElementById('tree-title').innerText = localData.name || initialData.name;
+                        } else {
+                            // 완전 신규 트리인 경우 더미/기본 노드 사용
+                            state.nodes = JSON.parse(JSON.stringify(originalNodes));
+                            state.edges = initialData.edges || [];
+                            document.getElementById('tree-title').innerText = initialData.name;
                         }
+                        render();
                     }
                 } catch (error) {
                     console.error("Error getting document:", error);
+                    // Firebase 조회 실패 시에도 로컬/더미 데이터로 바로 노드를 보여준다
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const localData = JSON.parse(stored);
+                        state.nodes = localData.nodes || [];
+                        state.edges = localData.edges || [];
+                        document.getElementById('tree-title').innerText = localData.name || initialData.name;
+                    } else {
+                        state.nodes = JSON.parse(JSON.stringify(originalNodes));
+                        state.edges = initialData.edges || [];
+                        document.getElementById('tree-title').innerText = initialData.name;
+                    }
+                    render();
                 }
             } else {
                 // Fallback to LocalStorage
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
                     const localData = JSON.parse(stored);
-                    state.nodes = localData.nodes;
-                    state.edges = localData.edges;
-                    document.getElementById('tree-title').innerText = localData.name;
+                    state.nodes = localData.nodes || [];
+                    state.edges = localData.edges || [];
+                    document.getElementById('tree-title').innerText = localData.name || initialData.name;
+                } else {
+                    state.nodes = JSON.parse(JSON.stringify(originalNodes));
+                    state.edges = initialData.edges || [];
+                    document.getElementById('tree-title').innerText = initialData.name;
                 }
                 render();
             }
@@ -598,6 +681,79 @@
             dragStart: { x: 0, y: 0 },
             activeNodeId: null
         };
+
+        let editorMode = 'tree';
+
+        function setEditorMode(mode) {
+            if (mode !== 'tree' && mode !== 'timeline') return;
+            editorMode = mode;
+
+            const treeBtn = document.getElementById('mode-tree-btn');
+            const listBtn = document.getElementById('mode-timeline-btn');
+
+            if (treeBtn && listBtn) {
+                if (mode === 'tree') {
+                    treeBtn.classList.add('bg-slate-800', 'text-white');
+                    treeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                    listBtn.classList.remove('bg-slate-800', 'text-white');
+                    listBtn.classList.add('bg-slate-100', 'text-slate-600');
+                } else {
+                    listBtn.classList.add('bg-slate-800', 'text-white');
+                    listBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                    treeBtn.classList.remove('bg-slate-800', 'text-white');
+                    treeBtn.classList.add('bg-slate-100', 'text-slate-600');
+                }
+            }
+
+            render();
+        }
+
+        let viewportMode = 'desktop';
+
+        function setViewportMode(mode) {
+            if (mode !== 'desktop' && mode !== 'mobile') return;
+            viewportMode = mode;
+
+            const wrapper = document.getElementById('wrapper');
+            const desktopBtn = document.getElementById('viewport-desktop-btn');
+            const mobileBtn = document.getElementById('viewport-mobile-btn');
+
+            if (!wrapper) return;
+
+            if (mode === 'desktop') {
+                wrapper.style.width = '100vw';
+                wrapper.style.height = '100vh';
+                wrapper.style.maxWidth = '';
+                wrapper.style.maxHeight = '';
+                wrapper.style.margin = '0';
+                wrapper.style.borderRadius = '0';
+                wrapper.style.boxShadow = 'none';
+                document.body.style.backgroundColor = '#f1f5f9';
+            } else {
+                wrapper.style.width = '430px';
+                wrapper.style.maxWidth = '100vw';
+                wrapper.style.height = '780px';
+                wrapper.style.maxHeight = 'calc(100vh - 32px)';
+                wrapper.style.margin = '16px auto';
+                wrapper.style.borderRadius = '24px';
+                wrapper.style.boxShadow = '0 20px 40px rgba(15,23,42,0.45)';
+                document.body.style.backgroundColor = '#0f172a';
+            }
+
+            if (desktopBtn && mobileBtn) {
+                if (mode === 'desktop') {
+                    desktopBtn.classList.add('bg-slate-800', 'text-white');
+                    desktopBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                    mobileBtn.classList.remove('bg-slate-800', 'text-white');
+                    mobileBtn.classList.add('bg-slate-100', 'text-slate-600');
+                } else {
+                    mobileBtn.classList.add('bg-slate-800', 'text-white');
+                    mobileBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                    desktopBtn.classList.remove('bg-slate-800', 'text-white');
+                    desktopBtn.classList.add('bg-slate-100', 'text-slate-600');
+                }
+            }
+        }
 
         // Save Data (Firebase + LocalStorage)
         // Simple debounce function
@@ -653,6 +809,19 @@
         const connections = document.getElementById('connections');
 
         function render() {
+            const timeline = document.getElementById('timeline');
+
+            if (editorMode === 'timeline') {
+                if (canvas) canvas.classList.add('hidden');
+                if (connections) connections.innerHTML = '';
+                if (timeline) timeline.classList.remove('hidden');
+                renderTimeline();
+                return;
+            }
+
+            if (timeline) timeline.classList.add('hidden');
+            if (canvas) canvas.classList.remove('hidden');
+
             canvas.style.transform = `translate(${state.transform.x}px, ${state.transform.y}px) scale(${state.transform.k})`;
             document.getElementById('zoom-level').innerText = Math.round(state.transform.k * 100) + '%';
 
@@ -672,14 +841,13 @@
                 el.style.left = node.x + 'px';
                 el.style.top = node.y + 'px';
 
-                const thumb = node.videoId
-                    ? `https://img.youtube.com/vi/${node.videoId}/hqdefault.jpg`
-                    : 'https://via.placeholder.com/280x157?text=No+Video';
+                const videoBlock = node.videoId
+                    ? `<iframe src="https://www.youtube-nocookie.com/embed/${node.videoId}?playsinline=1&rel=0&modestbranding=1" class="w-full h-full" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+                    : `<div class=\"w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs\">No Video</div>`;
 
                 el.innerHTML = `
-                    <div class="h-40 bg-slate-200 relative group">
-                        <img src="${thumb}" class="w-full h-full object-cover" draggable="false">
-                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                    <div class="h-40 bg-black relative group overflow-hidden">
+                        ${videoBlock}
                         <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur">
                             ${node.moments.length} Moments
                         </div>
@@ -689,7 +857,7 @@
                         <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
                     </div>
                     <!-- Connect Handles -->
-                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30" title="Drag to connect">
+                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30 connection-handle" title="Drag to connect">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
@@ -730,13 +898,59 @@
             connections.appendChild(path);
         }
 
+        function renderTimeline() {
+            const timeline = document.getElementById('timeline');
+            if (!timeline) return;
+
+            timeline.innerHTML = '';
+
+            const nodes = [...state.nodes];
+            nodes.sort((a, b) => {
+                const ad = a.date || '';
+                const bd = b.date || '';
+                if (ad === bd) return 0;
+                return ad < bd ? -1 : 1;
+            });
+
+            if (nodes.length === 0) {
+                timeline.innerHTML = '<div class="h-full flex items-center justify-center text-slate-400 text-sm px-6 text-center">아직 등록된 순간이 없습니다.<br>아래 + 버튼으로 첫 순간을 추가해 보세요.</div>';
+                return;
+            }
+
+            nodes.forEach(node => {
+                const card = document.createElement('div');
+                card.className = 'mx-auto mt-4 w-full max-w-md rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden';
+
+                const videoBlock = node.videoId
+                    ? `<iframe src="https://www.youtube-nocookie.com/embed/${node.videoId}?playsinline=1&rel=0&modestbranding=1" class="w-full h-40" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+                    : `<div class="w-full h-40 flex items-center justify-center bg-slate-800 text-slate-300 text-xs">No Video</div>`;
+
+                card.innerHTML = `
+                    <div class="bg-black">
+                        ${videoBlock}
+                    </div>
+                    <div class="p-4 flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base leading-snug mb-1 line-clamp-2">${node.title}</h3>
+                            <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
+                            <p class="mt-1 text-[11px] text-slate-400">${(node.moments || []).length} Moments</p>
+                        </div>
+                        <button class="px-3 py-1.5 rounded-full bg-brand-500 text-white text-xs font-bold shrink-0">열기</button>
+                    </div>
+                `;
+
+                card.onclick = () => openDetailModal(node);
+                timeline.appendChild(card);
+            });
+        }
+
         // --- Interactions ---
         let dragStartX = 0;
         let dragStartY = 0;
         let isDraggingNode = false;
 
         function startDragNode(e, node) {
-            if (e.target.closest('.absolute')) return; // Don't drag if clicking handle
+            if (e.target.closest('.connection-handle')) return; // Don't drag if clicking connection handle
             e.stopPropagation();
             isDraggingNode = true;
             state.selectedNode = node.id;
@@ -831,6 +1045,30 @@
             }
         }
 
+        // --- Video Helpers ---
+        function startVideo(videoId, startSeconds) {
+            if (!videoId) return;
+            const iframe = document.getElementById('detail-video');
+            const placeholder = document.getElementById('video-placeholder');
+
+            const params = new URLSearchParams({
+                playsinline: 1,
+                rel: 0,
+                modestbranding: 1,
+                autoplay: 1
+            });
+
+            if (typeof startSeconds === 'number' && Number.isFinite(startSeconds) && startSeconds > 0) {
+                params.set('start', String(Math.floor(startSeconds)));
+            }
+
+            iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+            iframe.classList.remove('hidden');
+            if (placeholder) {
+                placeholder.classList.add('hidden');
+            }
+        }
+
         // --- Unified Detail Modal & Other Logic ---
         function openDetailModal(node) {
             state.activeNodeId = node.id;
@@ -840,13 +1078,34 @@
             document.getElementById('edit-date').value = node.date;
             document.getElementById('edit-video').value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
 
-            // Set video iframe src
+            // 모달을 열 때는 읽기 모드로 두고, Edit 버튼을 눌렀을 때만 편집 폼을 연다
+            disableEditMode();
+
+            const iframe = document.getElementById('detail-video');
+            const placeholder = document.getElementById('video-placeholder');
+
             if (node.videoId) {
-                document.getElementById('detail-video').src = `https://www.youtube-nocookie.com/embed/${node.videoId}?playsinline=1&rel=0&modestbranding=1&autoplay=1`;
+                const params = new URLSearchParams({
+                    playsinline: 1,
+                    rel: 0,
+                    modestbranding: 1
+                });
+                iframe.src = `https://www.youtube-nocookie.com/embed/${node.videoId}?${params.toString()}`;
+                iframe.classList.remove('hidden');
+                if (placeholder) {
+                    placeholder.classList.add('hidden');
+                }
                 document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${node.videoId}`;
                 document.getElementById('external-link').classList.remove('hidden');
             } else {
-                document.getElementById('detail-video').src = '';
+                iframe.src = '';
+                iframe.classList.add('hidden');
+                if (placeholder) {
+                    placeholder.classList.remove('hidden');
+                    placeholder.style.cursor = 'default';
+                    placeholder.onclick = null;
+                    placeholder.innerHTML = '<p class="text-sm text-slate-300">등록된 영상이 없습니다.</p>';
+                }
                 document.getElementById('external-link').classList.add('hidden');
             }
 
@@ -896,11 +1155,10 @@
             if (parts.length === 2) seconds = parts[0] * 60 + parts[1];
             if (parts.length === 3) seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
 
-            const iframe = document.getElementById('detail-video');
-            let src = iframe.src;
-            src = src.replace(/[?&]start=\d+/, '');
-            src += (src.includes('?') ? '&' : '?') + `start=${seconds}&autoplay=1`;
-            iframe.src = src;
+            const node = state.nodes.find(n => n.id === state.activeNodeId);
+            if (!node || !node.videoId) return;
+
+            startVideo(node.videoId, seconds);
         }
 
         function addMomentFromDetail(e) {
@@ -950,7 +1208,15 @@
                 document.getElementById('detail-date').innerText = date;
 
                 if (videoId) {
-                    document.getElementById('detail-video').src = `https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1&rel=0&modestbranding=1`;
+                    const iframe = document.getElementById('detail-video');
+                    const placeholder = document.getElementById('video-placeholder');
+
+                    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1&rel=0&modestbranding=1`;
+                    iframe.classList.remove('hidden');
+                    if (placeholder) {
+                        placeholder.classList.add('hidden');
+                    }
+
                     document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}`;
                     document.getElementById('external-link').classList.remove('hidden');
                 }
@@ -978,9 +1244,48 @@
             openDetailModal(newNode);
         }
 
+        function deleteNode() {
+            const node = state.nodes.find(n => n.id === state.activeNodeId);
+            if (!node) return;
+
+            if (confirm(isKorean ? `"${node.title}" 노드를 삭제하시겠습니까?` : `Delete "${node.title}"?`)) {
+                // Remove edges connected to this node
+                state.edges = state.edges.filter(e => e.from !== node.id && e.to !== node.id);
+
+                // Remove the node
+                state.nodes = state.nodes.filter(n => n.id !== node.id);
+
+                // Close modal
+                closeModal('detail-modal');
+
+                // Re-render and save
+                render();
+                saveData();
+
+                showToast(isKorean ? '노드가 삭제되었습니다' : 'Node deleted');
+            }
+        }
+
         function closeModal(id) {
             document.getElementById(id).close();
             document.getElementById('detail-video').src = '';
+        }
+
+        // 모달 바깥(backdrop)을 클릭하면 닫히도록 처리
+        const detailModalEl = document.getElementById('detail-modal');
+        if (detailModalEl) {
+            detailModalEl.addEventListener('click', (e) => {
+                const rect = detailModalEl.getBoundingClientRect();
+                const isInDialog = (
+                    rect.top <= e.clientY && e.clientY <= rect.bottom &&
+                    rect.left <= e.clientX && e.clientX <= rect.right
+                );
+
+                // 다이얼로그 영역 밖(어두운 배경)을 클릭한 경우에만 닫기
+                if (!isInDialog) {
+                    closeModal('detail-modal');
+                }
+            });
         }
 
         // Initial Load

@@ -48,6 +48,12 @@
             font-display: swap;
         }
 
+        /* 전체 페이지에서 가로 스크롤 방지 */
+        html,
+        body {
+            overflow-x: hidden;
+        }
+
         .loading-skeleton {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
@@ -155,6 +161,176 @@
                 line-height: 2.5rem;
             }
         }
+
+        /* Desktop/Mobile 프리뷰용 래퍼 공통 스타일 */
+        #mobile-shell {
+            flex: 1;
+            width: 100%;
+        }
+
+        #mobile-shell-inner {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 모바일 프리뷰 모드에서 글래스모피즘 카드 + 외부 배경 */
+        body.mobile-preview {
+            /* 내부 #f8fafc 톤과 잘 맞는 부드러운 그라디언트 */
+            background: radial-gradient(circle at top left, #e5edf7, #f8fafc, #e2e8f0);
+        }
+
+        body.mobile-preview #mobile-shell {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 0;
+        }
+
+        body.mobile-preview #mobile-shell-inner {
+            position: relative;
+            width: 393px;
+            max-width: calc(100vw - 32px);
+            border-radius: 40px;
+            /* 1번 요청: 투명도 조절 (더 투명하게) */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 28px 70px rgba(15, 23, 42, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 18px 14px 26px;
+        }
+
+        /* 노치/하단 막대 제거 (이미지처럼 중앙 카드만 부드럽게 보이도록) */
+        body.mobile-preview #mobile-shell-inner::before,
+        body.mobile-preview #mobile-shell-inner::after {
+            content: none;
+        }
+
+        /* 모바일 프리뷰 전용 플로팅 햄버거 버튼 (폰 안 우상단) */
+        body.mobile-preview #mobile-menu-floating {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        body.mobile-preview #mobile-menu-floating span {
+            display: block;
+            width: 16px;
+            height: 2px;
+            border-radius: 999px;
+            background: #1e293b;
+        }
+
+        body.mobile-preview #mobile-menu-floating span+span {
+            margin-top: 3px;
+        }
+
+        /* 데스크탑 모드에서는 상단 Nav 쪽 버튼만 보이고, 모바일 모드에서는 폰 안 버튼만 보이게 */
+        body.mobile-preview #mobile-menu-btn {
+            display: none;
+        }
+
+        body:not(.mobile-preview) #mobile-menu-floating {
+            display: none;
+        }
+
+        body.mobile-preview main#main-content {
+            max-width: 100%;
+            padding: 18px 16px 24px;
+            max-height: calc(100vh - 190px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: transparent;
+            /* 안쪽은 완전 투명, 바깥 글래스가 받쳐줌 */
+        }
+
+        /* 모바일 프리뷰에서 러브트리 카드 영역들을 세로형(유튜브 스타일) 리스트로 표시 */
+        body.mobile-preview #main-grid {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            /* 간격 조금 더 넓게 */
+        }
+
+        /* 3번, 4번 요청: 모바일 버전 가로 크기 맞춤 & 영상 위/설명 아래 */
+        body.mobile-preview .tree-card {
+            display: flex;
+            flex-direction: column;
+            /* 세로 배치 */
+            width: 100%;
+            height: auto;
+            /* 높이 자동 */
+            background: rgba(255, 255, 255, 0.6);
+            /* 카드 자체도 약간 투명하게 */
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        body.mobile-preview .tree-card .aspect-video {
+            width: 100%;
+            /* 가로 꽉 차게 */
+            min-width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            /* 16:9 비율 유지 */
+        }
+
+        body.mobile-preview .tree-card>.p-5 {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* 최근 방문한 트리 영역도 세로형 리스트로 */
+        body.mobile-preview #my-trees-grid {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        body.mobile-preview #my-trees-grid>a {
+            display: flex;
+            flex-direction: column;
+            /* 세로 배치 */
+            width: 100%;
+            height: auto;
+            min-height: 180px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        body.mobile-preview #my-trees-grid>a>.h-2/3 {
+            width: 100%;
+            min-width: 100%;
+            height: auto;
+            aspect-ratio: 2 / 1;
+            /* 적절한 비율 */
+            padding: 16px;
+        }
+
+        body.mobile-preview #my-trees-grid>a>.h-1/3 {
+            flex: 1;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: row;
+            /* 하단 정보는 가로로 */
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -173,137 +349,253 @@
     <!-- Nav -->
     <nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40" role="navigation"
         aria-label="메인 네비게이션">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
+        <div id="nav-inner" class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-500/30"
                     aria-hidden="true">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
                         </path>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-slate-900 leading-tight">Relovetree</span>
+                    <span class="text-xs text-slate-500 leading-tight">나의 덕질 기록</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="mobile-menu-btn" type="button"
+                    class="w-9 h-9 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow-sm hover:bg-slate-100"
+                    onclick="toggleMobileMenu()" aria-label="메뉴 열기">
+                    <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
+                    <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
+                    <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full"></span>
+                </button>
+                <div
+                    class="bg-slate-100/80 backdrop-blur px-1.5 py-1 rounded-lg text-[11px] text-slate-600 flex items-center gap-1 border border-slate-200">
+                    <button id="viewport-desktop-btn" onclick="setViewportMode('desktop')"
+                        class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
+                        데스크탑
+                    </button>
+                    <button id="viewport-mobile-btn" onclick="setViewportMode('mobile')"
+                        class="px-2 py-0.5 rounded-md text-slate-600 bg-white hover:text-slate-800 hover:bg-slate-100 text-[11px]">
+                        모바일
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-                        <!-- Main Layout -->
-                        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex gap-6 lg:gap-8"
-                            id="main-content">
+    <!-- 모바일용 햄버거 메뉴 패널 -->
+    <div id="mobile-menu-panel" class="hidden fixed inset-0 z-50 bg-black/40 flex items-start justify-center pt-20">
+        <div class="w-72 max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                <span class="text-sm font-bold text-slate-800">메뉴</span>
+                <button type="button"
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100"
+                    onclick="toggleMobileMenu()" aria-label="메뉴 닫기">
+                    <span class="text-lg leading-none">&times;</span>
+                </button>
+            </div>
+            <nav class="py-2 text-sm text-slate-700">
+                <button type="button" onclick="navigateToHome()"
+                    class="w-full text-left px-4 py-2 hover:bg-slate-50">홈</button>
+                <button type="button" onclick="scrollToMyTrees()"
+                    class="w-full text-left px-4 py-2 hover:bg-slate-50">최근 방문한 트리</button>
+                <button type="button" onclick="scrollToAllTrees()"
+                    class="w-full text-left px-4 py-2 hover:bg-slate-50">모든 러브트리</button>
+            </nav>
+        </div>
+    </div>
 
-                            <!-- Sidebar (Ranking) -->
-                            <aside class="hidden lg:block w-64 shrink-0" role="complementary" aria-label="인기 러브트리 순위">
-                                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sticky top-24">
-                                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"
-                                            aria-hidden="true">
-                                            <path
-                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                        인기 러브트리
-                                    </h3>
-                                    <ul class="space-y-3" role="list" id="popular-artists-list">
-                                        <!-- Artists will be populated by JavaScript -->
-                                    </ul>
-                                </div>
-                            </aside>
+    <!-- Main Layout -->
+    <div id="mobile-shell" class="flex-1 w-full">
+        <div id="mobile-shell-inner">
+            <button id="mobile-menu-floating" type="button" onclick="toggleMobileMenu()" aria-label="메뉴 열기">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex gap-6 lg:gap-8"
+                id="main-content">
 
-                            <!-- Main Content -->
-                            <div class="flex-1">
-                                <header class="mb-6 sm:mb-8">
-                                    <h1 class="text-responsive-xl font-bold text-slate-900 mb-2 animate-slide-up"
-                                        id="page-title">나의 러브트리
-                                    </h1>
-                                    <p class="text-slate-500 text-lg animate-slide-up" id="page-subtitle">사랑에 빠진 모든 순간을
-                                        기록하세요.</p>
-                                </header>
+                <!-- Sidebar (Ranking) -->
+                <aside class="hidden lg:block w-64 shrink-0" role="complementary" aria-label="인기 러브트리 순위">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sticky top-24">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"
+                                aria-hidden="true">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            인기 러브트리
+                        </h3>
+                        <ul class="space-y-3" role="list" id="popular-artists-list">
+                            <!-- Artists will be populated by JavaScript -->
+                        </ul>
+                    </div>
+                </aside>
 
-                                <!-- My Trees Section (Hidden by default) -->
-                                <div id="my-trees-section" class="mb-8 hidden animate-fade-in">
-                                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span id="my-trees-title">최근 방문한 트리</span>
-                                    </h2>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
-                                        id="my-trees-grid">
-                                        <!-- My Trees populated here -->
-                                    </div>
-                                </div>
+                <!-- Main Content -->
+                <div class="flex-1">
+                    <header class="mb-6 sm:mb-8">
+                        <h1 class="text-responsive-xl font-bold text-slate-900 mb-2 animate-slide-up" id="page-title">나의
+                            러브트리
+                        </h1>
+                        <p class="text-slate-500 text-lg animate-slide-up" id="page-subtitle">사랑에 빠진 모든 순간을
+                            기록하세요.</p>
+                    </header>
 
-                                <h2 id="all-trees-title"
-                                    class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                        </path>
-                                    </svg>
-                                    <span id="all-trees-title">모든 러브트리</span>
-                                </h2>
+                    <!-- My Trees Section (Hidden by default) -->
+                    <div id="my-trees-section" class="mb-8 hidden animate-fade-in">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="my-trees-title">최근 방문한 트리</span>
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6" id="my-trees-grid">
+                            <!-- My Trees populated here -->
+                        </div>
+                    </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
-                                    id="main-grid">
+                    <h2 id="all-trees-title" class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                        <span id="all-trees-title">모든 러브트리</span>
+                    </h2>
 
-                                    <!-- Create Card -->
-                                    <button onclick="openCreateModal()"
-                                        class="h-64 rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-4 hover:border-brand-500 hover:bg-brand-50/50 transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 animate-scale-in"
-                                        id="create-tree-btn" type="button" aria-describedby="create-tree-desc">
-                                        <div
-                                            class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-500 transition-colors shadow-sm group-hover:shadow-md">
-                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                aria-hidden="true">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 4v16m8-8H4">
-                                                </path>
-                                            </svg>
-                                        </div>
-                                        <span class="font-semibold text-lg text-slate-600 group-hover:text-brand-600"
-                                            id="btn-create">새로운 트리
-                                            만들기</span>
-                                        <span class="sr-only" id="create-tree-desc">새로운 러브트리를 만드세요</span>
-                                    </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6" id="main-grid">
 
-                                    <!-- Artist Cards will be populated by JavaScript -->
-                                    <div id="artist-cards-container" class="contents">
-                                        <!-- Cards will be dynamically generated -->
-                                    </div>
-                                </div>
+                        <!-- Create Card -->
+                        <button onclick="openCreateModal()"
+                            class="rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-4 hover:border-brand-500 hover:bg-brand-50/50 transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 animate-scale-in min-h-[16rem]"
+                            id="create-tree-btn" type="button" aria-describedby="create-tree-desc">
+                            <div
+                                class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-500 transition-colors shadow-sm group-hover:shadow-md">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4">
+                                    </path>
+                                </svg>
                             </div>
-                        </main>
+                            <span class="font-semibold text-lg text-slate-600 group-hover:text-brand-600"
+                                id="btn-create">새로운 트리
+                                만들기</span>
+                            <span class="sr-only" id="create-tree-desc">새로운 러브트리를 만드세요</span>
+                        </button>
 
-                        <!-- Create Modal -->
-                        <dialog id="create-modal"
-                            class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-                            <div class="p-6">
-                                <h3 class="text-xl font-bold text-slate-900 mb-2" id="modal-title">누구의 팬이신가요?</h3>
-                                <p class="text-slate-500 text-sm mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
+                        <!-- Artist Cards will be populated by JavaScript -->
+                        <div id="artist-cards-container" class="contents">
+                            <!-- Cards will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
 
-                                <form method="dialog" onsubmit="handleCreate(event)" novalidate>
-                                    <div class="mb-6">
-                                        <label for="artist-name"
-                                            class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
-                                            id="label-name">아티스트 이름</label>
-                                        <input type="text" id="artist-name" name="artistName"
-                                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
-                                            placeholder="예: 뉴진스, 임영웅..." required maxlength="50"
-                                            aria-describedby="artist-name-help">
-                                        <p id="artist-name-help" class="text-xs text-slate-400 mt-1">최대 50자까지 입력 가능합니다
-                                        </p>
-                                    </div>
-                                    <div class="flex justify-end gap-3">
-                                        <button type="button" onclick="closeModal('create-modal')"
-                                            class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
-                                            id="btn-cancel">취소</button>
-                                        <button type="submit"
-                                            class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
-                                            id="btn-start">시작하기</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </dialog>
+    <!-- Create Modal -->
+    <dialog id="create-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 mb-2" id="modal-title">누구의 팬이신가요?</h3>
+            <p class="text-slate-500 text-sm mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
 
-                        <!-- JavaScript Modules -->
-                        <script src="src/shared.js"></script>
-                        <script src="index.js"></script>
+            <form method="dialog" onsubmit="handleCreate(event)" novalidate>
+                <div class="mb-6">
+                    <label for="artist-name"
+                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                        id="label-name">아티스트 이름</label>
+                    <input type="text" id="artist-name" name="artistName"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                        placeholder="예: 뉴진스, 임영웅..." required maxlength="50" aria-describedby="artist-name-help">
+                    <p id="artist-name-help" class="text-xs text-slate-400 mt-1">최대 50자까지 입력 가능합니다
+                    </p>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('create-modal')"
+                        class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
+                        id="btn-cancel">취소</button>
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
+                        id="btn-start">시작하기</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- JavaScript Modules -->
+    <script>
+        let viewportMode = 'desktop';
+
+        function setViewportMode(mode) {
+            if (mode !== 'desktop' && mode !== 'mobile') return;
+            viewportMode = mode;
+
+            const navInner = document.getElementById('nav-inner');
+            const mainLayout = document.getElementById('main-content');
+            const desktopBtn = document.getElementById('viewport-desktop-btn');
+            const mobileBtn = document.getElementById('viewport-mobile-btn');
+            const aside = document.querySelector('aside[aria-label="인기 러브트리 순위"]');
+
+            const applyWidth = (el, isDesktop) => {
+                if (!el) return;
+                if (isDesktop) {
+                    el.style.maxWidth = '72rem';
+                    el.style.marginLeft = '';
+                    el.style.marginRight = '';
+                } else {
+                    el.style.maxWidth = '430px';
+                    el.style.marginLeft = 'auto';
+                    el.style.marginRight = 'auto';
+                }
+            };
+
+            const isDesktop = mode === 'desktop';
+
+            applyWidth(navInner, isDesktop);
+            applyWidth(mainLayout, isDesktop);
+
+            // 데스크탑/모바일 프리뷰 모드 body 클래스 토글
+            if (isDesktop) {
+                document.body.classList.remove('mobile-preview');
+                document.body.style.backgroundColor = '#f8fafc';
+            } else {
+                document.body.classList.add('mobile-preview');
+                document.body.style.backgroundColor = '';
+            }
+
+            // 모바일 프리뷰 모드에서는 인기 러브트리 사이드바 숨김
+            if (aside) {
+                aside.style.display = isDesktop ? '' : 'none';
+            }
+
+            // 버튼 스타일 토글
+            if (desktopBtn && mobileBtn) {
+                if (isDesktop) {
+                    desktopBtn.classList.add('bg-slate-800', 'text-white');
+                    desktopBtn.classList.remove('bg-white', 'text-slate-600');
+                    mobileBtn.classList.remove('bg-slate-800', 'text-white');
+                    mobileBtn.classList.add('bg-white', 'text-slate-600');
+                } else {
+                    mobileBtn.classList.add('bg-slate-800', 'text-white');
+                    mobileBtn.classList.remove('bg-white', 'text-slate-600');
+                    desktopBtn.classList.remove('bg-slate-800', 'text-white');
+                    desktopBtn.classList.add('bg-white', 'text-slate-600');
+                }
+            }
+        }
+
+        window.addEventListener('load', () => setViewportMode('desktop'));
+    </script>
+    <script src="src/shared.js"></script>
+    <script src="index.js"></script>
 </body>
 
 </html>

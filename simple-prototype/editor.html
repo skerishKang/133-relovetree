@@ -1,0 +1,946 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoveTree – 심플 에디터</title>
+    <style>
+        :root { color-scheme: light; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f4f6fb;
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #7c3aed;
+        }
+        .brand span { color: #0f172a; }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .header-actions button,
+        .header-actions a {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: #ede9fe;
+            color: #5b21b6;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .header-actions button:hover,
+        .header-actions a:hover { background: #c7d2fe; }
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px 40px;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 24px;
+        }
+        .panel {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+            padding: 20px;
+        }
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 1.25rem;
+            color: #0f172a;
+        }
+        .board-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .board-actions button {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: #ede9fe;
+            color: #5b21b6;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .board-actions button:hover {
+            background: #c7d2fe;
+            transform: translateY(-1px);
+        }
+        .board-actions button.active {
+            background: #7c3aed;
+            color: #fff;
+        }
+        #addNodeForm {
+            display: none;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            background: #f9fafc;
+            margin-bottom: 16px;
+            gap: 10px;
+        }
+        #addNodeForm.visible {
+            display: grid;
+        }
+        #addNodeForm label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475467;
+        }
+        #addNodeForm input,
+        #addNodeForm textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        #addNodeForm textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        #addNodeForm button[type="submit"] {
+            justify-self: flex-end;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .board-stage {
+            position: relative;
+            min-height: 520px;
+        }
+        #boardConnections {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        #nodeBoard {
+            position: relative;
+            min-height: 520px;
+            background: radial-gradient(#e2e8f0 1px, transparent 0);
+            background-size: 24px 24px;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .node-card {
+            width: 260px;
+            position: absolute;
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .node-card:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(15, 23, 42, 0.1); }
+        .node-card.active { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15); }
+        .node-card.connecting {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+        }
+        .node-player {
+            width: 100%;
+            height: 150px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            overflow: hidden;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .node-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .node-player .no-video {
+            color: #cbd5f5;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .node-card .body { padding: 14px; }
+        .node-card h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+        .node-card small { color: #94a3b8; }
+        .node-card .moments-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: #475467;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+        .detail-panel {
+            position: fixed;
+            top: 96px;
+            right: 32px;
+            width: min(360px, calc(100% - 40px));
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            display: none;
+            z-index: 20;
+        }
+        .detail-panel.visible {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-panel iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: none;
+            border-radius: 16px;
+            background: #000;
+        }
+        .detail-panel .info {
+            margin: 16px 0;
+            padding: 16px;
+            border-radius: 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .panel-close {
+            align-self: flex-end;
+            margin-bottom: 12px;
+            border: none;
+            background: #e2e8f0;
+            color: #475467;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .panel-close:hover {
+            background: #cbd5f5;
+        }
+        .moments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+        .moment-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+        .moment-item strong {
+            font-size: 0.85rem;
+            color: #7c3aed;
+            cursor: pointer;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        form input,
+        form textarea,
+        form select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #d5dbe8;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        form textarea { resize: vertical; min-height: 70px; }
+        form button {
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            background: #7c3aed;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        form button:hover { transform: translateY(-1px); }
+        @media (max-width: 1024px) {
+            #nodeBoard { min-height: 420px; }
+            .detail-panel {
+                position: fixed;
+                left: 50%;
+                transform: translateX(-50%);
+                width: min(90%, 420px);
+            }
+        }
+        @media (max-width: 640px) {
+            .header-inner { flex-direction: column; align-items: flex-start; }
+            .header-actions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+            .detail-panel {
+                top: 80px;
+                left: 16px;
+                right: 16px;
+                width: auto;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="brand">🌿 <span id="treeTitle">LoveTree Editor</span></div>
+            <div class="header-actions">
+                <a href="index.html">← 홈으로</a>
+                <button id="langBtn">English</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="panel" style="margin-bottom: 20px;">
+            <p id="treeSummary" style="margin:0; color:#475467;">선택된 아티스트 정보를 불러오는 중...</p>
+        </div>
+        <div class="layout">
+            <section class="panel">
+                <h2>타임라인 보드</h2>
+                <p style="margin-top:0; color:#64748b; font-size:0.95rem;">노드를 클릭하면 상세 패널에서 영상과 순간을 확인할 수 있습니다.</p>
+                <div class="board-actions">
+                    <button type="button" id="addNodeToggle">노드 추가</button>
+                    <button type="button" id="connectModeToggle">연결 모드</button>
+                </div>
+                <form id="addNodeForm">
+                    <div>
+                        <label for="newNodeTitle">제목</label>
+                        <input id="newNodeTitle" name="title" type="text" placeholder="예: 새로운 순간" required />
+                    </div>
+                    <div>
+                        <label for="newNodeDate">날짜</label>
+                        <input id="newNodeDate" name="date" type="date" required />
+                    </div>
+                    <div>
+                        <label for="newNodeVideo">YouTube ID 또는 URL</label>
+                        <input id="newNodeVideo" name="video" type="text" placeholder="https://youtu.be/..." />
+                    </div>
+                    <div>
+                        <label for="newNodeSummary">요약</label>
+                        <textarea id="newNodeSummary" name="summary" placeholder="순간에 대한 설명"></textarea>
+                    </div>
+                    <button type="submit">노드 생성</button>
+                </form>
+                <div class="board-stage">
+                    <svg id="boardConnections"></svg>
+                    <div id="nodeBoard"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <section class="panel detail-panel" id="detailPanel">
+        <button type="button" id="detailClose" class="panel-close">닫기</button>
+        <h2 id="detailTitle">노드를 선택하세요</h2>
+        <p id="detailDate" style="margin-top:-4px; color:#94a3b8;">날짜 정보</p>
+        <iframe id="detailVideo" title="러브트리 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="info" id="detailSummary">영상과 순간 설명이 여기에 표시됩니다.</div>
+        <div class="moments-list" id="momentsList"></div>
+        <form id="momentForm">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="momentTime" placeholder="예: 1:20" required />
+                <select id="momentFeeling">
+                    <option value="love">😍 Love</option>
+                    <option value="tear">😭 Tear</option>
+                    <option value="funny">🤣 Funny</option>
+                    <option value="shock">😲 Shock</option>
+                </select>
+            </div>
+            <textarea id="momentText" placeholder="이 순간에 대한 코멘트를 남겨주세요" required></textarea>
+            <button type="submit">순간 추가하기</button>
+        </form>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+
+    <script>
+        const ARTIST_TREES = {
+            bts: {
+                id: 'bts',
+                name: '방탄소년단 (BTS)',
+                summary: '글로벌 팬덤과 함께 성장한 7인 보이그룹. 대표 순간을 타임라인으로 정리했습니다.',
+                nodes: [
+                    {
+                        id: 'bts-1',
+                        title: '데뷔 무대 (No More Dream)',
+                        date: '2013-06-13',
+                        videoId: 'rBG5L7UsUxA',
+                        summary: '진정한 시작을 알린 무대.',
+                        x: 60,
+                        y: 60,
+                        moments: [
+                            { time: '0:10', text: '전설의 시작!', feeling: 'love' },
+                            { time: '2:42', text: '칼군무 소름', feeling: 'shock' }
+                        ]
+                    },
+                    {
+                        id: 'bts-2',
+                        title: '첫 1위 (I Need U)',
+                        date: '2015-05-05',
+                        videoId: 'NMdTd9e-LEI',
+                        summary: '첫 음악 방송 1위를 기록한 감동의 순간.',
+                        x: 360,
+                        y: 210,
+                        moments: [
+                            { time: '2:30', text: '눈물바다 ㅠㅠ', feeling: 'tear' }
+                        ]
+                    },
+                    {
+                        id: 'bts-3',
+                        title: 'Dynamite 빌보드 1위',
+                        date: '2020-08-21',
+                        videoId: 'gdZLi9oWNZg',
+                        summary: '빌보드 HOT100 1위로 기록된 역사적인 장면.',
+                        x: 680,
+                        y: 80,
+                        moments: [
+                            { time: '1:00', text: '자랑스럽다…', feeling: 'love' }
+                        ]
+                    }
+                ]
+            },
+            seventeen: {
+                id: 'seventeen',
+                name: '세븐틴 (Seventeen)',
+                summary: '세밀한 퍼포먼스로 사랑받는 13인 체제 그룹.',
+                nodes: [
+                    {
+                        id: 'svt-1',
+                        title: '손오공 (Super)',
+                        date: '2023-04-24',
+                        videoId: 'z8E3szwQUPw',
+                        thumbnail: 'https://i.ytimg.com/vi/z8E3szwQUPw/hqdefault.jpg',
+                        summary: '압도적인 퍼포먼스의 정점.',
+                        x: 140,
+                        y: 80,
+                        moments: [
+                            { time: '2:45', text: '칼군무 미쳤다', feeling: 'shock' }
+                        ]
+                    },
+                    {
+                        id: 'svt-2',
+                        title: '음악의 신 (God of Music)',
+                        date: '2023-10-23',
+                        videoId: 'V9nCeSD0ap8',
+                        thumbnail: 'https://i.ytimg.com/vi/V9nCeSD0ap8/hqdefault.jpg',
+                        summary: '브라스 사운드와 밝은 무드의 정점을 보여준 타이틀곡.',
+                        x: 480,
+                        y: 240,
+                        moments: [
+                            { time: '1:20', text: '후렴에서 단체 안무 폭발', feeling: 'love' }
+                        ]
+                    }
+                ]
+            },
+            leejunyoung: {
+                id: 'leejunyoung',
+                name: '이준영 (Lee Jun-young)',
+                summary: '배우와 보컬을 겸비한 올라운더 솔로 아티스트.',
+                nodes: [
+                    {
+                        id: 'lee-1',
+                        title: '궁금해 (Curious About U)',
+                        date: '2019-12-05',
+                        videoId: 'K4y_y2BfSgI',
+                        summary: '솔로 보컬의 가능성을 보여준 곡.',
+                        x: 90,
+                        y: 100,
+                        moments: [
+                            { time: '0:00', text: '보컬 천재', feeling: 'love' }
+                        ]
+                    },
+                    {
+                        id: 'lee-2',
+                        title: '너의 밤이 되어줄게 (드라마)',
+                        date: '2021-11-07',
+                        videoId: 'B-e_nK8Q3-M',
+                        summary: '연기와 노래를 모두 보여준 레전드 장면.',
+                        x: 420,
+                        y: 260,
+                        moments: [
+                            { time: '0:00', text: '연기력 폭발', feeling: 'love' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const treeId = urlParams.get('id') || 'bts';
+        const fallbackTree = ARTIST_TREES[treeId] || ARTIST_TREES.bts;
+
+        let treeData = {
+            artist: null,
+            nodes: [],
+            connections: []
+        };
+
+        const nodeBoard = document.getElementById('nodeBoard');
+        const connectionsSvg = document.getElementById('boardConnections');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailDate = document.getElementById('detailDate');
+        const detailVideo = document.getElementById('detailVideo');
+        const detailSummary = document.getElementById('detailSummary');
+        const momentsList = document.getElementById('momentsList');
+        const treeTitle = document.getElementById('treeTitle');
+        const treeSummary = document.getElementById('treeSummary');
+        const langBtn = document.getElementById('langBtn');
+        const detailPanel = document.getElementById('detailPanel');
+        const detailClose = document.getElementById('detailClose');
+        const momentForm = document.getElementById('momentForm');
+        const addNodeToggle = document.getElementById('addNodeToggle');
+        const addNodeForm = document.getElementById('addNodeForm');
+        const connectModeToggle = document.getElementById('connectModeToggle');
+
+        const NODE_DIMENSIONS = { width: 260, height: 214 };
+        const BOARD_PADDING = { horizontal: 40, vertical: 40 };
+        const NODE_GAP = { x: 40, y: 30 };
+        const PLACEHOLDER_THUMB = 'https://via.placeholder.com/320x180/0f172a/ffffff?text=LoveTree';
+        const YOUTUBE_THUMB_VARIANTS = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
+        const oEmbedCache = new Map();
+
+        let currentNode = null;
+        let isKorean = true;
+        let isConnectMode = false;
+        let connectStartId = null;
+
+        async function init() {
+            const remoteTree = window.LoveTreeSupabase
+                ? await window.LoveTreeSupabase.fetchTree(treeId)
+                : null;
+
+            if (remoteTree) {
+                treeData = {
+                    artist: remoteTree.artist,
+                    nodes: remoteTree.nodes || [],
+                    connections: remoteTree.connections || []
+                };
+            }
+
+            if (!treeData.nodes.length) {
+                treeData = {
+                    artist: {
+                        id: null,
+                        name: fallbackTree.name,
+                        summary: fallbackTree.summary,
+                        slug: treeId
+                    },
+                    nodes: fallbackTree.nodes.map((node) => ({ ...node })),
+                    connections: (fallbackTree.connections || []).map((conn) => ({ ...conn }))
+                };
+            }
+
+            treeTitle.textContent = treeData.artist?.name || fallbackTree.name;
+            treeSummary.textContent = treeData.artist?.summary || fallbackTree.summary;
+            ensureConnections();
+            renderNodes({ forceLayout: true });
+        }
+
+        function renderNodes(options = {}) {
+            const { forceLayout = false } = options;
+            autoLayoutNodes(forceLayout);
+            nodeBoard.innerHTML = '';
+            treeData.nodes.forEach((node) => {
+                const safeX = typeof node.x === 'number' ? node.x : BOARD_PADDING.horizontal + Math.random() * 100;
+                const safeY = typeof node.y === 'number' ? node.y : BOARD_PADDING.vertical + Math.random() * 100;
+                node.x = safeX;
+                node.y = safeY;
+                const card = document.createElement('article');
+                card.className = 'node-card';
+                card.style.left = `${safeX}px`;
+                card.style.top = `${safeY}px`;
+                card.dataset.nodeId = node.id;
+                const mediaWrapper = createMediaWrapper(node);
+
+                const body = document.createElement('div');
+                body.className = 'body';
+                body.innerHTML = `
+                    <h3>${node.title}</h3>
+                    <small>${node.date}</small>
+                    <div class="moments-pill">
+                        <span>✨ Moments</span>
+                        <strong>${node.moments.length}</strong>
+                    </div>
+                `;
+
+                card.appendChild(mediaWrapper);
+                card.appendChild(body);
+                card.addEventListener('click', () => selectNode(node.id));
+                nodeBoard.appendChild(card);
+            });
+            ensureConnections();
+            renderConnections();
+            highlightConnectStart();
+        }
+
+        function autoLayoutNodes(force = false) {
+            if (!treeData.nodes?.length) return;
+            const boardWidth = nodeBoard.clientWidth || nodeBoard.parentElement?.clientWidth || 960;
+            const sorted = [...treeData.nodes].sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+            const columns = Math.max(
+                1,
+                Math.floor((boardWidth - BOARD_PADDING.horizontal * 2 + NODE_GAP.x) / (NODE_DIMENSIONS.width + NODE_GAP.x))
+            );
+            const effectiveWidth = columns * NODE_DIMENSIONS.width + (columns - 1) * NODE_GAP.x;
+            const startX = Math.max(BOARD_PADDING.horizontal, (boardWidth - effectiveWidth) / 2);
+
+            sorted.forEach((node, index) => {
+                const needsLayout = typeof node.x !== 'number' || typeof node.y !== 'number';
+                if (!force && !needsLayout) {
+                    return;
+                }
+                const column = index % columns;
+                const row = Math.floor(index / columns);
+                node.x = startX + column * (NODE_DIMENSIONS.width + NODE_GAP.x);
+                node.y = BOARD_PADDING.vertical + row * (NODE_DIMENSIONS.height + NODE_GAP.y);
+            });
+        }
+
+        function ensureConnections() {
+            if (!Array.isArray(treeData.connections)) {
+                treeData.connections = [];
+            }
+            if (treeData.connections.length || treeData.nodes.length < 2) {
+                return;
+            }
+            const orderedIds = [...treeData.nodes]
+                .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0))
+                .map((node) => node.id);
+            for (let i = 0; i < orderedIds.length - 1; i += 1) {
+                treeData.connections.push({ from: orderedIds[i], to: orderedIds[i + 1] });
+            }
+        }
+
+        function selectNode(nodeId) {
+            const node = treeData.nodes.find((n) => n.id === nodeId) || treeData.nodes[0];
+            if (!node) return;
+
+            if (isConnectMode) {
+                handleConnectMode(nodeId);
+                return;
+            }
+
+            currentNode = node;
+            document.querySelectorAll('.node-card').forEach((card) => {
+                card.classList.toggle('active', card.dataset.nodeId === currentNode.id);
+                if (!isConnectMode) {
+                    card.classList.remove('connecting');
+                }
+            });
+
+            openDetailPanel();
+            detailTitle.textContent = currentNode.title;
+            detailDate.textContent = currentNode.date;
+            detailSummary.textContent = currentNode.summary;
+            detailVideo.src = currentNode.videoId
+                ? `https://www.youtube.com/embed/${currentNode.videoId}?rel=0&modestbranding=1`
+                : '';
+            renderMoments();
+        }
+
+        function renderMoments() {
+            momentsList.innerHTML = '';
+            if (!currentNode || currentNode.moments.length === 0) {
+                momentsList.innerHTML = '<p style="color:#94a3b8;">아직 기록된 순간이 없습니다.</p>';
+                return;
+            }
+
+            currentNode.moments.forEach((moment) => {
+                const item = document.createElement('div');
+                item.className = 'moment-item';
+                item.innerHTML = `
+                    <span style="font-size:1.5rem;">
+                        ${getFeelingEmoji(moment.feeling)}
+                    </span>
+                    <div>
+                        <strong onclick="seekVideo('${moment.time}')">${moment.time}</strong>
+                        <p style="margin:4px 0 0; color:#475467;">${moment.text}</p>
+                    </div>
+                `;
+                momentsList.appendChild(item);
+            });
+        }
+
+        function getFeelingEmoji(feeling) {
+            const map = { love: '😍', tear: '😭', funny: '🤣', shock: '😲' };
+            return map[feeling] || '😊';
+        }
+
+        function seekVideo(timeStr) {
+            if (!detailVideo.src) return;
+            const seconds = timeStr.split(':').reverse().reduce((total, part, idx) => {
+                const value = parseInt(part, 10) || 0;
+                return total + value * Math.pow(60, idx);
+            }, 0);
+            detailVideo.src = `${detailVideo.src.split('?')[0]}?start=${seconds}&autoplay=1&rel=0&modestbranding=1`;
+        }
+
+        momentForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!currentNode) return;
+
+            const time = document.getElementById('momentTime').value.trim();
+            const text = document.getElementById('momentText').value.trim();
+            const feeling = document.getElementById('momentFeeling').value;
+
+            if (!time || !text) {
+                alert('시간과 코멘트를 모두 입력해주세요.');
+                return;
+            }
+
+            let newMoment = { id: `moment-${Date.now()}`, time, text, feeling };
+
+            if (treeData.artist?.id && window.LoveTreeSupabase && currentNode.id) {
+                const savedMoment = await window.LoveTreeSupabase.createMoment(currentNode.id, { time, text, feeling });
+                if (savedMoment) {
+                    newMoment = savedMoment;
+                }
+            }
+
+            currentNode.moments.push(newMoment);
+            renderMoments();
+            momentForm.reset();
+        });
+
+        langBtn.addEventListener('click', () => {
+            isKorean = !isKorean;
+            langBtn.textContent = isKorean ? 'English' : '한국어';
+            if (isKorean) {
+                treeSummary.textContent = treeData.artist?.summary || fallbackTree.summary;
+                detailSummary.textContent = currentNode ? currentNode.summary : detailSummary.textContent;
+            } else {
+                treeSummary.textContent = 'A simplified editor to compare timelines easily.';
+                if (currentNode) {
+                    detailSummary.textContent = 'Quick snapshot of this fan moment.';
+                }
+            }
+        });
+
+        detailClose.addEventListener('click', () => {
+            currentNode = null;
+            detailPanel.classList.remove('visible');
+            resetDetailPanel();
+        });
+
+        addNodeToggle.addEventListener('click', () => {
+            addNodeForm.classList.toggle('visible');
+            addNodeToggle.textContent = addNodeForm.classList.contains('visible') ? '노드 추가 닫기' : '노드 추가';
+        });
+
+        addNodeForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const title = document.getElementById('newNodeTitle').value.trim();
+            const date = document.getElementById('newNodeDate').value;
+            const videoInput = document.getElementById('newNodeVideo').value.trim();
+            const summary = document.getElementById('newNodeSummary').value.trim() || '새로운 순간입니다.';
+
+            if (!title || !date) {
+                alert('제목과 날짜를 입력해주세요.');
+                return;
+            }
+
+            const videoId = extractVideoId(videoInput);
+            let newNode = {
+                id: `node-${Date.now()}`,
+                title,
+                date,
+                videoId: videoId || '',
+                summary,
+                x: 40 + Math.random() * 600,
+                y: 60 + Math.random() * 280,
+                moments: []
+            };
+
+            if (treeData.artist?.id && window.LoveTreeSupabase) {
+                const savedNode = await window.LoveTreeSupabase.createNode(newNode, treeData.artist);
+                if (savedNode) {
+                    newNode = savedNode;
+                }
+            }
+
+            treeData.nodes.push(newNode);
+            addNodeForm.reset();
+            addNodeForm.classList.remove('visible');
+            addNodeToggle.textContent = '노드 추가';
+            renderNodes({ forceLayout: true });
+            selectNode(newNode.id);
+        });
+
+        connectModeToggle.addEventListener('click', () => {
+            isConnectMode = !isConnectMode;
+            connectModeToggle.classList.toggle('active', isConnectMode);
+            connectModeToggle.textContent = isConnectMode ? '연결 모드 종료' : '연결 모드';
+            connectStartId = null;
+            highlightConnectStart();
+            if (!isConnectMode) {
+                document.querySelectorAll('.node-card').forEach((card) => card.classList.remove('connecting'));
+            }
+        });
+
+        function extractVideoId(input) {
+            if (!input) return '';
+            const match = input.match(/(?:youtu\.be\/|v=|\/videos\/|embed\/)([^"&?\n\r]+)/);
+            return match ? match[1] : input;
+        }
+
+        async function handleConnectMode(nodeId) {
+            if (!connectStartId) {
+                connectStartId = nodeId;
+                highlightConnectStart();
+                return;
+            }
+
+            if (connectStartId === nodeId) {
+                connectStartId = null;
+                highlightConnectStart();
+                return;
+            }
+
+            treeData.connections = treeData.connections || [];
+            const exists = treeData.connections.some((conn) => conn.from === connectStartId && conn.to === nodeId);
+            if (!exists) {
+                treeData.connections.push({ from: connectStartId, to: nodeId });
+                renderConnections();
+                if (treeData.artist?.id && window.LoveTreeSupabase) {
+                    await window.LoveTreeSupabase.createConnection(treeData.artist.id, connectStartId, nodeId);
+                }
+            }
+            connectStartId = null;
+            highlightConnectStart();
+        }
+
+        function renderConnections() {
+            connectionsSvg.innerHTML = '';
+            const connections = treeData.connections || [];
+            connections.forEach((conn) => {
+                const fromNode = treeData.nodes.find((n) => n.id === conn.from);
+                const toNode = treeData.nodes.find((n) => n.id === conn.to);
+                if (!fromNode || !toNode) return;
+
+                const startX = fromNode.x + NODE_DIMENSIONS.width;
+                const startY = fromNode.y + NODE_DIMENSIONS.height / 2;
+                const endX = toNode.x;
+                const endY = toNode.y + NODE_DIMENSIONS.height / 2;
+                const controlOffset = Math.abs(endX - startX) * 0.4;
+                const pathData = `M ${startX} ${startY} C ${startX + controlOffset} ${startY}, ${endX - controlOffset} ${endY}, ${endX} ${endY}`;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathData);
+                path.setAttribute('stroke', '#94a3b8');
+                path.setAttribute('stroke-width', '3');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-linecap', 'round');
+                connectionsSvg.appendChild(path);
+            });
+        }
+
+        function highlightConnectStart() {
+            document.querySelectorAll('.node-card').forEach((card) => {
+                card.classList.toggle('connecting', isConnectMode && card.dataset.nodeId === connectStartId);
+            });
+        }
+
+        function openDetailPanel() {
+            detailPanel.classList.add('visible');
+        }
+
+        function resetDetailPanel() {
+            detailTitle.textContent = '노드를 선택하세요';
+            detailDate.textContent = '날짜 정보';
+            detailSummary.textContent = '영상과 순간 설명이 여기에 표시됩니다.';
+            momentsList.innerHTML = '';
+            detailVideo.src = '';
+        }
+
+        function createMediaWrapper(node) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'node-player';
+            if (!node.videoId) {
+                const empty = document.createElement('div');
+                empty.className = 'no-video';
+                empty.textContent = '영상 정보가 없습니다';
+                wrapper.appendChild(empty);
+                return wrapper;
+            }
+
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${node.videoId}?rel=0&modestbranding=1&controls=1&playsinline=1`;
+            iframe.loading = 'lazy';
+            iframe.title = `${node.title} 미리보기`;
+            iframe.setAttribute('allow', 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            wrapper.appendChild(iframe);
+            return wrapper;
+        }
+
+        window.seekVideo = seekVideo;
+        window.addEventListener('resize', () => {
+            if (!isConnectMode) {
+                renderNodes({ forceLayout: true });
+            }
+        });
+        init();
+    </script>
+</body>
+</html>
