@@ -40,8 +40,6 @@
     <!-- Tailwind CSS (Built locally for production) -->
     <link rel="stylesheet" href="output.css">
 
-
-
     <!-- Critical CSS for performance -->
     <style>
         /* Critical styles for above-the-fold content */
@@ -183,104 +181,129 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
                         </path>
-                    </svg>
-                </div>
-                <span class="text-lg sm:text-xl font-bold font-display tracking-tight text-slate-800">Relovetree</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="toggleLanguage()"
-                    class="text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors" id="lang-btn"
-                    aria-label="언어 전환" type="button">English</button>
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-400 to-brand-400 shadow-md"
-                    aria-hidden="true"></div>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Layout -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex gap-6 lg:gap-8" id="main-content">
+                        <!-- Main Layout -->
+                        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex gap-6 lg:gap-8"
+                            id="main-content">
 
-        <!-- Sidebar (Ranking) -->
-        <aside class="hidden lg:block w-64 shrink-0" role="complementary" aria-label="인기 러브트리 순위">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sticky top-24">
-                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                        <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    인기 러브트리
-                </h3>
-                <ul class="space-y-3" role="list" id="popular-artists-list">
-                    <!-- Artists will be populated by JavaScript -->
-                </ul>
-            </div>
-        </aside>
+                            <!-- Sidebar (Ranking) -->
+                            <aside class="hidden lg:block w-64 shrink-0" role="complementary" aria-label="인기 러브트리 순위">
+                                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sticky top-24">
+                                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"
+                                            aria-hidden="true">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        인기 러브트리
+                                    </h3>
+                                    <ul class="space-y-3" role="list" id="popular-artists-list">
+                                        <!-- Artists will be populated by JavaScript -->
+                                    </ul>
+                                </div>
+                            </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1">
-            <header class="mb-6 sm:mb-8">
-                <h1 class="text-responsive-xl font-bold text-slate-900 mb-2 animate-slide-up" id="page-title">나의 러브트리
-                </h1>
-                <p class="text-slate-500 text-lg animate-slide-up" id="page-subtitle">사랑에 빠진 모든 순간을 기록하세요.</p>
-            </header>
+                            <!-- Main Content -->
+                            <div class="flex-1">
+                                <header class="mb-6 sm:mb-8">
+                                    <h1 class="text-responsive-xl font-bold text-slate-900 mb-2 animate-slide-up"
+                                        id="page-title">나의 러브트리
+                                    </h1>
+                                    <p class="text-slate-500 text-lg animate-slide-up" id="page-subtitle">사랑에 빠진 모든 순간을
+                                        기록하세요.</p>
+                                </header>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6" id="main-grid">
+                                <!-- My Trees Section (Hidden by default) -->
+                                <div id="my-trees-section" class="mb-8 hidden animate-fade-in">
+                                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span id="my-trees-title">최근 방문한 트리</span>
+                                    </h2>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
+                                        id="my-trees-grid">
+                                        <!-- My Trees populated here -->
+                                    </div>
+                                </div>
 
-                <!-- Create Card -->
-                <button onclick="openCreateModal()"
-                    class="h-64 rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-4 hover:border-brand-500 hover:bg-brand-50/50 transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 animate-scale-in"
-                    id="create-tree-btn" type="button" aria-describedby="create-tree-desc">
-                    <div
-                        class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-500 transition-colors shadow-sm group-hover:shadow-md">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-                            </path>
-                        </svg>
-                    </div>
-                    <span class="font-semibold text-lg text-slate-600 group-hover:text-brand-600" id="btn-create">새로운 트리
-                        만들기</span>
-                    <span class="sr-only" id="create-tree-desc">새로운 러브트리를 만드세요</span>
-                </button>
+                                <h2 id="all-trees-title"
+                                    class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                        </path>
+                                    </svg>
+                                    <span id="all-trees-title">모든 러브트리</span>
+                                </h2>
 
-                <!-- Artist Cards will be populated by JavaScript -->
-                <div id="artist-cards-container" class="contents">
-                    <!-- Cards will be dynamically generated -->
-                </div>
-            </div>
-        </div>
-    </main>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
+                                    id="main-grid">
 
-    <!-- Create Modal -->
-    <dialog id="create-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div class="p-6">
-            <h3 class="text-xl font-bold text-slate-900 mb-2" id="modal-title">누구의 팬이신가요?</h3>
-            <p class="text-slate-500 text-sm mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
+                                    <!-- Create Card -->
+                                    <button onclick="openCreateModal()"
+                                        class="h-64 rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-4 hover:border-brand-500 hover:bg-brand-50/50 transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 animate-scale-in"
+                                        id="create-tree-btn" type="button" aria-describedby="create-tree-desc">
+                                        <div
+                                            class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-500 transition-colors shadow-sm group-hover:shadow-md">
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <span class="font-semibold text-lg text-slate-600 group-hover:text-brand-600"
+                                            id="btn-create">새로운 트리
+                                            만들기</span>
+                                        <span class="sr-only" id="create-tree-desc">새로운 러브트리를 만드세요</span>
+                                    </button>
 
-            <form method="dialog" onsubmit="handleCreate(event)" novalidate>
-                <div class="mb-6">
-                    <label for="artist-name"
-                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
-                        id="label-name">아티스트 이름</label>
-                    <input type="text" id="artist-name" name="artistName"
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
-                        placeholder="예: 뉴진스, 임영웅..." required maxlength="50" aria-describedby="artist-name-help">
-                    <p id="artist-name-help" class="text-xs text-slate-400 mt-1">최대 50자까지 입력 가능합니다</p>
-                </div>
-                <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeModal('create-modal')"
-                        class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
-                        id="btn-cancel">취소</button>
-                    <button type="submit"
-                        class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
-                        id="btn-start">시작하기</button>
-                </div>
-            </form>
-        </div>
-    </dialog>
+                                    <!-- Artist Cards will be populated by JavaScript -->
+                                    <div id="artist-cards-container" class="contents">
+                                        <!-- Cards will be dynamically generated -->
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
 
-    <!-- JavaScript Modules -->
-    <script src="src/shared.js"></script>
-    <script src="index.js"></script>
+                        <!-- Create Modal -->
+                        <dialog id="create-modal"
+                            class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-slate-900 mb-2" id="modal-title">누구의 팬이신가요?</h3>
+                                <p class="text-slate-500 text-sm mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
+
+                                <form method="dialog" onsubmit="handleCreate(event)" novalidate>
+                                    <div class="mb-6">
+                                        <label for="artist-name"
+                                            class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+                                            id="label-name">아티스트 이름</label>
+                                        <input type="text" id="artist-name" name="artistName"
+                                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                                            placeholder="예: 뉴진스, 임영웅..." required maxlength="50"
+                                            aria-describedby="artist-name-help">
+                                        <p id="artist-name-help" class="text-xs text-slate-400 mt-1">최대 50자까지 입력 가능합니다
+                                        </p>
+                                    </div>
+                                    <div class="flex justify-end gap-3">
+                                        <button type="button" onclick="closeModal('create-modal')"
+                                            class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
+                                            id="btn-cancel">취소</button>
+                                        <button type="submit"
+                                            class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
+                                            id="btn-start">시작하기</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </dialog>
+
+                        <!-- JavaScript Modules -->
+                        <script src="src/shared.js"></script>
+                        <script src="index.js"></script>
 </body>
 
 </html>

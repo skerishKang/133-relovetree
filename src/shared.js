@@ -336,7 +336,29 @@ function parseYouTubeId(url) {
  * @returns {string} - Thumbnail URL
  */
 function getYouTubeThumb(videoId, quality = 'hqdefault') {
-    return `${APP_CONFIG.youtubeThumb}${videoId}/${quality}default.jpg`;
+    if (!videoId) {
+        return APP_CONFIG.defaultThumbnail;
+    }
+
+    const normalizedQuality = quality.endsWith('.jpg') ? quality : `${quality}.jpg`;
+    const hostname = 'https://img.youtube.com/vi/';
+    const thumbUrl = `${hostname}${videoId}/${normalizedQuality}`;
+
+    // Add defensive fallback: if thumbnail request fails after retries, use default placeholder image from app config
+    const img = new Image();
+    img.src = thumbUrl;
+    let retries = 0;
+    const maxRetries = 3;
+    img.onerror = function() {
+        retries++;
+        if (retries < maxRetries) {
+            img.src = thumbUrl;
+        } else {
+            img.src = APP_CONFIG.defaultThumbnail;
+        }
+    };
+
+    return thumbUrl;
 }
 
 /**

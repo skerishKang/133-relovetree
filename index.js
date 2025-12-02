@@ -1,20 +1,19 @@
 /**
  * Relovetree - Main Index Page Logic
- * Shared utilities are imported from shared.js
+ * 공유 유틸리티는 shared.js에서 로드됨
  */
 
 // ================== DATA AND CONSTANTS ==================
 
-/**
- * Popular artists data - centralized for consistency
- */
-const POPULAR_ARTISTS = [
+const DEFAULT_THUMBNAIL = 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
+
+const BASE_POPULAR_ARTISTS = [
     {
         id: 'bts',
         name: '방탄소년단',
         englishName: 'BTS',
         category: 'Legend',
-        thumbnail: 'https://img.youtube.com/vi/gwMa6gpoE9I/hqdefault.jpg',
+        videoId: 'gwMa6gpoE9I',
         moments: 108,
         lastUpdate: '방금 전',
         color: 'purple'
@@ -24,7 +23,8 @@ const POPULAR_ARTISTS = [
         name: '세븐틴',
         englishName: 'Seventeen',
         category: 'Group',
-        thumbnail: 'https://img.youtube.com/vi/9M7k9ZV67c0/hqdefault.jpg',
+        videoId: 'ThI0pBAbFnk',
+        thumbnail: 'https://img.youtube.com/vi/ThI0pBAbFnk/hqdefault.jpg',
         moments: 95,
         lastUpdate: '2시간 전',
         color: 'blue'
@@ -34,7 +34,7 @@ const POPULAR_ARTISTS = [
         name: '스트레이 키즈',
         englishName: 'Stray Kids',
         category: 'Group',
-        thumbnail: 'https://img.youtube.com/vi/EaswWiwMVs8/hqdefault.jpg',
+        videoId: 'EaswWiwMVs8',
         moments: 87,
         lastUpdate: '4시간 전',
         color: 'red'
@@ -44,7 +44,8 @@ const POPULAR_ARTISTS = [
         name: '이준영',
         englishName: 'Lee Jun-young',
         category: 'Solo',
-        thumbnail: 'https://img.youtube.com/vi/gwMa6gpoE9I/hqdefault.jpg',
+        videoId: 'PPgQOxtnUao',
+        thumbnail: 'https://img.youtube.com/vi/PPgQOxtnUao/hqdefault.jpg',
         moments: 23,
         lastUpdate: '6시간 전',
         color: 'green'
@@ -54,7 +55,7 @@ const POPULAR_ARTISTS = [
         name: '하츠투하츠',
         englishName: 'Hearts2Hearts',
         category: 'Group',
-        thumbnail: 'https://img.youtube.com/vi/9M7k9ZV67c0/hqdefault.jpg',
+        videoId: 'kxUA2wwYiME',
         moments: 45,
         lastUpdate: '1시간 전',
         color: 'pink'
@@ -64,37 +65,92 @@ const POPULAR_ARTISTS = [
         name: '아일릿',
         englishName: 'ILLIT',
         category: 'Group',
-        thumbnail: 'https://img.youtube.com/vi/uyRMRbWAUro/hqdefault.jpg',
+        videoId: 'Vk5-c_v4gMU',
         moments: 62,
         lastUpdate: '30분 전',
         color: 'purple'
     }
 ];
 
-/**
- * Create artist card HTML
- * @param {Object} artist - Artist data
- * @param {boolean} isKorean - Language preference
- * @returns {string} - HTML string
- */
-function createArtistCard(artist, isKorean = true) {
-    const errorFallbackColor = {
+const POPULAR_ARTISTS = BASE_POPULAR_ARTISTS.map((artist) => ({
+    ...artist,
+    thumbnail: artist.thumbnail || (typeof getYouTubeThumb === 'function' ? getYouTubeThumb(artist.videoId) : '')
+}));
+
+function resolveArtistThumbnail(artist) {
+    if (artist.thumbnail) return artist.thumbnail;
+    if (artist.videoId && typeof getYouTubeThumb === 'function') {
+        const videoThumb = getYouTubeThumb(artist.videoId);
+        if (videoThumb) return videoThumb;
+    }
+    return DEFAULT_THUMBNAIL;
+}
+
+function getFallbackColor(colorKey) {
+    const palette = {
         purple: '#e9d5ff',
         blue: '#dbeafe',
         red: '#fecaca',
         green: '#dcfce7',
         pink: '#fce7f3'
-    }[artist.color] || '#f1f5f9';
+    };
+    return palette[colorKey] || '#f1f5f9';
+}
+
+function navigateToArtist(artistId) {
+    if (!artistId) return;
+    window.location.href = `editor.html?id=${encodeURIComponent(artistId)}`;
+}
+
+function attachArtistCardEvents() {
+    if (!elements.artistCardsContainer) return;
+
+    elements.artistCardsContainer.querySelectorAll('a[data-artist-id]').forEach((anchor) => {
+        const artistId = anchor.dataset.artistId;
+        if (!artistId) return;
+
+        anchor.addEventListener('click', (event) => {
+            event.preventDefault();
+            navigateToArtist(artistId);
+        });
+    });
+}
+
+function attachPopularListEvents() {
+    if (!elements.popularArtistsList) return;
+
+    elements.popularArtistsList.querySelectorAll('[data-artist-id]').forEach((item) => {
+        const artistId = item.dataset.artistId;
+        if (!artistId) return;
+
+        const handleActivate = (event) => {
+            if (event.type === 'click' || event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigateToArtist(artistId);
+            }
+        };
+
+        item.addEventListener('click', handleActivate);
+        item.addEventListener('keydown', handleActivate);
+    });
+}
+
+function createArtistCard(artist) {
+    const fallbackColor = getFallbackColor(artist.color);
+    const thumbnailSrc = resolveArtistThumbnail(artist);
 
     return `
         <a href="editor.html?id=${artist.id}"
+            data-artist-id="${artist.id}"
             class="block h-64 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up"
             style="animation-delay: ${POPULAR_ARTISTS.indexOf(artist) * 0.1}s">
             <div class="aspect-video bg-${artist.color}-100 relative overflow-hidden">
-                <img src="${artist.thumbnail}" alt="${artist.name} (${artist.englishName}) 주요 순간"
+                <img src="${thumbnailSrc}" alt="${artist.name} (${artist.englishName}) 주요 순간"
                     class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                     loading="lazy"
-                    onerror="this.style.display='none'; this.parentNode.style.backgroundColor='${errorFallbackColor}'">
+                    decoding="async"
+                    referrerpolicy="no-referrer"
+                    onerror="this.onerror=null; this.src='${DEFAULT_THUMBNAIL}'; this.parentNode.style.backgroundColor='${fallbackColor}';">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
                 <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-${artist.color}-600 shadow-sm">
                     ${artist.category}
@@ -113,35 +169,25 @@ function createArtistCard(artist, isKorean = true) {
     `;
 }
 
-/**
- * Create popular artist list item HTML
- * @param {Object} artist - Artist data
- * @param {number} index - Position index
- * @returns {string} - HTML string
- */
 function createPopularArtistItem(artist, index) {
     const rankColor = index < 1 ? 'text-brand-500' : index < 3 ? 'text-slate-700' : 'text-slate-400';
-    const errorFallbackColor = {
-        purple: '#e9d5ff',
-        blue: '#dbeafe',
-        red: '#fecaca',
-        green: '#dcfce7',
-        pink: '#fce7f3'
-    }[artist.color] || '#f1f5f9';
+    const fallbackColor = getFallbackColor(artist.color);
+    const thumbnailSrc = resolveArtistThumbnail(artist);
 
     return `
         <li class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
-            onclick="location.href='editor.html?id=${artist.id}'"
             role="button"
             tabindex="0"
-            onkeypress="if(event.key==='Enter') location.href='editor.html?id=${artist.id}'"
+            data-artist-id="${artist.id}"
             aria-label="${artist.name} 러브트리 보기">
             <span class="font-bold ${rankColor} w-4 text-center" aria-hidden="true">${index + 1}</span>
             <div class="w-8 h-8 rounded-full bg-${artist.color}-100 overflow-hidden">
-                <img src="${artist.thumbnail}" alt="${artist.name}"
+                <img src="${thumbnailSrc}" alt="${artist.name}"
                      class="w-full h-full object-cover"
                      loading="lazy"
-                     onerror="this.style.display='none'; this.parentNode.style.backgroundColor='${errorFallbackColor}'">
+                     decoding="async"
+                     referrerpolicy="no-referrer"
+                     onerror="this.onerror=null; this.src='${DEFAULT_THUMBNAIL}'; this.parentNode.style.backgroundColor='${fallbackColor}';">
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold text-slate-800 truncate">${artist.name}</p>
@@ -154,24 +200,96 @@ function createPopularArtistItem(artist, index) {
 function renderArtistCards() {
     if (!elements.artistCardsContainer) return;
 
-    const cardsHTML = POPULAR_ARTISTS.map((artist, index) => {
-        return createArtistCard(artist, isKorean);
-    }).join('');
-
+    const cardsHTML = POPULAR_ARTISTS.map((artist) => createArtistCard(artist)).join('');
     elements.artistCardsContainer.innerHTML = cardsHTML;
+    attachArtistCardEvents();
 }
 
-/**
- * Render popular artists list
- */
 function renderPopularArtistsList() {
     if (!elements.popularArtistsList) return;
 
-    const listItemsHTML = POPULAR_ARTISTS.map((artist, index) => {
-        return createPopularArtistItem(artist, index);
-    }).join('');
-
+    const listItemsHTML = POPULAR_ARTISTS.map((artist, index) => createPopularArtistItem(artist, index)).join('');
     elements.popularArtistsList.innerHTML = listItemsHTML;
+    attachPopularListEvents();
+}
+
+/**
+ * Load and display "My Trees" from LocalStorage
+ */
+function loadMyTrees() {
+    if (!elements.myTreesGrid || !elements.myTreesSection) return;
+
+    const myTrees = [];
+    const STORAGE_PREFIX = 'relovetree_data_';
+
+    // Scan LocalStorage for tree data
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(STORAGE_PREFIX)) {
+            try {
+                const treeId = key.replace(STORAGE_PREFIX, '');
+                const data = JSON.parse(localStorage.getItem(key));
+
+                // Basic validation
+                if (data && (data.nodes || data.edges)) {
+                    myTrees.push({
+                        id: treeId,
+                        name: data.name || decodeURIComponent(treeId),
+                        lastUpdated: data.lastUpdated || new Date().toISOString(),
+                        nodeCount: (data.nodes || []).length
+                    });
+                }
+            } catch (e) {
+                console.warn('Failed to parse tree data:', key, e);
+            }
+        }
+    }
+
+    // Sort by last updated (descending)
+    myTrees.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+
+    if (myTrees.length > 0) {
+        elements.myTreesSection.classList.remove('hidden');
+
+        const myTreesHTML = myTrees.map(tree => {
+            // Determine color based on ID hash or random for variety
+            const colors = ['purple', 'blue', 'red', 'green', 'pink', 'indigo', 'teal'];
+            const colorIndex = tree.id.length % colors.length;
+            const color = colors[colorIndex];
+
+            return `
+            <a href="editor.html?id=${encodeURIComponent(tree.id)}"
+                class="block h-48 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-500 animate-slide-up">
+                <div class="h-2/3 bg-${color}-50 relative p-5 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">
+                            ${tree.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span class="bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold text-slate-500">
+                            ${new Date(tree.lastUpdated).toLocaleDateString()}
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 line-clamp-1 group-hover:text-brand-600 transition-colors">
+                        ${tree.name}
+                    </h3>
+                </div>
+                <div class="h-1/3 p-4 flex items-center justify-between bg-white">
+                    <span class="text-sm text-slate-500 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        ${tree.nodeCount} Moments
+                    </span>
+                    <span class="text-brand-500 font-medium text-sm group-hover:translate-x-1 transition-transform">
+                        이어하기 &rarr;
+                    </span>
+                </div>
+            </a>
+            `;
+        }).join('');
+
+        elements.myTreesGrid.innerHTML = myTreesHTML;
+    } else {
+        elements.myTreesSection.classList.add('hidden');
+    }
 }
 
 // ================== LANGUAGE AND TRANSLATIONS ==================
@@ -189,7 +307,9 @@ const translations = {
         labelName: "아티스트 이름",
         cancel: "취소",
         start: "시작하기",
-        langBtn: "English"
+        langBtn: "English",
+        myTreesTitle: "최근 방문한 트리",
+        allTreesTitle: "모든 러브트리"
     },
     en: {
         title: "My LoveTrees",
@@ -200,7 +320,9 @@ const translations = {
         labelName: "Artist Name",
         cancel: "Cancel",
         start: "Start Journey",
-        langBtn: "한국어"
+        langBtn: "한국어",
+        myTreesTitle: "Recent Visits",
+        allTreesTitle: "All LoveTrees"
     }
 };
 
@@ -221,6 +343,8 @@ function updateUIText() {
     if (elements.btnCancel) elements.btnCancel.innerText = t.cancel;
     if (elements.btnStart) elements.btnStart.innerText = t.start;
     if (elements.langBtn) elements.langBtn.innerText = t.langBtn;
+    if (elements.myTreesTitle) elements.myTreesTitle.innerText = t.myTreesTitle;
+    if (elements.allTreesTitle) elements.allTreesTitle.innerText = t.allTreesTitle;
 
     // Re-render artist cards with correct language
     renderArtistCards();
@@ -368,7 +492,11 @@ function cacheElements() {
         // Container elements
         mainGrid: document.getElementById('main-grid'),
         artistCardsContainer: document.getElementById('artist-cards-container'),
-        popularArtistsList: document.getElementById('popular-artists-list')
+        popularArtistsList: document.getElementById('popular-artists-list'),
+        myTreesSection: document.getElementById('my-trees-section'),
+        myTreesGrid: document.getElementById('my-trees-grid'),
+        myTreesTitle: document.getElementById('my-trees-title'),
+        allTreesTitle: document.getElementById('all-trees-title')
     };
 }
 
@@ -394,6 +522,7 @@ function initPage() {
         // Initial render
         renderArtistCards();
         renderPopularArtistsList();
+        loadMyTrees();
         updateUIText();
 
         // Initialize performance features
@@ -444,13 +573,16 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+/**
+ * Handle profile button click
+ */
+function handleProfileClick() {
+    showError(isKorean ? '로그인 기능은 준비 중입니다.' : 'Login feature is coming soon.', 2000);
+}
+
 // Export functions for global access
 window.toggleLanguage = toggleLanguage;
 window.openCreateModal = openCreateModal;
 window.handleCreate = handleCreate;
-// Note: closeModal and hideError are globally available from shared.js
-// These assignments are no longer needed since functions are imported from shared.js
-window.closeModal = function (modalId) {
-    closeModal(modalId || 'create-modal');
-};
-window.hideError = hideError;
+window.handleProfileClick = handleProfileClick;
+// closeModal, hideError already exposed via shared.js
