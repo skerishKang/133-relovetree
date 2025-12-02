@@ -19,21 +19,12 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        :root {
-            --main-bg-image: none;
-        }
-
         body {
-            /* 인덱스와 동일한 기본 배경색 */
-            background-color: #f8fafc;
-            background-image: var(--main-bg-image);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            /* 인덱스와 동일한 기본 배경색으로 고정하지 않고 투명/커스텀 지원 */
+            /* background-color: #f8fafc; -> JS에서 제어 */
             overflow: hidden;
             font-family: 'Noto Sans KR', sans-serif;
-            transition: background-color 0.3s ease;
+            transition: background-image 0.3s ease, background-color 0.3s ease;
         }
 
         /* 모바일 + 타임라인 모드 전용 레이아웃 */
@@ -251,21 +242,23 @@
             </svg>
             <!-- Nodes injected here -->
         </div>
+
+        <!-- Floating Action Button (Moved inside wrapper for mobile positioning) -->
+        <button onclick="createNewNode()"
+            class="absolute bottom-6 right-6 w-14 h-14 md:bottom-8 md:right-8 md:w-16 md:h-16 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40 group">
+            <svg class="w-7 h-7 md:w-8 md:h-8 group-hover:rotate-90 transition-transform duration-300" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span
+                class="absolute -top-10 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                새로운 순간 추가
+            </span>
+        </button>
         <div id="timeline" class="hidden w-full h-full overflow-y-auto pt-20 pb-24 bg-slate-100/80"></div>
     </div>
 
-    <!-- Floating Action Button -->
-    <button onclick="createNewNode()"
-        class="fixed bottom-8 right-8 w-16 h-16 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40 group">
-        <svg class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        <span
-            class="absolute -top-10 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            새로운 순간 추가
-        </span>
-    </button>
+
 
     <!-- Unified Detail Modal -->
     <dialog id="detail-modal" class="bg-white">
@@ -790,7 +783,7 @@
                 wrapper.style.boxShadow = '0 20px 40px rgba(15,23,42,0.45)';
             }
 
-            // 배경색 강제 초기화 제거 (사용자 설정 유지)
+            // 배경색 강제 설정 제거 (사용자 설정 따름)
             // document.body.style.backgroundColor = '#f8fafc';
         }
 
@@ -871,6 +864,38 @@
 
             setViewportMode(initialMode);
         })();
+
+        // ================== BACKGROUND PREFERENCES (Copied from index.js) ==================
+        const BG_STORAGE_KEY = 'relovetree_background';
+
+        function applyBackgroundConfig(config) {
+            const body = document.body;
+            if (!body || !config) return;
+
+            if (config.type === 'image' && config.value) {
+                body.style.backgroundImage = `url('${config.value}')`;
+                body.style.backgroundSize = 'cover';
+                body.style.backgroundPosition = 'center';
+                body.style.backgroundRepeat = 'no-repeat';
+                body.style.backgroundColor = ''; // 이미지 사용 시 배경색 초기화
+            } else if (config.type === 'color' && config.value) {
+                body.style.backgroundImage = '';
+                body.style.backgroundColor = config.value;
+            }
+        }
+
+        function loadBackgroundPreference() {
+            // shared.js의 safeLocalStorageGet 사용
+            const saved = safeLocalStorageGet(BG_STORAGE_KEY, null);
+            if (saved && (saved.type === 'image' || saved.type === 'color')) {
+                applyBackgroundConfig(saved);
+            } else {
+                applyBackgroundConfig({ type: 'color', value: '#f8fafc' });
+            }
+        }
+
+        // Load background on startup
+        loadBackgroundPreference();
 
         // Save Data (Firebase + LocalStorage)
         // Simple debounce function
@@ -1548,53 +1573,7 @@
             });
         }
 
-        // ================== BACKGROUND SYNC ==================
-        const BG_STORAGE_KEY = 'relovetree_background';
-
-        function applyBackgroundConfig(config) {
-            const body = document.body;
-            if (!body || !config) return;
-
-            if (config.type === 'image' && config.value) {
-                body.style.backgroundImage = `url('${config.value}')`;
-                body.style.backgroundSize = 'cover';
-                body.style.backgroundPosition = 'center';
-                body.style.backgroundRepeat = 'no-repeat';
-            } else if (config.type === 'color' && config.value) {
-                body.style.backgroundImage = '';
-                body.style.backgroundColor = config.value;
-            }
-        }
-
-        function loadBackgroundPreference() {
-            try {
-                const saved = localStorage.getItem(BG_STORAGE_KEY);
-                if (saved) {
-                    const config = JSON.parse(saved);
-                    if (config && (config.type === 'image' || config.type === 'color')) {
-                        applyBackgroundConfig(config);
-                    }
-                }
-            } catch (e) {
-                console.warn('Failed to load background preference:', e);
-            }
-        }
-
         // Initial Load
-        loadBackgroundPreference(); // Load background first
-
-        // Load Viewport Mode
-        let initialMode = 'desktop';
-        try {
-            const saved = localStorage.getItem(VIEWPORT_MODE_KEY);
-            if (saved === 'desktop' || saved === 'mobile') {
-                initialMode = saved;
-            } else if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-                initialMode = 'mobile';
-            }
-        } catch (e) { }
-        setViewportMode(initialMode);
-
         loadData();
 
         // 모바일 화면에서는 기본 에디터 모드를 리스트로 설정

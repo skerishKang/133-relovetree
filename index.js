@@ -604,6 +604,18 @@ function loadBackgroundPreference() {
     }
 }
 
+function openSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+
+    if (typeof modal.showModal === 'function') {
+        modal.showModal();
+    } else {
+        // showModal을 지원하지 않는 경우 fallback
+        modal.setAttribute('open', 'open');
+    }
+}
+
 // ================== INITIALIZATION ==================
 
 /**
@@ -694,4 +706,5 @@ window.toggleMobileMenu = toggleMobileMenu;
 window.navigateToHome = navigateToHome;
 window.scrollToMyTrees = scrollToMyTrees;
 window.scrollToAllTrees = scrollToAllTrees;
+window.openSettingsModal = openSettingsModal;
 // closeModal, hideError already exposed via shared.js
