@@ -732,6 +732,7 @@
 
     <!-- JavaScript Modules -->
     <script>
+        const VIEWPORT_MODE_KEY = 'relovetree_viewport_mode';
         let viewportMode = 'desktop';
 
         function setViewportMode(mode) {
@@ -788,9 +789,28 @@
                     desktopBtn.classList.add('bg-white', 'text-slate-600');
                 }
             }
+
+            // 사용자가 명시적으로 선택한 모드를 기억
+            try {
+                localStorage.setItem(VIEWPORT_MODE_KEY, mode);
+            } catch (e) { }
         }
 
-        window.addEventListener('load', () => setViewportMode('desktop'));
+        window.addEventListener('load', () => {
+            let initialMode = 'desktop';
+
+            try {
+                const saved = localStorage.getItem(VIEWPORT_MODE_KEY);
+                if (saved === 'desktop' || saved === 'mobile') {
+                    initialMode = saved;
+                } else if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+                    // 실제 모바일 기기에서는 기본을 모바일 모드로
+                    initialMode = 'mobile';
+                }
+            } catch (e) { }
+
+            setViewportMode(initialMode);
+        });
     </script>
     <script src="src/shared.js"></script>
     <script src="index.js"></script>

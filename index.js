@@ -556,6 +556,54 @@ function scrollToAllTrees() {
     }
 }
 
+// ================== BACKGROUND PREFERENCES ==================
+
+const BG_STORAGE_KEY = 'relovetree_background';
+
+function applyBackgroundConfig(config) {
+    const body = document.body;
+    if (!body || !config) return;
+
+    if (config.type === 'image' && config.value) {
+        body.style.backgroundImage = `url('${config.value}')`;
+        body.style.backgroundSize = 'cover';
+        body.style.backgroundPosition = 'center';
+        body.style.backgroundRepeat = 'no-repeat';
+    } else if (config.type === 'color' && config.value) {
+        body.style.backgroundImage = '';
+        body.style.backgroundColor = config.value;
+    }
+}
+
+function setBackground(type, value) {
+    const config = { type, value };
+    applyBackgroundConfig(config);
+    safeLocalStorageSet(BG_STORAGE_KEY, config);
+}
+
+function resetBackground() {
+    const defaultConfig = { type: 'color', value: '#f8fafc' };
+    applyBackgroundConfig(defaultConfig);
+    safeLocalStorageRemove(BG_STORAGE_KEY);
+}
+
+function applyCustomBackground() {
+    const input = document.getElementById('custom-bg-url');
+    if (!input) return;
+    const url = input.value.trim();
+    if (!url) return;
+    setBackground('image', url);
+}
+
+function loadBackgroundPreference() {
+    const saved = safeLocalStorageGet(BG_STORAGE_KEY, null);
+    if (saved && (saved.type === 'image' || saved.type === 'color')) {
+        applyBackgroundConfig(saved);
+    } else {
+        applyBackgroundConfig({ type: 'color', value: '#f8fafc' });
+    }
+}
+
 // ================== INITIALIZATION ==================
 
 /**

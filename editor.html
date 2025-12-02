@@ -19,11 +19,35 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
+        :root {
+            --main-bg-image: none;
+        }
+
         body {
-            /* 인덱스와 동일한 기본 배경색으로 고정 */
+            /* 인덱스와 동일한 기본 배경색 */
             background-color: #f8fafc;
+            background-image: var(--main-bg-image);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             overflow: hidden;
             font-family: 'Noto Sans KR', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 모바일 + 타임라인 모드 전용 레이아웃 */
+        body.editor-mobile.editor-timeline #timeline {
+            background-color: transparent;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        body.editor-mobile.editor-timeline .timeline-card {
+            max-width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            border-radius: 20px;
         }
 
         #canvas {
@@ -141,7 +165,8 @@
 <body>
 
     <!-- Top Bar -->
-    <div class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 py-3 flex flex-wrap md:flex-nowrap justify-between items-center gap-2 pointer-events-none">
+    <div
+        class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 py-3 flex flex-wrap md:flex-nowrap justify-between items-center gap-2 pointer-events-none">
         <div class="pointer-events-auto flex items-center gap-3">
             <a href="index.html"
                 class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 p-2 rounded-xl hover:bg-white transition-colors text-slate-500 hover:text-brand-500">
@@ -151,12 +176,13 @@
                 </svg>
             </a>
             <h1 id="tree-title"
-                class="text-lg md:text-2xl font-bold text-slate-800 drop-shadow-sm bg-white/80 backdrop-blur px-3 md:px-4 py-1.5 rounded-xl border border-slate-200 max-w-[55vw] md:max-w-none truncate">
+                class="text-lg md:text-2xl font-bold text-slate-800 drop-shadow-sm bg-white/80 backdrop-blur px-3 md:px-4 py-1.5 rounded-xl border border-slate-200 max-w-[55vw] truncate">
                 나의 러브트리
             </h1>
         </div>
         <div class="pointer-events-auto flex flex-wrap md:flex-nowrap gap-2 items-center justify-end">
-            <div class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
+            <div
+                class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
                 <button id="mode-tree-btn" onclick="setEditorMode('tree')"
                     class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
                     트리
@@ -166,7 +192,8 @@
                     리스트
                 </button>
             </div>
-            <div class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
+            <div
+                class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
                 <button id="viewport-desktop-btn" onclick="setViewportMode('desktop')"
                     class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
                     데스크탑
@@ -174,6 +201,17 @@
                 <button id="viewport-mobile-btn" onclick="setViewportMode('mobile')"
                     class="px-2 py-0.5 rounded-md text-slate-600 bg-slate-100 hover:text-slate-800 hover:bg-slate-200 text-[11px]">
                     모바일
+                </button>
+            </div>
+            <div
+                class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
+                <button id="orientation-portrait-btn" onclick="setOrientationMode('portrait')"
+                    class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
+                    세로
+                </button>
+                <button id="orientation-landscape-btn" onclick="setOrientationMode('landscape')"
+                    class="px-2 py-0.5 rounded-md text-slate-600 bg-slate-100 hover:text-slate-800 hover:bg-slate-200 text-[11px]">
+                    가로
                 </button>
             </div>
             <div
@@ -689,6 +727,15 @@
             if (mode !== 'tree' && mode !== 'timeline') return;
             editorMode = mode;
 
+            const bodyEl = document.body;
+            if (bodyEl) {
+                if (mode === 'timeline') {
+                    bodyEl.classList.add('editor-timeline');
+                } else {
+                    bodyEl.classList.remove('editor-timeline');
+                }
+            }
+
             const treeBtn = document.getElementById('mode-tree-btn');
             const listBtn = document.getElementById('mode-timeline-btn');
 
@@ -709,19 +756,15 @@
             render();
         }
 
+        const VIEWPORT_MODE_KEY = 'relovetree_viewport_mode';
         let viewportMode = 'desktop';
+        let orientationMode = 'portrait';
 
-        function setViewportMode(mode) {
-            if (mode !== 'desktop' && mode !== 'mobile') return;
-            viewportMode = mode;
-
+        function applyViewportLayout() {
             const wrapper = document.getElementById('wrapper');
-            const desktopBtn = document.getElementById('viewport-desktop-btn');
-            const mobileBtn = document.getElementById('viewport-mobile-btn');
-
             if (!wrapper) return;
 
-            if (mode === 'desktop') {
+            if (viewportMode === 'desktop') {
                 wrapper.style.width = '100vw';
                 wrapper.style.height = '100vh';
                 wrapper.style.maxWidth = '';
@@ -730,17 +773,44 @@
                 wrapper.style.borderRadius = '0';
                 wrapper.style.boxShadow = 'none';
             } else {
-                wrapper.style.width = '430px';
+                let width = 430;
+                let height = 780;
+
+                if (orientationMode === 'landscape') {
+                    width = 780;
+                    height = 430;
+                }
+
+                wrapper.style.width = width + 'px';
                 wrapper.style.maxWidth = '100vw';
-                wrapper.style.height = '780px';
-                wrapper.style.maxHeight = 'calc(100vh - 32px)';
-                wrapper.style.margin = '16px auto';
+                wrapper.style.height = height + 'px';
+                wrapper.style.maxHeight = 'calc(100vh - 112px)';
+                wrapper.style.margin = '80px auto 32px';
                 wrapper.style.borderRadius = '24px';
                 wrapper.style.boxShadow = '0 20px 40px rgba(15,23,42,0.45)';
             }
 
-            // 인덱스와 동일하게, 데스크탑/모바일 모두 body 배경은 고정(#f8fafc)
-            document.body.style.backgroundColor = '#f8fafc';
+            // 배경색 강제 초기화 제거 (사용자 설정 유지)
+            // document.body.style.backgroundColor = '#f8fafc';
+        }
+
+        function setViewportMode(mode) {
+            if (mode !== 'desktop' && mode !== 'mobile') return;
+            viewportMode = mode;
+
+            const desktopBtn = document.getElementById('viewport-desktop-btn');
+            const mobileBtn = document.getElementById('viewport-mobile-btn');
+
+            applyViewportLayout();
+
+            const bodyEl = document.body;
+            if (bodyEl) {
+                if (mode === 'mobile') {
+                    bodyEl.classList.add('editor-mobile');
+                } else {
+                    bodyEl.classList.remove('editor-mobile');
+                }
+            }
 
             if (desktopBtn && mobileBtn) {
                 if (mode === 'desktop') {
@@ -755,7 +825,52 @@
                     desktopBtn.classList.add('bg-slate-100', 'text-slate-600');
                 }
             }
+
+            // 사용자가 선택한 모드를 기억
+            try {
+                localStorage.setItem(VIEWPORT_MODE_KEY, mode);
+            } catch (e) { }
         }
+
+        function setOrientationMode(mode) {
+            if (mode !== 'portrait' && mode !== 'landscape') return;
+            orientationMode = mode;
+
+            const portraitBtn = document.getElementById('orientation-portrait-btn');
+            const landscapeBtn = document.getElementById('orientation-landscape-btn');
+
+            applyViewportLayout();
+
+            if (portraitBtn && landscapeBtn) {
+                if (orientationMode === 'portrait') {
+                    portraitBtn.classList.add('bg-slate-800', 'text-white');
+                    portraitBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                    landscapeBtn.classList.remove('bg-slate-800', 'text-white');
+                    landscapeBtn.classList.add('bg-slate-100', 'text-slate-600');
+                } else {
+                    landscapeBtn.classList.add('bg-slate-800', 'text-white');
+                    landscapeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                    portraitBtn.classList.remove('bg-slate-800', 'text-white');
+                    portraitBtn.classList.add('bg-slate-100', 'text-slate-600');
+                }
+            }
+        }
+
+        // Initial viewport mode (실제 기기 크기 + 저장된 값 기준)
+        (function initViewportMode() {
+            let initialMode = 'desktop';
+
+            try {
+                const saved = localStorage.getItem(VIEWPORT_MODE_KEY);
+                if (saved === 'desktop' || saved === 'mobile') {
+                    initialMode = saved;
+                } else if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+                    initialMode = 'mobile';
+                }
+            } catch (e) { }
+
+            setViewportMode(initialMode);
+        })();
 
         // Save Data (Firebase + LocalStorage)
         // Simple debounce function
@@ -921,29 +1036,172 @@
 
             nodes.forEach(node => {
                 const card = document.createElement('div');
-                card.className = 'mx-auto mt-4 w-full max-w-md rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden';
+                card.className = 'timeline-card mx-auto mt-4 w-full max-w-md rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden';
+                card.dataset.nodeId = node.id;
 
                 const videoBlock = node.videoId
                     ? `<iframe src="https://www.youtube-nocookie.com/embed/${node.videoId}?playsinline=1&rel=0&modestbranding=1" class="w-full h-40" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
                     : `<div class="w-full h-40 flex items-center justify-center bg-slate-800 text-slate-300 text-xs">No Video</div>`;
 
+                const moments = node.moments || [];
+                let feelingSummary = '아직 감정 기록이 없습니다.';
+                if (moments.length > 0) {
+                    const counts = {};
+                    moments.forEach(m => {
+                        const f = m.feeling || 'other';
+                        counts[f] = (counts[f] || 0) + 1;
+                    });
+
+                    let topFeeling = null;
+                    let topCount = 0;
+                    Object.keys(counts).forEach(f => {
+                        if (f !== 'other' && counts[f] > topCount) {
+                            topFeeling = f;
+                            topCount = counts[f];
+                        }
+                    });
+                    if (!topFeeling) {
+                        topFeeling = Object.keys(counts)[0];
+                    }
+                    const emoji = getFeelingEmoji(topFeeling);
+                    feelingSummary = `${emoji} 포함 ${moments.length}회`;
+                }
+
                 card.innerHTML = `
                     <div class="bg-black">
                         ${videoBlock}
                     </div>
-                    <div class="p-4 flex items-start justify-between gap-3">
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-base leading-snug mb-1 line-clamp-2">${node.title}</h3>
-                            <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
-                            <p class="mt-1 text-[11px] text-slate-400">${(node.moments || []).length} Moments</p>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base leading-snug mb-1 line-clamp-2">${node.title}</h3>
+                                <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
+                                <p class="mt-1 text-[11px] text-slate-400">${feelingSummary}</p>
+                                <div class="mt-1 flex gap-1">
+                                    <button type="button" class="w-7 h-7 rounded-full bg-pink-50 text-xs flex items-center justify-center"
+                                        onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'love')">😍</button>
+                                    <button type="button" class="w-7 h-7 rounded-full bg-sky-50 text-xs flex items-center justify-center"
+                                        onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'tear')">😭</button>
+                                    <button type="button" class="w-7 h-7 rounded-full bg-amber-50 text-xs flex items-center justify-center"
+                                        onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'funny')">🤣</button>
+                                    <button type="button" class="w-7 h-7 rounded-full bg-violet-50 text-xs flex items-center justify-center"
+                                        onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'shock')">😲</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end gap-1 shrink-0">
+                                <button type="button" class="px-3 py-1.5 rounded-full bg-brand-500 text-white text-xs font-bold"
+                                    onclick="event.stopPropagation(); openDetailFromTimeline(${node.id})">열기</button>
+                                <button type="button" class="px-2 py-1 rounded-full bg-slate-100 text-[11px] text-slate-600"
+                                    onclick="event.stopPropagation(); toggleQuickEdit(${node.id})">빠른수정</button>
+                            </div>
                         </div>
-                        <button class="px-3 py-1.5 rounded-full bg-brand-500 text-white text-xs font-bold shrink-0">열기</button>
+                        <form class="quick-edit-form hidden mt-2 space-y-2" onsubmit="saveQuickEdit(event, ${node.id})">
+                            <div>
+                                <input type="text" class="quick-edit-title w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg"
+                                    placeholder="제목" />
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="date" class="quick-edit-date flex-1 px-2 py-1.5 text-xs border border-slate-200 rounded-lg" />
+                                <input type="text" class="quick-edit-video flex-1 px-2 py-1.5 text-xs border border-slate-200 rounded-lg"
+                                    placeholder="유튜브 URL" />
+                            </div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" class="px-2 py-1 text-[11px] text-slate-500"
+                                    onclick="event.stopPropagation(); toggleQuickEdit(${node.id})">취소</button>
+                                <button type="submit" class="px-3 py-1 text-[11px] font-bold text-white bg-brand-500 rounded-full">
+                                    저장
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 `;
 
                 card.onclick = () => openDetailModal(node);
                 timeline.appendChild(card);
             });
+        }
+
+        function openDetailFromTimeline(nodeId) {
+            const node = state.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+            openDetailModal(node);
+        }
+
+        function toggleQuickEdit(nodeId) {
+            const selector = '.timeline-card[data-node-id="' + nodeId + '"]';
+            const card = document.querySelector(selector);
+            if (!card) return;
+
+            const form = card.querySelector('.quick-edit-form');
+            if (!form) return;
+
+            if (form.classList.contains('hidden')) {
+                const node = state.nodes.find(n => n.id === nodeId);
+                if (!node) return;
+
+                const titleInput = form.querySelector('.quick-edit-title');
+                const dateInput = form.querySelector('.quick-edit-date');
+                const videoInput = form.querySelector('.quick-edit-video');
+
+                if (titleInput) titleInput.value = node.title || '';
+                if (dateInput) dateInput.value = node.date || '';
+                if (videoInput) videoInput.value = node.videoId ? 'https://youtu.be/' + node.videoId : '';
+            }
+
+            form.classList.toggle('hidden');
+        }
+
+        function saveQuickEdit(e, nodeId) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const selector = '.timeline-card[data-node-id="' + nodeId + '"]';
+            const card = document.querySelector(selector);
+            if (!card) return;
+
+            const titleInput = card.querySelector('.quick-edit-title');
+            const dateInput = card.querySelector('.quick-edit-date');
+            const videoInput = card.querySelector('.quick-edit-video');
+
+            const node = state.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            const newTitle = titleInput ? titleInput.value.trim() : '';
+            const newDate = dateInput ? dateInput.value : '';
+            const videoUrl = videoInput ? videoInput.value.trim() : '';
+
+            if (newTitle) node.title = newTitle;
+            node.date = newDate;
+
+            let videoId = '';
+            if (videoUrl) {
+                const match = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/);
+                if (match) videoId = match[1];
+            }
+
+            node.videoId = videoId;
+
+            // 저장 및 다시 그리기
+            render();
+            saveData();
+        }
+
+        function addQuickFeeling(nodeId, feeling) {
+            const node = state.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            if (!Array.isArray(node.moments)) {
+                node.moments = [];
+            }
+
+            node.moments.push({
+                time: '00:00',
+                text: '',
+                feeling
+            });
+
+            render();
+            saveData();
         }
 
         // --- Interactions ---
@@ -1290,8 +1548,59 @@
             });
         }
 
+        // ================== BACKGROUND SYNC ==================
+        const BG_STORAGE_KEY = 'relovetree_background';
+
+        function applyBackgroundConfig(config) {
+            const body = document.body;
+            if (!body || !config) return;
+
+            if (config.type === 'image' && config.value) {
+                body.style.backgroundImage = `url('${config.value}')`;
+                body.style.backgroundSize = 'cover';
+                body.style.backgroundPosition = 'center';
+                body.style.backgroundRepeat = 'no-repeat';
+            } else if (config.type === 'color' && config.value) {
+                body.style.backgroundImage = '';
+                body.style.backgroundColor = config.value;
+            }
+        }
+
+        function loadBackgroundPreference() {
+            try {
+                const saved = localStorage.getItem(BG_STORAGE_KEY);
+                if (saved) {
+                    const config = JSON.parse(saved);
+                    if (config && (config.type === 'image' || config.type === 'color')) {
+                        applyBackgroundConfig(config);
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to load background preference:', e);
+            }
+        }
+
         // Initial Load
+        loadBackgroundPreference(); // Load background first
+
+        // Load Viewport Mode
+        let initialMode = 'desktop';
+        try {
+            const saved = localStorage.getItem(VIEWPORT_MODE_KEY);
+            if (saved === 'desktop' || saved === 'mobile') {
+                initialMode = saved;
+            } else if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+                initialMode = 'mobile';
+            }
+        } catch (e) { }
+        setViewportMode(initialMode);
+
         loadData();
+
+        // 모바일 화면에서는 기본 에디터 모드를 리스트로 설정
+        if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+            setEditorMode('timeline');
+        }
 
     </script>
 </body>
