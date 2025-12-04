@@ -699,22 +699,23 @@
 
         // Load Data (Firebase -> LocalStorage -> Dummy)
         // Default to 'bts' data if treeId not found in dummyData
-        let initialData = dummyData[treeId] || JSON.parse(JSON.stringify(dummyData['bts']));
-        // Override name if it's a new custom ID
-        if (!dummyData[treeId]) {
-            initialData.name = treeId ? decodeURIComponent(treeId) : 'My Tree';
-        }
+        // let initialData = ... (Removed to avoid duplication, declared below)
 
         // Async Load Function
         async function loadData() {
-            if (db) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const treeId = urlParams.get('id') || 'bts';
+            const currentTreeId = treeId;
+
+            // 1. Try Firebase (if available)
+            if (typeof db !== 'undefined' && db) {
                 try {
                     const docRef = db.collection('trees').doc(treeId);
                     const docSnap = await docRef.get();
 
                     if (docSnap.exists) {
-                        console.log("Document data:", docSnap.data());
                         const data = docSnap.data();
+                        console.log("Document data from Firebase:", data);
 
                         // Check Ownership
                         if (currentUser && data.ownerId && data.ownerId !== currentUser.uid) {
@@ -722,43 +723,62 @@
                             showToast("읽기 전용 모드입니다.");
                             document.getElementById('tree-title').classList.add('bg-slate-100', 'text-slate-500');
                         } else if (!currentUser && data.ownerId) {
-                            // Guest viewing a user's tree
                             isReadOnly = true;
                             showToast("로그인이 필요합니다. (읽기 전용)");
                         }
 
-                        const hasNodes = Array.isArray(data.nodes) && data.nodes.length > 0;
-
-                        if (hasNodes) {
-                            state.nodes = data.nodes;
-                            state.edges = data.edges || [];
-                            document.getElementById('tree-title').innerText = data.name || initialData.name;
-
-                            // Load Likes
-                            state.likes = data.likes || [];
-                            updateLikeUI();
-
-                            // Load Comments (Real-time)
-                            loadComments();
-                        } else {
-                            // Fallback to local if doc exists but empty nodes (rare)
-                            loadFromLocalOrDummy(data);
+                        if (data.nodes && data.nodes.length > 0) {
+                            return data;
                         }
-                        render();
-                    } else {
-                        console.log("No such document! Checking local storage.");
-                        loadFromLocalOrDummy();
                     }
                 } catch (error) {
-                    console.error("Error getting document:", error);
-                    loadFromLocalOrDummy();
+                    console.error("Error getting document from Firebase:", error);
                 }
-            } else {
-                loadFromLocalOrDummy();
             }
 
-            updateUIForReadOnly();
+            // 2. Try LocalStorage
+            const localData = localStorage.getItem(`relovetree_data_${treeId}`);
+            if (localData) {
+                try {
+                    const parsed = JSON.parse(localData);
+                    if (parsed.nodes && parsed.edges) {
+                        console.log('Loaded from LocalStorage');
+                        return parsed;
+                    }
+                } catch (e) {
+                    console.error('LocalStorage parse error', e);
+                }
+            }
+
+            // 3. Try Dummy Data
+            if (dummyData[treeId]) {
+                console.log('Loaded from Dummy Data');
+                return dummyData[treeId];
+            }
+
+            // 4. Default to Empty Tree for new IDs
+            console.log('New tree created for ID:', treeId);
+            return {
+                name: treeId ? decodeURIComponent(treeId) : 'My Tree',
+                nodes: [
+                    {
+                        id: 1,
+                        x: window.innerWidth / 2 - 140,
+                        y: window.innerHeight / 2 - 100,
+                        title: '여정의 시작',
+                        date: new Date().toISOString().split('T')[0],
+                        videoId: '',
+                        moments: [],
+                        details: '여기를 클릭하여 첫 번째 순간을 기록해보세요.'
+                    }
+                ],
+                edges: [],
+                likes: [],
+                comments: []
+            };
         }
+
+        let initialData = null; // Will be set by init()
 
         function loadFromLocalOrDummy(remoteData = null) {
             const stored = localStorage.getItem(STORAGE_KEY);

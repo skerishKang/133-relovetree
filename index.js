@@ -228,14 +228,10 @@ function renderPopularArtistsList() {
 }
 
 /**
- * Load and display "My Trees" from LocalStorage
+ * Load and display "Recent Trees" from LocalStorage
  */
-function loadMyTrees() {
-    const scrollContainer = document.getElementById('my-trees-scroll');
-    const section = document.getElementById('my-trees-section');
-    const welcomeBanner = document.getElementById('welcome-banner');
-
-    if (!scrollContainer || !section) return;
+function loadRecentTrees() {
+    if (!elements.recentTreesScroll || !elements.recentSection) return;
 
     const myTrees = [];
     const STORAGE_PREFIX = 'relovetree_data_';
@@ -266,8 +262,7 @@ function loadMyTrees() {
     myTrees.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
 
     if (myTrees.length > 0) {
-        section.classList.remove('hidden');
-        if (welcomeBanner) welcomeBanner.classList.add('hidden');
+        elements.recentSection.classList.remove('hidden');
 
         // Render as Stories (Circles)
         const myTreesHTML = myTrees.map(tree => {
@@ -288,25 +283,15 @@ function loadMyTrees() {
             `;
         }).join('');
 
-        // Prepend the "Create New" button (already in HTML, so we append to it or just insert after)
-        // Actually, the HTML already has the "Create New" button. We should append the trees after it.
-        // But innerHTML overwrites. So we need to keep the first child.
-
-        // Let's just re-render the whole content including the button to be safe and simple
-        const createBtnHTML = `
-            <button onclick="openCreateModal()" class="flex-shrink-0 w-20 flex flex-col items-center gap-2 snap-start">
-                <div class="w-16 h-16 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:border-brand-500 hover:text-brand-500 transition-colors bg-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                </div>
-                <span class="text-xs font-medium text-slate-600">새로 만들기</span>
-            </button>
-        `;
-
-        scrollContainer.innerHTML = createBtnHTML + myTreesHTML;
+        elements.recentTreesScroll.innerHTML = myTreesHTML;
 
     } else {
-        section.classList.add('hidden');
-        if (welcomeBanner) welcomeBanner.classList.remove('hidden');
+        // If no recent trees, show placeholder or hide? 
+        // The HTML has a placeholder "No recent visits". We can just leave it or show it.
+        // For now, let's just show the placeholder text if empty.
+        if (elements.recentTreesScroll.children.length === 0) {
+            elements.recentTreesScroll.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>';
+        }
     }
 }
 
@@ -509,10 +494,12 @@ function cacheElements() {
 
         // Container elements
         mainGrid: document.getElementById('main-grid'),
-        artistCardsContainer: document.getElementById('artist-cards-container'),
+        // Sections
+        artistCardsContainer: document.getElementById('popular-feed'),
         popularArtistsList: document.getElementById('popular-artists-list'),
-        myTreesSection: document.getElementById('my-trees-section'),
-        myTreesGrid: document.getElementById('my-trees-grid'),
+        recentTreesScroll: document.getElementById('recent-trees-scroll'),
+        recentSection: document.getElementById('recent-section'),
+        myCreatedTreesSection: document.getElementById('my-created-trees-section'),
         myTreesTitle: document.getElementById('my-trees-title'),
         allTreesTitle: document.getElementById('all-trees-title')
     };
@@ -550,7 +537,7 @@ function navigateToHome() {
 
 function scrollToMyTrees() {
     setMobileMenuVisible(false);
-    const section = document.getElementById('hero-section');
+    const section = document.getElementById('my-created-trees-section');
     if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -643,7 +630,7 @@ function initPage() {
         // Initial render
         renderArtistCards();
         // renderPopularArtistsList(); // Deprecated
-        loadMyTrees();
+        loadRecentTrees();
         updateUIText();
 
         // Initialize performance features
@@ -669,11 +656,11 @@ function initPage() {
         // Add event listeners for settings buttons
         const settingsBtn = document.getElementById('settings-btn');
         const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
-        
+
         if (settingsBtn) {
             settingsBtn.addEventListener('click', openSettingsModal);
         }
-        
+
         if (mobileSettingsBtn) {
             mobileSettingsBtn.addEventListener('click', openSettingsModal);
         }

@@ -532,45 +532,8 @@
             <!-- Main Content Area -->
             <main class="flex-1 max-w-7xl mx-auto w-full pb-24" id="main-content">
 
-                <!-- 1. Hero Section (My Trees / Welcome) -->
-                <section id="hero-section" class="pt-6 px-4 mb-8">
-                    <!-- Logged Out State -->
-                    <div id="welcome-banner" class="hidden text-center py-10">
-                        <h1 class="text-3xl font-bold text-slate-900 mb-2">나의 덕질 기록</h1>
-                        <p class="text-slate-500 mb-6">사랑하는 아티스트의 모든 순간을<br>타임라인으로 남겨보세요.</p>
-                        <button onclick="openCreateModal()"
-                            class="bg-brand-500 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg shadow-brand-500/30 hover:bg-brand-600 transition-all hover:scale-105">
-                            + 러브트리 만들기
-                        </button>
-                    </div>
-
-                    <!-- Logged In State: My Trees (Stories Style) -->
-                    <div id="my-trees-section" class="hidden">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
-                            <button onclick="openCreateModal()" class="text-brand-500 text-sm font-bold">+ 만들기</button>
-                        </div>
-                        <!-- Horizontal Scroll Container -->
-                        <div id="my-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
-                            <!-- Add New Circle -->
-                            <button onclick="openCreateModal()"
-                                class="flex-shrink-0 w-20 flex flex-col items-center gap-2 snap-start">
-                                <div
-                                    class="w-16 h-16 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:border-brand-500 hover:text-brand-500 transition-colors bg-white">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                </div>
-                                <span class="text-xs font-medium text-slate-600">새로 만들기</span>
-                            </button>
-                            <!-- My Trees injected here by JS -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 2. Discovery Section (Feed Style) -->
-                <section id="discovery-section" class="px-4">
+                <!-- 1. Trending Section (지금 뜨는 러브트리) - Moved to Top -->
+                <section id="discovery-section" class="pt-6 px-4 mb-12">
                     <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -581,6 +544,42 @@
                     </h2>
                     <div id="popular-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Feed Cards injected here by JS -->
+                    </div>
+                </section>
+
+                <!-- 2. My Created Trees (나의 러브트리) - New Section -->
+                <section id="my-created-trees-section" class="px-4 mb-12">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
+                        <button onclick="openCreateModal()" class="text-brand-500 text-sm font-bold">+ 만들기</button>
+                    </div>
+
+                    <!-- Placeholder for Logged In/Out State -->
+                    <div id="my-created-list" class="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
+                        <div
+                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm">
+                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">나만의 러브트리를 만들어보세요</h3>
+                        <p class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을<br>타임라인으로 기록할 수 있습니다.</p>
+                        <button onclick="openCreateModal()"
+                            class="bg-white border border-slate-300 text-slate-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">
+                            새로 만들기
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 3. Recent Visits (최근 방문한 트리) - Renamed from Hero -->
+                <section id="recent-section" class="px-4 mb-8">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
+
+                    <!-- Horizontal Scroll Container -->
+                    <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
+                        <!-- Items injected by JS -->
+                        <div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>
                     </div>
                 </section>
 
