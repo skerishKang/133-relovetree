@@ -3,6 +3,22 @@
  * 공유 유틸리티는 shared.js에서 로드됨
  */
 
+// ================== UTILITIES ==================
+
+function debounce(func, wait) {
+    let timeout;
+    return function () {
+        const context = this;
+        const args = arguments;
+        const later = function () {
+            timeout = null;
+            func.apply(context, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 // ================== DATA AND CONSTANTS ==================
 
 const DEFAULT_THUMBNAIL = 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
