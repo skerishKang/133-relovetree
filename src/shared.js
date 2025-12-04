@@ -8,8 +8,48 @@ const APP_CONFIG = {
     // App metadata
     appName: 'Relovetree',
     version: '1.0.0',
-    author: 'skerishKang'
+    author: 'skerishKang',
+
+    // Firebase Configuration
+    firebase: {
+        apiKey: "AIzaSyDQNR8bNIp4LG4EGNwl1ew8B7Har-KJC90",
+        authDomain: "relovetree.firebaseapp.com",
+        projectId: "relovetree",
+        storageBucket: "relovetree.firebasestorage.app",
+        messagingSenderId: "1091063063536",
+        appId: "1:1091063063536:web:065a746e2578c47dd7b335",
+        measurementId: "G-D4R5XMGFK5"
+    },
+
+    // Validation limits
+    validation: {
+        artistNameMax: 50
+    },
+
+    // YouTube
+    defaultThumbnail: 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree',
+    youtubeEmbed: 'https://www.youtube.com/embed/'
 };
+
+/**
+ * Debounce function to limit function execution frequency
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {Function} - Debounced function
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function () {
+        const context = this;
+        const args = arguments;
+        const later = function () {
+            timeout = null;
+            func.apply(context, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 /**
  * Throttle function to limit function execution frequency
@@ -239,200 +279,6 @@ function hideError() {
     if (errorDiv) {
         errorDiv.classList.add('hidden');
     }
-}
-
-/**
- * Close modal and reset form
- * @param {string} modalId - ID of modal to close
- */
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.close();
-        // Clear validation errors
-        const form = modal.querySelector('form');
-        if (form) {
-            form.reset();
-            clearValidationErrors(form);
-        }
-    }
-}
-
-/**
- * Clear validation errors from form
- * @param {HTMLFormElement} form - Form to clear errors from
- */
-function clearValidationErrors(form) {
-    if (!form) return;
-
-    form.querySelectorAll('.error-message').forEach(el => el.remove());
-    form.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
-    form.querySelectorAll('[aria-invalid="true"]').forEach(el => el.setAttribute('aria-invalid', 'false'));
-}
-
-// ================== URL PARSING ==================
-
-/**
- * Parse YouTube video ID from URL
- * @param {string} url - YouTube URL
- * @returns {string|null} - Video ID or null
- */
-function parseYouTubeId(url) {
-    return validateYouTubeUrl(url);
-}
-
-/**
- * Generate YouTube thumbnail URL
- * @param {string} videoId - YouTube video ID
- * @param {string} quality - Image quality (default, hqdefault, mqdefault)
- * @returns {string} - Thumbnail URL
- */
-function getYouTubeThumb(videoId, quality = 'hqdefault') {
-    if (!videoId) {
-        return APP_CONFIG.defaultThumbnail;
-    }
-
-    const normalizedQuality = quality.endsWith('.jpg') ? quality : `${quality}.jpg`;
-    const hostname = 'https://img.youtube.com/vi/';
-    const thumbUrl = `${hostname}${videoId}/${normalizedQuality}`;
-
-    // Add defensive fallback: if thumbnail request fails after retries, use default placeholder image from app config
-    const img = new Image();
-    img.src = thumbUrl;
-    let retries = 0;
-    const maxRetries = 3;
-    img.onerror = function () {
-        retries++;
-        if (retries < maxRetries) {
-            img.src = thumbUrl;
-        } else {
-            img.src = APP_CONFIG.defaultThumbnail;
-        }
-    };
-
-    return thumbUrl;
-}
-
-/**
- * Generate YouTube embed URL
- * @param {string} videoId - YouTube video ID
- * @param {Object} params - Additional parameters
- * @returns {string} - Embed URL
- */
-function getYouTubeEmbed(videoId, params = {}) {
-    const defaultParams = {
-        playsinline: 1,
-        rel: 0,
-        modestbranding: 1
-    };
-
-    const searchParams = new URLSearchParams({ ...defaultParams, ...params });
-    return `${APP_CONFIG.youtubeEmbed}${videoId}?${searchParams.toString()}`;
-}
-
-/**
- * Convert time string to seconds
- * @param {string} timeString - Time in MM:SS or HH:MM:SS format
- * @returns {number} - Seconds
- */
-function timeToSeconds(timeString) {
-    if (!validateTimeFormat(timeString)) return 0;
-
-    const parts = timeString.split(':').map(Number);
-    let seconds = 0;
-
-    if (parts.length === 2) {
-        seconds = parts[0] * 60 + parts[1];
-    } else if (parts.length === 3) {
-        seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
-    }
-
-    return seconds;
-}
-
-/**
- * Format seconds to time string
- * @param {number} seconds - Seconds to format
- * @returns {string} - Formatted time string
- */
-function secondsToTime(seconds) {
-    if (seconds < 0 || !Number.isFinite(seconds)) return '0:00';
-
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-        return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-}
-
-// ================== LOCAL STORAGE ==================
-
-/**
- * Safe localStorage set with error handling
- * @param {string} key - Storage key
- * @param {*} value - Value to store
- * @returns {boolean} - Success status
- */
-function safeLocalStorageSet(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-        return true;
-    } catch (error) {
-        console.warn('localStorage set failed:', error);
-        return false;
-    }
-}
-
-/**
- * Safe localStorage get with error handling
- * @param {string} key - Storage key
- * @param {*} defaultValue - Default value if not found
- * @returns {*} - Stored value or default
- */
-function safeLocalStorageGet(key, defaultValue = null) {
-    try {
-        const value = localStorage.getItem(key);
-        return value ? JSON.parse(value) : defaultValue;
-    } catch (error) {
-        console.warn('localStorage get failed:', error);
-        return defaultValue;
-    }
-}
-
-/**
- * Remove item from localStorage
- * @param {string} key - Storage key
- * @returns {boolean} - Success status
- */
-function safeLocalStorageRemove(key) {
-    try {
-        localStorage.removeItem(key);
-        return true;
-    } catch (error) {
-        console.warn('localStorage remove failed:', error);
-        return false;
-    }
-}
-
-// ================== EVENT HANDLERS ==================
-
-/**
- * Setup global error handling
- */
-function setupGlobalErrorHandling() {
-    window.addEventListener('error', function (e) {
-        console.error('JavaScript Error:', e.error);
-        showError('문제가 발생했습니다. 페이지를 새로고침해주세요.', 5000);
-    });
-
-    window.addEventListener('unhandledrejection', function (e) {
-        console.error('Unhandled Promise Rejection:', e.reason);
-        showError('예상치 못한 오류가 발생했습니다.', 5000);
-    });
 }
 
 /**
