@@ -666,6 +666,18 @@ function initPage() {
             }, 300));
         }
 
+        // Add event listeners for settings buttons
+        const settingsBtn = document.getElementById('settings-btn');
+        const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+        
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', openSettingsModal);
+        }
+        
+        if (mobileSettingsBtn) {
+            mobileSettingsBtn.addEventListener('click', openSettingsModal);
+        }
+
     } catch (error) {
         console.error('Page initialization error:', error);
         showError('페이지 로딩 중 오류가 발생했습니다.', 3000);

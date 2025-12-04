@@ -483,7 +483,7 @@
                     </div>
 
                     <!-- Settings Button -->
-                    <button onclick="openSettingsModal()"
+                    <button id="settings-btn"
                         class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
                         title="테마 설정">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -624,7 +624,7 @@
                     </svg>
                     <span class="text-[10px] font-medium">알림</span>
                 </button>
-                <button onclick="openSettingsModal()"
+                <button id="mobile-settings-btn"
                     class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -950,10 +950,10 @@
             setViewportMode(initialMode);
         });
     </script>
+    <script src="index.js"></script>
     <script src="src/shared.js"></script>
     <script src="src/auth.js"></script>
     <script src="src/payment.js"></script>
-    <script src="index.js"></script>
 </body>
 
 </html>
