@@ -458,7 +458,7 @@
     <!-- Comments Modal -->
     <dialog id="comments-modal"
         class="bg-white p-0 rounded-2xl shadow-2xl w-full max-w-md backdrop:bg-black/50 backdrop:backdrop-blur-sm">
-        <div class="flex flex-col h-[600px] max-h-[80vh]">
+        <div class="flex flex-col min-h-[400px] max-h-[80vh]">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-2xl">
                 <h3 class="font-bold text-lg text-slate-800">댓글 <span id="modal-comment-count"
                         class="text-brand-500 text-sm ml-1">0</span></h3>
@@ -551,14 +551,22 @@
                     },
                     {
                         id: 2, x: 500, y: 300, title: '첫 1위 (I Need U)', date: '2015-05-05', videoId: 'NMdTd9e-LEI',
-                        moments: [{ time: '2:30', text: '눈물바다 ㅠㅠ', feeling: 'tear' }]
+                        moments: [{ time: '2:30', text: '감동적인 순간', feeling: 'tear' }]
                     },
                     {
-                        id: 3, x: 900, y: 100, title: 'Dynamite 빌보드 1위', date: '2020-08-21', videoId: 'gdZLi9oWNZg',
-                        moments: [{ time: '1:00', text: '자랑스럽다', feeling: 'love' }]
+                        id: 3, x: 900, y: 100, title: '빌보드 1위 (Dynamite)', date: '2020-08-21', videoId: 'gdZLi9oWNZg',
+                        moments: [{ time: '1:00', text: '역사적인 기록', feeling: 'shock' }]
+                    },
+                    {
+                        id: 4, x: 500, y: -100, title: '화양연화 (Photo)', date: '2015-04-29', videoId: '', imageUrl: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070&auto=format&fit=crop',
+                        moments: [{ time: '0:00', text: '아름다운 컨셉 포토', feeling: 'love' }]
                     }
                 ],
-                edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }]
+                edges: [
+                    { from: 1, to: 2 },
+                    { from: 2, to: 3 },
+                    { from: 2, to: 4 }
+                ]
             },
             'newbie_fan': {
                 name: '신입 팬 (Newbie)',
@@ -1184,11 +1192,23 @@
 
             input.value = ''; // Clear input immediately
 
+            // Handle Anonymous User Name
+            let userName = '익명';
+            if (currentUser.displayName) {
+                userName = currentUser.displayName;
+            } else if (currentUser.email) {
+                userName = currentUser.email.split('@')[0];
+            } else if (currentUser.isAnonymous) {
+                userName = 'Guest';
+            } else if (currentUser.isAnonymous) {
+                userName = 'Guest';
+            }
+
             try {
                 await db.collection('trees').doc(treeId).collection('comments').add({
                     text: text,
                     userId: currentUser.uid,
-                    userName: currentUser.displayName || currentUser.email.split('@')[0],
+                    userName: userName,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
             } catch (error) {
