@@ -728,4 +728,5 @@ window.navigateToHome = navigateToHome;
 window.scrollToMyTrees = scrollToMyTrees;
 window.scrollToAllTrees = scrollToAllTrees;
 window.openSettingsModal = openSettingsModal;
+window.loadBackgroundPreference = loadBackgroundPreference;
 // closeModal, hideError already exposed via shared.js
