@@ -8,13 +8,8 @@ const APP_CONFIG = {
     // App metadata
     appName: 'Relovetree',
     version: '1.0.0',
-    author: 'skerishKang',
-    func(...args);
+    author: 'skerishKang'
 };
-clearTimeout(timeout);
-timeout = setTimeout(later, wait);
-    };
-}
 
 /**
  * Throttle function to limit function execution frequency
@@ -438,7 +433,6 @@ function setupGlobalErrorHandling() {
         console.error('Unhandled Promise Rejection:', e.reason);
         showError('예상치 못한 오류가 발생했습니다.', 5000);
     });
-}
 }
 
 /**
