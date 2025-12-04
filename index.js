@@ -159,7 +159,7 @@ function createArtistCard(artist) {
     return `
         <a href="editor.html?id=${artist.id}"
             data-artist-id="${artist.id}"
-            class="block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 mb-6 hover:shadow-md transition-shadow">
+            class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-shadow h-full">
             
             <!-- Header (User Info style) -->
             <div class="flex items-center justify-between p-3">
@@ -167,12 +167,12 @@ function createArtistCard(artist) {
                     <div class="w-8 h-8 rounded-full bg-${artist.color}-100 flex items-center justify-center text-xs font-bold text-${artist.color}-600">
                         ${artist.name.charAt(0)}
                     </div>
-                    <div>
-                        <p class="text-sm font-bold text-slate-900">${artist.name}</p>
-                        <p class="text-xs text-slate-500">${artist.englishName}</p>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-slate-900 truncate">${artist.name}</p>
+                        <p class="text-xs text-slate-500 truncate">${artist.englishName}</p>
                     </div>
                 </div>
-                <button class="text-slate-400 hover:text-slate-600">
+                <button class="text-slate-400 hover:text-slate-600 flex-shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
                 </button>
             </div>
@@ -204,7 +204,7 @@ function createArtistCard(artist) {
             </div>
 
             <!-- Footer Info -->
-            <div class="px-4 pb-4">
+            <div class="px-4 pb-4 mt-auto">
                 <p class="text-sm font-bold text-slate-900 mb-1">${artist.moments}개의 순간이 기록됨</p>
                 <p class="text-xs text-slate-500">${artist.lastUpdate} 업데이트</p>
             </div>
@@ -564,7 +564,65 @@ function scrollToAllTrees() {
     }
 }
 
-// ... (Background prefs omitted for brevity, they are unchanged) ...
+// ================== BACKGROUND PREFERENCES ==================
+
+const BG_STORAGE_KEY = 'relovetree_background';
+
+function applyBackgroundConfig(config) {
+    const body = document.body;
+    if (!body || !config) return;
+
+    if (config.type === 'image' && config.value) {
+        body.style.backgroundImage = `url('${config.value}')`;
+        body.style.backgroundSize = 'cover';
+        body.style.backgroundPosition = 'center';
+        body.style.backgroundRepeat = 'no-repeat';
+    } else if (config.type === 'color' && config.value) {
+        body.style.backgroundImage = '';
+        body.style.backgroundColor = config.value;
+    }
+}
+
+function setBackground(type, value) {
+    const config = { type, value };
+    applyBackgroundConfig(config);
+    safeLocalStorageSet(BG_STORAGE_KEY, config);
+}
+
+function resetBackground() {
+    const defaultConfig = { type: 'color', value: '#f8fafc' };
+    applyBackgroundConfig(defaultConfig);
+    safeLocalStorageRemove(BG_STORAGE_KEY);
+}
+
+function applyCustomBackground() {
+    const input = document.getElementById('custom-bg-url');
+    if (!input) return;
+    const url = input.value.trim();
+    if (!url) return;
+    setBackground('image', url);
+}
+
+function loadBackgroundPreference() {
+    const saved = safeLocalStorageGet(BG_STORAGE_KEY, null);
+    if (saved && (saved.type === 'image' || saved.type === 'color')) {
+        applyBackgroundConfig(saved);
+    } else {
+        applyBackgroundConfig({ type: 'color', value: '#f8fafc' });
+    }
+}
+
+function openSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+
+    if (typeof modal.showModal === 'function') {
+        modal.showModal();
+    } else {
+        // showModal을 지원하지 않는 경우 fallback
+        modal.setAttribute('open', 'open');
+    }
+}
 
 // ================== INITIALIZATION ==================
 
