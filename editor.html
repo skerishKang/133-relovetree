@@ -17,6 +17,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <style>
         :root {
@@ -236,6 +237,15 @@
                 class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-red-50 text-red-500 text-xs font-bold transition-colors">
                 초기화
             </button>
+            <button id="share-btn" onclick="shareTree()"
+                class="bg-brand-500 shadow-lg text-white px-3 py-1.5 rounded-lg hover:bg-brand-600 text-xs font-bold transition-colors flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
+                    </path>
+                </svg>
+                Share
+            </button>
             <button id="lang-btn" onclick="toggleLanguage()"
                 class="bg-slate-800 shadow-lg text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 text-xs font-bold transition-colors">
                 English
@@ -370,6 +380,17 @@
                             <input type="text" id="edit-video"
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">이미지 (Pro)</label>
+                            <input type="file" id="edit-image" accept="image/*"
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                            <div id="image-preview-container" class="mt-2 hidden">
+                                <img id="image-preview" src="" alt="Preview"
+                                    class="w-full h-32 object-cover rounded-lg border border-slate-200">
+                                <button type="button" onclick="removeImage()"
+                                    class="text-xs text-red-500 mt-1 hover:underline">이미지 삭제</button>
+                            </div>
+                        </div>
                         <div class="flex justify-end gap-2 pt-2">
                             <button type="button" onclick="disableEditMode()"
                                 class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200 rounded-lg">취소</button>
@@ -418,6 +439,7 @@
     </dialog>
 
     <script src="src/shared.js"></script>
+    <script src="src/auth.js"></script>
     <script>
         // --- Translations ---
         let isKorean = true;
@@ -580,41 +602,33 @@
             }
         };
 
-        // --- Firebase Configuration ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDQNR8bNIp4LG4EGNwl1ew8B7Har-KJC90",
-            authDomain: "relovetree.firebaseapp.com",
-            projectId: "relovetree",
-            storageBucket: "relovetree.firebasestorage.app",
-            messagingSenderId: "1091063063536",
-            appId: "1:1091063063536:web:065a746e2578c47dd7b335",
-            measurementId: "G-D4R5XMGFK5"
-        };
-
         // Local Storage Key (Backup)
         const STORAGE_KEY = `relovetree_data_${treeId}`;
 
         // Initialize Firebase
         let db;
         let auth;
-        let isFirebaseReady = false;
+        let storage;
+        let currentUser = null;
+        let isReadOnly = false;
 
-        try {
-            if (firebaseConfig.apiKey) {
-                firebase.initializeApp(firebaseConfig);
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', async () => {
+            initApp(); // from shared.js
+            initAuth(); // from auth.js
+
+            // Wait for Auth
+            currentUser = await waitForAuth();
+            console.log("Current User:", currentUser ? currentUser.email : "Guest");
+
+            if (typeof firebase !== 'undefined' && firebase.apps.length) {
                 db = firebase.firestore();
                 auth = firebase.auth();
-                isFirebaseReady = true;
-                console.log("Firebase initialized");
-
-                // Anonymous Login
-                auth.signInAnonymously().catch((error) => {
-                    console.error("Auth Error:", error);
-                });
+                storage = firebase.storage();
             }
-        } catch (e) {
-            console.error("Firebase init failed:", e);
-        }
+
+            loadData();
+        });
 
         // Load Data (Firebase -> LocalStorage -> Dummy)
         let initialData = dummyData[treeId] || {
@@ -625,7 +639,7 @@
 
         // Async Load Function
         async function loadData() {
-            if (isFirebaseReady && db) {
+            if (db) {
                 try {
                     const docRef = db.collection('trees').doc(treeId);
                     const docSnap = await docRef.get();
@@ -633,6 +647,18 @@
                     if (docSnap.exists) {
                         console.log("Document data:", docSnap.data());
                         const data = docSnap.data();
+
+                        // Check Ownership
+                        if (currentUser && data.ownerId && data.ownerId !== currentUser.uid) {
+                            isReadOnly = true;
+                            showToast("읽기 전용 모드입니다.");
+                            document.getElementById('tree-title').classList.add('bg-slate-100', 'text-slate-500');
+                        } else if (!currentUser && data.ownerId) {
+                            // Guest viewing a user's tree
+                            isReadOnly = true;
+                            showToast("로그인이 필요합니다. (읽기 전용)");
+                        }
+
                         const hasNodes = Array.isArray(data.nodes) && data.nodes.length > 0;
 
                         if (hasNodes) {
@@ -640,67 +666,52 @@
                             state.edges = data.edges || [];
                             document.getElementById('tree-title').innerText = data.name || initialData.name;
                         } else {
-                            console.log("Document has no nodes. Falling back to local or initial data.");
-                            const stored = localStorage.getItem(STORAGE_KEY);
-                            if (stored) {
-                                const localData = JSON.parse(stored);
-                                state.nodes = localData.nodes || [];
-                                state.edges = localData.edges || [];
-                                document.getElementById('tree-title').innerText = localData.name || initialData.name;
-                            } else {
-                                state.nodes = JSON.parse(JSON.stringify(originalNodes));
-                                state.edges = data.edges || initialData.edges || [];
-                                document.getElementById('tree-title').innerText = data.name || initialData.name;
-                            }
+                            // Fallback to local if doc exists but empty nodes (rare)
+                            loadFromLocalOrDummy(data);
                         }
                         render();
                     } else {
-                        console.log("No such document! Using initial data.");
-                        // If no data in Firebase, try LocalStorage first
-                        const stored = localStorage.getItem(STORAGE_KEY);
-                        if (stored) {
-                            const localData = JSON.parse(stored);
-                            state.nodes = localData.nodes || [];
-                            state.edges = localData.edges || [];
-                            document.getElementById('tree-title').innerText = localData.name || initialData.name;
-                        } else {
-                            // 완전 신규 트리인 경우 더미/기본 노드 사용
-                            state.nodes = JSON.parse(JSON.stringify(originalNodes));
-                            state.edges = initialData.edges || [];
-                            document.getElementById('tree-title').innerText = initialData.name;
-                        }
-                        render();
+                        console.log("No such document! Checking local storage.");
+                        loadFromLocalOrDummy();
                     }
                 } catch (error) {
                     console.error("Error getting document:", error);
-                    // Firebase 조회 실패 시에도 로컬/더미 데이터로 바로 노드를 보여준다
-                    const stored = localStorage.getItem(STORAGE_KEY);
-                    if (stored) {
-                        const localData = JSON.parse(stored);
-                        state.nodes = localData.nodes || [];
-                        state.edges = localData.edges || [];
-                        document.getElementById('tree-title').innerText = localData.name || initialData.name;
-                    } else {
-                        state.nodes = JSON.parse(JSON.stringify(originalNodes));
-                        state.edges = initialData.edges || [];
-                        document.getElementById('tree-title').innerText = initialData.name;
-                    }
-                    render();
+                    loadFromLocalOrDummy();
                 }
             } else {
-                // Fallback to LocalStorage
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    const localData = JSON.parse(stored);
-                    state.nodes = localData.nodes || [];
-                    state.edges = localData.edges || [];
-                    document.getElementById('tree-title').innerText = localData.name || initialData.name;
-                } else {
-                    state.nodes = JSON.parse(JSON.stringify(originalNodes));
-                    state.edges = initialData.edges || [];
-                    document.getElementById('tree-title').innerText = initialData.name;
-                }
-                render();
+                loadFromLocalOrDummy();
+            }
+
+            updateUIForReadOnly();
+        }
+
+        function loadFromLocalOrDummy(remoteData = null) {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const localData = JSON.parse(stored);
+                state.nodes = localData.nodes || [];
+                state.edges = localData.edges || [];
+                document.getElementById('tree-title').innerText = localData.name || (remoteData ? remoteData.name : initialData.name);
+            } else {
+                state.nodes = JSON.parse(JSON.stringify(originalNodes));
+                state.edges = (remoteData ? remoteData.edges : initialData.edges) || [];
+                document.getElementById('tree-title').innerText = (remoteData ? remoteData.name : initialData.name);
+            }
+            render();
+        }
+
+        function updateUIForReadOnly() {
+            if (isReadOnly) {
+                // Hide Add Button
+                const fab = document.querySelector('button[onclick="createNewNode()"]');
+                if (fab) fab.classList.add('hidden');
+
+                // Hide Reset Button
+                const resetBtn = document.getElementById('btn-reset');
+                if (resetBtn) resetBtn.classList.add('hidden');
+
+                // Disable Title Edit (visual only, logic handled in save)
+                document.getElementById('tree-title').contentEditable = "false";
             }
         }
 
@@ -943,11 +954,17 @@
         }
 
         const saveData = debounce(async () => {
+            if (isReadOnly) {
+                console.log("Read-only mode. Save skipped.");
+                return;
+            }
+
             const dataToSave = {
                 name: document.getElementById('tree-title').innerText,
                 nodes: state.nodes,
                 edges: state.edges,
-                lastUpdated: new Date().toISOString()
+                lastUpdated: new Date().toISOString(),
+                ownerId: currentUser ? currentUser.uid : null // Add ownerId
             };
 
             // 1. Save to LocalStorage (Backup & Speed)
@@ -956,9 +973,15 @@
             } catch (e) { console.error("Local save failed", e); }
 
             // 2. Save to Firebase
-            if (isFirebaseReady && db) {
+            if (db) {
+                if (!currentUser) {
+                    // Optional: Warn user that data is only local
+                    // showToast("로그인하면 클라우드에 저장됩니다.");
+                    return;
+                }
+
                 try {
-                    await db.collection('trees').doc(treeId).set(dataToSave);
+                    await db.collection('trees').doc(treeId).set(dataToSave, { merge: true });
                     console.log("Data saved to Firebase");
                     showToast("저장되었습니다");
                 } catch (e) {
@@ -967,6 +990,16 @@
                 }
             }
         }, 1000); // Debounce 1s
+
+        function shareTree() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast("링크가 복사되었습니다! 친구에게 공유하세요.");
+            }).catch(err => {
+                console.error('Async: Could not copy text: ', err);
+                prompt("이 링크를 복사해서 공유하세요:", url);
+            });
+        }
 
         // Simple Toast Notification
         function showToast(message) {
@@ -1023,7 +1056,7 @@
                 el.innerHTML = `
                     <div class="h-40 bg-black relative group overflow-hidden">
                         ${hasVideo
-                            ? `<div class="w-full h-full relative overflow-hidden">
+                        ? `<div class="w-full h-full relative overflow-hidden">
                                     <img src="${thumbUrl}" alt="YouTube thumbnail" class="w-full h-full object-cover" />
                                     <div class="absolute inset-0 bg-black/25"></div>
                                     <div class="absolute inset-0 flex items-center justify-center">
@@ -1034,7 +1067,13 @@
                                         </div>
                                     </div>
                                </div>`
-                            : `<div class=\"w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs\">No Video</div>`}
+                        : (node.imageUrl
+                            ? `<div class="w-full h-full relative overflow-hidden">
+                                <img src="${node.imageUrl}" alt="Node Image" class="w-full h-full object-cover" />
+                               </div>`
+                            : `<div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs">No Media</div>`
+                        )
+                    }
                         <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur">
                             ${node.moments.length} Moments
                         </div>
@@ -1139,7 +1178,7 @@
                 card.innerHTML = `
                     <div class="bg-black h-40 relative overflow-hidden">
                         ${hasVideo
-                            ? `<div class="w-full h-full relative overflow-hidden">
+                        ? `<div class="w-full h-full relative overflow-hidden">
                                     <img src="${thumbUrl}" alt="YouTube thumbnail" class="w-full h-full object-cover" />
                                     <div class="absolute inset-0 bg-black/25"></div>
                                     <div class="absolute inset-0 flex items-center justify-center">
@@ -1150,7 +1189,13 @@
                                         </div>
                                     </div>
                                </div>`
-                            : `<div class=\"w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs\">No Video</div>`}
+                        : (node.imageUrl
+                            ? `<div class="w-full h-full relative overflow-hidden">
+                                <img src="${node.imageUrl}" alt="Node Image" class="w-full h-full object-cover" />
+                               </div>`
+                            : `<div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs">No Media</div>`
+                        )
+                    }
                     </div>
                     <div class="p-4 space-y-3">
                         <div class="flex items-start justify-between gap-3">
@@ -1236,6 +1281,11 @@
             e.preventDefault();
             e.stopPropagation();
 
+            if (isReadOnly) {
+                showToast("읽기 전용 모드입니다.");
+                return;
+            }
+
             const selector = '.timeline-card[data-node-id="' + nodeId + '"]';
             const card = document.querySelector(selector);
             if (!card) return;
@@ -1268,6 +1318,10 @@
         }
 
         function addQuickFeeling(nodeId, feeling) {
+            if (isReadOnly) {
+                showToast("읽기 전용 모드입니다.");
+                return;
+            }
             const node = state.nodes.find(n => n.id === nodeId);
             if (!node) return;
 
@@ -1291,6 +1345,7 @@
         let isDraggingNode = false;
 
         function startDragNode(e, node) {
+            if (isReadOnly) return; // Prevent dragging in read-only mode
             if (e.target.closest('.connection-handle')) return; // Don't drag if clicking connection handle
             e.stopPropagation();
             isDraggingNode = true;
@@ -1368,6 +1423,11 @@
             wrapperEl.addEventListener('drop', (e) => {
                 e.preventDefault();
 
+                if (isReadOnly) {
+                    showToast("읽기 전용 모드입니다.");
+                    return;
+                }
+
                 const dataTransfer = e.dataTransfer;
                 if (!dataTransfer) return;
 
@@ -1419,6 +1479,11 @@
             detailModal.addEventListener('drop', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+
+                if (isReadOnly) {
+                    showToast("읽기 전용 모드입니다.");
+                    return;
+                }
 
                 const dataTransfer = e.dataTransfer;
                 if (!dataTransfer) return;
@@ -1515,29 +1580,17 @@
             const iframe = document.getElementById('detail-video');
             const placeholder = document.getElementById('video-placeholder');
 
-            if (node.videoId) {
-                const params = new URLSearchParams({
-                    playsinline: 1,
-                    rel: 0,
-                    modestbranding: 1
-                });
-                iframe.src = `https://www.youtube-nocookie.com/embed/${node.videoId}?${params.toString()}`;
-                iframe.classList.remove('hidden');
-                if (placeholder) {
-                    placeholder.classList.add('hidden');
-                }
-                document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${node.videoId}`;
-                document.getElementById('external-link').classList.remove('hidden');
+            // Update Media View
+            updateDetailMedia(node);
+
+            // Edit Form - Image Preview
+            const imagePreviewContainer = document.getElementById('image-preview-container');
+            const imagePreview = document.getElementById('image-preview');
+            if (node.imageUrl) {
+                imagePreview.src = node.imageUrl;
+                imagePreviewContainer.classList.remove('hidden');
             } else {
-                iframe.src = '';
-                iframe.classList.add('hidden');
-                if (placeholder) {
-                    placeholder.classList.remove('hidden');
-                    placeholder.style.cursor = 'default';
-                    placeholder.onclick = null;
-                    placeholder.innerHTML = '<p class="text-sm text-slate-300">등록된 영상이 없습니다.</p>';
-                }
-                document.getElementById('external-link').classList.add('hidden');
+                imagePreviewContainer.classList.add('hidden');
             }
 
             renderMomentsList(node.moments);
@@ -1594,6 +1647,10 @@
 
         function addMomentFromDetail(e) {
             e.preventDefault();
+            if (isReadOnly) {
+                showToast("읽기 전용 모드입니다.");
+                return;
+            }
             const time = document.getElementById('new-moment-time').value;
             const text = document.getElementById('new-moment-text').value;
             const feeling = document.querySelector('input[name="new-moment-feeling"]:checked').value;
@@ -1619,11 +1676,16 @@
             document.getElementById('edit-form').classList.add('hidden');
         }
 
-        function saveNodeDetails(e) {
+        async function saveNodeDetails(e) {
             e.preventDefault();
+            if (isReadOnly) {
+                showToast("읽기 전용 모드입니다.");
+                return;
+            }
             const title = document.getElementById('edit-title').value;
             const date = document.getElementById('edit-date').value;
             const videoUrl = document.getElementById('edit-video').value;
+            const imageFile = document.getElementById('edit-image').files[0];
 
             let videoId = '';
             const match = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/);
@@ -1635,22 +1697,35 @@
                 node.date = date;
                 if (videoId) node.videoId = videoId;
 
+                // Handle Image Upload
+                if (imageFile) {
+                    if (!currentUser) {
+                        showToast("이미지 업로드는 로그인 후 가능합니다.");
+                        return;
+                    }
+
+                    // Check for Pro (Optional, strict check in rules)
+                    // if (currentUser.role !== 'pro') ... 
+
+                    try {
+                        const storageRef = storage.ref();
+                        const fileRef = storageRef.child(`users/${currentUser.uid}/trees/${treeId}/nodes/${node.id}/${imageFile.name}`);
+                        await fileRef.put(imageFile);
+                        const downloadURL = await fileRef.getDownloadURL();
+                        node.imageUrl = downloadURL;
+                        console.log("Image uploaded:", downloadURL);
+                    } catch (error) {
+                        console.error("Image upload failed:", error);
+                        showToast("이미지 업로드 실패: " + error.message);
+                        return;
+                    }
+                }
+
                 document.getElementById('detail-title').innerText = title;
                 document.getElementById('detail-date').innerText = date;
 
-                if (videoId) {
-                    const iframe = document.getElementById('detail-video');
-                    const placeholder = document.getElementById('video-placeholder');
-
-                    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1&rel=0&modestbranding=1`;
-                    iframe.classList.remove('hidden');
-                    if (placeholder) {
-                        placeholder.classList.add('hidden');
-                    }
-
-                    document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}`;
-                    document.getElementById('external-link').classList.remove('hidden');
-                }
+                // Update Video/Image View
+                updateDetailMedia(node);
 
                 render();
                 saveData(); // Save after editing details
@@ -1658,7 +1733,69 @@
             }
         }
 
+        function removeImage() {
+            const node = state.nodes.find(n => n.id === state.activeNodeId);
+            if (node) {
+                delete node.imageUrl;
+                document.getElementById('edit-image').value = '';
+                document.getElementById('image-preview-container').classList.add('hidden');
+                updateDetailMedia(node);
+                render();
+                saveData();
+            }
+        }
+
+        function updateDetailMedia(node) {
+            const iframe = document.getElementById('detail-video');
+            const placeholder = document.getElementById('video-placeholder');
+            const externalLink = document.getElementById('external-link');
+
+            // Reset
+            iframe.src = '';
+            iframe.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            placeholder.style.backgroundImage = '';
+            placeholder.innerHTML = `
+                <div class="w-16 h-16 rounded-full border-2 border-white/60 flex items-center justify-center bg-black/40 shadow-lg">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+                <p class="text-sm font-medium">영상을 보려면 클릭하세요</p>
+                <p class="text-xs text-slate-400">썸네일은 숨기고, 재생 시에만 영상을 불러옵니다.</p>
+            `;
+            externalLink.classList.add('hidden');
+
+            if (node.videoId) {
+                const params = new URLSearchParams({
+                    playsinline: 1,
+                    rel: 0,
+                    modestbranding: 1
+                });
+                // We don't set src immediately to avoid autoplay/loading
+                // iframe.src = ... (handled by startVideo or click)
+
+                // Show placeholder with play button
+                placeholder.onclick = () => startVideo(node.videoId);
+                externalLink.href = `https://www.youtube.com/watch?v=${node.videoId}`;
+                externalLink.classList.remove('hidden');
+            } else if (node.imageUrl) {
+                // Show Image
+                placeholder.innerHTML = ''; // Clear play button text
+                placeholder.style.backgroundImage = `url('${node.imageUrl}')`;
+                placeholder.style.backgroundSize = 'contain';
+                placeholder.style.backgroundPosition = 'center';
+                placeholder.style.backgroundRepeat = 'no-repeat';
+                placeholder.onclick = null;
+            } else {
+                // No Media
+                placeholder.innerHTML = '<p class="text-sm text-slate-300">등록된 영상/이미지가 없습니다.</p>';
+                placeholder.onclick = null;
+            }
+        }
+
         function createNewNode() {
+            if (isReadOnly) return;
             const newNode = {
                 id: Date.now(),
                 x: -state.transform.x / state.transform.k + window.innerWidth / 2 / state.transform.k - 140,
@@ -1676,6 +1813,7 @@
         }
 
         function deleteNode() {
+            if (isReadOnly) return;
             const node = state.nodes.find(n => n.id === state.activeNodeId);
             if (!node) return;
 

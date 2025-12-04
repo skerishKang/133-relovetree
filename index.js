@@ -702,6 +702,19 @@ window.toggleLanguage = toggleLanguage;
 window.openCreateModal = openCreateModal;
 window.handleCreate = handleCreate;
 window.handleProfileClick = handleProfileClick;
+
+/**
+ * Handle Pro Upgrade Click
+ */
+function handleProUpgrade() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+    requestPayment(user.email, user.displayName);
+}
+window.handleProUpgrade = handleProUpgrade;
 window.toggleMobileMenu = toggleMobileMenu;
 window.navigateToHome = navigateToHome;
 window.scrollToMyTrees = scrollToMyTrees;

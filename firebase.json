@@ -11,5 +11,11 @@
             "**/*.cmd",
             "**/*.sh"
         ]
+    },
+    "firestore": {
+        "rules": "firestore.rules"
+    },
+    "storage": {
+        "rules": "storage.rules"
     }
 }
