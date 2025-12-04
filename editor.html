@@ -698,11 +698,12 @@
         });
 
         // Load Data (Firebase -> LocalStorage -> Dummy)
-        let initialData = dummyData[treeId] || {
-            name: treeId ? decodeURIComponent(treeId) : 'My Tree',
-            nodes: [],
-            edges: []
-        };
+        // Default to 'bts' data if treeId not found in dummyData
+        let initialData = dummyData[treeId] || JSON.parse(JSON.stringify(dummyData['bts']));
+        // Override name if it's a new custom ID
+        if (!dummyData[treeId]) {
+            initialData.name = treeId ? decodeURIComponent(treeId) : 'My Tree';
+        }
 
         // Async Load Function
         async function loadData() {
