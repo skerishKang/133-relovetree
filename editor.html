@@ -689,6 +689,7 @@
         let youTubeApiReady = false;
 
         let originalNodes = [];
+        let pendingConnectionFrom = null; // 연결선 시작 노드 ID 저장
 
         // Global State
         const state = {
@@ -1408,13 +1409,35 @@
                         <h3 class="font-bold text-slate-800 text-lg leading-tight line-clamp-1 mb-1">${node.title}</h3>
                         <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
                     </div>
-                    <!-- Connect Handles -->
-                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30 connection-handle" title="Drag to connect">
+                    <!-- Connect Handles (Left: 이전, Right: 다음) -->
+                    <div class="absolute top-1/2 -left-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30 connection-handle connection-handle-left" title="이전 노드와 연결">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </div>
+                    <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30 connection-handle connection-handle-right" title="다음 노드와 연결">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </div>
                 `;
+
+                // 연결 핸들 클릭 이벤트 바인딩 (버블링 방지)
+                const leftHandle = el.querySelector('.connection-handle-left');
+                if (leftHandle) {
+                    leftHandle.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        onConnectionHandleClick(node.id, 'left');
+                    });
+                }
+
+                const rightHandle = el.querySelector('.connection-handle-right');
+                if (rightHandle) {
+                    rightHandle.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        onConnectionHandleClick(node.id, 'right');
+                    });
+                }
 
                 el.onmousedown = (e) => startDragNode(e, node);
 
@@ -1448,6 +1471,49 @@
             path.setAttribute('stroke-width', '3');
             path.setAttribute('fill', 'none');
             connections.appendChild(path);
+        }
+
+        // 연결 핸들 클릭 로직: 오른쪽(다음) → 왼쪽(이전) 순으로 클릭해 연결선을 만든다
+        function onConnectionHandleClick(nodeId, side) {
+            if (isReadOnly) {
+                if (typeof showToast === 'function') {
+                    showToast("읽기 전용 모드입니다.");
+                }
+                return;
+            }
+
+            if (side === 'right') {
+                // 시작 노드 선택
+                pendingConnectionFrom = nodeId;
+                if (typeof showToast === 'function') {
+                    showToast('연결할 다음 노드를 선택하세요. (왼쪽 핸들 클릭)');
+                }
+                return;
+            }
+
+            if (side === 'left') {
+                // 도착 노드 선택
+                if (!pendingConnectionFrom || pendingConnectionFrom === nodeId) {
+                    // 자기 자신이거나 시작점이 없는 경우: 연결 취소
+                    pendingConnectionFrom = null;
+                    return;
+                }
+
+                const fromId = pendingConnectionFrom;
+                const toId = nodeId;
+
+                // 중복 연결 방지
+                const exists = state.edges.some(e => e.from === fromId && e.to === toId);
+                if (!exists) {
+                    state.edges.push({ from: fromId, to: toId });
+                    if (typeof saveData === 'function') {
+                        saveData();
+                    }
+                    render();
+                }
+
+                pendingConnectionFrom = null;
+            }
         }
 
         function renderTimeline() {
@@ -1877,15 +1943,15 @@
             const iframe = document.getElementById('detail-video');
             const placeholder = document.getElementById('video-placeholder');
 
-            // 우선 YouTube IFrame Player API 사용 시도
-            if (youTubeApiReady && typeof YT !== 'undefined' && typeof YT.Player === 'function') {
-                const startSec = (typeof startSeconds === 'number' && Number.isFinite(startSeconds) && startSeconds > 0)
-                    ? Math.floor(startSeconds)
-                    : 0;
+            const startSec = (typeof startSeconds === 'number' && Number.isFinite(startSeconds) && startSeconds > 0)
+                ? Math.floor(startSeconds)
+                : 0;
 
+            // 1) 가능하면 YouTube IFrame Player API 사용
+            if (youTubeApiReady && typeof YT !== 'undefined' && typeof YT.Player === 'function') {
                 try {
-                    // ytPlayer가 비정상 객체이거나 loadVideoById가 없는 경우를 방어적으로 처리
-                    if (!ytPlayer || typeof ytPlayer.loadVideoById !== 'function') {
+                    // ytPlayer가 없거나 비정상인 경우 새로 생성
+                    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') {
                         ytPlayer = new YT.Player('detail-video', {
                             videoId: videoId,
                             playerVars: {
@@ -1917,7 +1983,7 @@
                 }
             }
 
-            // 폴백: 단순 iframe src 교체
+            // 2) 폴백: 단순 nocookie iframe src 교체
             const params = new URLSearchParams({
                 playsinline: 1,
                 rel: 0,
@@ -1925,12 +1991,14 @@
                 autoplay: 1
             });
 
-            if (typeof startSeconds === 'number' && Number.isFinite(startSeconds) && startSeconds > 0) {
-                params.set('start', String(Math.floor(startSeconds)));
+            if (startSec > 0) {
+                params.set('start', String(startSec));
             }
 
-            iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
-            iframe.classList.remove('hidden');
+            if (iframe) {
+                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+                iframe.classList.remove('hidden');
+            }
             if (placeholder) {
                 placeholder.classList.add('hidden');
             }
