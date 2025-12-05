@@ -443,15 +443,22 @@
                 <!-- Add Moment Input -->
                 <div class="p-4 bg-white border-t border-slate-200 shrink-0">
                     <form onsubmit="addMomentFromDetail(event)" class="flex flex-col gap-3">
-                        <div class="flex gap-2">
-                            <div class="flex items-center gap-2">
-                                <input type="text" id="new-moment-time" placeholder="0:00"
-                                    class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center">
-                                <button type="button" onclick="setCurrentMomentTime()"
-                                    class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-[11px] font-medium text-slate-700 rounded-lg whitespace-nowrap">현재 시간</button>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-2">
+                                <div class="flex items-center gap-2">
+                                    <input type="text" id="new-moment-time" placeholder="0:00"
+                                        class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center">
+                                    <button type="button" onclick="setCurrentMomentTime()"
+                                        class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-[11px] font-medium text-slate-700 rounded-lg whitespace-nowrap">현재 시간</button>
+                                </div>
+                                <div class="flex-1 flex gap-2">
+                                    <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
+                                        class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    <button type="button" onclick="openMomentAiHelper()"
+                                        class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-semibold rounded-xl whitespace-nowrap">AI</button>
+                                </div>
                             </div>
-                            <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
-                                class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <div id="moment-ai-result" class="mt-1 space-y-1 text-xs text-slate-700"></div>
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="flex gap-1">
@@ -492,8 +499,8 @@
             <div class="px-4 pt-3 pb-2 flex gap-2 text-xs font-bold text-slate-600">
                 <button type="button" id="ai-mode-tree-btn" onclick="setAiHelperMode('tree')"
                     class="px-3 py-1.5 rounded-full bg-slate-900 text-white">트리 뼈대</button>
-                <button type="button" id="ai-mode-comment-btn" onclick="setAiHelperMode('comment')"
-                    class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600">코멘트 추천</button>
+                <button type="button" id="ai-mode-comment-btn" onclick="setAiHelperMode('qa')"
+                    class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600">질문·도움말</button>
             </div>
             <div class="flex-1 overflow-y-auto px-4 pb-3 space-y-3 text-sm" id="ai-helper-body">
                 <div id="ai-tree-panel" class="space-y-2">
@@ -514,10 +521,10 @@
                     </div>
                 </div>
                 <div id="ai-comment-panel" class="space-y-2 hidden">
-                    <label for="ai-comment-prompt" class="block text-xs font-medium text-slate-500">이 순간에 대해 설명해 주세요</label>
+                    <label for="ai-comment-prompt" class="block text-xs font-medium text-slate-500">어떤 점이 궁금한가요?</label>
                     <textarea id="ai-comment-prompt" rows="3"
                         class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
-                        placeholder="예: 세븐틴 콘서트에서 앵콜 무대 직전 분위기"></textarea>
+                        placeholder="예: 지금 트리 구조를 더 단순하게 만들고 싶은데 어떻게 나누면 좋을까?"></textarea>
                 </div>
                 <div id="ai-result" class="mt-1 space-y-2 text-sm text-slate-700"></div>
             </div>

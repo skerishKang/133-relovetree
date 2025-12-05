@@ -2,6 +2,8 @@ let aiHelperMode = 'tree';
 let aiTreeSuggestions = [];
 let aiCommentSuggestions = [];
 let aiHelperLoading = false;
+let momentAiSuggestions = [];
+let commentAiSuggestions = [];
 
 function openAiHelper() {
     const modal = document.getElementById('ai-helper-modal');
@@ -33,7 +35,7 @@ function closeAiHelper() {
 }
 
 function setAiHelperMode(mode) {
-    if (mode !== 'tree' && mode !== 'comment') return;
+    if (mode !== 'tree' && mode !== 'qa') return;
     aiHelperMode = mode;
     const treeBtn = document.getElementById('ai-mode-tree-btn');
     const commentBtn = document.getElementById('ai-mode-comment-btn');
@@ -104,7 +106,7 @@ function onAiHelperSubmit(event) {
         showToast('AI가 제안을 생성 중입니다...');
     }
 
-    const runner = aiHelperMode === 'tree' ? runAiTreeHelper : runAiCommentHelper;
+    const runner = aiHelperMode === 'tree' ? runAiTreeHelper : runAiQaHelper;
     Promise.resolve()
         .then(() => runner())
         .finally(() => {
@@ -251,6 +253,47 @@ function applyAiTreeSkeleton() {
     closeAiHelper();
 }
 
+function runAiQaHelper() {
+    const promptEl = document.getElementById('ai-comment-prompt');
+    const box = document.getElementById('ai-result');
+    if (!promptEl || !box) return Promise.resolve();
+
+    const userPrompt = promptEl.value.trim();
+    if (!userPrompt) {
+        box.innerHTML = '<p class="text-xs text-slate-400">궁금한 내용을 먼저 적어주세요.</p>';
+        return Promise.resolve();
+    }
+
+    const contextParts = [];
+    const titleEl = document.getElementById('tree-title');
+    if (titleEl && titleEl.innerText) {
+        contextParts.push('트리 제목: ' + titleEl.innerText);
+    }
+    if (typeof state !== 'undefined' && state && Array.isArray(state.nodes)) {
+        contextParts.push('노드 개수: ' + state.nodes.length);
+        if (state.activeNodeId) {
+            const node = state.nodes.find(function (n) { return n.id === state.activeNodeId; });
+            if (node && node.title) {
+                contextParts.push('선택된 노드 제목: ' + node.title);
+            }
+        }
+    }
+    const context = contextParts.join('\n');
+
+    box.innerHTML = '<p class="text-xs text-slate-400">AI가 답변을 준비하고 있습니다...</p>';
+
+    return callAiHelperApi('qa', { prompt: userPrompt, context: context }).then(function (result) {
+        if (!result) {
+            box.innerHTML = '<p class="text-xs text-slate-400">답변을 가져오지 못했습니다. 다시 시도해 주세요.</p>';
+            return;
+        }
+        const safe = escapeHtmlForAi(String(result)).replace(/\n/g, '<br>');
+        box.innerHTML = '<div class="text-xs leading-relaxed text-slate-800">' + safe + '</div>';
+    }).catch(function () {
+        box.innerHTML = '<p class="text-xs text-slate-400">AI 답변 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+    });
+}
+
 function runAiCommentHelper() {
     const promptEl = document.getElementById('ai-comment-prompt');
     let base = '';
@@ -328,6 +371,128 @@ function applyAiCommentSuggestion(index) {
         const modal = document.getElementById('ai-helper-modal');
         if (modal) modal.close();
         if (typeof showToast === 'function') showToast('댓글 입력란에 추천 문장이 채워졌습니다. 전송을 눌러주세요.');
+    }
+}
+
+function openMomentAiHelper() {
+    const input = document.getElementById('new-moment-text');
+    let base = '';
+
+    if (input && input.value.trim()) {
+        base = input.value.trim();
+    } else if (typeof state !== 'undefined' && state && state.activeNodeId && Array.isArray(state.nodes)) {
+        const node = state.nodes.find(function (n) { return n.id === state.activeNodeId; });
+        if (node && node.title) {
+            base = node.title;
+        }
+    }
+
+    if (!base) {
+        base = '이 순간';
+    }
+
+    const box = document.getElementById('moment-ai-result');
+    if (box) {
+        box.innerHTML = '<p class="text-xs text-slate-400">AI가 추천 문장을 생성 중입니다...</p>';
+    }
+
+    return callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {
+        if (Array.isArray(result) && result.length > 0) {
+            momentAiSuggestions = result;
+        } else {
+            momentAiSuggestions = createAiCommentSuggestions(base);
+        }
+        renderMomentAiSuggestions();
+    }).catch(function () {
+        momentAiSuggestions = createAiCommentSuggestions(base);
+        renderMomentAiSuggestions();
+    });
+}
+
+function renderMomentAiSuggestions() {
+    const box = document.getElementById('moment-ai-result');
+    if (!box) return;
+    if (!momentAiSuggestions || momentAiSuggestions.length === 0) {
+        box.innerHTML = '<p class="text-xs text-slate-400">추천 문장이 없습니다. 간단한 상황 설명을 적어 보세요.</p>';
+        return;
+    }
+    const items = momentAiSuggestions.map(function (text, index) {
+        return '<button type="button" onclick="applyMomentAiSuggestion(' + index + ')" class="w-full text-left px-3 py-2 mb-1 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs text-slate-800">' +
+            escapeHtmlForAi(text) +
+            '</button>';
+    }).join('');
+    box.innerHTML = items;
+}
+
+function applyMomentAiSuggestion(index) {
+    if (!momentAiSuggestions || index < 0 || index >= momentAiSuggestions.length) return;
+    const text = momentAiSuggestions[index];
+    const input = document.getElementById('new-moment-text');
+    if (!input) return;
+    input.value = text;
+    if (typeof showToast === 'function') {
+        showToast('추천 문장이 입력되었습니다. 시간을 맞추고 등록을 눌러주세요.');
+    }
+}
+
+function openCommentAiHelper() {
+    const input = document.getElementById('new-comment-input');
+    let base = '';
+
+    if (input && input.value.trim()) {
+        base = input.value.trim();
+    } else if (typeof state !== 'undefined' && state && state.activeNodeId && Array.isArray(state.nodes)) {
+        const node = state.nodes.find(function (n) { return n.id === state.activeNodeId; });
+        if (node && node.title) {
+            base = node.title;
+        }
+    }
+
+    if (!base) {
+        base = '이 순간';
+    }
+
+    const box = document.getElementById('comment-ai-result');
+    if (box) {
+        box.innerHTML = '<p class="text-xs text-slate-400">AI가 추천 문장을 생성 중입니다...</p>';
+    }
+
+    return callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {
+        if (Array.isArray(result) && result.length > 0) {
+            commentAiSuggestions = result;
+        } else {
+            commentAiSuggestions = createAiCommentSuggestions(base);
+        }
+        renderCommentAiSuggestions();
+    }).catch(function () {
+        commentAiSuggestions = createAiCommentSuggestions(base);
+        renderCommentAiSuggestions();
+    });
+}
+
+function renderCommentAiSuggestions() {
+    const box = document.getElementById('comment-ai-result');
+    if (!box) return;
+    if (!commentAiSuggestions || commentAiSuggestions.length === 0) {
+        box.innerHTML = '<p class="text-xs text-slate-400">추천 문장이 없습니다. 간단한 상황 설명을 적어 보세요.</p>';
+        return;
+    }
+    const items = commentAiSuggestions.map(function (text, index) {
+        return '<button type="button" onclick="applyCommentAiSuggestion(' + index + ')" class="w-full text-left px-3 py-2 mb-1 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs text-slate-800">' +
+            escapeHtmlForAi(text) +
+            '</button>';
+    }).join('');
+    box.innerHTML = items;
+}
+
+function applyCommentAiSuggestion(index) {
+    if (!commentAiSuggestions || index < 0 || index >= commentAiSuggestions.length) return;
+    const text = commentAiSuggestions[index];
+    const input = document.getElementById('new-comment-input');
+    if (!input) return;
+    input.value = text;
+    if (typeof showToast === 'function') {
+        showToast('댓글 입력란에 추천 문장이 채워졌습니다. 전송을 눌러주세요.');
     }
 }
 

@@ -1,6 +1,6 @@
 // Netlify Function: Gemini 2.5 Flash 프록시
 // - 여러 GEMINI_API_KEYS 를 순차적으로 사용
-// - 트리 뼈대 / 코멘트 추천 두 모드를 지원
+// - 트리 뼈대 / 코멘트 추천 / QA(질문·도움말) 모드를 지원
 // - 프런트에서는 /.netlify/functions/ai-helper 로 호출
 
 const GEMINI_ENDPOINT =
@@ -38,6 +38,17 @@ function buildPromptBody(mode, data) {
       `각 코멘트는 1~2문장, 60자 이내로 해주세요.\n` +
       `응답은 오직 JSON 문자열 배열 형식으로만 주세요.\n` +
       `순간 설명: ${base}`;
+    return { text };
+  }
+
+  if (mode === 'qa') {
+    const { prompt, context } = data || {};
+    const text =
+      `당신은 러브트리(LoveTree) 앱을 사용하는 사용자를 돕는 한국어 어시스턴트입니다.\n` +
+      `질문에 대해 친절하지만 간결하게 답변하고, 가능하면 번호 목록이나 불릿으로 정리해 주세요.\n` +
+      `앱의 현재 상태에 대한 추가 정보가 있을 수 있습니다:\n` +
+      `${context || '(추가 정보 없음)'}\n` +
+      `질문: ${prompt || ''}`;
     return { text };
   }
 
@@ -139,18 +150,23 @@ exports.handler = async (event, context) => {
     const part = first && first.content && first.content.parts && first.content.parts[0];
     const rawText = part && (part.text || part);
 
-    let parsed;
-    try {
-      parsed = JSON.parse(rawText);
-    } catch (e) {
-      console.warn('Failed to parse Gemini JSON, returning raw text');
-      parsed = rawText;
+    let result;
+    if (mode === 'qa') {
+      // QA 모드는 일반 텍스트 답변을 그대로 반환
+      result = rawText;
+    } else {
+      try {
+        result = JSON.parse(rawText);
+      } catch (e) {
+        console.warn('Failed to parse Gemini JSON, returning raw text');
+        result = rawText;
+      }
     }
 
     return {
       statusCode: 200,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ mode, result: parsed }),
+      body: JSON.stringify({ mode, result }),
     };
   } catch (e) {
     console.error('ai-helper error:', e);
