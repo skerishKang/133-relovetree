@@ -18,6 +18,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         :root {
@@ -426,8 +427,12 @@
                 <div class="p-4 bg-white border-t border-slate-200 shrink-0">
                     <form onsubmit="addMomentFromDetail(event)" class="flex flex-col gap-3">
                         <div class="flex gap-2">
-                            <input type="text" id="new-moment-time" placeholder="0:00"
-                                class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center">
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="new-moment-time" placeholder="0:00"
+                                    class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center">
+                                <button type="button" onclick="setCurrentMomentTime()"
+                                    class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-[11px] font-medium text-slate-700 rounded-lg whitespace-nowrap">현재 시간</button>
+                            </div>
                             <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
                                 class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                         </div>
@@ -679,6 +684,26 @@
         let currentUser = null;
         let isReadOnly = false;
 
+        // YouTube Player State
+        let ytPlayer = null;
+        let youTubeApiReady = false;
+
+        let originalNodes = [];
+
+        // Global State
+        const state = {
+            nodes: [],
+            edges: [],
+            transform: { x: 0, y: 0, k: 1 },
+            isDragging: false,
+            isPanning: false,
+            selectedNode: null,
+            dragStart: { x: 0, y: 0 },
+            activeNodeId: null,
+            likes: [],
+            comments: []
+        };
+
         // Initialize App
         document.addEventListener('DOMContentLoaded', async () => {
             initApp(); // from shared.js
@@ -694,7 +719,16 @@
                 storage = firebase.storage();
             }
 
-            loadData();
+            // Load Data and Initialize State
+            await loadData();
+
+            // Apply viewport settings
+            const savedViewport = localStorage.getItem(VIEWPORT_MODE_KEY);
+            if (savedViewport) {
+                viewportMode = savedViewport;
+                applyViewportLayout();
+                updateViewportButtons();
+            }
         });
 
         // Load Data (Firebase -> LocalStorage -> Dummy)
@@ -706,6 +740,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             const treeId = urlParams.get('id') || 'bts';
             const currentTreeId = treeId;
+
+            let loadedData = null;
 
             // 1. Try Firebase (if available)
             if (typeof db !== 'undefined' && db) {
@@ -728,7 +764,7 @@
                         }
 
                         if (data.nodes && data.nodes.length > 0) {
-                            return data;
+                            loadedData = data;
                         }
                     }
                 } catch (error) {
@@ -737,63 +773,62 @@
             }
 
             // 2. Try LocalStorage
-            const localData = localStorage.getItem(`relovetree_data_${treeId}`);
-            if (localData) {
-                try {
-                    const parsed = JSON.parse(localData);
-                    if (parsed.nodes && parsed.edges) {
-                        console.log('Loaded from LocalStorage');
-                        return parsed;
+            if (!loadedData) {
+                const localData = localStorage.getItem(`relovetree_data_${treeId}`);
+                if (localData) {
+                    try {
+                        const parsed = JSON.parse(localData);
+                        if (parsed.nodes && parsed.edges) {
+                            console.log('Loaded from LocalStorage');
+                            loadedData = parsed;
+                        }
+                    } catch (e) {
+                        console.error('LocalStorage parse error', e);
                     }
-                } catch (e) {
-                    console.error('LocalStorage parse error', e);
                 }
             }
 
             // 3. Try Dummy Data
-            if (dummyData[treeId]) {
+            if (!loadedData && dummyData[treeId]) {
                 console.log('Loaded from Dummy Data');
-                return dummyData[treeId];
+                loadedData = dummyData[treeId];
             }
 
             // 4. Default to Empty Tree for new IDs
-            console.log('New tree created for ID:', treeId);
-            return {
-                name: treeId ? decodeURIComponent(treeId) : 'My Tree',
-                nodes: [
-                    {
-                        id: 1,
-                        x: window.innerWidth / 2 - 140,
-                        y: window.innerHeight / 2 - 100,
-                        title: '여정의 시작',
-                        date: new Date().toISOString().split('T')[0],
-                        videoId: '',
-                        moments: [],
-                        details: '여기를 클릭하여 첫 번째 순간을 기록해보세요.'
-                    }
-                ],
-                edges: [],
-                likes: [],
-                comments: []
-            };
-        }
-
-        let initialData = null; // Will be set by init()
-
-        function loadFromLocalOrDummy(remoteData = null) {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const localData = JSON.parse(stored);
-                state.nodes = localData.nodes || [];
-                state.edges = localData.edges || [];
-                document.getElementById('tree-title').innerText = localData.name || (remoteData ? remoteData.name : initialData.name);
-            } else {
-                state.nodes = JSON.parse(JSON.stringify(originalNodes));
-                state.edges = (remoteData ? remoteData.edges : initialData.edges) || [];
-                document.getElementById('tree-title').innerText = (remoteData ? remoteData.name : initialData.name);
+            if (!loadedData) {
+                console.log('New tree created for ID:', treeId);
+                loadedData = {
+                    name: treeId ? decodeURIComponent(treeId) : 'My Tree',
+                    nodes: [
+                        {
+                            id: 1,
+                            x: window.innerWidth / 2 - 140,
+                            y: window.innerHeight / 2 - 100,
+                            title: '여정의 시작',
+                            date: new Date().toISOString().split('T')[0],
+                            videoId: '',
+                            moments: [],
+                            details: '여기를 클릭하여 첫 번째 순간을 기록해보세요.'
+                        }
+                    ],
+                    edges: [],
+                    likes: [],
+                    comments: []
+                };
             }
-            render();
+
+            // Initialize State and Render
+            if (loadedData) {
+                initState(loadedData);
+                document.getElementById('tree-title').innerText = loadedData.name || 'My Tree';
+                render();
+            }
+
+            return loadedData;
         }
+
+        // Removed redundant loadFromLocalOrDummy and initialData
+        // All loading logic is now handled in loadData() and initState()
 
         function updateUIForReadOnly() {
             if (isReadOnly) {
@@ -810,27 +845,25 @@
             }
         }
 
-        if (initialData.name) {
-            document.getElementById('tree-title').innerText = initialData.name;
+        // Global State moved to top of script
+        // initialData usage removed
+
+        // Initialize State with Data
+        function initState(data) {
+            // Deep copy for reset
+            const nodesSource = data.nodes.length > 0 ? data.nodes : [{
+                id: 1, x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 100, title: '여정의 시작', date: new Date().toISOString().split('T')[0], videoId: '', moments: []
+            }];
+
+            originalNodes = JSON.parse(JSON.stringify(nodesSource));
+            state.nodes = JSON.parse(JSON.stringify(originalNodes));
+            state.edges = data.edges || [];
+            state.likes = data.likes || [];
+            state.comments = data.comments || [];
+
+            // Reset transform
+            state.transform = { x: 0, y: 0, k: 1 };
         }
-
-        // Deep copy for reset
-        const originalNodes = JSON.parse(JSON.stringify(initialData.nodes.length > 0 ? initialData.nodes : [{
-            id: 1, x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 100, title: '여정의 시작', date: new Date().toISOString().split('T')[0], videoId: '', moments: []
-        }]));
-
-        const state = {
-            nodes: JSON.parse(JSON.stringify(originalNodes)),
-            edges: initialData.edges || [],
-            transform: { x: 0, y: 0, k: 1 },
-            isDragging: false,
-            isPanning: false,
-            selectedNode: null,
-            dragStart: { x: 0, y: 0 },
-            activeNodeId: null,
-            likes: [],
-            comments: []
-        };
 
         let editorMode = 'tree';
 
@@ -963,6 +996,25 @@
             try {
                 localStorage.setItem(VIEWPORT_MODE_KEY, mode);
             } catch (e) { }
+        }
+
+        function updateViewportButtons() {
+            const desktopBtn = document.getElementById('viewport-desktop-btn');
+            const mobileBtn = document.getElementById('viewport-mobile-btn');
+
+            if (!desktopBtn || !mobileBtn) return;
+
+            if (viewportMode === 'desktop') {
+                desktopBtn.classList.add('bg-slate-800', 'text-white');
+                desktopBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                mobileBtn.classList.remove('bg-slate-800', 'text-white');
+                mobileBtn.classList.add('bg-slate-100', 'text-slate-600');
+            } else if (viewportMode === 'mobile') {
+                mobileBtn.classList.add('bg-slate-800', 'text-white');
+                mobileBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                desktopBtn.classList.remove('bg-slate-800', 'text-white');
+                desktopBtn.classList.add('bg-slate-100', 'text-slate-600');
+            }
         }
 
         function setOrientationMode(mode) {
@@ -1773,7 +1825,7 @@
                 localStorage.removeItem(STORAGE_KEY);
 
                 // Clear Firebase
-                if (isFirebaseReady && db) {
+                if (db) {
                     db.collection('trees').doc(treeId).delete().then(() => {
                         console.log("Firebase document deleted");
                     }).catch((error) => {
@@ -1786,11 +1838,49 @@
         }
 
         // --- Video Helpers ---
+        function onYouTubeIframeAPIReady() {
+            youTubeApiReady = true;
+        }
+
         function startVideo(videoId, startSeconds) {
             if (!videoId) return;
             const iframe = document.getElementById('detail-video');
             const placeholder = document.getElementById('video-placeholder');
 
+            // 우선 YouTube IFrame Player API 사용 시도
+            if (youTubeApiReady && typeof YT !== 'undefined' && typeof YT.Player === 'function') {
+                const startSec = (typeof startSeconds === 'number' && Number.isFinite(startSeconds) && startSeconds > 0)
+                    ? Math.floor(startSeconds)
+                    : 0;
+
+                if (!ytPlayer) {
+                    ytPlayer = new YT.Player('detail-video', {
+                        videoId: videoId,
+                        playerVars: {
+                            playsinline: 1,
+                            rel: 0,
+                            modestbranding: 1,
+                            autoplay: 1,
+                            start: startSec
+                        }
+                    });
+                } else {
+                    ytPlayer.loadVideoById({
+                        videoId: videoId,
+                        startSeconds: startSec
+                    });
+                }
+
+                if (iframe) {
+                    iframe.classList.remove('hidden');
+                }
+                if (placeholder) {
+                    placeholder.classList.add('hidden');
+                }
+                return;
+            }
+
+            // 폴백: 단순 iframe src 교체
             const params = new URLSearchParams({
                 playsinline: 1,
                 rel: 0,
@@ -1806,6 +1896,35 @@
             iframe.classList.remove('hidden');
             if (placeholder) {
                 placeholder.classList.add('hidden');
+            }
+        }
+
+        function setCurrentMomentTime() {
+            const input = document.getElementById('new-moment-time');
+            if (!input) return;
+
+            let seconds = 0;
+
+            if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+                try {
+                    seconds = ytPlayer.getCurrentTime();
+                } catch (e) {
+                    seconds = 0;
+                }
+            }
+
+            if (!Number.isFinite(seconds) || seconds < 0) {
+                seconds = 0;
+            }
+
+            const total = Math.floor(seconds);
+
+            if (typeof secondsToTime === 'function') {
+                input.value = secondsToTime(total);
+            } else {
+                const m = Math.floor(total / 60);
+                const s = total % 60;
+                input.value = `${m}:${s.toString().padStart(2, '0')}`;
             }
         }
 
