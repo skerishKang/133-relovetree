@@ -1883,31 +1883,38 @@
                     ? Math.floor(startSeconds)
                     : 0;
 
-                if (!ytPlayer) {
-                    ytPlayer = new YT.Player('detail-video', {
-                        videoId: videoId,
-                        playerVars: {
-                            playsinline: 1,
-                            rel: 0,
-                            modestbranding: 1,
-                            autoplay: 1,
-                            start: startSec
-                        }
-                    });
-                } else {
-                    ytPlayer.loadVideoById({
-                        videoId: videoId,
-                        startSeconds: startSec
-                    });
-                }
+                try {
+                    // ytPlayer가 비정상 객체이거나 loadVideoById가 없는 경우를 방어적으로 처리
+                    if (!ytPlayer || typeof ytPlayer.loadVideoById !== 'function') {
+                        ytPlayer = new YT.Player('detail-video', {
+                            videoId: videoId,
+                            playerVars: {
+                                playsinline: 1,
+                                rel: 0,
+                                modestbranding: 1,
+                                autoplay: 1,
+                                start: startSec
+                            }
+                        });
+                    } else {
+                        ytPlayer.loadVideoById({
+                            videoId: videoId,
+                            startSeconds: startSec
+                        });
+                    }
 
-                if (iframe) {
-                    iframe.classList.remove('hidden');
+                    if (iframe) {
+                        iframe.classList.remove('hidden');
+                    }
+                    if (placeholder) {
+                        placeholder.classList.add('hidden');
+                    }
+                    return;
+                } catch (e) {
+                    console.error('YouTube Player API 오류, iframe src 폴백으로 전환합니다:', e);
+                    ytPlayer = null; // 다음 호출에서 다시 초기화 시도
+                    // 아래 일반 iframe 경로로 폴백
                 }
-                if (placeholder) {
-                    placeholder.classList.add('hidden');
-                }
-                return;
             }
 
             // 폴백: 단순 iframe src 교체

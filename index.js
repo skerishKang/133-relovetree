@@ -37,18 +37,12 @@ function ensureLoggedIn() {
     const user = getCurrentUser();
     if (user) return user;
 
-    const messageKo = '로그인이 필요합니다. 구글 계정으로 로그인한 후 이용해주세요.';
-    const messageEn = 'Login is required. Please sign in with Google to continue.';
-    showError(isKorean ? messageKo : messageEn, 4000);
+    const messageKo = '로그인이 필요합니다. 오른쪽 상단의 [로그인] 버튼을 눌러 구글 계정으로 로그인해 주세요.';
+    const messageEn = 'Login is required. Please use the [Login] button in the top-right corner.';
+    showError(isKorean ? messageKo : messageEn, 5000);
 
-    if (typeof signInWithGoogle === 'function') {
-        try {
-            signInWithGoogle();
-        } catch (e) {
-            console.error('signInWithGoogle failed:', e);
-        }
-    }
-
+    // 여기서는 자동으로 로그인 팝업을 띄우지 않고,
+    // 사용자가 명시적으로 상단의 [로그인] 버튼을 눌러 흐름을 제어하도록 둔다.
     return null;
 }
 
@@ -294,6 +288,8 @@ function loadRecentTrees() {
     // Sort by last updated (descending)
     myTrees.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
 
+    // 나의 러브트리 그리드 및 최근 방문 스토리 동시 갱신
+    renderMyTreesGrid(myTrees);
     if (myTrees.length > 0) {
         renderRecentTreesFromList(myTrees);
     } else {
@@ -346,6 +342,8 @@ async function loadUserTreesFromFirestore(user) {
             });
         });
 
+        // Firestore 기준으로 나의 러브트리 그리드와 최근 방문 스토리를 동시에 갱신
+        renderMyTreesGrid(myTrees);
         renderRecentTreesFromList(myTrees);
     } catch (error) {
         console.error('Failed to load trees from Firestore:', error);
@@ -388,12 +386,48 @@ function renderRecentTreesFromList(myTrees) {
     }).join('');
 
     elements.recentTreesScroll.innerHTML = myTreesHTML;
+}
 
-    // 사용자가 이미 트리를 가지고 있다면, "첫 러브트리를 만들어보세요" 플레이스홀더는 숨김
-    const myCreatedList = document.getElementById('my-created-list');
-    if (myCreatedList && myTrees.length > 0) {
-        myCreatedList.classList.add('hidden');
+/**
+ * 나의 러브트리 섹션용 그리드 렌더러
+ */
+function renderMyTreesGrid(myTrees) {
+    const grid = document.getElementById('my-created-grid');
+    const placeholder = document.getElementById('my-created-list');
+    if (!grid) return;
+
+    if (!myTrees || myTrees.length === 0) {
+        grid.classList.add('hidden');
+        grid.innerHTML = '';
+        if (placeholder) placeholder.classList.remove('hidden');
+        return;
     }
+
+    const cardsHTML = myTrees.map(tree => {
+        const initial = tree.name ? tree.name.charAt(0).toUpperCase() : '?';
+        const nodeCount = tree.nodeCount || 0;
+        const updated = (tree.lastUpdated || '').slice(0, 10);
+
+        return `
+            <a href="editor.html?id=${encodeURIComponent(tree.id)}"
+               class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-colors transition-shadow">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
+                        ${initial}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-slate-900 truncate">${tree.name}</p>
+                        <p class="text-xs text-slate-500">${nodeCount}개의 노드</p>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400">최근 업데이트: ${updated}</p>
+            </a>
+        `;
+    }).join('');
+
+    grid.innerHTML = cardsHTML;
+    grid.classList.remove('hidden');
+    if (placeholder) placeholder.classList.add('hidden');
 }
 
 // ================== LANGUAGE AND TRANSLATIONS ==================
