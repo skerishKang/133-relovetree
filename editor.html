@@ -2175,7 +2175,7 @@
                 // We don't set src immediately to avoid autoplay/loading
                 // iframe.src = ... (handled by startVideo or click)
 
-                // Show placeholder with play button
+                // Show placeholder with play button (실제 재생)
                 placeholder.onclick = () => startVideo(node.videoId);
                 externalLink.href = `https://www.youtube.com/watch?v=${node.videoId}`;
                 externalLink.classList.remove('hidden');
@@ -2188,9 +2188,32 @@
                 placeholder.style.backgroundRepeat = 'no-repeat';
                 placeholder.onclick = null;
             } else {
-                // No Media
-                placeholder.innerHTML = '<p class="text-sm text-slate-300">등록된 영상/이미지가 없습니다.</p>';
-                placeholder.onclick = null;
+                // No Media: 클릭 시 유튜브 URL 설정을 안내
+                placeholder.innerHTML = `<div class="w-16 h-16 rounded-full border-2 border-white/60 flex items-center justify-center bg-black/40 shadow-lg">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium">유튜브 영상을 추가하려면 클릭하세요</p>
+                    <p class="text-xs text-slate-400">우측 편집 영역에서 유튜브 URL을 입력하면 바로 재생할 수 있어요.</p>`;
+
+                placeholder.onclick = () => {
+                    if (typeof isReadOnly !== 'undefined' && isReadOnly) {
+                        if (typeof showToast === 'function') {
+                            showToast("읽기 전용 모드입니다.");
+                        }
+                        return;
+                    }
+
+                    if (typeof enableEditMode === 'function') {
+                        enableEditMode();
+                    }
+
+                    const videoInput = document.getElementById('edit-video');
+                    if (videoInput) {
+                        videoInput.focus();
+                    }
+                };
             }
         }
 

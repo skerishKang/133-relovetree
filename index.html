@@ -578,35 +578,38 @@
 
                 <!-- 2. My Created Trees (나의 러브트리) - New Section -->
                 <section id="my-created-trees-section" class="px-4 mb-12">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
-                        <button onclick="openCreateModal()"
-                            class="px-3 py-1.5 rounded-full border border-brand-400 bg-white/80 text-brand-500 text-xs sm:text-sm font-bold shadow-sm hover:bg-brand-50 hover:border-brand-500 transition-colors">+ 만들기</button>
-                    </div>
+                    <div
+                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
+                            <button onclick="openCreateModal()"
+                                class="px-3 py-1.5 rounded-full border border-brand-400 bg-white/80 text-brand-500 text-xs sm:text-sm font-bold shadow-sm hover:bg-brand-50 hover:border-brand-500 transition-colors">+ 만들기</button>
+                        </div>
 
-                    <!-- Placeholder for Logged In/Out State -->
-                    <div id="my-created-list"
-                        class="bg-transparent rounded-2xl p-8 text-center border border-white/80 shadow-lg backdrop-blur-sm">
-                        <button type="button" onclick="openCreateModal()"
-                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent">
-                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
-                        </button>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">첫 러브트리를 만들어보세요</h3>
-                        <p class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을
-                            나만의 트리로 정리해 보세요.</p>
-                        <button onclick="openCreateModal()"
-                            class="bg-white border border-slate-300 text-slate-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">
-                            새로 만들기
-                        </button>
-                    </div>
+                        <!-- Placeholder for Logged In/Out State -->
+                        <div id="my-created-list"
+                            class="bg-white/80 rounded-2xl p-8 text-center border border-white/60 shadow-md backdrop-blur-sm">
+                            <button type="button" onclick="openCreateModal()"
+                                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent">
+                                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </button>
+                            <h3 class="text-lg font-bold text-slate-900 mb-2">첫 러브트리를 만들어보세요</h3>
+                            <p class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을
+                                나만의 트리로 정리해 보세요.</p>
+                            <button onclick="openCreateModal()"
+                                class="bg-white border border-slate-300 text-slate-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">
+                                새로 만들기
+                            </button>
+                        </div>
 
-                    <!-- 실제 나의 러브트리 목록 그리드 -->
-                    <div id="my-created-grid"
-                        class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 hidden">
-                        <!-- 로그인 후 내가 만든 트리 카드들이 여기에 렌더링됩니다 -->
+                        <!-- 실제 나의 러브트리 목록 그리드 -->
+                        <div id="my-created-grid"
+                            class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 hidden">
+                            <!-- 로그인 후 내가 만든 트리 카드들이 여기에 렌더링됩니다 -->
+                        </div>
                     </div>
                 </section>
 
