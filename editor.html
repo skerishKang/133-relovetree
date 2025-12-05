@@ -234,8 +234,12 @@
                 </svg>
             </button>
             <div class="w-px h-8 bg-slate-300 mx-1"></div>
+            <button id="btn-auto-connect" onclick="autoConnectTimeline()"
+                class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+                자동 연결
+            </button>
             <button id="btn-reset" onclick="resetLayout()"
-                class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-red-50 text-red-500 text-xs font-bold transition-colors">
+                class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-red-50 text-red-500 text-xs font-bold transition-colors ml-1">
                 초기화
             </button>
             <div class="w-px h-8 bg-slate-300 mx-1"></div>
@@ -870,6 +874,10 @@
                 // Hide Reset Button
                 const resetBtn = document.getElementById('btn-reset');
                 if (resetBtn) resetBtn.classList.add('hidden');
+
+                // Hide Auto Connect Button
+                const autoBtn = document.getElementById('btn-auto-connect');
+                if (autoBtn) autoBtn.classList.add('hidden');
 
                 // Disable Title Edit (visual only, logic handled in save)
                 document.getElementById('tree-title').contentEditable = "false";
@@ -1513,6 +1521,53 @@
                 }
 
                 pendingConnectionFrom = null;
+            }
+        }
+
+        // 날짜 순으로 자동으로 연결선을 만들어 주는 기능
+        function autoConnectTimeline() {
+            if (isReadOnly) {
+                if (typeof showToast === 'function') {
+                    showToast("읽기 전용 모드입니다.");
+                }
+                return;
+            }
+
+            if (!Array.isArray(state.nodes) || state.nodes.length < 2) {
+                if (typeof showToast === 'function') {
+                    showToast("연결할 노드가 충분하지 않습니다.");
+                }
+                return;
+            }
+
+            // 날짜 기준으로 정렬 (같은 날짜면 id 순)
+            const nodes = [...state.nodes];
+            nodes.sort((a, b) => {
+                const ad = a.date || '';
+                const bd = b.date || '';
+                if (ad === bd) {
+                    return (a.id || 0) - (b.id || 0);
+                }
+                return ad < bd ? -1 : 1;
+            });
+
+            const newEdges = [];
+            for (let i = 0; i < nodes.length - 1; i++) {
+                const fromId = nodes[i].id;
+                const toId = nodes[i + 1].id;
+                if (fromId != null && toId != null) {
+                    newEdges.push({ from: fromId, to: toId });
+                }
+            }
+
+            state.edges = newEdges;
+            if (typeof saveData === 'function') {
+                saveData();
+            }
+            render();
+
+            if (typeof showToast === 'function') {
+                showToast("날짜 순으로 자동 연결되었습니다.");
             }
         }
 
