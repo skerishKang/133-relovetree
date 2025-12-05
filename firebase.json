@@ -10,7 +10,16 @@
             "**/*.bat",
             "**/*.cmd",
             "**/*.sh"
+        ],
+        "rewrites": [
+            {
+                "source": "/ai-helper",
+                "function": "aiHelper"
+            }
         ]
+    },
+    "functions": {
+        "source": "functions"
     },
     "firestore": {
         "rules": "firestore.rules"
