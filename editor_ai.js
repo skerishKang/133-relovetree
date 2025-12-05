@@ -1,6 +1,7 @@
 let aiHelperMode = 'tree';
 let aiTreeSuggestions = [];
 let aiCommentSuggestions = [];
+let aiHelperLoading = false;
 
 function openAiHelper() {
     const modal = document.getElementById('ai-helper-modal');
@@ -64,19 +65,57 @@ function setAiHelperMode(mode) {
     if (resultEl) resultEl.innerHTML = '';
 }
 
+function setAiHelperLoading(isLoading) {
+    aiHelperLoading = isLoading;
+    const submitBtn = document.getElementById('ai-helper-submit');
+    const cancelBtn = document.getElementById('ai-helper-cancel');
+
+    if (submitBtn) {
+        if (isLoading) {
+            if (!submitBtn.dataset.originalText) {
+                submitBtn.dataset.originalText = submitBtn.textContent || '생성';
+            }
+            submitBtn.textContent = '생성 중...';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+        } else {
+            submitBtn.textContent = submitBtn.dataset.originalText || '생성';
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+        }
+    }
+
+    if (cancelBtn) {
+        cancelBtn.disabled = isLoading;
+        if (isLoading) {
+            cancelBtn.classList.add('opacity-60', 'cursor-not-allowed');
+        } else {
+            cancelBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+        }
+    }
+}
+
 function onAiHelperSubmit(event) {
     event.preventDefault();
-    if (aiHelperMode === 'tree') {
-        runAiTreeHelper();
-    } else {
-        runAiCommentHelper();
+    if (aiHelperLoading) return;
+
+    setAiHelperLoading(true);
+    if (typeof showToast === 'function') {
+        showToast('AI가 제안을 생성 중입니다...');
     }
+
+    const runner = aiHelperMode === 'tree' ? runAiTreeHelper : runAiCommentHelper;
+    Promise.resolve()
+        .then(() => runner())
+        .finally(() => {
+            setAiHelperLoading(false);
+        });
 }
 
 function runAiTreeHelper() {
     if (typeof isReadOnly !== 'undefined' && isReadOnly) {
         if (typeof showToast === 'function') showToast('읽기 전용 모드에서는 사용할 수 없습니다.');
-        return;
+        return Promise.resolve();
     }
     const promptEl = document.getElementById('ai-tree-prompt');
     const countEl = document.getElementById('ai-tree-count');
@@ -88,7 +127,7 @@ function runAiTreeHelper() {
     }
 
     // Gemini API 호출 시도
-    callAiHelperApi('tree', { prompt, count }).then(function (result) {
+    return callAiHelperApi('tree', { prompt, count }).then(function (result) {
         if (Array.isArray(result)) {
             aiTreeSuggestions = result.map(function (item) {
                 return {
@@ -213,11 +252,11 @@ function applyAiTreeSkeleton() {
 }
 
 function runAiCommentHelper() {
-    if (typeof state === 'undefined' || !state) return;
+    if (typeof state === 'undefined' || !state) return Promise.resolve();
     const nodeId = state.activeNodeId;
     if (!nodeId) {
         if (typeof showToast === 'function') showToast('먼저 노드를 선택하거나 상세 보기에서 사용하세요.');
-        return;
+        return Promise.resolve();
     }
     const promptEl = document.getElementById('ai-comment-prompt');
     let base = '';
@@ -232,7 +271,7 @@ function runAiCommentHelper() {
         }
     }
 
-    callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {
+    return callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {
         if (Array.isArray(result) && result.length > 0) {
             aiCommentSuggestions = result;
             renderAiCommentPreview();
