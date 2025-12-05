@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relovetree 커뮤니티</title>
+    <meta name="description" content="러브트리 커뮤니티에서 덕질 이야기를 나누고 트리를 소개해보세요.">
+
+    <!-- Tailwind CSS (빌드된 output) -->
+    <link rel="stylesheet" href="output.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <style>
+        /* 커뮤니티 전용 간단 스타일 - 나머지는 Tailwind 사용 */
+        body {
+            background-color: #f8fafc;
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+
+        dialog {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900 flex flex-col antialiased">
+    <!-- 상단 네비게이션 (홈과 동일한 로그인 UI 구조 재사용) -->
+    <nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40" role="navigation"
+        aria-label="메인 네비게이션">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-500/30"
+                    aria-hidden="true">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <a href="index.html" class="font-bold text-slate-900 leading-tight hover:text-brand-600">Relovetree</a>
+                    <span class="text-xs text-slate-500 leading-tight">커뮤니티</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html"
+                    class="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-100">홈으로</a>
+                <!-- 로그인 / 사용자 메뉴 구조는 auth.js와 동일한 ID 사용 -->
+                <button id="login-btn"
+                    class="px-4 py-2 bg-brand-500 text-white text-sm font-bold rounded-xl hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30">
+                    로그인
+                </button>
+                <div id="user-menu" class="hidden flex items-center gap-3">
+                    <a href="admin.html" id="admin-link"
+                        class="hidden text-sm font-bold text-slate-500 hover:text-brand-600">
+                        관리자
+                    </a>
+                    <div
+                        class="flex items-center gap-2 bg-white border border-slate-200 rounded-full pl-1 pr-3 py-1 shadow-sm">
+                        <img id="user-avatar" src="" alt="Profile" class="w-6 h-6 rounded-full">
+                        <span id="user-name" class="text-xs font-bold text-slate-700 max-w-[80px] truncate"></span>
+                    </div>
+                    <button id="logout-btn" class="text-xs text-slate-400 hover:text-red-500 font-medium">
+                        로그아웃
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1">
+        <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16">
+            <header class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">커뮤니티</h1>
+                    <p class="text-slate-500 text-sm sm:text-base">덕질 이야기, 러브트리 소개, 추천 영상을 서로 나눠보세요.</p>
+                </div>
+                <button id="btn-open-create-post"
+                    class="px-4 py-2 rounded-xl bg-brand-500 text-white text-sm font-bold shadow-md hover:bg-brand-600 transition-colors">
+                    글 쓰기
+                </button>
+            </header>
+
+            <!-- 게시글 리스트 영역 -->
+            <div id="community-empty-state"
+                class="bg-white/80 border border-dashed border-slate-200 rounded-2xl p-8 text-center text-slate-500 text-sm hidden">
+                아직 작성된 글이 없습니다. 첫 번째 글을 올려보세요!
+            </div>
+
+            <div id="community-post-list" class="space-y-4">
+                <!-- Firestore에서 불러온 게시글 카드가 여기에 렌더링됩니다. -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 글 작성 모달 -->
+    <dialog id="create-post-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-slate-900 mb-2">새 글 작성</h2>
+            <p class="text-slate-500 text-sm mb-4">러브트리, 직캠, 콘서트 후기 등 자유롭게 공유해 주세요.</p>
+
+            <form id="create-post-form" class="space-y-4" method="dialog">
+                <div>
+                    <label for="community-title" class="block text-xs font-bold text-slate-500 mb-1">제목</label>
+                    <input id="community-title" name="title" type="text" maxlength="80" required
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        placeholder="예: 이번 콘서트 세트리스트가 미쳤다">
+                </div>
+                <div>
+                    <label for="community-content" class="block text-xs font-bold text-slate-500 mb-1">내용</label>
+                    <textarea id="community-content" name="content" rows="6" required
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm resize-none"
+                        placeholder="자유롭게 작성해 주세요. 타인을 공격하거나 스포일러는 자제해주세요."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('create-post-modal')"
+                        class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100">취소</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-xl text-sm font-bold bg-brand-500 text-white hover:bg-brand-600 shadow-md">등록</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- 게시글 상세/댓글 모달 -->
+    <dialog id="post-detail-modal" class="p-0 w-[95vw] max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="flex flex-col h-[80vh]">
+            <header class="px-6 pt-5 pb-3 border-b border-slate-100 flex items-start justify-between gap-4">
+                <div>
+                    <h2 id="detail-title" class="text-lg sm:text-xl font-bold text-slate-900 mb-1"></h2>
+                    <p id="detail-meta" class="text-xs text-slate-500"></p>
+                </div>
+                <button type="button" onclick="closeModal('post-detail-modal')"
+                    class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+            <div class="px-6 py-4 flex-1 overflow-y-auto space-y-6">
+                <article class="prose prose-sm max-w-none text-slate-800 whitespace-pre-wrap" id="detail-content"></article>
+
+                <section>
+                    <h3 class="text-sm font-bold text-slate-900 mb-2">댓글</h3>
+                    <div id="comment-list" class="space-y-3 text-sm">
+                        <!-- 댓글 리스트 -->
+                    </div>
+                </section>
+            </div>
+            <form id="comment-form" class="px-6 pt-3 pb-4 border-t border-slate-100 flex flex-col gap-2" method="dialog">
+                <textarea id="comment-input" rows="2" placeholder="댓글을 입력하세요"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm resize-none"></textarea>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('post-detail-modal')"
+                        class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100">닫기</button>
+                    <button type="submit"
+                        class="px-4 py-1.5 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600 shadow-sm">댓글 등록</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- 공용/인증/커뮤니티 스크립트 -->
+    <script src="src/shared.js"></script>
+    <script src="src/auth.js"></script>
+    <script src="community.js"></script>
+</body>
+
+</html>
