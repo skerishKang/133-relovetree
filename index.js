@@ -707,8 +707,11 @@ function applyBackgroundConfig(config) {
         body.style.backgroundSize = 'cover';
         body.style.backgroundPosition = 'center';
         body.style.backgroundRepeat = 'no-repeat';
+        // 이미지 배경을 사용할 때는 단색 배경 색상은 초기화
+        body.style.backgroundColor = '';
     } else if (config.type === 'color' && config.value) {
-        body.style.backgroundImage = '';
+        // CSS에서 설정된 기본 배경 이미지를 완전히 끄기 위해 none으로 지정
+        body.style.backgroundImage = 'none';
         body.style.backgroundColor = config.value;
     }
 }
@@ -737,9 +740,78 @@ function loadBackgroundPreference() {
     const saved = safeLocalStorageGet(BG_STORAGE_KEY, null);
     if (saved && (saved.type === 'image' || saved.type === 'color')) {
         applyBackgroundConfig(saved);
-    } else {
-        applyBackgroundConfig({ type: 'color', value: '#f8fafc' });
     }
+}
+
+// === Local file background helpers ===
+
+function processBackgroundFile(file) {
+    if (!file) return;
+    if (!file.type || !file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드할 수 있습니다.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const result = e.target && e.target.result;
+        if (typeof result === 'string') {
+            // data URL을 그대로 background 이미지로 사용
+            setBackground('image', result);
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function triggerBackgroundFileInput() {
+    const input = document.getElementById('custom-bg-file');
+    if (input) {
+        input.click();
+    }
+}
+
+function handleBackgroundFileChange(event) {
+    const input = event.target;
+    if (!input || !input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    processBackgroundFile(file);
+}
+
+function initBackgroundFileControls() {
+    const dropzone = document.getElementById('custom-bg-dropzone');
+    const fileInput = document.getElementById('custom-bg-file');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', handleBackgroundFileChange);
+    }
+
+    if (!dropzone) return;
+
+    const highlight = () => dropzone.classList.add('bg-slate-100');
+    const unhighlight = () => dropzone.classList.remove('bg-slate-100');
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            highlight();
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            unhighlight();
+        });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (!dt || !dt.files || dt.files.length === 0) return;
+        const file = dt.files[0];
+        processBackgroundFile(file);
+    });
 }
 
 function openSettingsModal() {
@@ -810,6 +882,9 @@ function initPage() {
             mobileSettingsBtn.addEventListener('click', openSettingsModal);
         }
 
+        // 배경 파일 업로드/드래그앤드롭 컨트롤 초기화
+        initBackgroundFileControls();
+
     } catch (error) {
         console.error('Page initialization error:', error);
         showError('페이지 로딩 중 오류가 발생했습니다.', 3000);
@@ -873,6 +948,8 @@ window.scrollToMyTrees = scrollToMyTrees;
 window.scrollToAllTrees = scrollToAllTrees;
 window.openSettingsModal = openSettingsModal;
 window.loadBackgroundPreference = loadBackgroundPreference;
+window.triggerBackgroundFileInput = triggerBackgroundFileInput;
+window.initBackgroundFileControls = initBackgroundFileControls;
 // Auth 모듈에서 호출하는 전역 콜백: 로그인/로그아웃 시점에 최근 트리 목록을 갱신
 window.onAuthReady = function (user) {
     if (user) {
