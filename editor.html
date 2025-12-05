@@ -815,6 +815,20 @@
                     likes: [],
                     comments: []
                 };
+
+                // 인덱스 페이지 "최근 방문한 트리"에 바로 보이도록 초기 상태를 로컬스토리지에 기록
+                try {
+                    const initialDataForIndex = {
+                        name: loadedData.name,
+                        nodes: loadedData.nodes,
+                        edges: loadedData.edges,
+                        lastUpdated: new Date().toISOString(),
+                        ownerId: currentUser ? currentUser.uid : null
+                    };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDataForIndex));
+                } catch (e) {
+                    console.error('Initial local save failed', e);
+                }
             }
 
             // Initialize State and Render

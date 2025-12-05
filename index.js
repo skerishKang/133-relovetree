@@ -159,7 +159,7 @@ function createArtistCard(artist) {
     return `
         <a href="editor.html?id=${artist.id}"
             data-artist-id="${artist.id}"
-            class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-shadow h-full">
+            class="flex flex-col bg-white/80 rounded-2xl overflow-hidden shadow-lg border border-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow h-full">
             
             <!-- Header (User Info style) -->
             <div class="flex items-center justify-between p-3">

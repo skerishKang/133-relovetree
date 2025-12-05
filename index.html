@@ -61,6 +61,11 @@
             --main-bg-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop');
         }
 
+        /* 데스크탑 전용 블록: 모바일 프리뷰에서는 숨김 */
+        body.mobile-preview .desktop-only {
+            display: none;
+        }
+
         body {
             background-color: #f8fafc;
             /* 배경 이미지 공통 적용 */
@@ -376,6 +381,19 @@
             gap: 16px;
         }
 
+        /* 모바일 프리뷰에서 '지금 뜨는 러브트리'는 가로 스크롤 리스트 형태로 */
+        body.mobile-preview #popular-feed {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        body.mobile-preview #popular-feed a[data-artist-id] {
+            flex: 0 0 220px;
+        }
+
         body.mobile-preview #my-trees-grid>a {
             display: flex;
             flex-direction: column;
@@ -542,16 +560,19 @@
 
                 <!-- 1. Trending Section (지금 뜨는 러브트리) - Moved to Top -->
                 <section id="discovery-section" class="pt-6 px-4 mb-12">
-                    <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        지금 뜨는 러브트리
-                    </h2>
-                    <div id="popular-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Feed Cards injected here by JS -->
+                    <div
+                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            지금 뜨는 러브트리
+                        </h2>
+                        <div id="popular-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Feed Cards injected here by JS -->
+                        </div>
                     </div>
                 </section>
 
@@ -559,18 +580,20 @@
                 <section id="my-created-trees-section" class="px-4 mb-12">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
-                        <button onclick="openCreateModal()" class="text-brand-500 text-sm font-bold">+ 만들기</button>
+                        <button onclick="openCreateModal()"
+                            class="px-3 py-1.5 rounded-full border border-brand-400 bg-white/80 text-brand-500 text-xs sm:text-sm font-bold shadow-sm hover:bg-brand-50 hover:border-brand-500 transition-colors">+ 만들기</button>
                     </div>
 
                     <!-- Placeholder for Logged In/Out State -->
-                    <div id="my-created-list" class="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
-                        <div
-                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm">
+                    <div id="my-created-list"
+                        class="bg-transparent rounded-2xl p-8 text-center border border-white/80 shadow-lg backdrop-blur-sm">
+                        <button type="button" onclick="openCreateModal()"
+                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent">
                             <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>
                             </svg>
-                        </div>
+                        </button>
                         <h3 class="text-lg font-bold text-slate-900 mb-2">첫 러브트리를 만들어보세요</h3>
                         <p class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을
                             나만의 트리로 정리해 보세요.</p>
@@ -583,12 +606,15 @@
 
                 <!-- 3. Recent Visits (최근 방문한 트리) - Renamed from Hero -->
                 <section id="recent-section" class="px-4 mb-8">
-                    <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
+                    <div
+                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
 
-                    <!-- Horizontal Scroll Container -->
-                    <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
-                        <!-- Items injected by JS -->
-                        <div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>
+                        <!-- Horizontal Scroll Container -->
+                        <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
+                            <!-- Items injected by JS -->
+                            <div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>
+                        </div>
                     </div>
                 </section>
 
@@ -642,8 +668,8 @@
                 </button>
             </nav>
 
-            <!-- Main Content -->
-            <div class="flex-1">
+            <!-- Main Content (Desktop-only block; 모바일 프리뷰에서는 숨김) -->
+            <div class="flex-1 desktop-only">
 
                 <!-- My Trees Section (Hidden by default) -->
                 <div id="my-trees-section" class="mb-8 hidden animate-fade-in">
@@ -659,41 +685,7 @@
                     </div>
                 </div>
 
-                <h2 id="all-trees-title" class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                        </path>
-                    </svg>
-                    <span id="all-trees-title">모든 러브트리</span>
-                </h2>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6" id="main-grid">
-
-                    <!-- Create Card -->
-                    <button onclick="openCreateModal()"
-                        class="rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-4 hover:border-brand-500 hover:bg-brand-50/50 transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 animate-scale-in min-h-[16rem]"
-                        id="create-tree-btn" type="button" aria-describedby="create-tree-desc">
-                        <div
-                            class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-500 transition-colors shadow-sm group-hover:shadow-md">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4">
-                                </path>
-                            </svg>
-                        </div>
-                        <span class="font-semibold text-lg text-slate-600 group-hover:text-brand-600"
-                            id="btn-create">새로운 트리
-                            만들기</span>
-                        <span class="sr-only" id="create-tree-desc">새로운 러브트리를 만드세요</span>
-                    </button>
-
-                    <!-- Artist Cards will be populated by JavaScript -->
-                    <div id="artist-cards-container" class="contents">
-                        <!-- Cards will be dynamically generated -->
-                    </div>
-                </div>
+                <!-- 하단 데스크탑용 '모든 러브트리 / 새로운 트리 만들기' 섹션 제거 -->
             </div>
             </main>
         </div>
