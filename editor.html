@@ -1372,18 +1372,13 @@
             connections.innerHTML = '';
             document.querySelectorAll('.node').forEach(el => el.remove());
 
-            state.edges.forEach(edge => {
-                const from = state.nodes.find(n => n.id === edge.from);
-                const to = state.nodes.find(n => n.id === edge.to);
-                if (from && to) drawConnection(from, to);
-            });
-
             state.nodes.forEach(node => {
                 const el = document.createElement('div');
 
                 el.className = `node ${state.selectedNode === node.id ? 'selected' : ''}`;
                 el.style.left = node.x + 'px';
                 el.style.top = node.y + 'px';
+                el.dataset.nodeId = String(node.id);
 
                 const hasVideo = !!node.videoId;
                 const thumbUrl = hasVideo ? getYouTubeThumb(node.videoId, 'hqdefault') : '';
@@ -1458,14 +1453,29 @@
 
                 canvas.appendChild(el);
             });
+
+            // 노드 DOM이 모두 생성된 이후에 실제 핸들 위치를 기준으로 연결선을 그림
+            state.edges.forEach(edge => {
+                const from = state.nodes.find(n => n.id === edge.from);
+                const to = state.nodes.find(n => n.id === edge.to);
+                if (from && to) drawConnection(from, to);
+            });
         }
 
         function drawConnection(from, to) {
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            const startX = from.x + 280;
-            const startY = from.y + 100;
-            const endX = to.x;
-            const endY = to.y + 100;
+            // 실제 DOM 상의 핸들 중앙 좌표를 기준으로 연결선을 계산
+            const fromEl = document.querySelector(`.node[data-node-id="${from.id}"]`);
+            const toEl = document.querySelector(`.node[data-node-id="${to.id}"]`);
+            if (!fromEl || !toEl) return;
+
+            const fromHandle = fromEl.querySelector('.connection-handle-right');
+            const toHandle = toEl.querySelector('.connection-handle-left');
+            if (!fromHandle || !toHandle) return;
+
+            const startX = fromEl.offsetLeft + fromHandle.offsetLeft + fromHandle.offsetWidth / 2;
+            const startY = fromEl.offsetTop + fromHandle.offsetTop + fromHandle.offsetHeight / 2;
+            const endX = toEl.offsetLeft + toHandle.offsetLeft + toHandle.offsetWidth / 2;
+            const endY = toEl.offsetTop + toHandle.offsetTop + toHandle.offsetHeight / 2;
 
             const cp1X = startX + (endX - startX) * 0.5;
             const cp1Y = startY;
@@ -1474,6 +1484,7 @@
 
             const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
 
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             path.setAttribute('d', d);
             path.setAttribute('stroke', '#cbd5e1');
             path.setAttribute('stroke-width', '3');
