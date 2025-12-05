@@ -238,6 +238,10 @@
                 class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-colors">
                 자동 연결
             </button>
+            <button id="btn-clear-connections" onclick="clearAllConnections()"
+                class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-colors ml-1">
+                연결선 초기화
+            </button>
             <button id="btn-reset" onclick="resetLayout()"
                 class="bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-red-50 text-red-500 text-xs font-bold transition-colors ml-1">
                 초기화
@@ -879,6 +883,10 @@
                 const autoBtn = document.getElementById('btn-auto-connect');
                 if (autoBtn) autoBtn.classList.add('hidden');
 
+                // Hide Clear Connections Button
+                const clearBtn = document.getElementById('btn-clear-connections');
+                if (clearBtn) clearBtn.classList.add('hidden');
+
                 // Disable Title Edit (visual only, logic handled in save)
                 document.getElementById('tree-title').contentEditable = "false";
             }
@@ -1141,7 +1149,7 @@
             };
         }
 
-        const saveData = debounce(async () => {
+        async function saveDataImmediate(showToastOnSuccess = true) {
             if (isReadOnly) {
                 console.log("Read-only mode. Save skipped.");
                 return;
@@ -1152,7 +1160,7 @@
                 nodes: state.nodes,
                 edges: state.edges,
                 lastUpdated: new Date().toISOString(),
-                ownerId: currentUser ? currentUser.uid : null // Add ownerId
+                ownerId: currentUser ? currentUser.uid : null
             };
 
             // 1. Save to LocalStorage (Backup & Speed)
@@ -1171,12 +1179,21 @@
                 try {
                     await db.collection('trees').doc(treeId).set(dataToSave, { merge: true });
                     console.log("Data saved to Firebase");
-                    showToast("저장되었습니다");
+                    if (showToastOnSuccess && typeof showToast === 'function') {
+                        showToast("저장되었습니다");
+                    }
                 } catch (e) {
                     console.error("Firebase save failed", e);
-                    showToast("클라우드 저장 실패 (로컬에만 저장됨)");
+                    if (showToastOnSuccess && typeof showToast === 'function') {
+                        showToast("클라우드 저장 실패 (로컬에만 저장됨)");
+                    }
                 }
             }
+        }
+
+        const saveData = debounce(() => {
+            // 일반 편집 동작에서는 디바운스된 저장을 사용
+            saveDataImmediate(true);
         }, 1000); // Debounce 1s
 
         function shareTree() {
@@ -1582,6 +1599,40 @@
             }
         }
 
+        // 모든 연결선을 한 번에 삭제하는 기능
+        function clearAllConnections() {
+            if (isReadOnly) {
+                if (typeof showToast === 'function') {
+                    showToast("읽기 전용 모드입니다.");
+                }
+                return;
+            }
+
+            if (!Array.isArray(state.edges) || state.edges.length === 0) {
+                if (typeof showToast === 'function') {
+                    showToast("삭제할 연결선이 없습니다.");
+                }
+                return;
+            }
+
+            if (!confirm('모든 연결선을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            state.edges = [];
+            render();
+
+            if (typeof saveDataImmediate === 'function') {
+                saveDataImmediate(false);
+            } else if (typeof saveData === 'function') {
+                saveData();
+            }
+
+            if (typeof showToast === 'function') {
+                showToast("모든 연결선이 삭제되었습니다.");
+            }
+        }
+
         function renderTimeline() {
             const timeline = document.getElementById('timeline');
             if (!timeline) return;
@@ -1845,7 +1896,12 @@
             // Delay clearing slightly to allow node.onmouseup to fire with correct state
             setTimeout(() => {
                 if (state.isDragging) {
-                    saveData(); // Save position after drag
+                    // 드래그가 끝난 직후에는 디바운스 없이 즉시 저장하여 새로고침해도 위치가 유지되도록 한다
+                    if (typeof saveDataImmediate === 'function') {
+                        saveDataImmediate(false);
+                    } else if (typeof saveData === 'function') {
+                        saveData();
+                    }
                 }
                 isDraggingNode = false;
                 state.isDragging = false;
