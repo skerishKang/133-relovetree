@@ -27,6 +27,15 @@ function initAuth() {
             console.log('User signed out');
             updateLoginUI(null);
         }
+
+        // 각 페이지에 인증 완료 상태를 알려주기 위한 훅
+        try {
+            if (typeof window.onAuthReady === 'function') {
+                window.onAuthReady(user);
+            }
+        } catch (e) {
+            console.error('onAuthReady callback failed:', e);
+        }
     });
 
     // Attach Event Listeners

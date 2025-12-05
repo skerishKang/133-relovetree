@@ -713,6 +713,11 @@
             currentUser = await waitForAuth();
             console.log("Current User:", currentUser ? currentUser.email : "Guest");
 
+            // 로그인하지 않은 사용자는 항상 읽기 전용 모드로 제한
+            if (!currentUser) {
+                isReadOnly = true;
+            }
+
             if (typeof firebase !== 'undefined' && firebase.apps.length) {
                 db = firebase.firestore();
                 auth = firebase.auth();
@@ -721,6 +726,9 @@
 
             // Load Data and Initialize State
             await loadData();
+
+            // 읽기 전용 모드라면 UI에서 편집 관련 버튼/컨트롤을 숨김
+            updateUIForReadOnly();
 
             // Apply viewport settings
             const savedViewport = localStorage.getItem(VIEWPORT_MODE_KEY);
@@ -788,13 +796,14 @@
                 }
             }
 
-            // 3. Try Dummy Data
+            // 3. Try Dummy Data (항상 읽기 전용으로 취급)
             if (!loadedData && dummyData[treeId]) {
                 console.log('Loaded from Dummy Data');
                 loadedData = dummyData[treeId];
+                isReadOnly = true;
             }
 
-            // 4. Default to Empty Tree for new IDs
+            // 4. Default to Empty Tree for new IDs (로그인 사용자 전용)
             if (!loadedData) {
                 console.log('New tree created for ID:', treeId);
                 loadedData = {
@@ -816,7 +825,7 @@
                     comments: []
                 };
 
-                // 인덱스 페이지 "최근 방문한 트리"에 바로 보이도록 초기 상태를 로컬스토리지에 기록
+                // 인덱스 페이지 "최근 방문한 트리"에 바로 보이도록 초기 상태를 로컬스토리지 및 Firestore에 기록
                 try {
                     const initialDataForIndex = {
                         name: loadedData.name,
@@ -825,9 +834,16 @@
                         lastUpdated: new Date().toISOString(),
                         ownerId: currentUser ? currentUser.uid : null
                     };
+
+                    // 로컬 백업
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDataForIndex));
+
+                    // 로그인 상태라면 즉시 Firestore에도 생성
+                    if (db && currentUser) {
+                        await db.collection('trees').doc(treeId).set(initialDataForIndex, { merge: true });
+                    }
                 } catch (e) {
-                    console.error('Initial local save failed', e);
+                    console.error('Initial save failed', e);
                 }
             }
 

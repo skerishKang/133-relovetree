@@ -19,6 +19,39 @@ function debounce(func, wait) {
     };
 }
 
+// 현재 로그인한 Firebase 사용자를 안전하게 가져오기
+function getCurrentUser() {
+    try {
+        if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+            return null;
+        }
+        return firebase.auth().currentUser;
+    } catch (e) {
+        console.warn('getCurrentUser failed:', e);
+        return null;
+    }
+}
+
+// 특정 액션 전에 로그인을 보장하는 헬퍼
+function ensureLoggedIn() {
+    const user = getCurrentUser();
+    if (user) return user;
+
+    const messageKo = '로그인이 필요합니다. 구글 계정으로 로그인한 후 이용해주세요.';
+    const messageEn = 'Login is required. Please sign in with Google to continue.';
+    showError(isKorean ? messageKo : messageEn, 4000);
+
+    if (typeof signInWithGoogle === 'function') {
+        try {
+            signInWithGoogle();
+        } catch (e) {
+            console.error('signInWithGoogle failed:', e);
+        }
+    }
+
+    return null;
+}
+
 // ================== DATA AND CONSTANTS ==================
 
 const DEFAULT_THUMBNAIL = 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
@@ -228,7 +261,7 @@ function renderPopularArtistsList() {
 }
 
 /**
- * Load and display "Recent Trees" from LocalStorage
+ * Load and display "Recent Trees" from LocalStorage (비로그인/백업용)
  */
 function loadRecentTrees() {
     if (!elements.recentTreesScroll || !elements.recentSection) return;
@@ -239,7 +272,7 @@ function loadRecentTrees() {
     // Scan LocalStorage for tree data
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key.startsWith(STORAGE_PREFIX)) {
+        if (key && key.startsWith(STORAGE_PREFIX)) {
             try {
                 const treeId = key.replace(STORAGE_PREFIX, '');
                 const data = JSON.parse(localStorage.getItem(key));
@@ -262,15 +295,86 @@ function loadRecentTrees() {
     myTrees.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
 
     if (myTrees.length > 0) {
-        elements.recentSection.classList.remove('hidden');
+        renderRecentTreesFromList(myTrees);
+    } else {
+        // 로컬에도 아무 데이터가 없으면 플레이스홀더만 유지
+        if (elements.recentTreesScroll.children.length === 0) {
+            elements.recentTreesScroll.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>';
+        }
+    }
+}
 
-        // Render as Stories (Circles)
-        const myTreesHTML = myTrees.map(tree => {
-            const colors = ['purple', 'blue', 'red', 'green', 'pink', 'indigo', 'teal'];
-            const colorIndex = tree.id.length % colors.length;
-            const color = colors[colorIndex];
+/**
+ * Firestore에서 현재 사용자(ownerId 기준) 트리를 불러오기
+ */
+async function loadUserTreesFromFirestore(user) {
+    if (!user) {
+        loadRecentTrees();
+        return;
+    }
 
-            return `
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+        loadRecentTrees();
+        return;
+    }
+
+    try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('trees')
+            .where('ownerId', '==', user.uid)
+            .orderBy('lastUpdated', 'desc')
+            .limit(30)
+            .get();
+
+        const myTrees = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            let lastUpdated = data.lastUpdated;
+
+            // Timestamp 타입과 문자열 모두 처리
+            if (lastUpdated && typeof lastUpdated.toDate === 'function') {
+                lastUpdated = lastUpdated.toDate().toISOString();
+            } else if (!lastUpdated) {
+                lastUpdated = new Date().toISOString();
+            }
+
+            myTrees.push({
+                id: doc.id,
+                name: data.name || decodeURIComponent(doc.id),
+                lastUpdated,
+                nodeCount: (data.nodes || []).length
+            });
+        });
+
+        renderRecentTreesFromList(myTrees);
+    } catch (error) {
+        console.error('Failed to load trees from Firestore:', error);
+        loadRecentTrees();
+    }
+}
+
+/**
+ * 공통 렌더러: 최근/나의 트리 목록을 스토리 형태로 표시
+ */
+function renderRecentTreesFromList(myTrees) {
+    if (!elements.recentTreesScroll || !elements.recentSection) return;
+
+    if (!myTrees || myTrees.length === 0) {
+        elements.recentSection.classList.add('hidden');
+        if (elements.recentTreesScroll.children.length === 0) {
+            elements.recentTreesScroll.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>';
+        }
+        return;
+    }
+
+    elements.recentSection.classList.remove('hidden');
+
+    const myTreesHTML = myTrees.map(tree => {
+        const colors = ['purple', 'blue', 'red', 'green', 'pink', 'indigo', 'teal'];
+        const colorIndex = tree.id.length % colors.length;
+        const color = colors[colorIndex];
+
+        return `
             <a href="editor.html?id=${encodeURIComponent(tree.id)}"
                 class="flex-shrink-0 w-20 flex flex-col items-center gap-2 snap-start group">
                 <div class="w-16 h-16 rounded-full bg-${color}-100 border-2 border-${color}-200 p-1 group-hover:border-${color}-500 transition-colors overflow-hidden">
@@ -280,18 +384,15 @@ function loadRecentTrees() {
                 </div>
                 <span class="text-xs font-medium text-slate-700 text-center truncate w-full px-1">${tree.name}</span>
             </a>
-            `;
-        }).join('');
+        `;
+    }).join('');
 
-        elements.recentTreesScroll.innerHTML = myTreesHTML;
+    elements.recentTreesScroll.innerHTML = myTreesHTML;
 
-    } else {
-        // If no recent trees, show placeholder or hide? 
-        // The HTML has a placeholder "No recent visits". We can just leave it or show it.
-        // For now, let's just show the placeholder text if empty.
-        if (elements.recentTreesScroll.children.length === 0) {
-            elements.recentTreesScroll.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>';
-        }
+    // 사용자가 이미 트리를 가지고 있다면, "첫 러브트리를 만들어보세요" 플레이스홀더는 숨김
+    const myCreatedList = document.getElementById('my-created-list');
+    if (myCreatedList && myTrees.length > 0) {
+        myCreatedList.classList.add('hidden');
     }
 }
 
@@ -372,6 +473,10 @@ function toggleLanguage() {
 function openCreateModal() {
     hideError();
 
+    // 새 트리 생성은 로그인 필수
+    const user = ensureLoggedIn();
+    if (!user) return;
+
     const nameInput = document.getElementById('artist-name');
     if (nameInput) {
         nameInput.value = '';
@@ -391,6 +496,10 @@ function openCreateModal() {
 function handleCreate(e) {
     e.preventDefault();
     hideError();
+
+    // 안전장치: 폼 제출 시에도 로그인 여부 재확인
+    const user = ensureLoggedIn();
+    if (!user) return;
 
     const nameInput = document.getElementById('artist-name');
     const name = nameInput?.value?.trim();
@@ -630,6 +739,8 @@ function initPage() {
         // Initial render
         renderArtistCards();
         // renderPopularArtistsList(); // Deprecated
+        // 최근 트리는 auth.js에서 onAuthReady(user)를 통해 Firestore 기준으로 재로드되며,
+        // 여기서는 로컬스토리지 기반 fallback만 먼저 호출
         loadRecentTrees();
         updateUIText();
 
@@ -728,4 +839,12 @@ window.scrollToMyTrees = scrollToMyTrees;
 window.scrollToAllTrees = scrollToAllTrees;
 window.openSettingsModal = openSettingsModal;
 window.loadBackgroundPreference = loadBackgroundPreference;
+// Auth 모듈에서 호출하는 전역 콜백: 로그인/로그아웃 시점에 최근 트리 목록을 갱신
+window.onAuthReady = function (user) {
+    if (user) {
+        loadUserTreesFromFirestore(user);
+    } else {
+        loadRecentTrees();
+    }
+};
 // closeModal, hideError already exposed via shared.js
