@@ -4,6 +4,7 @@
 
 // Configuration
 const ADMIN_EMAILS = ['padiemipu@gmail.com', 'limone@example.com'];
+const AI_HELPER_ENDPOINT = 'https://lovetree.limone.dev/.netlify/functions/ai-helper';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Firebase (if not already initialized in shared.js, but shared.js might not auto-init if config is in index.js)
@@ -207,9 +208,14 @@ async function loadUsers() {
                 </td>
                 <td class="px-6 py-4 text-slate-500">${user.lastLogin ? user.lastLogin.toDate().toLocaleDateString() : '-'}</td>
                 <td class="px-6 py-4">
-                    <button onclick="deleteUser('${doc.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                        삭제
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="createAiDemoTree('${doc.id}')" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                            AI 트리
+                        </button>
+                        <button onclick="deleteUser('${doc.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                            삭제
+                        </button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -243,5 +249,89 @@ window.deleteUser = async function (uid) {
         loadUsers();
     } catch (e) {
         alert('오류: ' + e.message);
+    }
+};
+
+window.createAiDemoTree = async function (uid) {
+    const db = firebase.firestore();
+    const defaultPrompt = '플레이브 활동을 입덕부터 최근까지 4단계로 정리해줘';
+    const promptText = window.prompt('이 사용자의 트리를 어떤 주제로 만들까요?', defaultPrompt);
+    if (promptText === null) return;
+
+    const count = 4;
+
+    let suggestions = [];
+    try {
+        const res = await fetch(AI_HELPER_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: 'tree', payload: { prompt: promptText, count: count } })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.result)) {
+                suggestions = data.result;
+            }
+        }
+    } catch (e) {
+        console.error('AI helper error:', e);
+    }
+
+    if (!Array.isArray(suggestions) || suggestions.length === 0) {
+        const now = new Date();
+        const base = promptText || 'AI 러브트리';
+        suggestions = [];
+        for (let i = 0; i < count; i++) {
+            const d = new Date(now.getTime() - (count - 1 - i) * 7 * 24 * 60 * 60 * 1000);
+            const date = d.toISOString().split('T')[0];
+            suggestions.push({
+                title: base + ' - 순간 ' + (i + 1),
+                date: date,
+                description: ''
+            });
+        }
+    }
+
+    const nodes = [];
+    const edges = [];
+    suggestions.forEach((item, index) => {
+        const id = index + 1;
+        nodes.push({
+            id: id,
+            x: 200 + index * 320,
+            y: 200,
+            title: item.title || '새 순간',
+            date: item.date || new Date().toISOString().split('T')[0],
+            videoId: '',
+            moments: []
+        });
+        if (index > 0) {
+            edges.push({ from: id - 1, to: id });
+        }
+    });
+
+    const treeId = 'ai-' + uid + '-' + Date.now();
+    const name = '[AI] ' + (promptText || '데모 트리');
+
+    const dataToSave = {
+        name: name,
+        nodes: nodes,
+        edges: edges,
+        likes: [],
+        comments: [],
+        ownerId: uid,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection('trees').doc(treeId).set(dataToSave, { merge: true });
+        const url = 'editor.html?id=' + encodeURIComponent(treeId);
+        alert('AI 트리가 생성되었습니다. 에디터에서 확인해 보세요.\n' + url);
+        if (window.confirm('지금 바로 에디터에서 열어볼까요?')) {
+            window.open(url, '_blank');
+        }
+    } catch (e) {
+        console.error('AI 트리 생성 오류:', e);
+        alert('AI 트리 생성 중 오류가 발생했습니다: ' + e.message);
     }
 };
