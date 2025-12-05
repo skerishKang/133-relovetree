@@ -252,23 +252,26 @@ function applyAiTreeSkeleton() {
 }
 
 function runAiCommentHelper() {
-    if (typeof state === 'undefined' || !state) return Promise.resolve();
-    const nodeId = state.activeNodeId;
-    if (!nodeId) {
-        if (typeof showToast === 'function') showToast('먼저 노드를 선택하거나 상세 보기에서 사용하세요.');
-        return Promise.resolve();
-    }
     const promptEl = document.getElementById('ai-comment-prompt');
     let base = '';
+
+    // 1순위: 사용자가 직접 적은 설명
     if (promptEl && promptEl.value.trim()) {
         base = promptEl.value.trim();
-    } else {
-        const node = state.nodes.find(function (n) { return n.id === nodeId; });
+    } else if (typeof state !== 'undefined' && state && state.activeNodeId) {
+        // 2순위: 선택된 노드의 제목
+        const nodeId = state.activeNodeId;
+        const node = Array.isArray(state.nodes)
+            ? state.nodes.find(function (n) { return n.id === nodeId; })
+            : null;
         if (node && node.title) {
             base = node.title;
-        } else {
-            base = '이 순간';
         }
+    }
+
+    // 둘 다 없으면 기본 문구 사용
+    if (!base) {
+        base = '이 순간';
     }
 
     return callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {
