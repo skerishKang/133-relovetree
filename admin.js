@@ -263,6 +263,7 @@ function setupNavigation() {
             sections.forEach(section => {
                 const isTarget = section.id === targetId;
                 section.classList.toggle('hidden', !isTarget);
+                section.classList.toggle('active', isTarget);
             });
         });
     });
