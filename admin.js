@@ -291,13 +291,29 @@ async function loadStats() {
     }
 }
 
+function getUserAvatarHTML(user, size) {
+    const baseName = user.displayName || user.email || 'U';
+    const initial = String(baseName).charAt(0).toUpperCase();
+    const dimClass = size === 'lg' ? 'w-10 h-10' : 'w-8 h-8';
+
+    if (user.photoURL) {
+        return `<img src="${user.photoURL}" alt="avatar" class="${dimClass} rounded-full object-cover">`;
+    }
+
+    return `
+        <div class="${dimClass} rounded-full bg-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600">
+            ${initial}
+        </div>
+    `;
+}
+
 function renderRecentUsers(users) {
     const tbody = document.getElementById('recentUsersTable');
     if (!tbody) return;
     tbody.innerHTML = users.map(user => `
         <tr class="hover:bg-slate-50">
             <td class="px-6 py-4 flex items-center gap-3">
-                <img src="${user.photoURL || 'https://via.placeholder.com/32'}" class="w-8 h-8 rounded-full">
+                ${getUserAvatarHTML(user, 'sm')}
                 <span class="font-medium text-slate-900">${user.displayName || 'No Name'}</span>
             </td>
             <td class="px-6 py-4">${user.email}</td>
@@ -328,7 +344,7 @@ async function loadUsers() {
             tr.className = 'hover:bg-slate-50 border-b border-slate-50 last:border-0';
             tr.innerHTML = `
                 <td class="px-6 py-4 flex items-center gap-3">
-                    <img src="${user.photoURL || 'https://via.placeholder.com/32'}" class="w-8 h-8 rounded-full">
+                    ${getUserAvatarHTML(user, 'sm')}
                     <span class="font-medium text-slate-900">${user.displayName || 'No Name'}</span>
                 </td>
                 <td class="px-6 py-4">${user.email}</td>
@@ -418,7 +434,7 @@ async function seedDemoUsers() {
             await ref.set({
                 email: tpl.email,
                 displayName: tpl.displayName,
-                photoURL: 'https://via.placeholder.com/64',
+                photoURL: '',
                 role: tpl.role,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
