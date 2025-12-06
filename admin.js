@@ -323,6 +323,25 @@ function getUserAvatarHTML(user, size) {
     `;
 }
 
+function getUserDisplayName(user, uid) {
+    if (user.displayName) return user.displayName;
+    if (user.email) return String(user.email).split('@')[0];
+    const shortId = uid ? String(uid).slice(0, 6) : '';
+    return shortId ? `익명 사용자 (${shortId})` : '익명 사용자';
+}
+
+function getUserStatusBadgeClass(user) {
+    if (user.isDemo) return 'bg-amber-100 text-amber-700';
+    if (user.role === 'admin') return 'bg-rose-100 text-rose-700';
+    if (user.role === 'pro') return 'bg-purple-100 text-purple-700';
+    return 'bg-slate-100 text-slate-600';
+}
+
+function getUserStatusLabel(user) {
+    if (user.isDemo) return 'DEMO';
+    return (user.role || 'free').toUpperCase();
+}
+
 function formatKoreanDateTime(ts) {
     if (!ts || typeof ts.toDate !== 'function') return '-';
     const d = ts.toDate();
@@ -344,13 +363,16 @@ function renderRecentUsers(users) {
         <tr class="hover:bg-slate-50">
             <td class="px-6 py-4 flex items-center gap-3">
                 ${getUserAvatarHTML(user, 'sm')}
-                <span class="font-medium text-slate-900">${user.displayName || 'No Name'}</span>
+                <div class="flex flex-col">
+                    <span class="font-medium text-slate-900">${getUserDisplayName(user, user.id)}</span>
+                    <span class="text-xs text-slate-400">${user.email || '이메일 없음'}</span>
+                </div>
             </td>
-            <td class="px-6 py-4">${user.email}</td>
+            <td class="px-6 py-4">${user.email || '—'}</td>
             <td class="px-6 py-4 text-slate-500">${user.createdAt ? formatKoreanDateTime(user.createdAt) : '-'}</td>
             <td class="px-6 py-4">
-                <span class="px-2 py-1 rounded-full text-xs font-bold ${user.role === 'pro' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}">
-                    ${(user.role || 'free').toUpperCase()}
+                <span class="px-2 py-1 rounded-full text-xs font-bold ${getUserStatusBadgeClass(user)}">
+                    ${getUserStatusLabel(user)}
                 </span>
             </td>
         </tr>
@@ -375,9 +397,12 @@ async function loadUsers() {
             tr.innerHTML = `
                 <td class="px-6 py-4 flex items-center gap-3">
                     ${getUserAvatarHTML(user, 'sm')}
-                    <span class="font-medium text-slate-900">${user.displayName || 'No Name'}</span>
+                    <div class="flex flex-col">
+                        <span class="font-medium text-slate-900">${getUserDisplayName(user, doc.id)}</span>
+                        <span class="text-xs text-slate-400">${user.email || '이메일 없음'}</span>
+                    </div>
                 </td>
-                <td class="px-6 py-4">${user.email}</td>
+                <td class="px-6 py-4">${user.email || '—'}</td>
                 <td class="px-6 py-4">
                     <select onchange="updateUserRole('${doc.id}', this.value)" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-brand-500">
                         <option value="free" ${user.role === 'free' || !user.role ? 'selected' : ''}>Free</option>
