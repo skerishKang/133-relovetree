@@ -208,6 +208,21 @@ window.editBotProfile = async function (uid) {
 
     // Navigation
     setupNavigation();
+
+    // User search & filter
+    const userSearchInput = document.getElementById('userSearch');
+    if (userSearchInput) {
+        userSearchInput.addEventListener('input', () => {
+            applyUserFiltersAndRender();
+        });
+    }
+
+    const userFilterSelect = document.getElementById('userFilter');
+    if (userFilterSelect) {
+        userFilterSelect.addEventListener('change', () => {
+            applyUserFiltersAndRender();
+        });
+    }
 });
 
 async function checkAdminRole(uid) {
@@ -271,6 +286,8 @@ function setupNavigation() {
 
 // --- Data Loading ---
 
+let allUsersCache = [];
+
 async function loadStats() {
     const db = firebase.firestore();
     try {
@@ -330,7 +347,21 @@ function getUserDisplayName(user, uid) {
     return shortId ? `익명 사용자 (${shortId})` : '익명 사용자';
 }
 
+function getUserType(user) {
+    if (user.isAiBot) return 'ai';
+    if (user.isDemo || (user.email && String(user.email).endsWith('@demo.local'))) return 'demo';
+    return 'normal';
+}
+
+function getUserTypeLabel(user) {
+    const type = getUserType(user);
+    if (type === 'ai') return 'AI 유저';
+    if (type === 'demo') return '데모 유저';
+    return '일반 유저';
+}
+
 function getUserStatusBadgeClass(user) {
+    if (user.isAiBot) return 'bg-cyan-100 text-cyan-700';
     if (user.isDemo) return 'bg-amber-100 text-amber-700';
     if (user.role === 'admin') return 'bg-rose-100 text-rose-700';
     if (user.role === 'pro') return 'bg-purple-100 text-purple-700';
@@ -338,6 +369,7 @@ function getUserStatusBadgeClass(user) {
 }
 
 function getUserStatusLabel(user) {
+    if (user.isAiBot) return 'AI';
     if (user.isDemo) return 'DEMO';
     return (user.role || 'free').toUpperCase();
 }
@@ -365,7 +397,7 @@ function renderRecentUsers(users) {
                 ${getUserAvatarHTML(user, 'sm')}
                 <div class="flex flex-col">
                     <span class="font-medium text-slate-900">${getUserDisplayName(user, user.id)}</span>
-                    <span class="text-xs text-slate-400">${user.email || '이메일 없음'}</span>
+                    <span class="text-xs text-slate-400">${getUserTypeLabel(user)}</span>
                 </div>
             </td>
             <td class="px-6 py-4">${user.email || '—'}</td>
@@ -389,54 +421,102 @@ async function loadUsers() {
     try {
         const snapshot = await db.collection('users').orderBy('lastLogin', 'desc').get();
 
-        tbody.innerHTML = '';
+        allUsersCache = [];
         snapshot.forEach(doc => {
-            const user = doc.data();
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-50 border-b border-slate-50 last:border-0';
-            tr.innerHTML = `
-                <td class="px-6 py-4 flex items-center gap-3">
-                    ${getUserAvatarHTML(user, 'sm')}
-                    <div class="flex flex-col">
-                        <span class="font-medium text-slate-900">${getUserDisplayName(user, doc.id)}</span>
-                        <span class="text-xs text-slate-400">${user.email || '이메일 없음'}</span>
-                    </div>
-                </td>
-                <td class="px-6 py-4">${user.email || '—'}</td>
-                <td class="px-6 py-4">
-                    <select onchange="updateUserRole('${doc.id}', this.value)" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-brand-500">
-                        <option value="free" ${user.role === 'free' || !user.role ? 'selected' : ''}>Free</option>
-                        <option value="pro" ${user.role === 'pro' ? 'selected' : ''}>Pro</option>
-                        <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                    </select>
-                </td>
-                <td class="px-6 py-4 text-slate-500">${user.lastLogin ? user.lastLogin.toDate().toLocaleDateString() : '-'}</td>
-                <td class="px-6 py-4">
-                    <div class="flex gap-2">
-                        <button onclick="editBotProfile('${doc.id}')" class="text-slate-500 hover:text-slate-700 hover:bg-slate-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                            AI 프로필
-                        </button>
-                        <button onclick="createAiDemoTree('${doc.id}')" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                            AI 트리
-                        </button>
-                        <button onclick="createAiReactions('${doc.id}')" class="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                            AI 반응
-                        </button>
-                        <button onclick="createAiCommunityComments('${doc.id}')" class="text-violet-600 hover:text-violet-800 hover:bg-violet-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                            AI 커뮤댓글
-                        </button>
-                        <button onclick="deleteUser('${doc.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                            삭제
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(tr);
+            const data = doc.data() || {};
+            allUsersCache.push({ id: doc.id, ...data });
         });
+
+        applyUserFiltersAndRender();
     } catch (e) {
         console.error('Load users error:', e);
         tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-red-500">데이터 로드 실패</td></tr>';
     }
+}
+
+function applyUserFiltersAndRender() {
+    const tbody = document.getElementById('allUsersTable');
+    if (!tbody) return;
+
+    const searchInput = document.getElementById('userSearch');
+    const filterSelect = document.getElementById('userFilter');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const filter = filterSelect ? filterSelect.value : 'all';
+
+    let users = Array.isArray(allUsersCache) ? allUsersCache.slice() : [];
+
+    // 검색: 이름/이메일
+    if (query) {
+        users = users.filter((user) => {
+            const name = getUserDisplayName(user, user.id || '');
+            const email = (user.email || '').toLowerCase();
+            const lowerName = name.toLowerCase();
+            return lowerName.includes(query) || email.includes(query);
+        });
+    }
+
+    // 필터: 일반/데모/AI/관리자/Pro
+    if (filter && filter !== 'all') {
+        users = users.filter((user) => {
+            const type = getUserType(user);
+            if (filter === 'normal') return type === 'normal';
+            if (filter === 'demo') return type === 'demo';
+            if (filter === 'ai') return type === 'ai';
+            if (filter === 'admin') return user.role === 'admin';
+            if (filter === 'pro') return user.role === 'pro';
+            return true;
+        });
+    }
+
+    tbody.innerHTML = '';
+
+    if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-slate-400">해당 조건에 맞는 사용자가 없습니다.</td></tr>';
+        return;
+    }
+
+    users.forEach((user) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 border-b border-slate-50 last:border-0';
+        tr.innerHTML = `
+            <td class="px-6 py-4 flex items-center gap-3">
+                ${getUserAvatarHTML(user, 'sm')}
+                <div class="flex flex-col">
+                    <span class="font-medium text-slate-900">${getUserDisplayName(user, user.id)}</span>
+                    <span class="text-xs text-slate-400">${user.email || getUserTypeLabel(user)}</span>
+                </div>
+            </td>
+            <td class="px-6 py-4">${user.email || '—'}</td>
+            <td class="px-6 py-4">
+                <select onchange="updateUserRole('${user.id}', this.value)" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-brand-500">
+                    <option value="free" ${user.role === 'free' || !user.role ? 'selected' : ''}>Free</option>
+                    <option value="pro" ${user.role === 'pro' ? 'selected' : ''}>Pro</option>
+                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                </select>
+            </td>
+            <td class="px-6 py-4 text-slate-500">${user.lastLogin && typeof user.lastLogin.toDate === 'function' ? user.lastLogin.toDate().toLocaleDateString() : '-'}</td>
+            <td class="px-6 py-4">
+                <div class="flex gap-2">
+                    <button onclick="editBotProfile('${user.id}')" class="text-slate-500 hover:text-slate-700 hover:bg-slate-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                        AI 프로필
+                    </button>
+                    <button onclick="createAiDemoTree('${user.id}')" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                        AI 트리
+                    </button>
+                    <button onclick="createAiReactions('${user.id}')" class="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                        AI 반응
+                    </button>
+                    <button onclick="createAiCommunityComments('${user.id}')" class="text-violet-600 hover:text-violet-800 hover:bg-violet-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                        AI 커뮤댓글
+                    </button>
+                    <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                        삭제
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 async function seedDemoUsers() {
@@ -456,25 +536,37 @@ async function seedDemoUsers() {
             uid: 'demo-user-01',
             email: 'demo-army@demo.local',
             displayName: '데모 아미',
-            role: 'free'
+            role: 'free',
+            isDemo: true
         },
         {
             uid: 'demo-user-02',
             email: 'demo-carat@demo.local',
             displayName: '데모 캐럿',
-            role: 'pro'
+            role: 'pro',
+            isDemo: true
         },
         {
             uid: 'demo-user-03',
             email: 'demo-stay@demo.local',
             displayName: '데모 스테이',
-            role: 'free'
+            role: 'free',
+            isDemo: true
         },
         {
             uid: 'demo-user-04',
             email: 'demo-diver@demo.local',
             displayName: '데모 다이브',
-            role: 'free'
+            role: 'free',
+            isDemo: true
+        },
+        {
+            uid: 'ai-user-01',
+            email: 'ai-bot@demo.local',
+            displayName: 'Relovetree AI',
+            role: 'free',
+            isDemo: false,
+            isAiBot: true
         }
     ];
 
@@ -493,7 +585,8 @@ async function seedDemoUsers() {
                 role: tpl.role,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                isDemo: true
+                isDemo: tpl.isDemo !== undefined ? tpl.isDemo : true,
+                isAiBot: !!tpl.isAiBot
             }, { merge: true });
 
             createdCount++;
