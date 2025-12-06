@@ -236,18 +236,33 @@ function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.content-section');
 
+    console.log('[Admin] setupNavigation called:', {
+        navCount: navItems.length,
+        sectionCount: sections.length
+    });
+
     navItems.forEach(item => {
+        const target = item.dataset.target;
+        console.log('[Admin] nav item found:', target);
+
         item.addEventListener('click', (e) => {
             e.preventDefault();
+            const targetId = item.dataset.target;
+            console.log('[Admin] nav click:', targetId);
 
-            navItems.forEach(nav => nav.classList.remove('active', 'bg-slate-800', 'text-white'));
+            navItems.forEach(nav => {
+                nav.classList.remove('active', 'bg-slate-800', 'text-white');
+                if (!nav.classList.contains('hover:text-white')) {
+                    nav.classList.add('text-slate-300');
+                }
+            });
+
             item.classList.add('active', 'bg-slate-800', 'text-white');
             item.classList.remove('text-slate-300');
 
-            const target = item.dataset.target;
             sections.forEach(section => {
-                if (section.id === target) section.classList.remove('hidden');
-                else section.classList.add('hidden');
+                const isTarget = section.id === targetId;
+                section.classList.toggle('hidden', !isTarget);
             });
         });
     });
