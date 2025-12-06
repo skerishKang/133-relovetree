@@ -684,8 +684,8 @@ function renderMyTreesGrid(myTrees) {
  */
 const translations = {
     ko: {
-        title: "사랑에 빠진 모든 순간을 기록하세요.",
-        subtitle: "나의 러브트리로 덕질의 모든 순간을 한 곳에 담아보세요.",
+        title: "사랑에 빠진 모든 순간을 기록해 보세요",
+        subtitle: "나의 러브트리로 좋아하는 아티스트의 모든 순간을 한 곳에 차곡차곡 모아 보세요.",
         create: "새로운 트리 만들기",
         modalTitle: "누구의 팬이신가요?",
         modalDesc: "아티스트의 이름을 입력하여 새로운 여정을 시작하세요.",
@@ -697,8 +697,8 @@ const translations = {
         allTreesTitle: "모든 러브트리"
     },
     en: {
-        title: "Record every moment you fall in love.",
-        subtitle: "Collect all your stan moments in one LoveTree.",
+        title: "Capture every moment you fall in love.",
+        subtitle: "Gather all your stan moments into a single LoveTree.",
         create: "Create New Tree",
         modalTitle: "Who is your artist?",
         modalDesc: "Enter the artist name to start a new journey.",
