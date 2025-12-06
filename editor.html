@@ -1364,7 +1364,10 @@
                     <div class="flex-1">
                         <div class="bg-white p-3 rounded-r-xl rounded-bl-xl border border-slate-100 shadow-sm">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-xs font-bold text-slate-700">${c.userName || '익명'}</span>
+                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                    <span>${c.userName || '익명'}</span>
+                                    ${c.isAiBot ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-bold">AI</span>' : ''}
+                                </span>
                                 <span class="text-[10px] text-slate-400">${new Date(c.createdAt?.toDate()).toLocaleDateString()}</span>
                             </div>
                             <p class="text-sm text-slate-800">${c.text}</p>

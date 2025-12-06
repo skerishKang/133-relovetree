@@ -24,6 +24,34 @@ document.addEventListener('DOMContentLoaded', () => {
         measurementId: "G-D4R5XMGFK5"
     };
 
+window.editBotProfile = async function (uid) {
+    const db = firebase.firestore();
+    try {
+        const doc = await db.collection('users').doc(uid).get();
+        let current = '';
+        if (doc.exists) {
+            const data = doc.data() || {};
+            if (data.botProfile) {
+                current = String(data.botProfile);
+            }
+        }
+
+        const input = window.prompt('이 사용자를 AI 봇으로 사용할 때의 말투/설명을 입력하세요.\n예: 과몰입 여돌 덕후, 항상 감탄사 많이 씀', current);
+        if (input === null) return;
+
+        const trimmed = input.trim();
+        if (trimmed) {
+            await db.collection('users').doc(uid).update({ botProfile: trimmed });
+        } else {
+            await db.collection('users').doc(uid).update({ botProfile: firebase.firestore.FieldValue.delete() });
+        }
+
+        alert('AI 프로필이 업데이트되었습니다.');
+    } catch (e) {
+        alert('AI 프로필 업데이트 중 오류: ' + e.message);
+    }
+};
+
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -209,8 +237,14 @@ async function loadUsers() {
                 <td class="px-6 py-4 text-slate-500">${user.lastLogin ? user.lastLogin.toDate().toLocaleDateString() : '-'}</td>
                 <td class="px-6 py-4">
                     <div class="flex gap-2">
+                        <button onclick="editBotProfile('${doc.id}')" class="text-slate-500 hover:text-slate-700 hover:bg-slate-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                            AI 프로필
+                        </button>
                         <button onclick="createAiDemoTree('${doc.id}')" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
                             AI 트리
+                        </button>
+                        <button onclick="createAiReactions('${doc.id}')" class="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                            AI 반응
                         </button>
                         <button onclick="deleteUser('${doc.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
                             삭제
@@ -260,12 +294,27 @@ window.createAiDemoTree = async function (uid) {
 
     const count = 4;
 
+    let botProfileSuffix = '';
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+            const u = userDoc.data() || {};
+            if (u.botProfile) {
+                botProfileSuffix = '\n\n[봇 프로필]\n' + String(u.botProfile);
+            }
+        }
+    } catch (e) {
+        console.warn('AI 트리용 봇 프로필 조회 실패:', e);
+    }
+
+    const finalPrompt = (promptText || defaultPrompt) + botProfileSuffix;
+
     let suggestions = [];
     try {
         const res = await fetch(AI_HELPER_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mode: 'tree', payload: { prompt: promptText, count: count } })
+            body: JSON.stringify({ mode: 'tree', payload: { prompt: finalPrompt, count: count } })
         });
         if (res.ok) {
             const data = await res.json();
@@ -333,5 +382,138 @@ window.createAiDemoTree = async function (uid) {
     } catch (e) {
         console.error('AI 트리 생성 오류:', e);
         alert('AI 트리 생성 중 오류가 발생했습니다: ' + e.message);
+    }
+};
+
+// 특정 사용자를 AI 봇처럼 사용해 여러 트리에 자동으로 좋아요/댓글을 생성하는 함수
+window.createAiReactions = async function (uid) {
+    const db = firebase.firestore();
+
+    // 몇 개의 트리에 반응을 남길지 입력 받기
+    const countInput = window.prompt('이 사용자가 AI처럼 반응할 트리 개수를 입력하세요. (기본 3)', '3');
+    if (countInput === null) return;
+
+    const reactionCount = parseInt(countInput, 10);
+    if (!reactionCount || reactionCount <= 0) {
+        alert('1 이상의 숫자를 입력해 주세요.');
+        return;
+    }
+
+    try {
+        // 사용자 정보에서 닉네임/표시 이름 가져오기
+        let userName = '익명';
+        let botProfile = '';
+        try {
+            const userDoc = await db.collection('users').doc(uid).get();
+            if (userDoc.exists) {
+                const u = userDoc.data() || {};
+                if (u.displayName) userName = u.displayName;
+                else if (u.email) userName = u.email.split('@')[0];
+                if (u.botProfile) botProfile = String(u.botProfile);
+            }
+        } catch (e) {
+            console.warn('AI 반응용 사용자 정보 조회 실패:', e);
+        }
+
+        // 최근 트리 몇 개 가져오기 (본인 소유/타인 소유 모두 포함)
+        const snapshot = await db.collection('trees')
+            .orderBy('lastUpdated', 'desc')
+            .limit(30)
+            .get();
+
+        const candidates = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+
+            // 이미 이 사용자가 좋아요를 누른 트리는 건너뛴다
+            const likes = Array.isArray(data.likes) ? data.likes : [];
+            if (likes.includes(uid)) return;
+
+            candidates.push({ id: doc.id, data });
+        });
+
+        if (candidates.length === 0) {
+            alert('AI가 반응할 수 있는 트리가 없습니다. (이미 좋아요를 눌렀거나 트리가 없습니다)');
+            return;
+        }
+
+        // 무작위로 reactionCount 개까지 선택
+        const shuffled = candidates.slice().sort(() => Math.random() - 0.5);
+        const targets = shuffled.slice(0, Math.min(reactionCount, shuffled.length));
+
+        const reactedTrees = [];
+
+        for (const item of targets) {
+            const treeId = item.id;
+            const treeData = item.data;
+            const treeName = treeData.name || '이 트리';
+
+            // AI에게 댓글 문장 한 줄 생성 요청
+            let commentText = '';
+            let basePrompt = `${treeName} 트리를 본 팬이 남길만한 한 줄 감상평을 한국어로 짧게 써줘. 최대 1문장.`;
+            if (botProfile) {
+                basePrompt += `\n\n이 계정의 말투: ${botProfile}`;
+            }
+            try {
+                const res = await fetch(AI_HELPER_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: 'comment',
+                        payload: {
+                            prompt: basePrompt,
+                            nodeTitle: treeName
+                        }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.result) && data.result.length > 0) {
+                        commentText = String(data.result[0]);
+                    }
+                }
+            } catch (e) {
+                console.warn('AI 반응 생성 중 오류:', e);
+            }
+
+            // AI 호출이 실패했거나 결과가 비어 있으면 기본 문장 사용
+            if (!commentText) {
+                commentText = `${treeName}를 보면 다시 입덕하는 느낌이에요.`;
+            }
+
+            // 좋아요 추가
+            try {
+                await db.collection('trees').doc(treeId).update({
+                    likes: firebase.firestore.FieldValue.arrayUnion(uid)
+                });
+            } catch (e) {
+                console.warn('AI 좋아요 업데이트 실패:', e);
+            }
+
+            // 댓글 추가
+            try {
+                await db.collection('trees').doc(treeId).collection('comments').add({
+                    text: commentText,
+                    userId: uid,
+                    userName: userName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isAiBot: true
+                });
+            } catch (e) {
+                console.warn('AI 댓글 생성 실패:', e);
+            }
+
+            reactedTrees.push(treeName);
+        }
+
+        if (reactedTrees.length > 0) {
+            alert(`총 ${reactedTrees.length}개의 트리에 AI 반응이 생성되었습니다.\n\n- ` + reactedTrees.join('\n- '));
+        } else {
+            alert('실제로 반응이 생성된 트리가 없습니다. (모든 시도가 실패했습니다)');
+        }
+    } catch (e) {
+        console.error('AI 반응 생성 중 오류:', e);
+        alert('AI 반응 생성 중 오류가 발생했습니다: ' + e.message);
     }
 };

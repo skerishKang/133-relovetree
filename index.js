@@ -289,7 +289,9 @@ function loadRecentTrees() {
     myTrees.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
 
     // 나의 러브트리 그리드 및 최근 방문 스토리 동시 갱신
-    renderMyTreesGrid(myTrees);
+    // 비로그인/로그아웃 상태에서는 나의 러브트리 목록은 항상 비워두고,
+    // 최근 방문한 트리 섹션만 로컬스토리지 기준으로 표시한다.
+    renderMyTreesGrid([]);
     if (myTrees.length > 0) {
         renderRecentTreesFromList(myTrees);
     } else {
@@ -342,12 +344,110 @@ async function loadUserTreesFromFirestore(user) {
             });
         });
 
+        if (elements.localMigrationBanner) {
+            const existingIds = new Set(myTrees.map(t => t.id));
+            const STORAGE_PREFIX = 'relovetree_data_';
+            let localOnlyCount = 0;
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(STORAGE_PREFIX)) {
+                    const treeId = key.replace(STORAGE_PREFIX, '');
+                    if (!existingIds.has(treeId)) {
+                        localOnlyCount++;
+                    }
+                }
+            }
+
+            if (localOnlyCount > 0) {
+                elements.localMigrationBanner.classList.remove('hidden');
+                const textEl = document.getElementById('local-migration-text');
+                if (textEl) {
+                    textEl.textContent = '이 기기에만 저장된 러브트리 ' + localOnlyCount + '개를 계정으로 가져올 수 있습니다.';
+                }
+            } else {
+                elements.localMigrationBanner.classList.add('hidden');
+            }
+        }
+
         // Firestore 기준으로 나의 러브트리 그리드와 최근 방문 스토리를 동시에 갱신
         renderMyTreesGrid(myTrees);
         renderRecentTreesFromList(myTrees);
     } catch (error) {
         console.error('Failed to load trees from Firestore:', error);
         loadRecentTrees();
+    }
+}
+
+async function migrateLocalTreesToAccount() {
+    const user = getCurrentUser();
+    if (!user) {
+        const message = isKorean
+            ? '로그인이 필요합니다. 오른쪽 상단의 [로그인] 버튼으로 먼저 로그인해 주세요.'
+            : 'Login is required. Please sign in first.';
+        showError(message, 4000);
+        return;
+    }
+
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+        showError(isKorean ? '저장소 초기화 중입니다. 잠시 후 다시 시도해 주세요.' : 'Storage is not ready. Please try again.', 4000);
+        return;
+    }
+
+    const confirmed = window.confirm('이 기기에만 저장된 러브트리를 현재 계정으로 모두 가져올까요?\n같은 ID의 트리가 이미 계정에 있으면 건너뜁니다.');
+    if (!confirmed) return;
+
+    const db = firebase.firestore();
+    const STORAGE_PREFIX = 'relovetree_data_';
+    const migratedNames = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith(STORAGE_PREFIX)) continue;
+
+        const treeId = key.replace(STORAGE_PREFIX, '');
+        let data;
+        try {
+            data = JSON.parse(localStorage.getItem(key));
+        } catch (e) {
+            continue;
+        }
+
+        if (!data || (!data.nodes && !data.edges)) continue;
+
+        try {
+            const docRef = db.collection('trees').doc(treeId);
+            const snap = await docRef.get();
+            if (snap.exists) {
+                continue;
+            }
+
+            const payload = {
+                name: data.name || decodeURIComponent(treeId),
+                nodes: data.nodes || [],
+                edges: data.edges || [],
+                ownerId: user.uid,
+                lastUpdated: new Date().toISOString()
+            };
+
+            await docRef.set(payload, { merge: true });
+            migratedNames.push(payload.name);
+        } catch (e) {
+            console.error('Local tree migrate failed:', e);
+        }
+    }
+
+    if (migratedNames.length > 0) {
+        const message = isKorean
+            ? '로컬 러브트리 ' + migratedNames.length + '개를 계정으로 가져왔습니다.'
+            : 'Imported ' + migratedNames.length + ' local trees into your account.';
+        showError(message, 4000);
+        await loadUserTreesFromFirestore(user);
+    } else {
+        const message = isKorean
+            ? '가져올 로컬 러브트리를 찾지 못했습니다.'
+            : 'No local trees to import.';
+        showError(message, 3000);
     }
 }
 
@@ -644,7 +744,8 @@ function cacheElements() {
         recentSection: document.getElementById('recent-section'),
         myCreatedTreesSection: document.getElementById('my-created-trees-section'),
         myTreesTitle: document.getElementById('my-trees-title'),
-        allTreesTitle: document.getElementById('all-trees-title')
+        allTreesTitle: document.getElementById('all-trees-title'),
+        localMigrationBanner: document.getElementById('local-migration-banner')
     };
 }
 
@@ -950,6 +1051,7 @@ window.openSettingsModal = openSettingsModal;
 window.loadBackgroundPreference = loadBackgroundPreference;
 window.triggerBackgroundFileInput = triggerBackgroundFileInput;
 window.initBackgroundFileControls = initBackgroundFileControls;
+window.migrateLocalTreesToAccount = migrateLocalTreesToAccount;
 // Auth 모듈에서 호출하는 전역 콜백: 로그인/로그아웃 시점에 최근 트리 목록을 갱신
 window.onAuthReady = function (user) {
     if (user) {

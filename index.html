@@ -618,6 +618,20 @@
                             class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 hidden">
                             <!-- 로그인 후 내가 만든 트리 카드들이 여기에 렌더링됩니다 -->
                         </div>
+
+                        <div id="local-migration-banner"
+                            class="mt-4 hidden bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div>
+                                <p class="font-semibold">이 기기에만 저장된 러브트리가 있습니다.</p>
+                                <p id="local-migration-text" class="text-xs text-amber-700">
+                                    로그인한 계정으로 가져오면, 데스크탑과 모바일에서 함께 볼 수 있어요.
+                                </p>
+                            </div>
+                            <button onclick="migrateLocalTreesToAccount()"
+                                class="px-3 py-1.5 rounded-full bg-amber-600 text-white text-xs font-bold hover:bg-amber-700">
+                                계정으로 가져오기
+                            </button>
+                        </div>
                     </div>
                 </section>
 
