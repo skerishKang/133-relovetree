@@ -192,6 +192,20 @@ window.editBotProfile = async function (uid) {
         });
     }
 
+    const seedDemoUsersBtn = document.getElementById('seedDemoUsersBtn');
+    if (seedDemoUsersBtn) {
+        seedDemoUsersBtn.addEventListener('click', () => {
+            seedDemoUsers();
+        });
+    }
+
+    const seedDemoTreesBtn = document.getElementById('seedDemoTreesBtn');
+    if (seedDemoTreesBtn) {
+        seedDemoTreesBtn.addEventListener('click', () => {
+            seedDemoTrees();
+        });
+    }
+
     // Navigation
     setupNavigation();
 });
@@ -354,6 +368,193 @@ async function loadUsers() {
     }
 }
 
+async function seedDemoUsers() {
+    const db = firebase.firestore();
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+
+    const confirmed = window.confirm('대시보드와 사용자 관리 화면을 위한 데모 사용자를 몇 명 추가할까요?\n같은 ID의 데모 사용자가 이미 있으면 건너뜁니다.');
+    if (!confirmed) return;
+
+    const templates = [
+        {
+            uid: 'demo-user-01',
+            email: 'demo-army@demo.local',
+            displayName: '데모 아미',
+            role: 'free'
+        },
+        {
+            uid: 'demo-user-02',
+            email: 'demo-carat@demo.local',
+            displayName: '데모 캐럿',
+            role: 'pro'
+        },
+        {
+            uid: 'demo-user-03',
+            email: 'demo-stay@demo.local',
+            displayName: '데모 스테이',
+            role: 'free'
+        },
+        {
+            uid: 'demo-user-04',
+            email: 'demo-diver@demo.local',
+            displayName: '데모 다이브',
+            role: 'free'
+        }
+    ];
+
+    let createdCount = 0;
+
+    try {
+        for (const tpl of templates) {
+            const ref = db.collection('users').doc(tpl.uid);
+            const snap = await ref.get();
+            if (snap.exists) continue;
+
+            await ref.set({
+                email: tpl.email,
+                displayName: tpl.displayName,
+                photoURL: 'https://via.placeholder.com/64',
+                role: tpl.role,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                isDemo: true
+            }, { merge: true });
+
+            createdCount++;
+        }
+
+        if (createdCount > 0) {
+            alert(`데모 사용자 ${createdCount}명을 생성했습니다.`);
+            await loadStats();
+            await loadUsers();
+        } else {
+            alert('새로 생성된 데모 사용자가 없습니다. (이미 같은 ID의 데모 사용자가 있습니다)');
+        }
+    } catch (e) {
+        console.error('데모 사용자 생성 오류:', e);
+        alert('데모 사용자 생성 중 오류가 발생했습니다: ' + e.message);
+    }
+}
+
+async function seedDemoTrees() {
+    const db = firebase.firestore();
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+
+    const confirmed = window.confirm('홈과 에디터에서 볼 수 있는 데모 러브트리를 여러 개 생성할까요?\n같은 ID의 트리가 이미 있으면 건너뜁니다.');
+    if (!confirmed) return;
+
+    const owners = [];
+
+    try {
+        const demoSnap = await db.collection('users').where('isDemo', '==', true).limit(10).get();
+        demoSnap.forEach((doc) => {
+            const data = doc.data() || {};
+            owners.push({ uid: doc.id, name: data.displayName || data.email || doc.id });
+        });
+    } catch (e) {
+    }
+
+    if (!owners.length) {
+        owners.push({ uid: currentUser.uid, name: currentUser.displayName || currentUser.email || '관리자' });
+    }
+
+    const templates = [
+        {
+            id: 'demo-tree-bts',
+            name: '방탄소년단 타임라인 데모',
+            baseTitle: 'BTS 활동 정리'
+        },
+        {
+            id: 'demo-tree-svt',
+            name: '세븐틴 투어 히스토리 데모',
+            baseTitle: '세븐틴 투어 기록'
+        },
+        {
+            id: 'demo-tree-skz',
+            name: '스트레이 키즈 컴백 타임라인 데모',
+            baseTitle: '스트레이 키즈 컴백 정리'
+        },
+        {
+            id: 'demo-tree-newjeans',
+            name: '뉴진스 활동 모먼트 데모',
+            baseTitle: '뉴진스 활동 정리'
+        },
+        {
+            id: 'demo-tree-illit',
+            name: '아일릿 성장기 데모',
+            baseTitle: '아일릿 활동 타임라인'
+        }
+    ];
+
+    let createdCount = 0;
+
+    try {
+        for (let i = 0; i < templates.length; i++) {
+            const tpl = templates[i];
+            const ref = db.collection('trees').doc(tpl.id);
+            const snap = await ref.get();
+            if (snap.exists) continue;
+
+            const owner = owners[i % owners.length];
+
+            const now = new Date();
+            const nodes = [];
+            const edges = [];
+
+            for (let step = 0; step < 4; step++) {
+                const id = step + 1;
+                const d = new Date(now.getTime() - (3 - step) * 30 * 24 * 60 * 60 * 1000);
+                const date = d.toISOString().split('T')[0];
+                nodes.push({
+                    id: id,
+                    x: 200 + step * 260,
+                    y: 200,
+                    title: tpl.baseTitle + ' - 단계 ' + (step + 1),
+                    date: date,
+                    videoId: '',
+                    moments: []
+                });
+                if (step > 0) {
+                    edges.push({ from: id - 1, to: id });
+                }
+            }
+
+            await ref.set({
+                name: tpl.name,
+                ownerId: owner.uid,
+                nodes: nodes,
+                edges: edges,
+                likes: [],
+                likeCount: 0,
+                comments: [],
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                isDemo: true
+            }, { merge: true });
+
+            createdCount++;
+        }
+
+        if (createdCount > 0) {
+            alert(`데모 러브트리 ${createdCount}개를 생성했습니다.`);
+        } else {
+            alert('새로 생성된 데모 러브트리가 없습니다. (이미 같은 ID의 트리가 있습니다)');
+        }
+    } catch (e) {
+        console.error('데모 러브트리 생성 오류:', e);
+        alert('데모 러브트리 생성 중 오류가 발생했습니다: ' + e.message);
+    }
+}
+
 async function seedDemoCommunityPosts() {
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
@@ -363,7 +564,7 @@ async function seedDemoCommunityPosts() {
         return;
     }
 
-    const confirmed = window.confirm('커뮤니티에 데모 글 몇 개를 추가할까요?\n같은 제목의 글이 이미 있으면 건너뜁니다.');
+    const confirmed = window.confirm('커뮤니티에 데모 글을 여러 개 추가할까요?\n같은 제목의 글이 이미 있으면 건너뜁니다.');
     if (!confirmed) return;
 
     const authorId = currentUser.uid;
@@ -381,6 +582,14 @@ async function seedDemoCommunityPosts() {
         {
             title: '덕질 루틴 공유해요',
             content: '출근길/등굣길, 퇴근 후, 주말에 어떻게 덕질하는지 루틴을 공유해 봅시다.\n러브트리를 어떻게 활용하고 있는지도 같이 써 주세요.'
+        },
+        {
+            title: '입덕 계기 썰 풀어보기',
+            content: '어떤 계기로 지금 최애를 좋아하게 되었나요? 음악, 무대, 예능, 혹은 친구의 추천 등 각자의 입덕 스토리를 자유롭게 공유해 주세요.'
+        },
+        {
+            title: '최애 짤/움짤 자랑방',
+            content: '요즘 계속 돌려보는 최애 짤이나 움짤이 있다면 여기에 공유해 주세요. 왜 좋아하는지도 한 줄 코멘트로 남겨주면 더 재밌어요.'
         }
     ];
 
