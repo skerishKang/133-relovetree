@@ -307,6 +307,20 @@ function getUserAvatarHTML(user, size) {
     `;
 }
 
+function formatKoreanDateTime(ts) {
+    if (!ts || typeof ts.toDate !== 'function') return '-';
+    const d = ts.toDate();
+    const formatted = d.toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    return formatted + ' (KST)';
+}
+
 function renderRecentUsers(users) {
     const tbody = document.getElementById('recentUsersTable');
     if (!tbody) return;
@@ -317,7 +331,7 @@ function renderRecentUsers(users) {
                 <span class="font-medium text-slate-900">${user.displayName || 'No Name'}</span>
             </td>
             <td class="px-6 py-4">${user.email}</td>
-            <td class="px-6 py-4 text-slate-500">${user.createdAt ? user.createdAt.toDate().toLocaleDateString() : '-'}</td>
+            <td class="px-6 py-4 text-slate-500">${user.createdAt ? formatKoreanDateTime(user.createdAt) : '-'}</td>
             <td class="px-6 py-4">
                 <span class="px-2 py-1 rounded-full text-xs font-bold ${user.role === 'pro' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}">
                     ${(user.role || 'free').toUpperCase()}
