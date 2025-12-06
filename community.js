@@ -82,6 +82,8 @@ function renderCommunityPostCard(id, data) {
     const snippet = escapeHtml(rawContent.length > 120 ? rawContent.slice(0, 120) + '…' : rawContent);
     const author = escapeHtml(data.authorDisplayName || '익명');
     const created = formatCommunityDate(data.createdAt);
+    const likeCount = data.likeCount || 0;
+    const commentCount = data.commentCount || 0;
 
     return `
         <article data-post-id="${id}"
@@ -90,7 +92,13 @@ function renderCommunityPostCard(id, data) {
             <p class="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">${snippet}</p>
             <div class="flex items-center justify-between text-[11px] text-slate-400">
                 <span>${author}</span>
-                <span>${created}</span>
+                <div class="flex items-center gap-2">
+                    <span>${created}</span>
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400">
+                        <span>💬</span>
+                        <span>${commentCount}</span>
+                    </span>
+                </div>
             </div>
         </article>
     `;
@@ -297,10 +305,14 @@ async function loadCommunityComments(postId) {
             const author = escapeHtml(data.authorDisplayName || '익명');
             const text = escapeHtml(data.content || '');
             const created = formatCommunityDate(data.createdAt);
+            const isAi = !!data.isAiBot;
             return `
                 <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
                     <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-semibold text-slate-700">${author}</span>
+                        <span class="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                            <span>${author}</span>
+                            ${isAi ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-bold">AI</span>' : ''}
+                        </span>
                         <span class="text-[10px] text-slate-400">${created}</span>
                     </div>
                     <p class="text-xs text-slate-700 whitespace-pre-wrap">${text}</p>
@@ -352,6 +364,12 @@ async function handleCommentFormSubmit(event) {
                 authorDisplayName: user.displayName || user.email || '익명',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 isDeleted: false
+            });
+
+        await db.collection(COMMUNITY_COLLECTION)
+            .doc(communityCurrentPostId)
+            .update({
+                commentCount: firebase.firestore.FieldValue.increment(1)
             });
 
         if (input) input.value = '';

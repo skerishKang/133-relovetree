@@ -246,6 +246,9 @@ async function loadUsers() {
                         <button onclick="createAiReactions('${doc.id}')" class="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
                             AI 반응
                         </button>
+                        <button onclick="createAiCommunityComments('${doc.id}')" class="text-violet-600 hover:text-violet-800 hover:bg-violet-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                            AI 커뮤댓글
+                        </button>
                         <button onclick="deleteUser('${doc.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors text-sm font-medium">
                             삭제
                         </button>
@@ -515,5 +518,125 @@ window.createAiReactions = async function (uid) {
     } catch (e) {
         console.error('AI 반응 생성 중 오류:', e);
         alert('AI 반응 생성 중 오류가 발생했습니다: ' + e.message);
+    }
+};
+
+// 특정 사용자를 AI 봇처럼 사용해 커뮤니티 글에 자동으로 댓글을 생성하는 함수
+window.createAiCommunityComments = async function (uid) {
+    const db = firebase.firestore();
+
+    const countInput = window.prompt('이 사용자가 AI처럼 댓글을 남길 커뮤니티 글 개수를 입력하세요. (기본 3)', '3');
+    if (countInput === null) return;
+
+    const reactionCount = parseInt(countInput, 10);
+    if (!reactionCount || reactionCount <= 0) {
+        alert('1 이상의 숫자를 입력해 주세요.');
+        return;
+    }
+
+    try {
+        let userName = '익명';
+        let botProfile = '';
+        try {
+            const userDoc = await db.collection('users').doc(uid).get();
+            if (userDoc.exists) {
+                const u = userDoc.data() || {};
+                if (u.displayName) userName = u.displayName;
+                else if (u.email) userName = u.email.split('@')[0];
+                if (u.botProfile) botProfile = String(u.botProfile);
+            }
+        } catch (e) {
+            console.warn('AI 커뮤니티 댓글용 사용자 정보 조회 실패:', e);
+        }
+
+        const snapshot = await db.collection('community_posts')
+            .orderBy('createdAt', 'desc')
+            .limit(50)
+            .get();
+
+        const candidates = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            candidates.push({ id: doc.id, data });
+        });
+
+        if (candidates.length === 0) {
+            alert('AI가 댓글을 남길 수 있는 커뮤니티 글이 없습니다.');
+            return;
+        }
+
+        const shuffled = candidates.slice().sort(() => Math.random() - 0.5);
+        const targets = shuffled.slice(0, Math.min(reactionCount, shuffled.length));
+
+        const reactedPosts = [];
+
+        for (const item of targets) {
+            const postId = item.id;
+            const postData = item.data;
+            const title = postData.title || '제목 없음';
+            const content = postData.content || '';
+            const snippet = content.length > 80 ? content.slice(0, 80) + '…' : content;
+
+            let commentText = '';
+            let basePrompt = `"${title}"라는 제목의 글과 다음 내용을 읽은 팬이 남길만한 한 줄 댓글을 한국어로 짧게 써줘. 최대 1문장.\n\n내용 요약: ${snippet}`;
+            if (botProfile) {
+                basePrompt += `\n\n이 계정의 말투: ${botProfile}`;
+            }
+
+            try {
+                const res = await fetch(AI_HELPER_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: 'comment',
+                        payload: {
+                            prompt: basePrompt,
+                            nodeTitle: title
+                        }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.result) && data.result.length > 0) {
+                        commentText = String(data.result[0]);
+                    }
+                }
+            } catch (e) {
+                console.warn('AI 커뮤니티 댓글 생성 중 오류:', e);
+            }
+
+            if (!commentText) {
+                commentText = `${title} 글 너무 공감돼요.`;
+            }
+
+            try {
+                await db.collection('community_posts').doc(postId).collection('comments').add({
+                    content: commentText,
+                    authorId: uid,
+                    authorDisplayName: userName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isDeleted: false,
+                    isAiBot: true
+                });
+
+                await db.collection('community_posts').doc(postId).update({
+                    commentCount: firebase.firestore.FieldValue.increment(1)
+                });
+            } catch (e) {
+                console.warn('AI 커뮤니티 댓글 쓰기 실패:', e);
+            }
+
+            reactedPosts.push(title);
+        }
+
+        if (reactedPosts.length > 0) {
+            alert(`총 ${reactedPosts.length}개의 글에 AI 커뮤니티 댓글이 생성되었습니다.\n\n- ` + reactedPosts.join('\n- '));
+        } else {
+            alert('실제로 댓글이 생성된 글이 없습니다. (모든 시도가 실패했습니다)');
+        }
+    } catch (e) {
+        console.error('AI 커뮤니티 댓글 생성 중 오류:', e);
+        alert('AI 커뮤니티 댓글 생성 중 오류가 발생했습니다: ' + e.message);
     }
 };
