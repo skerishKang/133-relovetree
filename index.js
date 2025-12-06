@@ -32,6 +32,90 @@ function getCurrentUser() {
     }
 }
 
+// Firestore에서 좋아요 수 기준으로 인기 트리를 불러와 상단 디스커버리 섹션에 렌더링
+async function loadPopularTrees() {
+    const container = document.getElementById('popular-feed');
+    if (!container) {
+        // 컨테이너가 없으면 기존 정적 카드 렌더로 대체
+        renderArtistCards();
+        return;
+    }
+
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+        // Firebase를 사용할 수 없을 때는 정적 인기 아티스트 카드 사용
+        renderArtistCards();
+        return;
+    }
+
+    try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('trees')
+            .orderBy('likeCount', 'desc')
+            .limit(8)
+            .get();
+
+        const trees = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            const rawLikeCount = typeof data.likeCount === 'number'
+                ? data.likeCount
+                : (Array.isArray(data.likes) ? data.likes.length : 0);
+
+            let updated = '';
+            const lastUpdated = data.lastUpdated;
+            if (lastUpdated && typeof lastUpdated.toDate === 'function') {
+                updated = lastUpdated.toDate().toISOString().slice(0, 10);
+            } else if (typeof lastUpdated === 'string') {
+                updated = lastUpdated.slice(0, 10);
+            }
+
+            trees.push({
+                id: doc.id,
+                name: data.name || decodeURIComponent(doc.id),
+                likeCount: rawLikeCount,
+                updated
+            });
+        });
+
+        if (trees.length === 0) {
+            // 아직 인기 데이터가 없으면 기존 정적 카드 사용
+            renderArtistCards();
+            return;
+        }
+
+        const cardsHTML = trees.map((tree) => {
+            const initial = tree.name ? tree.name.charAt(0).toUpperCase() : '?';
+            const likeCount = tree.likeCount || 0;
+
+            return `
+                <a href="editor.html?id=${encodeURIComponent(tree.id)}"
+                   class="flex flex-col bg-white/90 rounded-2xl overflow-hidden shadow-lg border border-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow h-full">
+                    <div class="flex items-center justify-between p-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-xs font-bold text-pink-600">
+                                ${initial}
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-900 truncate">${tree.name}</p>
+                                <p class="text-xs text-slate-500 truncate">${tree.updated || ''}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 text-[11px] text-slate-500">
+                            <span class="text-pink-500">♥</span>
+                            <span>${likeCount}</span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }).join('');
+
+        container.innerHTML = cardsHTML;
+    } catch (error) {
+        console.error('Failed to load popular trees:', error);
+        // 오류 시에도 기존 정적 카드로 fallback
+        renderArtistCards();
+    }
+}
 // 특정 액션 전에 로그인을 보장하는 헬퍼
 function ensureLoggedIn() {
     const user = getCurrentUser();
@@ -41,8 +125,18 @@ function ensureLoggedIn() {
     const messageEn = 'Login is required. Please use the [Login] button in the top-right corner.';
     showError(isKorean ? messageKo : messageEn, 5000);
 
-    // 여기서는 자동으로 로그인 팝업을 띄우지 않고,
-    // 사용자가 명시적으로 상단의 [로그인] 버튼을 눌러 흐름을 제어하도록 둔다.
+    // 새 러브트리 생성처럼 명확한 액션에서는 바로 로그인 플로우를 띄워준다.
+    try {
+        if (typeof signInWithGoogle === 'function') {
+            signInWithGoogle();
+        } else {
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) loginBtn.focus();
+        }
+    } catch (e) {
+        console.warn('자동 로그인 플로우 실행 실패:', e);
+    }
+
     return null;
 }
 
@@ -111,6 +205,46 @@ const BASE_POPULAR_ARTISTS = [
         videoId: 'Vk5-c_v4gMU',
         moments: 62,
         lastUpdate: '30분 전',
+        color: 'purple'
+    },
+    {
+        id: 'newjeans',
+        name: '뉴진스',
+        englishName: 'NewJeans',
+        category: 'Group',
+        videoId: 'js1CtxSY38I',
+        moments: 74,
+        lastUpdate: '어제',
+        color: 'pink'
+    },
+    {
+        id: 'lesserafim',
+        name: '르세라핌',
+        englishName: 'LE SSERAFIM',
+        category: 'Group',
+        videoId: 'pyf8cbqyfPs',
+        moments: 68,
+        lastUpdate: '3일 전',
+        color: 'red'
+    },
+    {
+        id: 'ive',
+        name: '아이브',
+        englishName: 'IVE',
+        category: 'Group',
+        videoId: 'Y8JFxS1HlDo',
+        moments: 81,
+        lastUpdate: '5일 전',
+        color: 'blue'
+    },
+    {
+        id: 'aespa',
+        name: '에스파',
+        englishName: 'aespa',
+        category: 'Group',
+        videoId: 'ZeerrnuLi5E',
+        moments: 59,
+        lastUpdate: '1주 전',
         color: 'purple'
     }
 ];
@@ -320,8 +454,7 @@ async function loadUserTreesFromFirestore(user) {
         const db = firebase.firestore();
         const snapshot = await db.collection('trees')
             .where('ownerId', '==', user.uid)
-            .orderBy('lastUpdated', 'desc')
-            .limit(30)
+            .limit(100)
             .get();
 
         const myTrees = [];
@@ -369,6 +502,11 @@ async function loadUserTreesFromFirestore(user) {
                 elements.localMigrationBanner.classList.add('hidden');
             }
         }
+
+        // lastUpdated 기준으로 최신 순 정렬 (문자열/Date 모두 처리)
+        myTrees.sort(function (a, b) {
+            return new Date(b.lastUpdated) - new Date(a.lastUpdated);
+        });
 
         // Firestore 기준으로 나의 러브트리 그리드와 최근 방문 스토리를 동시에 갱신
         renderMyTreesGrid(myTrees);
@@ -419,6 +557,15 @@ async function migrateLocalTreesToAccount() {
             const docRef = db.collection('trees').doc(treeId);
             const snap = await docRef.get();
             if (snap.exists) {
+                const existing = snap.data() || {};
+                if (!existing.ownerId) {
+                    const claimedName = existing.name || data.name || decodeURIComponent(treeId);
+                    await docRef.set({
+                        ownerId: user.uid,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
+                    migratedNames.push(claimedName);
+                }
                 continue;
             }
 
@@ -537,8 +684,8 @@ function renderMyTreesGrid(myTrees) {
  */
 const translations = {
     ko: {
-        title: "나의 러브트리",
-        subtitle: "사랑에 빠진 모든 순간을 기록하세요.",
+        title: "사랑에 빠진 모든 순간을 기록하세요.",
+        subtitle: "나의 러브트리로 덕질의 모든 순간을 한 곳에 담아보세요.",
         create: "새로운 트리 만들기",
         modalTitle: "누구의 팬이신가요?",
         modalDesc: "아티스트의 이름을 입력하여 새로운 여정을 시작하세요.",
@@ -550,8 +697,8 @@ const translations = {
         allTreesTitle: "모든 러브트리"
     },
     en: {
-        title: "My LoveTrees",
-        subtitle: "Record your falling-in-love moments.",
+        title: "Record every moment you fall in love.",
+        subtitle: "Collect all your stan moments in one LoveTree.",
         create: "Create New Tree",
         modalTitle: "Who is your artist?",
         modalDesc: "Enter the artist name to start a new journey.",
@@ -583,9 +730,6 @@ function updateUIText() {
     if (elements.langBtn) elements.langBtn.innerText = t.langBtn;
     if (elements.myTreesTitle) elements.myTreesTitle.innerText = t.myTreesTitle;
     if (elements.allTreesTitle) elements.allTreesTitle.innerText = t.allTreesTitle;
-
-    // Re-render artist cards with correct language
-    renderArtistCards();
 }
 
 /**
@@ -944,7 +1088,8 @@ function initPage() {
         isKorean = savedLang === 'ko';
 
         // Initial render
-        renderArtistCards();
+        // Firestore 기준 인기 트리 섹션을 우선 시도하고, 실패 시 정적 카드로 대체
+        loadPopularTrees();
         // renderPopularArtistsList(); // Deprecated
         // 최근 트리는 auth.js에서 onAuthReady(user)를 통해 Firestore 기준으로 재로드되며,
         // 여기서는 로컬스토리지 기반 fallback만 먼저 호출

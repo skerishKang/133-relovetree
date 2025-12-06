@@ -28,24 +28,92 @@ window.editBotProfile = async function (uid) {
     const db = firebase.firestore();
     try {
         const doc = await db.collection('users').doc(uid).get();
-        let current = '';
-        if (doc.exists) {
-            const data = doc.data() || {};
-            if (data.botProfile) {
-                current = String(data.botProfile);
+        const data = doc.exists ? (doc.data() || {}) : {};
+
+        let currentProfile = '';
+        if (data.botProfile) {
+            currentProfile = String(data.botProfile);
+        }
+
+        const settings = data.botSettings || {};
+        let tone = settings.tone || '';
+        let fanType = settings.fanType || '';
+        let length = settings.length || '';
+        let emoji = settings.emoji || '';
+        let extraNote = settings.extraNote || '';
+
+        const profileInput = window.prompt('이 사용자를 AI 봇으로 사용할 때의 전체적인 말투/설명을 입력하세요.\n예: 과몰입 여돌 덕후, 항상 감탄사 많이 씀', currentProfile);
+        if (profileInput === null) return;
+        const profileTrimmed = profileInput.trim();
+
+        if (window.confirm('톤, 팬 타입, 문장 길이, 이모지 사용량 같은 고급 설정도 함께 편집할까요?')) {
+            const toneLabel = tone === 'over_reactive' ? '과몰입' :
+                tone === 'friendly' ? '친근' :
+                    tone === 'calm' ? '차분' :
+                        tone === 'formal' ? '공식' : '';
+            const toneInput = window.prompt('톤을 선택해 주세요. (숫자 또는 한글)\n1) 과몰입\n2) 친근\n3) 차분\n4) 공식', toneLabel);
+            if (toneInput !== null) {
+                const v = toneInput.trim();
+                if (v === '1' || v === '과몰입') tone = 'over_reactive';
+                else if (v === '2' || v === '친근') tone = 'friendly';
+                else if (v === '3' || v === '차분') tone = 'calm';
+                else if (v === '4' || v === '공식') tone = 'formal';
+            }
+
+            const fanLabel = fanType === 'fresh' ? '입덕러' :
+                fanType === 'core' ? '고인물' :
+                    fanType === 'light' ? '라이트팬' : '';
+            const fanInput = window.prompt('팬 타입을 선택해 주세요.\n1) 입덕러\n2) 고인물\n3) 라이트팬', fanLabel);
+            if (fanInput !== null) {
+                const v = fanInput.trim();
+                if (v === '1' || v === '입덕러') fanType = 'fresh';
+                else if (v === '2' || v === '고인물') fanType = 'core';
+                else if (v === '3' || v === '라이트팬') fanType = 'light';
+            }
+
+            const lengthLabel = length === 'short' ? '짧게' :
+                length === 'medium' ? '보통' :
+                    length === 'long' ? '길게' : '';
+            const lengthInput = window.prompt('문장 길이를 선택해 주세요.\n1) 짧게\n2) 보통\n3) 길게', lengthLabel);
+            if (lengthInput !== null) {
+                const v = lengthInput.trim();
+                if (v === '1' || v === '짧게') length = 'short';
+                else if (v === '2' || v === '보통') length = 'medium';
+                else if (v === '3' || v === '길게') length = 'long';
+            }
+
+            const emojiLabel = emoji === 'few' ? '거의 안씀' :
+                emoji === 'normal' ? '적당히' :
+                    emoji === 'many' ? '많이' : '';
+            const emojiInput = window.prompt('이모지 사용량을 선택해 주세요.\n1) 거의 안씀\n2) 적당히\n3) 많이', emojiLabel);
+            if (emojiInput !== null) {
+                const v = emojiInput.trim();
+                if (v === '1' || v === '거의 안씀') emoji = 'few';
+                else if (v === '2' || v === '적당히') emoji = 'normal';
+                else if (v === '3' || v === '많이') emoji = 'many';
+            }
+
+            const extraInput = window.prompt('추가 설명이 있다면 입력해 주세요. (선택 사항)', extraNote);
+            if (extraInput !== null) {
+                extraNote = extraInput.trim();
             }
         }
 
-        const input = window.prompt('이 사용자를 AI 봇으로 사용할 때의 말투/설명을 입력하세요.\n예: 과몰입 여돌 덕후, 항상 감탄사 많이 씀', current);
-        if (input === null) return;
-
-        const trimmed = input.trim();
-        if (trimmed) {
-            await db.collection('users').doc(uid).update({ botProfile: trimmed });
+        const updatePayload = {};
+        if (profileTrimmed) {
+            updatePayload.botProfile = profileTrimmed;
         } else {
-            await db.collection('users').doc(uid).update({ botProfile: firebase.firestore.FieldValue.delete() });
+            updatePayload.botProfile = firebase.firestore.FieldValue.delete();
         }
 
+        const hasSettings = tone || fanType || length || emoji || extraNote;
+        if (hasSettings) {
+            updatePayload.botSettings = { tone, fanType, length, emoji, extraNote };
+        } else {
+            updatePayload.botSettings = firebase.firestore.FieldValue.delete();
+        }
+
+        await db.collection('users').doc(uid).update(updatePayload);
         alert('AI 프로필이 업데이트되었습니다.');
     } catch (e) {
         alert('AI 프로필 업데이트 중 오류: ' + e.message);
@@ -90,6 +158,13 @@ window.editBotProfile = async function (uid) {
     if (loginBtn) {
         loginBtn.addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                if (typeof provider.setCustomParameters === 'function') {
+                    provider.setCustomParameters({ prompt: 'select_account' });
+                }
+            } catch (e) {
+                console.warn('Admin Google Provider custom parameters 설정 실패:', e);
+            }
             firebase.auth().signInWithPopup(provider).catch(e => setStatus(e.message));
         });
     }
@@ -99,6 +174,21 @@ window.editBotProfile = async function (uid) {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             firebase.auth().signOut().then(() => window.location.reload());
+        });
+    }
+
+    // AI 로그 새로고침 버튼
+    const refreshAiLogsBtn = document.getElementById('refreshAiLogsBtn');
+    if (refreshAiLogsBtn) {
+        refreshAiLogsBtn.addEventListener('click', () => {
+            loadAiLogs();
+        });
+    }
+
+    const seedDemoCommunityBtn = document.getElementById('seedDemoCommunityBtn');
+    if (seedDemoCommunityBtn) {
+        seedDemoCommunityBtn.addEventListener('click', () => {
+            seedDemoCommunityPosts();
         });
     }
 
@@ -125,6 +215,7 @@ function initDashboard(user) {
 
     loadStats();
     loadUsers();
+    loadAiLogs();
 }
 
 function setupNavigation() {
@@ -263,6 +354,186 @@ async function loadUsers() {
     }
 }
 
+async function seedDemoCommunityPosts() {
+    const db = firebase.firestore();
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+
+    const confirmed = window.confirm('커뮤니티에 데모 글 몇 개를 추가할까요?\n같은 제목의 글이 이미 있으면 건너뜁니다.');
+    if (!confirmed) return;
+
+    const authorId = currentUser.uid;
+    const authorName = currentUser.displayName || currentUser.email || '관리자';
+
+    const templates = [
+        {
+            title: 'Relovetree로 덕질 기록하는 법',
+            content: '처음 오신 분들을 위해 Relovetree를 어떻게 쓰면 좋은지 간단히 정리해봤어요.\n1) 아티스트 러브트리를 만들고\n2) 입덕부터 최신 활동까지 순간들을 노드로 추가해 보세요.'
+        },
+        {
+            title: '내 최애 무대 추천 스레드',
+            content: '각자 최애 무대 하나씩만 링크와 함께 추천해 주세요!\n왜 이 무대를 좋아하는지도 한 줄로 적어주면 더 좋아요 :)'
+        },
+        {
+            title: '덕질 루틴 공유해요',
+            content: '출근길/등굣길, 퇴근 후, 주말에 어떻게 덕질하는지 루틴을 공유해 봅시다.\n러브트리를 어떻게 활용하고 있는지도 같이 써 주세요.'
+        }
+    ];
+
+    try {
+        const existingSnap = await db.collection('community_posts')
+            .where('authorId', '==', authorId)
+            .get();
+
+        const existingTitles = new Set();
+        existingSnap.forEach((doc) => {
+            const data = doc.data() || {};
+            if (data.title) existingTitles.add(String(data.title));
+        });
+
+        let createdCount = 0;
+
+        for (const tpl of templates) {
+            if (existingTitles.has(tpl.title)) continue;
+
+            await db.collection('community_posts').add({
+                title: tpl.title,
+                content: tpl.content,
+                authorId,
+                authorDisplayName: authorName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                likeCount: 0,
+                commentCount: 0,
+                isDeleted: false
+            });
+
+            createdCount++;
+        }
+
+        if (createdCount > 0) {
+            alert(`커뮤니티 데모 글 ${createdCount}개를 생성했습니다.`);
+        } else {
+            alert('새로 생성된 데모 글이 없습니다. (이미 같은 제목의 글이 있습니다)');
+        }
+    } catch (e) {
+        console.error('데모 커뮤니티 글 생성 오류:', e);
+        alert('데모 커뮤니티 글 생성 중 오류가 발생했습니다: ' + e.message);
+    }
+}
+
+// AI 봇 활동 로그 로드
+async function loadAiLogs() {
+    const db = firebase.firestore();
+    const tbody = document.getElementById('aiLogsTable');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center">로딩 중...</td></tr>';
+
+    try {
+        const snapshot = await db.collection('ai_logs')
+            .orderBy('createdAt', 'desc')
+            .limit(50)
+            .get();
+
+        const rows = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            const createdAt = data.createdAt && typeof data.createdAt.toDate === 'function'
+                ? data.createdAt.toDate().toLocaleString()
+                : '-';
+            const type = data.type || '-';
+            const bot = data.botName || data.botUid || '-';
+            const summary = data.summary || '';
+
+            rows.push(`
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-3 text-xs text-slate-500 whitespace-nowrap">${createdAt}</td>
+                    <td class="px-6 py-3 text-xs font-semibold text-slate-700">${type}</td>
+                    <td class="px-6 py-3 text-xs text-slate-700">${bot}</td>
+                    <td class="px-6 py-3 text-xs text-slate-600">${summary}</td>
+                </tr>
+            `);
+        });
+
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-slate-400">아직 기록된 AI 로그가 없습니다.</td></tr>';
+        } else {
+            tbody.innerHTML = rows.join('');
+        }
+    } catch (e) {
+        console.error('AI 로그 로드 오류:', e);
+        tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-red-500">AI 로그 로드 실패</td></tr>';
+    }
+}
+
+// AI 봇 활동을 Firestore에 기록하는 헬퍼
+async function logAiActivity(entry) {
+    try {
+        const db = firebase.firestore();
+        const adminUser = firebase.auth().currentUser;
+        const payload = {
+            type: entry.type || 'unknown',
+            botUid: entry.botUid || null,
+            botName: entry.botName || null,
+            targetType: entry.targetType || null,
+            targetId: entry.targetId || null,
+            count: typeof entry.count === 'number' ? entry.count : null,
+            summary: entry.summary || '',
+            meta: entry.meta || null,
+            adminUid: adminUser ? adminUser.uid : null,
+            adminEmail: adminUser ? adminUser.email : null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection('ai_logs').add(payload);
+    } catch (e) {
+        console.warn('AI 로그 기록 실패:', e);
+    }
+}
+
+// 사용자 botSettings를 사람이 읽을 수 있는 설명 텍스트로 변환하는 헬퍼
+function buildBotSettingsDescription(settings) {
+    if (!settings) return '';
+    const parts = [];
+
+    if (settings.tone) {
+        if (settings.tone === 'over_reactive') parts.push('- 톤: 과몰입 (감탄사와 리액션이 큰 스타일)');
+        else if (settings.tone === 'friendly') parts.push('- 톤: 친근 (팬들끼리 편하게 대화하는 느낌)');
+        else if (settings.tone === 'calm') parts.push('- 톤: 차분 (설명 위주, 담백한 스타일)');
+        else if (settings.tone === 'formal') parts.push('- 톤: 공식 (존댓말, 공지문 같은 느낌)');
+    }
+
+    if (settings.fanType) {
+        if (settings.fanType === 'fresh') parts.push('- 팬 타입: 입덕러 (최근에 좋아하게 된 팬)');
+        else if (settings.fanType === 'core') parts.push('- 팬 타입: 고인물 (활동/정보를 잘 아는 오래된 팬)');
+        else if (settings.fanType === 'light') parts.push('- 팬 타입: 라이트팬 (편하게 즐기는 가벼운 팬)');
+    }
+
+    if (settings.length) {
+        if (settings.length === 'short') parts.push('- 문장 길이: 짧게 (한 문장 정도)');
+        else if (settings.length === 'medium') parts.push('- 문장 길이: 보통 (두세 문장 이내)');
+        else if (settings.length === 'long') parts.push('- 문장 길이: 길게 (조금 더 자세하게)');
+    }
+
+    if (settings.emoji) {
+        if (settings.emoji === 'few') parts.push('- 이모지: 거의 사용하지 않음');
+        else if (settings.emoji === 'normal') parts.push('- 이모지: 적당히 사용');
+        else if (settings.emoji === 'many') parts.push('- 이모지: 자주 사용');
+    }
+
+    if (settings.extraNote) {
+        parts.push('- 추가 설명: ' + String(settings.extraNote));
+    }
+
+    if (!parts.length) return '';
+
+    return '\n\n[봇 설정]\n' + parts.join('\n');
+}
+
 // --- Actions ---
 
 window.updateUserRole = async function (uid, newRole) {
@@ -297,7 +568,9 @@ window.createAiDemoTree = async function (uid) {
 
     const count = 4;
 
+    let userName = '';
     let botProfileSuffix = '';
+    let botSettingsSuffix = '';
     try {
         const userDoc = await db.collection('users').doc(uid).get();
         if (userDoc.exists) {
@@ -305,12 +578,20 @@ window.createAiDemoTree = async function (uid) {
             if (u.botProfile) {
                 botProfileSuffix = '\n\n[봇 프로필]\n' + String(u.botProfile);
             }
+            if (u.botSettings) {
+                botSettingsSuffix = buildBotSettingsDescription(u.botSettings);
+            }
+            if (u.displayName) {
+                userName = u.displayName;
+            } else if (u.email) {
+                userName = u.email.split('@')[0];
+            }
         }
     } catch (e) {
         console.warn('AI 트리용 봇 프로필 조회 실패:', e);
     }
 
-    const finalPrompt = (promptText || defaultPrompt) + botProfileSuffix;
+    const finalPrompt = (promptText || defaultPrompt) + botProfileSuffix + botSettingsSuffix;
 
     let suggestions = [];
     try {
@@ -370,6 +651,7 @@ window.createAiDemoTree = async function (uid) {
         nodes: nodes,
         edges: edges,
         likes: [],
+        likeCount: 0,
         comments: [],
         ownerId: uid,
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
@@ -377,6 +659,16 @@ window.createAiDemoTree = async function (uid) {
 
     try {
         await db.collection('trees').doc(treeId).set(dataToSave, { merge: true });
+        // AI 활동 로그 기록
+        logAiActivity({
+            type: 'tree_create',
+            botUid: uid,
+            botName: userName || null,
+            targetType: 'tree',
+            targetId: treeId,
+            count: nodes.length,
+            summary: name
+        });
         const url = 'editor.html?id=' + encodeURIComponent(treeId);
         alert('AI 트리가 생성되었습니다. 에디터에서 확인해 보세요.\n' + url);
         if (window.confirm('지금 바로 에디터에서 열어볼까요?')) {
@@ -406,6 +698,7 @@ window.createAiReactions = async function (uid) {
         // 사용자 정보에서 닉네임/표시 이름 가져오기
         let userName = '익명';
         let botProfile = '';
+        let botSettingsSuffix = '';
         try {
             const userDoc = await db.collection('users').doc(uid).get();
             if (userDoc.exists) {
@@ -413,6 +706,7 @@ window.createAiReactions = async function (uid) {
                 if (u.displayName) userName = u.displayName;
                 else if (u.email) userName = u.email.split('@')[0];
                 if (u.botProfile) botProfile = String(u.botProfile);
+                if (u.botSettings) botSettingsSuffix = buildBotSettingsDescription(u.botSettings);
             }
         } catch (e) {
             console.warn('AI 반응용 사용자 정보 조회 실패:', e);
@@ -457,6 +751,9 @@ window.createAiReactions = async function (uid) {
             if (botProfile) {
                 basePrompt += `\n\n이 계정의 말투: ${botProfile}`;
             }
+            if (botSettingsSuffix) {
+                basePrompt += botSettingsSuffix;
+            }
             try {
                 const res = await fetch(AI_HELPER_ENDPOINT, {
                     method: 'POST',
@@ -487,8 +784,12 @@ window.createAiReactions = async function (uid) {
 
             // 좋아요 추가
             try {
+                const likesArray = Array.isArray(treeData.likes) ? treeData.likes : [];
+                const newLikeCount = likesArray.length + 1;
+
                 await db.collection('trees').doc(treeId).update({
-                    likes: firebase.firestore.FieldValue.arrayUnion(uid)
+                    likes: firebase.firestore.FieldValue.arrayUnion(uid),
+                    likeCount: newLikeCount
                 });
             } catch (e) {
                 console.warn('AI 좋아요 업데이트 실패:', e);
@@ -511,6 +812,17 @@ window.createAiReactions = async function (uid) {
         }
 
         if (reactedTrees.length > 0) {
+            // AI 활동 로그 기록
+            logAiActivity({
+                type: 'tree_reactions',
+                botUid: uid,
+                botName: userName || null,
+                targetType: 'tree',
+                targetId: null,
+                count: reactedTrees.length,
+                summary: `트리 ${reactedTrees.length}개에 AI 반응 생성`,
+                meta: { treeNames: reactedTrees }
+            });
             alert(`총 ${reactedTrees.length}개의 트리에 AI 반응이 생성되었습니다.\n\n- ` + reactedTrees.join('\n- '));
         } else {
             alert('실제로 반응이 생성된 트리가 없습니다. (모든 시도가 실패했습니다)');
@@ -582,6 +894,9 @@ window.createAiCommunityComments = async function (uid) {
             if (botProfile) {
                 basePrompt += `\n\n이 계정의 말투: ${botProfile}`;
             }
+            if (botSettingsSuffix) {
+                basePrompt += botSettingsSuffix;
+            }
 
             try {
                 const res = await fetch(AI_HELPER_ENDPOINT, {
@@ -631,6 +946,17 @@ window.createAiCommunityComments = async function (uid) {
         }
 
         if (reactedPosts.length > 0) {
+            // AI 활동 로그 기록
+            logAiActivity({
+                type: 'community_comments',
+                botUid: uid,
+                botName: userName || null,
+                targetType: 'community_post',
+                targetId: null,
+                count: reactedPosts.length,
+                summary: `커뮤니티 글 ${reactedPosts.length}개에 AI 댓글 생성`,
+                meta: { postTitles: reactedPosts }
+            });
             alert(`총 ${reactedPosts.length}개의 글에 AI 커뮤니티 댓글이 생성되었습니다.\n\n- ` + reactedPosts.join('\n- '));
         } else {
             alert('실제로 댓글이 생성된 글이 없습니다. (모든 시도가 실패했습니다)');

@@ -485,8 +485,8 @@
     </dialog>
 
     <dialog id="ai-helper-modal"
-        class="bg-white p-0 rounded-2xl shadow-2xl w-full max-w-md backdrop:bg-black/50 backdrop:backdrop-blur-sm">
-        <form id="ai-helper-form" method="dialog" class="flex flex-col max-h-[80vh]">
+        class="bg-white p-0 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md backdrop:bg-black/50 backdrop:backdrop-blur-sm">
+        <form id="ai-helper-form" method="dialog" class="flex flex-col max-h-[75vh] sm:max-h-[80vh]">
             <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
                 <h3 class="text-sm font-bold text-slate-900">AI 도우미</h3>
                 <button type="button" onclick="closeAiHelper()"
@@ -570,11 +570,16 @@
                 <form onsubmit="addComment(event)" class="flex gap-2">
                     <input type="text" id="new-comment-input" placeholder="댓글을 입력하세요..."
                         class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-shadow">
+                    <button type="button" onclick="openCommentAiHelper()"
+                        class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl whitespace-nowrap hidden sm:inline-flex items-center justify-center">
+                        AI
+                    </button>
                     <button type="submit"
                         class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
                         전송
                     </button>
                 </form>
+                <div id="comment-ai-result" class="mt-2 space-y-1 text-xs text-slate-700"></div>
             </div>
         </div>
     </dialog>
@@ -1315,7 +1320,8 @@
 
             try {
                 await db.collection('trees').doc(treeId).update({
-                    likes: newLikes
+                    likes: newLikes,
+                    likeCount: Array.isArray(newLikes) ? newLikes.length : 0
                 });
             } catch (error) {
                 console.error("Error updating likes:", error);

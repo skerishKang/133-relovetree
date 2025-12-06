@@ -183,16 +183,44 @@ function renderAiTreePreview() {
         return;
     }
     const items = aiTreeSuggestions.map(function (item, index) {
-        return '<div class="border border-slate-200 rounded-xl p-3 bg-slate-50 flex items-start justify-between gap-3">' +
-            '<div class="flex-1 min-w-0">' +
-            '<p class="text-xs font-semibold text-slate-500">순간 ' + (index + 1) + '</p>' +
-            '<p class="text-sm font-bold text-slate-900 truncate">' + escapeHtmlForAi(item.title) + '</p>' +
-            '<p class="text-[11px] text-slate-500 mt-0.5">' + item.date + '</p>' +
-            '</div>' +
+        const safeTitle = escapeHtmlForAi(item.title);
+        const safeDate = item.date || '';
+        return '' +
+            '<div class="border border-slate-200 rounded-xl p-3 bg-slate-50 flex items-start justify-between gap-3">' +
+            '  <div class="flex-1 min-w-0 space-y-1">' +
+            '    <div class="flex items-center justify-between gap-2">' +
+            '      <p class="text-xs font-semibold text-slate-500">순간 ' + (index + 1) + '</p>' +
+            '      <button type="button" onclick="removeAiTreeSuggestion(' + index + ')" class="text-[10px] text-slate-400 hover:text-red-500">삭제</button>' +
+            '    </div>' +
+            '    <input type="text" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"' +
+            '      value="' + safeTitle + '"' +
+            '      oninput="updateAiTreeSuggestion(' + index + ', \'title\', this.value)">' +
+            '    <input type="date" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white text-[11px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500"' +
+            '      value="' + safeDate + '"' +
+            '      oninput="updateAiTreeSuggestion(' + index + ', \'date\', this.value)">' +
+            '  </div>' +
             '</div>';
     }).join('');
-    const applyButton = '<button type="button" onclick="applyAiTreeSkeleton()" class="w-full mt-2 px-3 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">현재 트리에 적용</button>';
-    box.innerHTML = items + applyButton;
+    const helperText = '<p class="mt-2 text-[11px] text-slate-400">각 순간의 제목과 날짜를 먼저 확인·수정한 뒤 아래 버튼을 눌러 현재 트리에 추가하세요.</p>';
+    const applyButton = '<button type="button" onclick="applyAiTreeSkeleton()" class="w-full mt-3 px-3 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">선택한 노드들을 현재 트리에 적용</button>';
+    box.innerHTML = items + helperText + applyButton;
+}
+
+function updateAiTreeSuggestion(index, field, value) {
+    if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
+    const item = aiTreeSuggestions[index];
+    if (!item) return;
+    if (field === 'title') {
+        item.title = value;
+    } else if (field === 'date') {
+        item.date = value;
+    }
+}
+
+function removeAiTreeSuggestion(index) {
+    if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
+    aiTreeSuggestions.splice(index, 1);
+    renderAiTreePreview();
 }
 
 function escapeHtmlForAi(text) {
@@ -214,6 +242,11 @@ function applyAiTreeSkeleton() {
         return;
     }
     if (!aiTreeSuggestions || aiTreeSuggestions.length === 0) return;
+
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+        const ok = window.confirm('생성된 노드 ' + aiTreeSuggestions.length + '개를 현재 트리에 추가할까요? (나중에 언제든지 수정할 수 있습니다.)');
+        if (!ok) return;
+    }
     let maxId = 0;
     state.nodes.forEach(function (n) {
         if (typeof n.id === 'number' && n.id > maxId) maxId = n.id;

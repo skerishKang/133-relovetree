@@ -51,6 +51,14 @@ function initAuth() {
  */
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
+    // 항상 계정 선택 창이 뜨도록 설정 (기존 로그인 계정이 있어도 선택 가능)
+    try {
+        if (typeof provider.setCustomParameters === 'function') {
+            provider.setCustomParameters({ prompt: 'select_account' });
+        }
+    } catch (e) {
+        console.warn('Google Provider custom parameters 설정 실패:', e);
+    }
     try {
         await firebase.auth().signInWithPopup(provider);
     } catch (error) {

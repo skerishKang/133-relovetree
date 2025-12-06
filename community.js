@@ -6,6 +6,7 @@
 const COMMUNITY_COLLECTION = 'community_posts';
 let communityCurrentUser = null;
 let communityCurrentPostId = null;
+let communitySortMode = 'latest'; // 'latest' | 'popular'
 
 /**
  * 현재 로그인한 사용자를 안전하게 반환하는 헬퍼 (커뮤니티 전용)
@@ -119,8 +120,14 @@ async function loadCommunityPosts() {
     if (emptyEl) emptyEl.classList.add('hidden');
 
     try {
-        const snapshot = await db.collection(COMMUNITY_COLLECTION)
-            .orderBy('createdAt', 'desc')
+        let query = db.collection(COMMUNITY_COLLECTION);
+        if (communitySortMode === 'popular') {
+            query = query.orderBy('commentCount', 'desc');
+        } else {
+            query = query.orderBy('createdAt', 'desc');
+        }
+
+        const snapshot = await query
             .limit(30)
             .get();
 
@@ -387,6 +394,8 @@ function initCommunityPage() {
     const createBtn = document.getElementById('btn-open-create-post');
     const createForm = document.getElementById('create-post-form');
     const commentForm = document.getElementById('comment-form');
+    const sortLatestBtn = document.getElementById('community-sort-latest');
+    const sortPopularBtn = document.getElementById('community-sort-popular');
 
     if (createBtn) {
         createBtn.addEventListener('click', openCreatePostModal);
@@ -398,17 +407,33 @@ function initCommunityPage() {
         commentForm.addEventListener('submit', handleCommentFormSubmit);
     }
 
+    if (sortLatestBtn && sortPopularBtn) {
+        sortLatestBtn.addEventListener('click', () => {
+            communitySortMode = 'latest';
+            updateCommunitySortButtons();
+            loadCommunityPosts();
+        });
+        sortPopularBtn.addEventListener('click', () => {
+            communitySortMode = 'popular';
+            updateCommunitySortButtons();
+            loadCommunityPosts();
+        });
+    }
+
     // 인증 상태를 기다렸다가 현재 사용자 캐시 후 글 목록 로딩
     if (typeof waitForAuth === 'function') {
         waitForAuth().then((user) => {
             communityCurrentUser = user;
+            updateCommunitySortButtons();
             loadCommunityPosts();
         }).catch((e) => {
             console.error('waitForAuth 실패:', e);
+            updateCommunitySortButtons();
             loadCommunityPosts();
         });
     } else {
         // 혹시 waitForAuth가 없더라도 최소한 리스트는 로딩
+        updateCommunitySortButtons();
         loadCommunityPosts();
     }
 }

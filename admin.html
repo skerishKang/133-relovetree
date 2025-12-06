@@ -54,6 +54,11 @@
                 </a>
                 <a href="#"
                     class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-300 hover:text-white"
+                    data-target="ai-logs">
+                    <i class="fas fa-robot w-5"></i> AI 로그
+                </a>
+                <a href="#"
+                    class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-300 hover:text-white"
                     data-target="settings">
                     <i class="fas fa-cog w-5"></i> 설정
                 </a>
@@ -166,6 +171,34 @@
                 </div>
             </section>
 
+            <!-- AI Bot Activity Logs Section -->
+            <section id="ai-logs" class="content-section hidden space-y-6">
+                <header class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-slate-900">AI 봇 활동 로그</h1>
+                    <button id="refreshAiLogsBtn"
+                        class="px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+                        새로고침
+                    </button>
+                </header>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-xs uppercase font-bold text-slate-500">
+                                <tr>
+                                    <th class="px-6 py-3">시간</th>
+                                    <th class="px-6 py-3">유형</th>
+                                    <th class="px-6 py-3">봇 계정</th>
+                                    <th class="px-6 py-3">요약</th>
+                                </tr>
+                            </thead>
+                            <tbody id="aiLogsTable" class="divide-y divide-slate-100">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
             <!-- Settings Section -->
             <section id="settings" class="content-section hidden space-y-6">
                 <header>
@@ -178,6 +211,18 @@
                     <div class="bg-blue-50 text-blue-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
                         <i class="fas fa-info-circle"></i>
                         관리자 추가 기능은 준비 중입니다.
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-900 mb-4">데모 데이터</h3>
+                    <p class="text-sm text-slate-600 mb-3">
+                        홈과 커뮤니티 화면이 너무 비어 보이지 않도록 간단한 예시 글을 생성합니다.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="seedDemoCommunityBtn"
+                            class="px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100">
+                            커뮤니티 데모 글 생성
+                        </button>
                     </div>
                 </div>
             </section>
