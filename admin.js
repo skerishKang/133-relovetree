@@ -188,21 +188,50 @@ window.editBotProfile = async function (uid) {
     const seedDemoCommunityBtn = document.getElementById('seedDemoCommunityBtn');
     if (seedDemoCommunityBtn) {
         seedDemoCommunityBtn.addEventListener('click', () => {
-            seedDemoCommunityPosts();
+            openDemoSeedModal('community');
         });
     }
 
     const seedDemoUsersBtn = document.getElementById('seedDemoUsersBtn');
     if (seedDemoUsersBtn) {
         seedDemoUsersBtn.addEventListener('click', () => {
-            seedDemoUsers();
+            openDemoSeedModal('users');
         });
     }
 
     const seedDemoTreesBtn = document.getElementById('seedDemoTreesBtn');
     if (seedDemoTreesBtn) {
         seedDemoTreesBtn.addEventListener('click', () => {
-            seedDemoTrees();
+            openDemoSeedModal('trees');
+        });
+    }
+
+    const demoSeedCancel = document.getElementById('demoSeedCancel');
+    if (demoSeedCancel) {
+        demoSeedCancel.addEventListener('click', () => {
+            closeDemoSeedModal();
+        });
+    }
+
+    const demoSeedConfirm = document.getElementById('demoSeedConfirm');
+    if (demoSeedConfirm) {
+        demoSeedConfirm.addEventListener('click', async () => {
+            const inputEl = document.getElementById('demoSeedCount');
+            let count = inputEl ? parseInt(inputEl.value, 10) : NaN;
+            if (!Number.isFinite(count) || count <= 0) {
+                count = null; // 입력 없으면 기본값 사용
+            }
+
+            const mode = currentDemoSeedMode;
+            closeDemoSeedModal();
+
+            if (mode === 'users') {
+                await seedDemoUsers(count);
+            } else if (mode === 'trees') {
+                await seedDemoTrees(count);
+            } else if (mode === 'community') {
+                await seedDemoCommunityPosts(count);
+            }
         });
     }
 
@@ -286,6 +315,43 @@ function setupNavigation() {
 
 // --- Data Loading ---
 
+let currentDemoSeedMode = null;
+
+function openDemoSeedModal(mode) {
+    currentDemoSeedMode = mode;
+    const modal = document.getElementById('demoSeedModal');
+    const titleEl = document.getElementById('demoSeedTitle');
+    const descEl = document.getElementById('demoSeedDescription');
+    const inputEl = document.getElementById('demoSeedCount');
+
+    if (!modal || !titleEl || !descEl || !inputEl) return;
+
+    let title = '데모 데이터 생성';
+    let desc = '생성할 개수를 입력하세요. 비워두면 기본 개수로 생성됩니다.';
+
+    if (mode === 'users') {
+        title = '데모 사용자 생성';
+        desc = '대시보드와 사용자 관리 화면에 표시할 데모 사용자를 몇 명까지 생성할지 입력하세요. 비워두면 기본 개수로 생성됩니다.';
+    } else if (mode === 'trees') {
+        title = '데모 러브트리 생성';
+        desc = '홈과 에디터에서 사용할 데모 러브트리를 몇 개까지 생성할지 입력하세요. 비워두면 기본 개수로 생성됩니다.';
+    } else if (mode === 'community') {
+        title = '커뮤니티 데모 글 생성';
+        desc = '커뮤니티 목록에 표시할 데모 글을 몇 개까지 생성할지 입력하세요. 비워두면 기본 개수로 생성됩니다.';
+    }
+
+    titleEl.textContent = title;
+    descEl.textContent = desc;
+    inputEl.value = '';
+    modal.classList.remove('hidden');
+}
+
+function closeDemoSeedModal() {
+    const modal = document.getElementById('demoSeedModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+}
+
 let allUsersCache = [];
 
 async function loadStats() {
@@ -349,7 +415,7 @@ function getUserDisplayName(user, uid) {
 
 function getUserType(user) {
     if (user.isAiBot) return 'ai';
-    if (user.isDemo || (user.email && String(user.email).endsWith('@demo.local'))) return 'demo';
+    if (user.isDemo || !user.email || (user.email && String(user.email).endsWith('@demo.local'))) return 'demo';
     return 'normal';
 }
 
@@ -358,6 +424,30 @@ function getUserTypeLabel(user) {
     if (type === 'ai') return 'AI 유저';
     if (type === 'demo') return '데모 유저';
     return '일반 유저';
+}
+
+function getUserCategory(user) {
+    const type = getUserType(user);
+    if (type === 'ai') return 'ai';
+    if (type === 'demo') return 'demo';
+    if (user.role === 'admin') return 'admin';
+    if (user.role === 'pro') return 'pro';
+    return 'free';
+}
+
+function getUserIdForDisplay(user, uid) {
+    if (user.userId) return String(user.userId);
+    if (user.email) return String(user.email).split('@')[0];
+    if (uid) return String(uid).slice(0, 8);
+    return '';
+}
+
+function getProfileSubLabel(user, uid) {
+    const idLabel = getUserIdForDisplay(user, uid);
+    const typeLabel = getUserTypeLabel(user);
+    if (idLabel && typeLabel) return `${idLabel} · ${typeLabel}`;
+    if (idLabel) return idLabel;
+    return typeLabel;
 }
 
 function getUserStatusBadgeClass(user) {
@@ -478,20 +568,23 @@ function applyUserFiltersAndRender() {
     users.forEach((user) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 border-b border-slate-50 last:border-0';
+        const category = getUserCategory(user);
         tr.innerHTML = `
             <td class="px-6 py-4 flex items-center gap-3">
                 ${getUserAvatarHTML(user, 'sm')}
                 <div class="flex flex-col">
                     <span class="font-medium text-slate-900">${getUserDisplayName(user, user.id)}</span>
-                    <span class="text-xs text-slate-400">${user.email || getUserTypeLabel(user)}</span>
+                    <span class="text-xs text-slate-400">${getProfileSubLabel(user, user.id)}</span>
                 </div>
             </td>
             <td class="px-6 py-4">${user.email || '—'}</td>
             <td class="px-6 py-4">
                 <select onchange="updateUserRole('${user.id}', this.value)" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-brand-500">
-                    <option value="free" ${user.role === 'free' || !user.role ? 'selected' : ''}>Free</option>
-                    <option value="pro" ${user.role === 'pro' ? 'selected' : ''}>Pro</option>
-                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                    <option value="free" ${category === 'free' ? 'selected' : ''}>일반</option>
+                    <option value="demo" ${category === 'demo' ? 'selected' : ''}>데모</option>
+                    <option value="ai" ${category === 'ai' ? 'selected' : ''}>AI</option>
+                    <option value="pro" ${category === 'pro' ? 'selected' : ''}>Pro</option>
+                    <option value="admin" ${category === 'admin' ? 'selected' : ''}>관리자</option>
                 </select>
             </td>
             <td class="px-6 py-4 text-slate-500">${user.lastLogin && typeof user.lastLogin.toDate === 'function' ? user.lastLogin.toDate().toLocaleDateString() : '-'}</td>
@@ -519,7 +612,7 @@ function applyUserFiltersAndRender() {
     });
 }
 
-async function seedDemoUsers() {
+async function seedDemoUsers(requestCount) {
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
 
@@ -528,14 +621,12 @@ async function seedDemoUsers() {
         return;
     }
 
-    const confirmed = window.confirm('대시보드와 사용자 관리 화면을 위한 데모 사용자를 몇 명 추가할까요?\n같은 ID의 데모 사용자가 이미 있으면 건너뜁니다.');
-    if (!confirmed) return;
-
     const templates = [
         {
             uid: 'demo-user-01',
             email: 'demo-army@demo.local',
             displayName: '데모 아미',
+            userId: 'demo_army',
             role: 'free',
             isDemo: true
         },
@@ -543,6 +634,7 @@ async function seedDemoUsers() {
             uid: 'demo-user-02',
             email: 'demo-carat@demo.local',
             displayName: '데모 캐럿',
+            userId: 'demo_carat',
             role: 'pro',
             isDemo: true
         },
@@ -550,6 +642,7 @@ async function seedDemoUsers() {
             uid: 'demo-user-03',
             email: 'demo-stay@demo.local',
             displayName: '데모 스테이',
+            userId: 'demo_stay',
             role: 'free',
             isDemo: true
         },
@@ -557,6 +650,7 @@ async function seedDemoUsers() {
             uid: 'demo-user-04',
             email: 'demo-diver@demo.local',
             displayName: '데모 다이브',
+            userId: 'demo_diver',
             role: 'free',
             isDemo: true
         },
@@ -564,19 +658,25 @@ async function seedDemoUsers() {
             uid: 'ai-user-01',
             email: 'ai-bot@demo.local',
             displayName: 'Relovetree AI',
+            userId: 'relovetree_ai',
             role: 'free',
             isDemo: false,
             isAiBot: true
         }
     ];
 
+    const defaultCount = templates.length;
+    const maxCount = typeof requestCount === 'number' && requestCount > 0
+        ? Math.min(requestCount, templates.length)
+        : defaultCount;
+
     let createdCount = 0;
 
     try {
-        for (const tpl of templates) {
+        for (let i = 0; i < maxCount; i++) {
+            const tpl = templates[i];
             const ref = db.collection('users').doc(tpl.uid);
             const snap = await ref.get();
-            if (snap.exists) continue;
 
             await ref.set({
                 email: tpl.email,
@@ -586,10 +686,13 @@ async function seedDemoUsers() {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                 isDemo: tpl.isDemo !== undefined ? tpl.isDemo : true,
-                isAiBot: !!tpl.isAiBot
+                isAiBot: !!tpl.isAiBot,
+                userId: tpl.userId || firebase.firestore.FieldValue.delete()
             }, { merge: true });
 
-            createdCount++;
+            if (!snap.exists) {
+                createdCount++;
+            }
         }
 
         if (createdCount > 0) {
@@ -605,7 +708,7 @@ async function seedDemoUsers() {
     }
 }
 
-async function seedDemoTrees() {
+async function seedDemoTrees(requestCount) {
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
 
@@ -613,9 +716,6 @@ async function seedDemoTrees() {
         alert('로그인이 필요합니다.');
         return;
     }
-
-    const confirmed = window.confirm('홈과 에디터에서 볼 수 있는 데모 러브트리를 여러 개 생성할까요?\n같은 ID의 트리가 이미 있으면 건너뜁니다.');
-    if (!confirmed) return;
 
     const owners = [];
 
@@ -663,7 +763,7 @@ async function seedDemoTrees() {
     let createdCount = 0;
 
     try {
-        for (let i = 0; i < templates.length; i++) {
+        for (let i = 0; i < maxCount; i++) {
             const tpl = templates[i];
             const ref = db.collection('trees').doc(tpl.id);
             const snap = await ref.get();
@@ -719,7 +819,7 @@ async function seedDemoTrees() {
     }
 }
 
-async function seedDemoCommunityPosts() {
+async function seedDemoCommunityPosts(requestCount) {
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
 
@@ -727,9 +827,6 @@ async function seedDemoCommunityPosts() {
         alert('로그인이 필요합니다.');
         return;
     }
-
-    const confirmed = window.confirm('커뮤니티에 데모 글을 여러 개 추가할까요?\n같은 제목의 글이 이미 있으면 건너뜁니다.');
-    if (!confirmed) return;
 
     const authorId = currentUser.uid;
     const authorName = currentUser.displayName || currentUser.email || '관리자';
@@ -768,9 +865,15 @@ async function seedDemoCommunityPosts() {
             if (data.title) existingTitles.add(String(data.title));
         });
 
+        const defaultCount = templates.length;
+        const maxCount = typeof requestCount === 'number' && requestCount > 0
+            ? Math.min(requestCount, templates.length)
+            : defaultCount;
+
         let createdCount = 0;
 
-        for (const tpl of templates) {
+        for (let i = 0; i < maxCount; i++) {
+            const tpl = templates[i];
             if (existingTitles.has(tpl.title)) continue;
 
             await db.collection('community_posts').add({
@@ -909,14 +1012,50 @@ function buildBotSettingsDescription(settings) {
 
 // --- Actions ---
 
-window.updateUserRole = async function (uid, newRole) {
-    if (!confirm(`등급을 ${newRole}(으)로 변경하시겠습니까?`)) {
+window.updateUserRole = async function (uid, category) {
+    const labelMap = {
+        free: '일반',
+        demo: '데모',
+        ai: 'AI',
+        pro: 'Pro',
+        admin: '관리자'
+    };
+    const label = labelMap[category] || category;
+
+    if (!confirm(`등급을 ${label}(으)로 변경하시겠습니까?`)) {
         loadUsers();
         return;
     }
+
     try {
-        await firebase.firestore().collection('users').doc(uid).update({ role: newRole });
+        const updates = {};
+
+        if (category === 'demo') {
+            updates.isDemo = true;
+            updates.isAiBot = false;
+            updates.role = 'free';
+        } else if (category === 'ai') {
+            updates.isAiBot = true;
+            updates.isDemo = false;
+            updates.role = 'free';
+        } else if (category === 'pro') {
+            updates.role = 'pro';
+            updates.isDemo = false;
+            updates.isAiBot = false;
+        } else if (category === 'admin') {
+            updates.role = 'admin';
+            updates.isDemo = false;
+            updates.isAiBot = false;
+        } else {
+            // free 또는 기타 값은 일반 유저로 처리
+            updates.role = 'free';
+            updates.isDemo = false;
+            updates.isAiBot = false;
+        }
+
+        await firebase.firestore().collection('users').doc(uid).update(updates);
         alert('등급이 변경되었습니다.');
+        await loadUsers();
     } catch (e) {
         alert('오류: ' + e.message);
     }
