@@ -206,6 +206,14 @@ window.editBotProfile = async function (uid) {
         });
     }
 
+    const recalcNodeCountBtn = document.getElementById('recalcNodeCountBtn');
+    if (recalcNodeCountBtn) {
+        recalcNodeCountBtn.addEventListener('click', async () => {
+            if (!window.confirm('모든 트리의 노드 수(nodeCount)를 다시 계산하시겠습니까?')) return;
+            await recalcAllTreesNodeCount();
+        });
+    }
+
     const demoSeedCancel = document.getElementById('demoSeedCancel');
     if (demoSeedCancel) {
         demoSeedCancel.addEventListener('click', () => {
@@ -824,6 +832,37 @@ async function seedDemoTrees(requestCount) {
     }
 }
 
+// 모든 트리의 nodeCount를 nodes.length 기준으로 재계산하는 유틸리티
+async function recalcAllTreesNodeCount() {
+    const db = firebase.firestore();
+
+    try {
+        const snapshot = await db.collection('trees').get();
+
+        if (snapshot.empty) {
+            alert('재계산할 트리가 없습니다.');
+            return;
+        }
+
+        let updatedCount = 0;
+        const batch = db.batch();
+
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+            const nodeCount = nodes.length;
+            batch.update(doc.ref, { nodeCount });
+            updatedCount++;
+        });
+
+        await batch.commit();
+        alert(`총 ${updatedCount}개의 트리에 대해 nodeCount를 재계산했습니다.`);
+    } catch (e) {
+        console.error('nodeCount 재계산 오류:', e);
+        alert('nodeCount 재계산 중 오류가 발생했습니다: ' + e.message);
+    }
+}
+
 async function seedDemoCommunityPosts(requestCount) {
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
@@ -1146,14 +1185,28 @@ window.createAiDemoTree = async function (uid) {
     const edges = [];
     suggestions.forEach((item, index) => {
         const id = index + 1;
+        const title = item && item.title ? item.title : '새 순간';
+        const date = item && item.date ? item.date : new Date().toISOString().split('T')[0];
+        const description = item && item.description ? String(item.description).trim() : '';
+
+        // 기본으로 한 개의 순간을 채워 넣어, 에디터에 들어갔을 때 완전히 비어 있지 않도록 처리
+        const baseMomentText = description || `${title}에 대한 첫 순간을 여기에 기록해 보세요.`;
+        const nodeMoments = [
+            {
+                time: '0:00',
+                text: baseMomentText,
+                feeling: 'love'
+            }
+        ];
+
         nodes.push({
             id: id,
             x: 200 + index * 320,
             y: 200,
-            title: item.title || '새 순간',
-            date: item.date || new Date().toISOString().split('T')[0],
-            videoId: '',
-            moments: []
+            title: title,
+            date: date,
+            videoId: item && item.videoId ? item.videoId : '',
+            moments: nodeMoments
         });
         if (index > 0) {
             edges.push({ from: id - 1, to: id });
@@ -1171,7 +1224,10 @@ window.createAiDemoTree = async function (uid) {
         likeCount: 0,
         comments: [],
         ownerId: uid,
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+        nodeCount: nodes.length,
+        viewCount: 0,
+        shareCount: 0
     };
 
     try {

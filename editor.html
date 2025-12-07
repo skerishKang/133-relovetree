@@ -226,6 +226,11 @@
                 <span>ZOOM</span>
                 <span id="zoom-level" class="font-bold text-slate-800">100%</span>
             </div>
+            <div
+                id="tree-stats-banner"
+                class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-2 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
+                <span id="tree-stats-text">노드 0 · 순간 0 · 조회 0 · 좋아요 0 · 공유 0</span>
+            </div>
             <button onclick="zoomOut()" title="줌 아웃"
                 class="bg-white shadow-sm border border-slate-200 p-2 rounded-lg hover:bg-slate-50 text-slate-600">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -845,6 +850,25 @@
                         const data = docSnap.data();
                         console.log("Document data from Firebase:", data);
 
+                        const baseView = typeof data.viewCount === 'number' ? data.viewCount : 0;
+                        const baseShare = typeof data.shareCount === 'number' ? data.shareCount : 0;
+                        window.treeStats = {
+                            viewCount: baseView + 1, // 아래에서 increment 1회를 수행하므로 화면에는 증가된 값 기준으로 표시
+                            shareCount: baseShare
+                        };
+
+                        // 조회수(viewCount) 및 마지막 열람 시각(lastOpened) 통계 증가
+                        try {
+                            if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+                                await docRef.update({
+                                    viewCount: firebase.firestore.FieldValue.increment(1),
+                                    lastOpened: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            }
+                        } catch (e) {
+                            console.warn('viewCount/lastOpened update failed:', e);
+                        }
+
                         // Check Ownership
                         if (currentUser && data.ownerId && data.ownerId !== currentUser.uid) {
                             isReadOnly = true;
@@ -911,12 +935,22 @@
 
                 // 인덱스 페이지 "최근 방문한 트리"에 바로 보이도록 초기 상태를 로컬스토리지 및 Firestore에 기록
                 try {
+                    const initialNodeCount = Array.isArray(loadedData.nodes) ? loadedData.nodes.length : 0;
                     const initialDataForIndex = {
                         name: loadedData.name,
                         nodes: loadedData.nodes,
                         edges: loadedData.edges,
                         lastUpdated: new Date().toISOString(),
-                        ownerId: currentUser ? currentUser.uid : null
+                        ownerId: currentUser ? currentUser.uid : null,
+                        nodeCount: initialNodeCount,
+                        viewCount: 0,
+                        shareCount: 0,
+                        likeCount: Array.isArray(loadedData.likes) ? loadedData.likes.length : 0
+                    };
+
+                    window.treeStats = {
+                        viewCount: 0,
+                        shareCount: 0
                     };
 
                     // 로컬 백업
@@ -936,6 +970,9 @@
                 initState(loadedData);
                 document.getElementById('tree-title').innerText = loadedData.name || 'My Tree';
                 render();
+                if (typeof updateTreeStatsBanner === 'function') {
+                    updateTreeStatsBanner();
+                }
             }
 
             return loadedData;
@@ -1213,6 +1250,33 @@
         // Load background on startup
         loadBackgroundPreference();
 
+        function updateTreeStatsBanner() {
+            const banner = document.getElementById('tree-stats-banner');
+            const textEl = document.getElementById('tree-stats-text');
+            if (!banner || !textEl) return;
+
+            const nodeCount = Array.isArray(state.nodes) ? state.nodes.length : 0;
+
+            let momentsTotal = 0;
+            if (Array.isArray(state.nodes)) {
+                state.nodes.forEach((n) => {
+                    if (Array.isArray(n.moments)) {
+                        momentsTotal += n.moments.length;
+                    }
+                });
+            }
+
+            const likeCount = Array.isArray(state.likes) ? state.likes.length : 0;
+            const viewCount = (window.treeStats && typeof window.treeStats.viewCount === 'number')
+                ? window.treeStats.viewCount
+                : 0;
+            const shareCount = (window.treeStats && typeof window.treeStats.shareCount === 'number')
+                ? window.treeStats.shareCount
+                : 0;
+
+            textEl.textContent = `노드 ${nodeCount} · 순간 ${momentsTotal} · 조회 ${viewCount} · 좋아요 ${likeCount} · 공유 ${shareCount}`;
+        }
+
         // Save Data (Firebase + LocalStorage)
         // Simple debounce function
         function debounce(func, wait) {
@@ -1230,12 +1294,15 @@
                 return;
             }
 
+            const nodeCount = Array.isArray(state.nodes) ? state.nodes.length : 0;
+
             const dataToSave = {
                 name: document.getElementById('tree-title').innerText,
                 nodes: state.nodes,
                 edges: state.edges,
                 lastUpdated: new Date().toISOString(),
-                ownerId: currentUser ? currentUser.uid : null
+                ownerId: currentUser ? currentUser.uid : null,
+                nodeCount: nodeCount
             };
 
             // 1. Save to LocalStorage (Backup & Speed)
@@ -1273,8 +1340,32 @@
 
         function shareTree() {
             const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
+            navigator.clipboard.writeText(url).then(async () => {
                 showToast("링크가 복사되었습니다! 친구에게 공유하세요.");
+
+                // 공유수(shareCount) 통계 증가
+                try {
+                    if (db && typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
+                        await db.collection('trees').doc(treeId).update({
+                            shareCount: firebase.firestore.FieldValue.increment(1)
+                        });
+                    }
+                } catch (e) {
+                    console.warn('shareCount increment failed:', e);
+                }
+
+                // 로컬 통계 값도 함께 증가
+                if (!window.treeStats) {
+                    window.treeStats = { viewCount: 0, shareCount: 0 };
+                }
+                if (typeof window.treeStats.shareCount !== 'number') {
+                    window.treeStats.shareCount = 0;
+                }
+                window.treeStats.shareCount += 1;
+
+                if (typeof updateTreeStatsBanner === 'function') {
+                    updateTreeStatsBanner();
+                }
             }).catch(err => {
                 console.error('Async: Could not copy text: ', err);
                 prompt("이 링크를 복사해서 공유하세요:", url);
@@ -1295,6 +1386,10 @@
             } else {
                 btn.classList.remove('text-pink-500', 'bg-pink-50');
                 btn.classList.add('text-slate-400', 'bg-white');
+            }
+
+            if (typeof updateTreeStatsBanner === 'function') {
+                updateTreeStatsBanner();
             }
         }
 
@@ -2334,6 +2429,9 @@
                 saveData(); // Save after adding moment
                 document.getElementById('new-moment-text').value = '';
                 document.getElementById('new-moment-time').value = '';
+                if (typeof updateTreeStatsBanner === 'function') {
+                    updateTreeStatsBanner();
+                }
             }
         }
 
@@ -2502,6 +2600,9 @@
             render();
             saveData(); // Save after creating node
             openDetailModal(newNode);
+            if (typeof updateTreeStatsBanner === 'function') {
+                updateTreeStatsBanner();
+            }
         }
 
         function deleteNode() {

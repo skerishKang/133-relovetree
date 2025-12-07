@@ -69,11 +69,26 @@ async function loadPopularTrees() {
                 updated = lastUpdated.slice(0, 10);
             }
 
+            const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+            const nodeCount = typeof data.nodeCount === 'number'
+                ? data.nodeCount
+                : nodes.length;
+
+            const viewCount = typeof data.viewCount === 'number' ? data.viewCount : 0;
+            const shareCount = typeof data.shareCount === 'number' ? data.shareCount : 0;
+
+            // likeCount를 가장 강하게 반영하되, 조회/공유도 약하게 반영하는 인기 점수
+            const popularityScore = (rawLikeCount || 0) * 1000 + viewCount * 3 + shareCount * 5;
+
             trees.push({
                 id: doc.id,
                 name: data.name || decodeURIComponent(doc.id),
                 likeCount: rawLikeCount,
-                updated
+                updated,
+                nodeCount,
+                viewCount,
+                shareCount,
+                popularityScore
             });
         });
 
@@ -83,9 +98,15 @@ async function loadPopularTrees() {
             return;
         }
 
+        // likeCount를 우선하면서 조회/공유를 보조 지표로 사용하는 정렬
+        trees.sort((a, b) => (b.popularityScore || 0) - (a.popularityScore || 0));
+
         const cardsHTML = trees.map((tree) => {
             const initial = tree.name ? tree.name.charAt(0).toUpperCase() : '?';
             const likeCount = tree.likeCount || 0;
+            const nodeCount = typeof tree.nodeCount === 'number' ? tree.nodeCount : 0;
+            const viewCount = typeof tree.viewCount === 'number' ? tree.viewCount : 0;
+            const shareCount = typeof tree.shareCount === 'number' ? tree.shareCount : 0;
 
             return `
                 <a href="editor.html?id=${encodeURIComponent(tree.id)}"
@@ -104,6 +125,11 @@ async function loadPopularTrees() {
                             <span class="text-pink-500">♥</span>
                             <span>${likeCount}</span>
                         </div>
+                    </div>
+                    <div class="px-3 pb-3">
+                        <p class="text-[11px] text-slate-500">
+                            ${nodeCount}개의 순간 · 조회 ${viewCount} · 좋아요 ${likeCount} · 공유 ${shareCount}
+                        </p>
                     </div>
                 </a>
             `;
@@ -469,11 +495,26 @@ async function loadUserTreesFromFirestore(user) {
                 lastUpdated = new Date().toISOString();
             }
 
+            const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+            const nodeCount = typeof data.nodeCount === 'number'
+                ? data.nodeCount
+                : nodes.length;
+
+            const likeCount = typeof data.likeCount === 'number'
+                ? data.likeCount
+                : (Array.isArray(data.likes) ? data.likes.length : 0);
+
+            const viewCount = typeof data.viewCount === 'number' ? data.viewCount : 0;
+            const shareCount = typeof data.shareCount === 'number' ? data.shareCount : 0;
+
             myTrees.push({
                 id: doc.id,
                 name: data.name || decodeURIComponent(doc.id),
                 lastUpdated,
-                nodeCount: (data.nodes || []).length
+                nodeCount,
+                likeCount,
+                viewCount,
+                shareCount
             });
         });
 
@@ -514,6 +555,105 @@ async function loadUserTreesFromFirestore(user) {
     } catch (error) {
         console.error('Failed to load trees from Firestore:', error);
         loadRecentTrees();
+    }
+}
+
+/**
+ * 최근 만들어진 러브트리 섹션용 그리드 렌더러 (전역 최신 트리 기준)
+ */
+async function loadRecentCreatedTrees() {
+    const section = document.getElementById('recent-created-section');
+    const grid = document.getElementById('recent-created-grid');
+
+    if (!section || !grid) return;
+
+    // 기본적으로 섹션은 숨겨두고, 실제 데이터가 있을 때만 노출
+    section.classList.add('hidden');
+
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+        // Firebase를 사용할 수 없을 때는 기본 플레이스홀더만 표시
+        return;
+    }
+
+    try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('trees')
+            .orderBy('lastUpdated', 'desc')
+            .limit(12)
+            .get();
+
+        if (snapshot.empty) {
+            // 아무 트리도 없으면 섹션을 숨긴 채로 유지
+            return;
+        }
+
+        const trees = [];
+
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+
+            let lastUpdated = data.lastUpdated;
+            if (lastUpdated && typeof lastUpdated.toDate === 'function') {
+                lastUpdated = lastUpdated.toDate().toISOString();
+            } else if (typeof lastUpdated !== 'string') {
+                lastUpdated = '';
+            }
+
+            const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+            const nodeCount = typeof data.nodeCount === 'number'
+                ? data.nodeCount
+                : nodes.length;
+
+            const likeCount = typeof data.likeCount === 'number'
+                ? data.likeCount
+                : (Array.isArray(data.likes) ? data.likes.length : 0);
+
+            const viewCount = typeof data.viewCount === 'number' ? data.viewCount : 0;
+            const shareCount = typeof data.shareCount === 'number' ? data.shareCount : 0;
+
+            trees.push({
+                id: doc.id,
+                name: data.name || decodeURIComponent(doc.id),
+                lastUpdated,
+                nodeCount,
+                likeCount,
+                viewCount,
+                shareCount
+            });
+        });
+
+        if (trees.length === 0) {
+            return;
+        }
+
+        const cardsHTML = trees.map((tree) => {
+            const name = tree.name || '?';
+            const initial = name.charAt(0).toUpperCase();
+            const updatedDate = (tree.lastUpdated || '').slice(0, 10);
+
+            return `
+                <a href="editor.html?id=${encodeURIComponent(tree.id)}"
+                   class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-colors transition-shadow">
+                    <div class="flex items-center gap-3 w-full">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
+                            ${initial}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 truncate">${name}</p>
+                            <p class="text-[11px] text-slate-400">최근 업데이트: ${updatedDate}</p>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-500">
+                        ${tree.nodeCount}개의 순간 · 조회 ${tree.viewCount} · 좋아요 ${tree.likeCount} · 공유 ${tree.shareCount}
+                    </p>
+                </a>
+            `;
+        }).join('');
+
+        grid.innerHTML = cardsHTML;
+        section.classList.remove('hidden');
+    } catch (error) {
+        console.error('Failed to load recently created trees:', error);
     }
 }
 
@@ -569,12 +709,19 @@ async function migrateLocalTreesToAccount() {
                 continue;
             }
 
+            const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+            const likes = Array.isArray(data.likes) ? data.likes : [];
+
             const payload = {
                 name: data.name || decodeURIComponent(treeId),
-                nodes: data.nodes || [],
+                nodes: nodes,
                 edges: data.edges || [],
                 ownerId: user.uid,
-                lastUpdated: new Date().toISOString()
+                lastUpdated: new Date().toISOString(),
+                nodeCount: typeof data.nodeCount === 'number' ? data.nodeCount : nodes.length,
+                viewCount: typeof data.viewCount === 'number' ? data.viewCount : 0,
+                shareCount: typeof data.shareCount === 'number' ? data.shareCount : 0,
+                likeCount: typeof data.likeCount === 'number' ? data.likeCount : likes.length
             };
 
             await docRef.set(payload, { merge: true });
@@ -652,7 +799,10 @@ function renderMyTreesGrid(myTrees) {
 
     const cardsHTML = myTrees.map(tree => {
         const initial = tree.name ? tree.name.charAt(0).toUpperCase() : '?';
-        const nodeCount = tree.nodeCount || 0;
+        const nodeCount = typeof tree.nodeCount === 'number' ? tree.nodeCount : 0;
+        const viewCount = typeof tree.viewCount === 'number' ? tree.viewCount : 0;
+        const likeCount = typeof tree.likeCount === 'number' ? tree.likeCount : 0;
+        const shareCount = typeof tree.shareCount === 'number' ? tree.shareCount : 0;
         const updated = (tree.lastUpdated || '').slice(0, 10);
 
         return `
@@ -664,10 +814,12 @@ function renderMyTreesGrid(myTrees) {
                     </div>
                     <div class="min-w-0">
                         <p class="text-sm font-bold text-slate-900 truncate">${tree.name}</p>
-                        <p class="text-xs text-slate-500">${nodeCount}개의 노드</p>
+                        <p class="text-xs text-slate-500">최근 업데이트: ${updated}</p>
                     </div>
                 </div>
-                <p class="text-[11px] text-slate-400">최근 업데이트: ${updated}</p>
+                <p class="text-[11px] text-slate-500">
+                    ${nodeCount}개의 순간 · 조회 ${viewCount} · 좋아요 ${likeCount} · 공유 ${shareCount}
+                </p>
             </a>
         `;
     }).join('');
@@ -889,7 +1041,9 @@ function cacheElements() {
         myCreatedTreesSection: document.getElementById('my-created-trees-section'),
         myTreesTitle: document.getElementById('my-trees-title'),
         allTreesTitle: document.getElementById('all-trees-title'),
-        localMigrationBanner: document.getElementById('local-migration-banner')
+        localMigrationBanner: document.getElementById('local-migration-banner'),
+        recentCreatedSection: document.getElementById('recent-created-section'),
+        recentCreatedGrid: document.getElementById('recent-created-grid')
     };
 }
 
@@ -1090,6 +1244,8 @@ function initPage() {
         // Initial render
         // Firestore 기준 인기 트리 섹션을 우선 시도하고, 실패 시 정적 카드로 대체
         loadPopularTrees();
+        // 최근 만들어진 러브트리(전역 최신 트리) 섹션 로드
+        loadRecentCreatedTrees();
         // renderPopularArtistsList(); // Deprecated
         // 최근 트리는 auth.js에서 onAuthReady(user)를 통해 Firestore 기준으로 재로드되며,
         // 여기서는 로컬스토리지 기반 fallback만 먼저 호출

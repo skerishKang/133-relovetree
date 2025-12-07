@@ -570,8 +570,22 @@
                     </p>
                 </header>
 
+                <!-- 3. Recent Visits (최근 방문한 트리) - Renamed from Hero -->
+                <section id="recent-section" class="px-4 mb-12">
+                    <div
+                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
+
+                        <!-- Horizontal Scroll Container -->
+                        <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
+                            <!-- Items injected by JS -->
+                            <div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- 1. Trending Section (지금 뜨는 러브트리) - Moved to Top -->
-                <section id="discovery-section" class="pt-6 px-4 mb-12">
+                <section id="discovery-section" class="px-4 mb-12">
                     <div
                         class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
                         <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -639,16 +653,12 @@
                     </div>
                 </section>
 
-                <!-- 3. Recent Visits (최근 방문한 트리) - Renamed from Hero -->
-                <section id="recent-section" class="px-4 mb-8">
+                <section id="recent-created-section" class="px-4 mb-8">
                     <div
                         class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
-                        <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
-
-                        <!-- Horizontal Scroll Container -->
-                        <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
-                            <!-- Items injected by JS -->
-                            <div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>
+                        <h2 class="text-xl font-bold text-slate-900 mb-4">최근 만들어진 러브트리</h2>
+                        <div id="recent-created-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                            <div class="text-sm text-slate-400 py-4 px-2">아직 만들어진 러브트리가 없습니다.</div>
                         </div>
                     </div>
                 </section>
