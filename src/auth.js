@@ -8,6 +8,8 @@ const AUTH_CONFIG = {
     adminEmails: ['padiemipu@gmail.com', 'limone@example.com'] // Replace with actual admin emails
 };
 
+let EMAIL_AUTH_MODE = 'login';
+
 /**
  * Initialize Authentication
  */
@@ -44,6 +46,8 @@ function initAuth() {
 
     if (loginBtn) loginBtn.addEventListener('click', signInWithGoogle);
     if (logoutBtn) logoutBtn.addEventListener('click', signOut);
+
+    setupEmailAuthForm();
 }
 
 /**
@@ -174,3 +178,77 @@ function waitForAuth() {
 
 // Auto-init
 document.addEventListener('DOMContentLoaded', initAuth);
+
+function setupEmailAuthForm() {
+    const form = document.getElementById('email-auth-form');
+    if (!form || !firebase.auth) return;
+
+    const emailInput = document.getElementById('email-auth-email');
+    const passwordInput = document.getElementById('email-auth-password');
+    const submitBtn = document.getElementById('email-auth-submit');
+    const toggleBtn = document.getElementById('email-auth-toggle');
+    const titleEl = document.getElementById('email-auth-title');
+    const helperEl = document.getElementById('email-auth-helper');
+
+    function updateUi() {
+        if (!submitBtn || !toggleBtn || !titleEl || !helperEl) return;
+        if (EMAIL_AUTH_MODE === 'login') {
+            titleEl.textContent = '이메일로 로그인';
+            submitBtn.textContent = '로그인';
+            toggleBtn.textContent = '계정이 없나요? 회원가입으로 전환';
+            helperEl.textContent = '이미 만든 이메일 계정으로 로그인합니다.';
+        } else {
+            titleEl.textContent = '이메일로 회원가입';
+            submitBtn.textContent = '회원가입';
+            toggleBtn.textContent = '이미 계정이 있나요? 로그인으로 전환';
+            helperEl.textContent = '새 이메일 계정을 만들고 로그인합니다.';
+        }
+    }
+
+    updateUi();
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            EMAIL_AUTH_MODE = EMAIL_AUTH_MODE === 'login' ? 'signup' : 'login';
+            updateUi();
+        });
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!emailInput || !passwordInput || !submitBtn) return;
+
+        const email = String(emailInput.value || '').trim();
+        const password = String(passwordInput.value || '');
+
+        if (!email || !password) {
+            alert('이메일과 비밀번호를 모두 입력해 주세요.');
+            return;
+        }
+
+        if (password.length < 6) {
+            alert('비밀번호는 최소 6자 이상이어야 합니다.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = EMAIL_AUTH_MODE === 'login' ? '로그인 중...' : '가입 중...';
+
+        try {
+            if (EMAIL_AUTH_MODE === 'login') {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+            } else {
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+            }
+
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Email auth error:', error);
+            alert('이메일 인증 중 오류가 발생했습니다: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+}
