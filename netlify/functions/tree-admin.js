@@ -106,11 +106,15 @@ exports.handler = async (event, context) => {
 
     await requireAdminUser(event, adminInstance);
 
-    const basePath = '/.netlify/functions/tree-admin';
+    const functionBasePath = '/.netlify/functions/tree-admin';
+    const apiBasePath = '/api/admin/trees';
+
     let pathTail = event.path || '';
 
-    if (pathTail.startsWith(basePath)) {
-      pathTail = pathTail.slice(basePath.length);
+    if (pathTail.startsWith(functionBasePath)) {
+      pathTail = pathTail.slice(functionBasePath.length);
+    } else if (pathTail.startsWith(apiBasePath)) {
+      pathTail = pathTail.slice(apiBasePath.length);
     }
 
     if (pathTail.startsWith('/')) {
