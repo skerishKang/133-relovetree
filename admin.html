@@ -56,6 +56,11 @@
                 </a>
                 <a href="#"
                     class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-300 hover:text-white"
+                    data-target="trees">
+                    <i class="fas fa-tree w-5"></i> 트리 관리
+                </a>
+                <a href="#"
+                    class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-300 hover:text-white"
                     data-target="ai-logs">
                     <i class="fas fa-robot w-5"></i> AI 로그
                 </a>
@@ -179,6 +184,84 @@
                                 <!-- JS Load -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tree Management Section -->
+            <section id="trees" class="content-section hidden space-y-6">
+                <header class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">트리 관리</h1>
+                        <p class="text-slate-500 text-sm mt-1">트리 목록과 노드 구조를 한눈에 보고 관리할 수 있는 영역입니다.</p>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Tree List Panel -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                        <div class="p-4 border-b border-slate-100 flex items-center justify-between gap-3">
+                            <div>
+                                <h2 class="font-bold text-slate-900 text-sm">트리 리스트</h2>
+                                <p class="text-xs text-slate-500">최신 업데이트 순으로 정렬된 트리 목록입니다.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input id="treeOwnerFilter" type="text" placeholder="소유자 UID/이메일 필터"
+                                    class="px-3 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50"
+                                />
+                                <input id="treeSearchInput" type="text" placeholder="트리 이름/ID 검색"
+                                    class="px-3 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50"
+                                />
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-50 text-xs uppercase font-bold text-slate-500">
+                                    <tr>
+                                        <th class="px-4 py-2">트리</th>
+                                        <th class="px-4 py-2">소유자</th>
+                                        <th class="px-4 py-2">노드</th>
+                                        <th class="px-4 py-2">뷰/좋아요/공유</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="treeListTable" class="divide-y divide-slate-100 text-xs">
+                                    <!-- JS Load -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tree Detail & Nodes Panel -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                        <div class="p-4 border-b border-slate-100 flex items-center justify-between gap-3">
+                            <div>
+                                <h2 class="font-bold text-slate-900 text-sm" id="treeDetailTitle">트리를 선택해 주세요</h2>
+                                <p class="text-xs text-slate-500" id="treeDetailSubtitle">왼쪽 리스트에서 트리를 선택하면 상세 정보와 노드가 여기 표시됩니다.</p>
+                            </div>
+                            <div class="flex flex-col items-end gap-1 text-[11px] text-slate-500" id="treeDetailStats">
+                                <!-- JS Load -->
+                            </div>
+                        </div>
+                        <div class="p-4 border-b border-slate-100 text-xs text-slate-500" id="treeMetaSummary">
+                            <!-- JS Load: owner, id, lastUpdated 등 요약 -->
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-50 text-xs uppercase font-bold text-slate-500">
+                                    <tr>
+                                        <th class="px-4 py-2">노드 ID</th>
+                                        <th class="px-4 py-2">제목</th>
+                                        <th class="px-4 py-2">날짜</th>
+                                        <th class="px-4 py-2">영상/모먼트</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="treeNodesTable" class="divide-y divide-slate-100 text-xs">
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-6 text-center text-slate-400">왼쪽에서 트리를 선택하면 노드 목록이 표시됩니다.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>

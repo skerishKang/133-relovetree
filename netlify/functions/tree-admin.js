@@ -13,20 +13,22 @@ function getAdmin() {
   if (adminInitialized) return admin;
 
   if (!admin.apps || !admin.apps.length) {
-    let serviceAccount;
+    const raw =
+      process.env.FIREBASE_SERVICE_ACCOUNT_JSON || process.env.FIREBASE_SERVICE_ACCOUNT;
 
-    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
-      try {
-        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
-      } catch (e) {
-        console.error('FIREBASE_SERVICE_ACCOUNT_JSON 파싱 오류:', e);
-        throw e;
-      }
-    } else {
-      // 로컬/백업용 서비스 계정 파일 사용
-      // (Netlify 환경에서는 가능하면 환경 변수 사용 권장)
-      // eslint-disable-next-line global-require, import/no-dynamic-require
-      serviceAccount = require('../../relovetree-firebase-adminsdk-fbsvc-d8d4c96f15.json');
+    if (!raw) {
+      console.error(
+        'Firebase 서비스 계정 환경 변수가 설정되지 않았습니다. FIREBASE_SERVICE_ACCOUNT_JSON 또는 FIREBASE_SERVICE_ACCOUNT 를 설정하세요.'
+      );
+      throw new Error('Missing Firebase service account config');
+    }
+
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(raw);
+    } catch (e) {
+      console.error('Firebase 서비스 계정 JSON 파싱 오류:', e);
+      throw e;
     }
 
     admin.initializeApp({
