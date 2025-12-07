@@ -760,6 +760,11 @@ async function seedDemoTrees(requestCount) {
         }
     ];
 
+    const defaultCount = templates.length;
+    const maxCount = typeof requestCount === 'number' && requestCount > 0
+        ? Math.min(requestCount, templates.length)
+        : defaultCount;
+
     let createdCount = 0;
 
     try {
