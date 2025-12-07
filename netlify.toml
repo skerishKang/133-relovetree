@@ -15,3 +15,7 @@
   to = "/.netlify/functions/tree-admin/:splat"
   status = 200
 
+[[redirects]]
+  from = "/api/admin/tree-ai"
+  to = "/.netlify/functions/tree-ai"
+  status = 200

@@ -325,6 +325,7 @@ function setupNavigation() {
 // --- Tree Management (트리 관리) ---
 
 const TREE_ADMIN_API_BASE = '/api/admin/trees';
+const TREE_AI_API_PATH = '/api/admin/tree-ai';
 let treeListCache = [];
 let currentTreeDetail = null;
 let currentTreeNodeIndex = null;
@@ -601,6 +602,13 @@ function setupTreeNodeEditor() {
         });
     }
 
+    const aiBtn = document.getElementById('treeNodeAiBtn');
+    if (aiBtn) {
+        aiBtn.addEventListener('click', () => {
+            requestAiDescriptionForCurrentNode();
+        });
+    }
+
     resetTreeNodeEditor();
 }
 
@@ -662,6 +670,59 @@ function selectTreeNode(index) {
         const selectedRow = tbody.querySelector('tr[data-node-index="' + index + '"]');
         if (selectedRow) {
             selectedRow.classList.add('bg-blue-50');
+        }
+    }
+}
+
+async function requestAiDescriptionForCurrentNode() {
+    if (!currentTreeDetail || !Array.isArray(currentTreeDetail.nodes)) {
+        alert('트리 정보가 없습니다.');
+        return;
+    }
+
+    if (currentTreeNodeIndex == null) {
+        alert('먼저 설명을 채울 노드를 선택해 주세요.');
+        return;
+    }
+
+    const treeId = currentTreeDetail.id;
+    if (!treeId) {
+        alert('트리 ID가 없습니다.');
+        return;
+    }
+
+    const aiBtn = document.getElementById('treeNodeAiBtn');
+    const descInput = document.getElementById('treeNodeDescriptionInput');
+
+    if (aiBtn) {
+        aiBtn.disabled = true;
+        aiBtn.textContent = 'AI 생성 중...';
+    }
+
+    try {
+        const data = await callTreeAdminApi(TREE_AI_API_PATH, {
+            method: 'POST',
+            body: JSON.stringify({
+                mode: 'node_description_v1',
+                treeId,
+                nodeIndex: currentTreeNodeIndex
+            })
+        });
+
+        if (data && data.suggested && typeof data.suggested.description === 'string') {
+            if (descInput) {
+                descInput.value = data.suggested.description;
+            }
+        } else {
+            alert('AI가 유효한 설명을 반환하지 않았습니다.');
+        }
+    } catch (e) {
+        console.error('AI 설명 생성 오류:', e);
+        alert('AI 설명 생성 중 오류가 발생했습니다: ' + e.message);
+    } finally {
+        if (aiBtn) {
+            aiBtn.disabled = false;
+            aiBtn.textContent = 'AI로 설명 채우기';
         }
     }
 }
