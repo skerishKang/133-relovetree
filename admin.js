@@ -327,6 +327,7 @@ function setupNavigation() {
 const TREE_ADMIN_API_BASE = '/api/admin/trees';
 let treeListCache = [];
 let currentTreeDetail = null;
+let currentTreeNodeIndex = null;
 
 async function callTreeAdminApi(path, options = {}) {
     const user = firebase.auth().currentUser;
@@ -372,6 +373,8 @@ async function initTreeManager(user) {
             applyTreeFiltersAndRender();
         });
     }
+
+    setupTreeNodeEditor();
 }
 
 async function loadTreeList() {
@@ -478,8 +481,10 @@ async function loadTreeDetail(treeId) {
             throw new Error('빈 응답');
         }
         currentTreeDetail = data;
+        currentTreeNodeIndex = null;
         renderTreeDetail(data);
         renderTreeNodes(Array.isArray(data.nodes) ? data.nodes : []);
+        resetTreeNodeEditor();
     } catch (e) {
         console.error('트리 상세 로드 오류:', e);
         if (nodesTbody) {
@@ -553,9 +558,10 @@ function renderTreeNodes(nodes) {
 
     tbody.innerHTML = '';
 
-    nodes.forEach((node) => {
+    nodes.forEach((node, index) => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50';
+        tr.className = 'hover:bg-slate-50 cursor-pointer';
+        tr.dataset.nodeIndex = String(index);
 
         const momentsCount = Array.isArray(node.moments) ? node.moments.length : 0;
         const videoText = node.videoId ? `영상: ${node.videoId}` : '영상 없음';
@@ -568,8 +574,169 @@ function renderTreeNodes(nodes) {
             <td class="px-4 py-2 text-[11px] text-slate-500">${videoText} · ${momentsText}</td>
         `;
 
+        tr.addEventListener('click', () => {
+            selectTreeNode(index);
+        });
+
         tbody.appendChild(tr);
     });
+}
+
+function setupTreeNodeEditor() {
+    const saveBtn = document.getElementById('treeNodeSaveBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            saveCurrentNodeEdits();
+        });
+    }
+
+    const resetBtn = document.getElementById('treeNodeResetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            if (currentTreeDetail && Array.isArray(currentTreeDetail.nodes) && currentTreeNodeIndex != null) {
+                selectTreeNode(currentTreeNodeIndex);
+            } else {
+                resetTreeNodeEditor();
+            }
+        });
+    }
+
+    resetTreeNodeEditor();
+}
+
+function resetTreeNodeEditor() {
+    currentTreeNodeIndex = null;
+
+    const idInput = document.getElementById('treeNodeIdDisplay');
+    const titleInput = document.getElementById('treeNodeTitleInput');
+    const dateInput = document.getElementById('treeNodeDateInput');
+    const videoInput = document.getElementById('treeNodeVideoInput');
+    const descInput = document.getElementById('treeNodeDescriptionInput');
+    const hintEl = document.getElementById('treeNodeEditorHint');
+
+    if (idInput) idInput.value = '';
+    if (titleInput) titleInput.value = '';
+    if (dateInput) dateInput.value = '';
+    if (videoInput) videoInput.value = '';
+    if (descInput) descInput.value = '';
+    if (hintEl) {
+        hintEl.textContent = '왼쪽 노드 목록에서 노드를 선택하면 여기에서 수정할 수 있습니다.';
+    }
+}
+
+function selectTreeNode(index) {
+    if (!currentTreeDetail || !Array.isArray(currentTreeDetail.nodes)) {
+        return;
+    }
+
+    const nodes = currentTreeDetail.nodes;
+    if (index < 0 || index >= nodes.length) {
+        return;
+    }
+
+    currentTreeNodeIndex = index;
+    const node = nodes[index];
+
+    const idInput = document.getElementById('treeNodeIdDisplay');
+    const titleInput = document.getElementById('treeNodeTitleInput');
+    const dateInput = document.getElementById('treeNodeDateInput');
+    const videoInput = document.getElementById('treeNodeVideoInput');
+    const descInput = document.getElementById('treeNodeDescriptionInput');
+    const hintEl = document.getElementById('treeNodeEditorHint');
+
+    if (idInput) idInput.value = node.id != null ? String(node.id) : '';
+    if (titleInput) titleInput.value = node.title || '';
+    if (dateInput) dateInput.value = node.date || '';
+    if (videoInput) videoInput.value = node.videoId || '';
+    if (descInput) descInput.value = node.description || '';
+    if (hintEl) {
+        hintEl.textContent = '선택된 노드 ID: ' + (node.id != null ? String(node.id) : '');
+    }
+
+    const tbody = document.getElementById('treeNodesTable');
+    if (tbody) {
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach((tr) => {
+            tr.classList.remove('bg-blue-50');
+        });
+        const selectedRow = tbody.querySelector('tr[data-node-index="' + index + '"]');
+        if (selectedRow) {
+            selectedRow.classList.add('bg-blue-50');
+        }
+    }
+}
+
+async function saveCurrentNodeEdits() {
+    if (!currentTreeDetail || !Array.isArray(currentTreeDetail.nodes)) {
+        alert('트리 정보가 없습니다.');
+        return;
+    }
+
+    if (currentTreeNodeIndex == null) {
+        alert('먼저 편집할 노드를 선택해 주세요.');
+        return;
+    }
+
+    const idInput = document.getElementById('treeNodeIdDisplay');
+    const titleInput = document.getElementById('treeNodeTitleInput');
+    const dateInput = document.getElementById('treeNodeDateInput');
+    const videoInput = document.getElementById('treeNodeVideoInput');
+    const descInput = document.getElementById('treeNodeDescriptionInput');
+    const saveBtn = document.getElementById('treeNodeSaveBtn');
+
+    const nodes = currentTreeDetail.nodes.slice();
+    const node = { ...(nodes[currentTreeNodeIndex] || {}) };
+
+    const newTitle = titleInput ? titleInput.value.trim() : '';
+    const newDate = dateInput ? dateInput.value.trim() : '';
+    const newVideo = videoInput ? videoInput.value.trim() : '';
+    const newDesc = descInput ? descInput.value.trim() : '';
+
+    if (newTitle) {
+        node.title = newTitle;
+    } else {
+        delete node.title;
+    }
+
+    node.date = newDate || '';
+    node.videoId = newVideo || '';
+    node.description = newDesc || '';
+
+    nodes[currentTreeNodeIndex] = node;
+
+    const treeId = currentTreeDetail.id;
+    if (!treeId) {
+        alert('트리 ID가 없습니다.');
+        return;
+    }
+
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = '저장 중...';
+    }
+
+    try {
+        await callTreeAdminApi(TREE_ADMIN_API_BASE + '/' + encodeURIComponent(treeId), {
+            method: 'PATCH',
+            body: JSON.stringify({
+                nodes,
+                nodeCount: nodes.length
+            })
+        });
+
+        currentTreeDetail.nodes = nodes;
+        renderTreeNodes(nodes);
+        selectTreeNode(currentTreeNodeIndex);
+        alert('노드가 저장되었습니다.');
+    } catch (e) {
+        console.error('노드 저장 오류:', e);
+        alert('노드 저장 중 오류가 발생했습니다: ' + e.message);
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '변경 내용 저장';
+        }
+    }
 }
 
 // --- Data Loading ---
