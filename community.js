@@ -157,6 +157,27 @@ async function loadCommunityPosts() {
 }
 
 /**
+ * 정렬 모드(최신순/인기순)에 따라 상단 정렬 버튼 스타일을 토글
+ */
+function updateCommunitySortButtons() {
+    const latestBtn = document.getElementById('community-sort-latest');
+    const popularBtn = document.getElementById('community-sort-popular');
+
+    if (!latestBtn || !popularBtn) return;
+
+    const activeClass = 'px-3 py-1 rounded-full bg-white text-slate-800 font-semibold shadow-sm';
+    const inactiveClass = 'px-3 py-1 rounded-full text-slate-500 hover:text-slate-800';
+
+    if (communitySortMode === 'popular') {
+        popularBtn.className = activeClass;
+        latestBtn.className = inactiveClass;
+    } else {
+        latestBtn.className = activeClass;
+        popularBtn.className = inactiveClass;
+    }
+}
+
+/**
  * 새 글 작성 모달 열기
  */
 function openCreatePostModal() {
