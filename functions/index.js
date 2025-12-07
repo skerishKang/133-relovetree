@@ -129,7 +129,6 @@ export const aiHelper = functions
     }
 
     const candidates = data.candidates || [];
-    const candidates = data.candidates || [];
     const first = candidates[0];
     const part = first && first.content && first.content.parts && first.content.parts[0];
     const rawText = part && (part.text || part);
@@ -148,3 +147,152 @@ export const aiHelper = functions
     return res.status(500).json({ error: 'Internal error' });
   }
 });
+
+function buildHttpError(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
+async function requireAdminUser(req) {
+  const authHeader = req.get('Authorization') || '';
+  if (!authHeader.startsWith('Bearer ')) {
+    throw buildHttpError(401, 'Missing or invalid Authorization header');
+  }
+
+  const idToken = authHeader.substring(7);
+
+  let decoded;
+  try {
+    decoded = await admin.auth().verifyIdToken(idToken);
+  } catch (e) {
+    console.error('Failed to verify ID token:', e);
+    throw buildHttpError(401, 'Invalid ID token');
+  }
+
+  const uid = decoded.uid;
+  const db = admin.firestore();
+  const userSnap = await db.collection('users').doc(uid).get();
+  if (!userSnap.exists) {
+    throw buildHttpError(403, 'User not found');
+  }
+
+  const userData = userSnap.data() || {};
+  if (userData.role !== 'admin') {
+    throw buildHttpError(403, 'Forbidden');
+  }
+
+  return { uid, user: userData };
+}
+
+export const treeAdmin = functions
+  .region('asia-northeast3')
+  .https.onRequest(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, PATCH, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+      return res.status(204).send('');
+    }
+
+    try {
+      const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+      const segments = url.pathname.split('/').filter(Boolean);
+
+      // Expect path like /api/admin/trees or /api/admin/trees/:id
+      if (segments.length < 3 || segments[0] !== 'api' || segments[1] !== 'admin' || segments[2] !== 'trees') {
+        return res.status(404).json({ error: 'Not found' });
+      }
+
+      const treeId = segments[3] ? decodeURIComponent(segments[3]) : null;
+
+      // 관리자 인증
+      await requireAdminUser(req);
+
+      const db = admin.firestore();
+
+      // GET /api/admin/trees 리스트 (간단 버전)
+      if (req.method === 'GET' && !treeId) {
+        const limit = Math.max(1, Math.min(100, Number((new URLSearchParams(url.search)).get('limit')) || 50));
+        const ownerId = (new URLSearchParams(url.search)).get('ownerId') || null;
+
+        let query = db.collection('trees').orderBy('lastUpdated', 'desc').limit(limit);
+        if (ownerId) {
+          query = query.where('ownerId', '==', ownerId);
+        }
+
+        const snapshot = await query.get();
+        const items = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data() || {};
+          items.push({
+            id: doc.id,
+            name: data.name || decodeURIComponent(doc.id),
+            ownerId: data.ownerId || null,
+            nodeCount: typeof data.nodeCount === 'number' ? data.nodeCount : (Array.isArray(data.nodes) ? data.nodes.length : 0),
+            viewCount: typeof data.viewCount === 'number' ? data.viewCount : 0,
+            likeCount: typeof data.likeCount === 'number'
+              ? data.likeCount
+              : (Array.isArray(data.likes) ? data.likes.length : 0),
+            shareCount: typeof data.shareCount === 'number' ? data.shareCount : 0,
+            isDemo: !!data.isDemo,
+            isAiBot: !!data.isAiBot,
+            lastUpdated: data.lastUpdated || null
+          });
+        });
+
+        return res.json({ items });
+      }
+
+      // GET /api/admin/trees/:id - 단일 트리 조회
+      if (req.method === 'GET' && treeId) {
+        const snap = await db.collection('trees').doc(treeId).get();
+        if (!snap.exists) {
+          return res.status(404).json({ error: 'Tree not found' });
+        }
+
+        const data = snap.data() || {};
+        return res.json({ id: snap.id, ...data });
+      }
+
+      // PATCH /api/admin/trees/:id - 단일 트리 부분 업데이트
+      if (req.method === 'PATCH' && treeId) {
+        if (!req.body || typeof req.body !== 'object') {
+          return res.status(400).json({ error: 'Request body must be JSON object' });
+        }
+
+        const allowedKeys = new Set([
+          'name', 'nodes', 'edges', 'likes', 'comments',
+          'nodeCount', 'viewCount', 'likeCount', 'shareCount',
+          'lastUpdated', 'lastOpened', 'ownerId', 'isDemo', 'isAiBot'
+        ]);
+
+        const updates = {};
+        for (const [key, value] of Object.entries(req.body)) {
+          if (!allowedKeys.has(key)) continue;
+          // 간단 유효성 검사
+          if ((key === 'nodes' || key === 'edges' || key === 'likes' || key === 'comments') && !Array.isArray(value)) {
+            return res.status(400).json({ error: `${key} must be an array` });
+          }
+          updates[key] = value;
+        }
+
+        if (!Object.keys(updates).length) {
+          return res.status(400).json({ error: 'No valid fields to update' });
+        }
+
+        await db.collection('trees').doc(treeId).set(updates, { merge: true });
+        return res.json({ ok: true });
+      }
+
+      // 아직 구현되지 않은 메서드/경로
+      return res.status(405).json({ error: 'Method not allowed' });
+    } catch (err) {
+      console.error('treeAdmin error:', err);
+      if (err && typeof err.status === 'number') {
+        return res.status(err.status).json({ error: err.message || 'Error' });
+      }
+      return res.status(500).json({ error: 'Internal error' });
+    }
+  });

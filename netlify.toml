@@ -4,3 +4,14 @@
 
 [functions]
   directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/admin/trees"
+  to = "/.netlify/functions/tree-admin"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/trees/*"
+  to = "/.netlify/functions/tree-admin/:splat"
+  status = 200
+

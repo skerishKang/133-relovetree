@@ -15,6 +15,10 @@
             {
                 "source": "/ai-helper",
                 "function": "aiHelper"
+            },
+            {
+                "source": "/api/admin/trees/**",
+                "function": "treeAdmin"
             }
         ]
     },
