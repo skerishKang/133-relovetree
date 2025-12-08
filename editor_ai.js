@@ -862,10 +862,10 @@ function applyCommentAiSuggestion(index) {
 function callAiHelperApi(mode, payload) {
     return new Promise(function (resolve, reject) {
         try {
-            // 기본은 Netlify Functions 엔드포인트
+            // Netlify Functions 엔드포인트를 기본으로 사용
             const endpoint = (typeof window !== 'undefined' && window.RELOVETREE_AI_ENDPOINT)
                 ? window.RELOVETREE_AI_ENDPOINT
-                : '/.netlify/functions/ai-helper';
+                : 'https://lovetree.limone.dev/.netlify/functions/ai-helper';
             fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
