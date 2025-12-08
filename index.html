@@ -496,17 +496,6 @@
 
                     <div class="w-px h-6 bg-slate-200 mx-1"></div>
 
-                    <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
-                        <button onclick="setViewportMode('desktop')" id="viewport-desktop-btn"
-                            class="px-3 py-1.5 rounded-md text-sm font-medium transition-all bg-slate-800 text-white shadow-sm">
-                            데스크탑
-                        </button>
-                        <button onclick="setViewportMode('mobile')" id="viewport-mobile-btn"
-                            class="px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition-all">
-                            모바일
-                        </button>
-                    </div>
-
                     <!-- Settings Button -->
                     <button id="settings-btn"
                         class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
@@ -919,89 +908,6 @@
     </dialog>
 
     <!-- JavaScript Modules -->
-    <script>
-        const VIEWPORT_MODE_KEY = 'relovetree_viewport_mode';
-        let viewportMode = 'desktop';
-
-        function setViewportMode(mode) {
-            if (mode !== 'desktop' && mode !== 'mobile') return;
-            viewportMode = mode;
-
-            const navInner = document.getElementById('nav-inner');
-            const mainLayout = document.getElementById('main-content');
-            const desktopBtn = document.getElementById('viewport-desktop-btn');
-            const mobileBtn = document.getElementById('viewport-mobile-btn');
-            const aside = document.querySelector('aside[aria-label="인기 러브트리 순위"]');
-
-            const applyWidth = (el, isDesktop) => {
-                if (!el) return;
-                if (isDesktop) {
-                    el.style.maxWidth = '72rem';
-                    el.style.marginLeft = '';
-                    el.style.marginRight = '';
-                } else {
-                    el.style.maxWidth = '430px';
-                    el.style.marginLeft = 'auto';
-                    el.style.marginRight = 'auto';
-                }
-            };
-
-            const isDesktop = mode === 'desktop';
-
-            // navInner는 항상 데스크탑 너비 유지 (사용자 요청)
-            // applyWidth(navInner, isDesktop); 
-
-            applyWidth(mainLayout, isDesktop);
-
-            // 데스크탑/모바일 프리뷰 모드 body 클래스 토글
-            if (isDesktop) {
-                document.body.classList.remove('mobile-preview');
-            } else {
-                document.body.classList.add('mobile-preview');
-            }
-
-            // 모바일 프리뷰 모드에서는 인기 러브트리 사이드바 숨김
-            if (aside) {
-                aside.style.display = isDesktop ? '' : 'none';
-            }
-
-            // 버튼 스타일 토글
-            if (desktopBtn && mobileBtn) {
-                if (isDesktop) {
-                    desktopBtn.classList.add('bg-slate-800', 'text-white');
-                    desktopBtn.classList.remove('bg-white', 'text-slate-600');
-                    mobileBtn.classList.remove('bg-slate-800', 'text-white');
-                    mobileBtn.classList.add('bg-white', 'text-slate-600');
-                } else {
-                    mobileBtn.classList.add('bg-slate-800', 'text-white');
-                    mobileBtn.classList.remove('bg-white', 'text-slate-600');
-                    desktopBtn.classList.remove('bg-slate-800', 'text-white');
-                    desktopBtn.classList.add('bg-white', 'text-slate-600');
-                }
-            }
-
-            // 사용자가 명시적으로 선택한 모드를 기억
-            try {
-                localStorage.setItem(VIEWPORT_MODE_KEY, mode);
-            } catch (e) { }
-        }
-
-        window.addEventListener('load', () => {
-            let initialMode = 'desktop';
-
-            try {
-                const saved = localStorage.getItem(VIEWPORT_MODE_KEY);
-                if (saved === 'desktop' || saved === 'mobile') {
-                    initialMode = saved;
-                } else if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-                    // 실제 모바일 기기에서는 기본을 모바일 모드로
-                    initialMode = 'mobile';
-                }
-            } catch (e) { }
-
-            setViewportMode(initialMode);
-        });
-    </script>
     <script src="index.js"></script>
     <script src="src/shared.js"></script>
     <script src="src/auth.js"></script>

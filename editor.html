@@ -201,17 +201,6 @@
             </div>
             <div
                 class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
-                <button id="viewport-desktop-btn" onclick="setViewportMode('desktop')"
-                    class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
-                    데스크탑
-                </button>
-                <button id="viewport-mobile-btn" onclick="setViewportMode('mobile')"
-                    class="px-2 py-0.5 rounded-md text-slate-600 bg-slate-100 hover:text-slate-800 hover:bg-slate-200 text-[11px]">
-                    모바일
-                </button>
-            </div>
-            <div
-                class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-1.5 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
                 <button id="orientation-portrait-btn" onclick="setOrientationMode('portrait')"
                     class="px-2 py-0.5 rounded-md font-semibold bg-slate-800 text-white text-[11px]">
                     세로
@@ -836,14 +825,6 @@
 
             // 읽기 전용 모드라면 UI에서 편집 관련 버튼/컨트롤을 숨김
             updateUIForReadOnly();
-
-            // Apply viewport settings
-            const savedViewport = localStorage.getItem(VIEWPORT_MODE_KEY);
-            if (savedViewport) {
-                viewportMode = savedViewport;
-                applyViewportLayout();
-                updateViewportButtons();
-            }
         });
 
         // Load Data (Firebase -> LocalStorage -> Dummy)
@@ -1076,166 +1057,6 @@
 
             render();
         }
-
-        const VIEWPORT_MODE_KEY = 'relovetree_viewport_mode';
-        let viewportMode = 'desktop';
-        let orientationMode = 'portrait';
-
-        function applyViewportLayout() {
-            const wrapper = document.getElementById('wrapper');
-            if (!wrapper) return;
-
-            const header = document.querySelector('body > div.fixed');
-            const headerHeight = header ? header.offsetHeight + 16 : 0; // 헤더 아래 여유 공간 약간 추가
-            const viewportHeight = window.innerHeight;
-
-            if (viewportMode === 'desktop') {
-                wrapper.style.width = '100vw';
-                wrapper.style.height = '100vh';
-                wrapper.style.maxWidth = '';
-                wrapper.style.maxHeight = '';
-                wrapper.style.margin = '0';
-                wrapper.style.borderRadius = '0';
-                wrapper.style.boxShadow = 'none';
-                wrapper.style.background = 'transparent';
-                wrapper.style.border = 'none';
-                wrapper.style.backdropFilter = '';
-                wrapper.style.webkitBackdropFilter = '';
-                wrapper.style.overflow = 'visible';
-            } else {
-                let width = 430;
-                let height = 780;
-
-                if (orientationMode === 'landscape') {
-                    width = 780;
-                    height = 430;
-                }
-
-                const bottomPadding = 32; // 인덱스 모바일 프리뷰와 비슷한 하단 여백
-                const availableHeight = Math.max(0, viewportHeight - headerHeight - bottomPadding);
-                const finalHeight = Math.min(height, availableHeight || height);
-                const extraSpace = Math.max(0, availableHeight - finalHeight);
-
-                const marginTop = headerHeight + extraSpace / 2;
-                const marginBottom = bottomPadding + extraSpace / 2;
-
-                wrapper.style.width = width + 'px';
-                wrapper.style.maxWidth = '100vw';
-                wrapper.style.height = finalHeight + 'px';
-                wrapper.style.maxHeight = '';
-                wrapper.style.margin = `${marginTop}px auto ${marginBottom}px`;
-                wrapper.style.borderRadius = '55px';
-                wrapper.style.border = '8px solid rgba(255, 255, 255, 0.4)';
-                wrapper.style.background = 'rgba(255, 255, 255, 0.25)';
-                wrapper.style.backdropFilter = 'blur(25px)';
-                wrapper.style.webkitBackdropFilter = 'blur(25px)';
-                wrapper.style.boxShadow = '0 30px 60px rgba(15,23,42,0.5)';
-                wrapper.style.overflow = 'hidden';
-            }
-
-            // 배경색 강제 설정 제거 (사용자 설정 따름)
-            // document.body.style.backgroundColor = '#f8fafc';
-        }
-
-        function setViewportMode(mode) {
-            if (mode !== 'desktop' && mode !== 'mobile') return;
-            viewportMode = mode;
-
-            const desktopBtn = document.getElementById('viewport-desktop-btn');
-            const mobileBtn = document.getElementById('viewport-mobile-btn');
-
-            applyViewportLayout();
-
-            const bodyEl = document.body;
-            if (bodyEl) {
-                if (mode === 'mobile') {
-                    bodyEl.classList.add('editor-mobile');
-                } else {
-                    bodyEl.classList.remove('editor-mobile');
-                }
-            }
-
-            if (desktopBtn && mobileBtn) {
-                if (mode === 'desktop') {
-                    desktopBtn.classList.add('bg-slate-800', 'text-white');
-                    desktopBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                    mobileBtn.classList.remove('bg-slate-800', 'text-white');
-                    mobileBtn.classList.add('bg-slate-100', 'text-slate-600');
-                } else {
-                    mobileBtn.classList.add('bg-slate-800', 'text-white');
-                    mobileBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                    desktopBtn.classList.remove('bg-slate-800', 'text-white');
-                    desktopBtn.classList.add('bg-slate-100', 'text-slate-600');
-                }
-            }
-
-            // 사용자가 선택한 모드를 기억
-            try {
-                localStorage.setItem(VIEWPORT_MODE_KEY, mode);
-            } catch (e) { }
-        }
-
-        function updateViewportButtons() {
-            const desktopBtn = document.getElementById('viewport-desktop-btn');
-            const mobileBtn = document.getElementById('viewport-mobile-btn');
-
-            if (!desktopBtn || !mobileBtn) return;
-
-            if (viewportMode === 'desktop') {
-                desktopBtn.classList.add('bg-slate-800', 'text-white');
-                desktopBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                mobileBtn.classList.remove('bg-slate-800', 'text-white');
-                mobileBtn.classList.add('bg-slate-100', 'text-slate-600');
-            } else if (viewportMode === 'mobile') {
-                mobileBtn.classList.add('bg-slate-800', 'text-white');
-                mobileBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                desktopBtn.classList.remove('bg-slate-800', 'text-white');
-                desktopBtn.classList.add('bg-slate-100', 'text-slate-600');
-            }
-        }
-
-        function setOrientationMode(mode) {
-            if (mode !== 'portrait' && mode !== 'landscape') return;
-            orientationMode = mode;
-
-            const portraitBtn = document.getElementById('orientation-portrait-btn');
-            const landscapeBtn = document.getElementById('orientation-landscape-btn');
-
-            applyViewportLayout();
-
-            if (portraitBtn && landscapeBtn) {
-                if (orientationMode === 'portrait') {
-                    portraitBtn.classList.add('bg-slate-800', 'text-white');
-                    portraitBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                    landscapeBtn.classList.remove('bg-slate-800', 'text-white');
-                    landscapeBtn.classList.add('bg-slate-100', 'text-slate-600');
-                } else {
-                    landscapeBtn.classList.add('bg-slate-800', 'text-white');
-                    landscapeBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                    portraitBtn.classList.remove('bg-slate-800', 'text-white');
-                    portraitBtn.classList.add('bg-slate-100', 'text-slate-600');
-                }
-            }
-        }
-
-        // 창 크기 변경 시에도 레이아웃 재계산
-        window.addEventListener('resize', applyViewportLayout);
-
-        // Initial viewport mode (실제 기기 크기 + 저장된 값 기준)
-        (function initViewportMode() {
-            let initialMode = 'desktop';
-
-            try {
-                const saved = localStorage.getItem(VIEWPORT_MODE_KEY);
-                if (saved === 'desktop' || saved === 'mobile') {
-                    initialMode = saved;
-                } else if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-                    initialMode = 'mobile';
-                }
-            } catch (e) { }
-
-            setViewportMode(initialMode);
-        })();
 
         // ================== BACKGROUND PREFERENCES (Copied from index.js) ==================
         const BG_STORAGE_KEY = 'relovetree_background';
