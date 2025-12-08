@@ -5,7 +5,7 @@
 
 // Configuration
 const AUTH_CONFIG = {
-    adminEmails: ['padiemipu@gmail.com', 'limone@example.com'] // Replace with actual admin emails
+    adminEmails: ['padiemipu@gmail.com', 'limone@example.com', 'admin.test@lovetree.dev'] // Replace with actual admin emails
 };
 
 let EMAIL_AUTH_MODE = 'login';
