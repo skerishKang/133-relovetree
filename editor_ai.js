@@ -4,10 +4,12 @@ let aiCommentSuggestions = [];
 let aiHelperLoading = false;
 let momentAiSuggestions = [];
 let commentAiSuggestions = [];
+let aiNodeSuggestion = null;
 
-function openAiHelper() {
+function openAiHelper(initialMode) {
     const modal = document.getElementById('ai-helper-modal');
     if (!modal) return;
+
     const treePrompt = document.getElementById('ai-tree-prompt');
     const titleEl = document.getElementById('tree-title');
     if (treePrompt && titleEl && !treePrompt.value) {
@@ -16,11 +18,58 @@ function openAiHelper() {
             treePrompt.value = base + ' 활동을 단계별로 정리해줘';
         }
     }
+
     const commentPrompt = document.getElementById('ai-comment-prompt');
     if (commentPrompt) commentPrompt.value = '';
+
+    const nodePrompt = document.getElementById('ai-node-prompt');
+    if (nodePrompt) nodePrompt.value = '';
+
+    const ctxEl = document.getElementById('ai-node-context');
+    if (ctxEl) ctxEl.textContent = '';
+
     const resultEl = document.getElementById('ai-result');
     if (resultEl) resultEl.innerHTML = '';
-    setAiHelperMode('tree');
+
+    setAiHelperMode(initialMode || 'tree');
+    if (typeof modal.showModal === 'function') {
+        modal.showModal();
+    } else {
+        modal.setAttribute('open', 'open');
+    }
+}
+
+function prepareNodeAiContext(node) {
+    const ctxEl = document.getElementById('ai-node-context');
+    if (ctxEl) {
+        const videoLabel = node.videoId ? `YouTube: https://youtu.be/${node.videoId}` : 'YouTube 영상 없음';
+        const momentsCount = Array.isArray(node.moments) ? node.moments.length : 0;
+        ctxEl.textContent = `${node.title || ''} · ${node.date || ''} · ${videoLabel} · 순간 ${momentsCount}개`;
+    }
+
+    const promptEl = document.getElementById('ai-node-prompt');
+    if (promptEl && !promptEl.value.trim()) {
+        promptEl.value = '이 노드의 제목과 설명을 더 자연스럽고 감성적으로 다듬어줘.';
+    }
+}
+
+function openNodeAiHelperFromDetail() {
+    if (typeof state === 'undefined' || !state || !Array.isArray(state.nodes)) {
+        if (typeof showToast === 'function') showToast('먼저 노드를 선택해 주세요.');
+        return;
+    }
+    const node = state.nodes.find(function (n) { return n.id === state.activeNodeId; });
+    if (!node) {
+        if (typeof showToast === 'function') showToast('먼저 노드를 선택해 주세요.');
+        return;
+    }
+
+    const modal = document.getElementById('ai-helper-modal');
+    if (!modal) return;
+
+    prepareNodeAiContext(node);
+    setAiHelperMode('node');
+
     if (typeof modal.showModal === 'function') {
         modal.showModal();
     } else {
@@ -35,34 +84,40 @@ function closeAiHelper() {
 }
 
 function setAiHelperMode(mode) {
-    if (mode !== 'tree' && mode !== 'qa') return;
+    if (mode !== 'tree' && mode !== 'qa' && mode !== 'node') return;
     aiHelperMode = mode;
     const treeBtn = document.getElementById('ai-mode-tree-btn');
     const commentBtn = document.getElementById('ai-mode-comment-btn');
+    const nodeBtn = document.getElementById('ai-mode-node-btn');
     const treePanel = document.getElementById('ai-tree-panel');
     const commentPanel = document.getElementById('ai-comment-panel');
-    if (treeBtn && commentBtn) {
-        if (mode === 'tree') {
-            treeBtn.classList.add('bg-slate-900', 'text-white');
-            treeBtn.classList.remove('bg-slate-100', 'text-slate-600');
-            commentBtn.classList.remove('bg-slate-900', 'text-white');
-            commentBtn.classList.add('bg-slate-100', 'text-slate-600');
-        } else {
-            commentBtn.classList.add('bg-slate-900', 'text-white');
-            commentBtn.classList.remove('bg-slate-100', 'text-slate-600');
-            treeBtn.classList.remove('bg-slate-900', 'text-white');
-            treeBtn.classList.add('bg-slate-100', 'text-slate-600');
-        }
+    const nodePanel = document.getElementById('ai-node-panel');
+
+    const allBtns = [treeBtn, commentBtn, nodeBtn].filter(Boolean);
+    allBtns.forEach((btn) => {
+        btn.classList.remove('bg-slate-900', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+    });
+
+    if (mode === 'tree' && treeBtn) {
+        treeBtn.classList.add('bg-slate-900', 'text-white');
+        treeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+    } else if (mode === 'qa' && commentBtn) {
+        commentBtn.classList.add('bg-slate-900', 'text-white');
+        commentBtn.classList.remove('bg-slate-100', 'text-slate-600');
+    } else if (mode === 'node' && nodeBtn) {
+        nodeBtn.classList.add('bg-slate-900', 'text-white');
+        nodeBtn.classList.remove('bg-slate-100', 'text-slate-600');
     }
-    if (treePanel && commentPanel) {
-        if (mode === 'tree') {
-            treePanel.classList.remove('hidden');
-            commentPanel.classList.add('hidden');
-        } else {
-            commentPanel.classList.remove('hidden');
-            treePanel.classList.add('hidden');
-        }
-    }
+
+    const panels = [treePanel, commentPanel, nodePanel];
+    panels.forEach((p) => {
+        if (p) p.classList.add('hidden');
+    });
+    if (mode === 'tree' && treePanel) treePanel.classList.remove('hidden');
+    if (mode === 'qa' && commentPanel) commentPanel.classList.remove('hidden');
+    if (mode === 'node' && nodePanel) nodePanel.classList.remove('hidden');
+
     const resultEl = document.getElementById('ai-result');
     if (resultEl) resultEl.innerHTML = '';
 }
@@ -106,7 +161,12 @@ function onAiHelperSubmit(event) {
         showToast('AI가 제안을 생성 중입니다...');
     }
 
-    const runner = aiHelperMode === 'tree' ? runAiTreeHelper : runAiQaHelper;
+    let runner = runAiTreeHelper;
+    if (aiHelperMode === 'qa') {
+        runner = runAiQaHelper;
+    } else if (aiHelperMode === 'node') {
+        runner = runAiNodeHelper;
+    }
     Promise.resolve()
         .then(() => runner())
         .finally(() => {
@@ -132,11 +192,44 @@ function runAiTreeHelper() {
     return callAiHelperApi('tree', { prompt, count }).then(function (result) {
         if (Array.isArray(result)) {
             aiTreeSuggestions = result.map(function (item) {
+                const title = item && item.title ? item.title : '새 순간';
+                const date = item && item.date ? item.date : new Date().toISOString().split('T')[0];
+
+                let videoId = '';
+                if (item && typeof item.videoId === 'string' && item.videoId) {
+                    videoId = item.videoId;
+                } else if (item && typeof item.youtubeUrl === 'string' && item.youtubeUrl && typeof parseYouTubeId === 'function') {
+                    const parsed = parseYouTubeId(item.youtubeUrl);
+                    if (parsed) videoId = parsed;
+                }
+
+                let moments = [];
+                if (item && Array.isArray(item.moments)) {
+                    moments = item.moments
+                        .map(function (m) {
+                            return {
+                                time: m && m.time ? m.time : '0:00',
+                                text: m && m.text ? m.text : '',
+                                feeling: m && m.feeling ? m.feeling : 'love'
+                            };
+                        })
+                        .filter(function (m) {
+                            return m.text && m.text.trim().length > 0;
+                        });
+                }
+
+                const description = item && item.description ? item.description : '';
+
+                if ((!moments || moments.length === 0) && description) {
+                    moments = [{ time: '0:00', text: description, feeling: 'love' }];
+                }
+
                 return {
-                    title: item.title || '새 순간',
-                    date: item.date || new Date().toISOString().split('T')[0],
-                    videoId: '',
-                    description: item.description || ''
+                    title: title,
+                    date: date,
+                    videoId: videoId,
+                    description: description,
+                    moments: moments
                 };
             });
             renderAiTreePreview();
@@ -169,7 +262,8 @@ function createAiTreeSkeleton(prompt, count) {
             title: nodeTitle,
             date: date,
             videoId: '',
-            description: ''
+            description: '',
+            moments: []
         });
     }
     return list;
@@ -258,6 +352,26 @@ function applyAiTreeSkeleton() {
     const newNodes = [];
     aiTreeSuggestions.forEach(function (item, index) {
         const id = maxId + index + 1;
+
+        let moments = [];
+        if (Array.isArray(item.moments)) {
+            moments = item.moments
+                .map(function (m) {
+                    return {
+                        time: m && m.time ? m.time : '0:00',
+                        text: m && m.text ? m.text : '',
+                        feeling: m && m.feeling ? m.feeling : 'love'
+                    };
+                })
+                .filter(function (m) {
+                    return m.text && m.text.trim().length > 0;
+                });
+        }
+
+        if ((!moments || moments.length === 0) && item.description) {
+            moments = [{ time: '0:00', text: item.description, feeling: 'love' }];
+        }
+
         newNodes.push({
             id: id,
             x: centerX + index * gapX,
@@ -265,7 +379,8 @@ function applyAiTreeSkeleton() {
             title: item.title,
             date: item.date,
             videoId: item.videoId,
-            moments: []
+            description: item.description || '',
+            moments: moments
         });
     });
     newNodes.forEach(function (n) {
@@ -284,6 +399,221 @@ function applyAiTreeSkeleton() {
         showToast('AI 추천 트리가 추가되었습니다.');
     }
     closeAiHelper();
+}
+
+function runAiNodeHelper() {
+    const box = document.getElementById('ai-result');
+    const promptEl = document.getElementById('ai-node-prompt');
+
+    if (typeof state === 'undefined' || !state || !Array.isArray(state.nodes)) {
+        if (box) box.innerHTML = '<p class="text-xs text-slate-400">먼저 편집할 노드를 선택해 주세요.</p>';
+        return Promise.resolve();
+    }
+
+    const node = state.nodes.find(function (n) { return n.id === state.activeNodeId; });
+    if (!node) {
+        if (box) box.innerHTML = '<p class="text-xs text-slate-400">먼저 편집할 노드를 선택해 주세요.</p>';
+        return Promise.resolve();
+    }
+
+    const instruction = promptEl ? promptEl.value.trim() : '';
+
+    const payload = {
+        node: {
+            title: node.title || '',
+            date: node.date || '',
+            videoId: node.videoId || '',
+            description: node.description || '',
+            moments: Array.isArray(node.moments) ? node.moments : []
+        },
+        instruction
+    };
+
+    if (box) {
+        box.innerHTML = '<p class="text-xs text-slate-400">AI가 이 노드를 분석하고 있습니다...</p>';
+    }
+
+    return callAiHelperApi('node_edit', payload).then(function (result) {
+        if (!result) {
+            if (box) box.innerHTML = '<p class="text-xs text-slate-400">AI 응답을 가져오지 못했습니다. 다시 시도해 주세요.</p>';
+            return;
+        }
+
+        let suggestion = result;
+        if (typeof result === 'string') {
+            try {
+                suggestion = JSON.parse(result);
+            } catch (e) {
+                // 파싱 실패 시 그대로 텍스트만 보여준다.
+                if (box) {
+                    const safe = escapeHtmlForAi(result).replace(/\n/g, '<br>');
+                    box.innerHTML = '<div class="text-xs leading-relaxed text-slate-800">' + safe + '</div>';
+                }
+                return;
+            }
+        }
+
+        aiNodeSuggestion = suggestion || null;
+        renderNodeAiSuggestion(node, aiNodeSuggestion);
+    }).catch(function () {
+        if (box) box.innerHTML = '<p class="text-xs text-slate-400">AI 응답 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+    });
+}
+
+function renderNodeAiSuggestion(node, suggestion) {
+    const box = document.getElementById('ai-result');
+    if (!box) return;
+    if (!suggestion || typeof suggestion !== 'object') {
+        box.innerHTML = '<p class="text-xs text-slate-400">적용할 수 있는 제안이 없습니다.</p>';
+        return;
+    }
+
+    const newTitle = suggestion.title || node.title || '';
+    const newDate = suggestion.date || node.date || '';
+    const newDescription = suggestion.description || node.description || '';
+
+    let hasVideo = !!node.videoId;
+    let videoId = node.videoId || '';
+    if (!videoId && typeof suggestion.videoId === 'string' && suggestion.videoId) {
+        videoId = suggestion.videoId;
+        hasVideo = true;
+    } else if (!videoId && typeof suggestion.youtubeUrl === 'string' && suggestion.youtubeUrl && typeof parseYouTubeId === 'function') {
+        const parsed = parseYouTubeId(suggestion.youtubeUrl);
+        if (parsed) {
+            videoId = parsed;
+            hasVideo = true;
+        }
+    }
+
+    const videoLabel = hasVideo ? 'YouTube 연결됨' : 'YouTube 없음';
+
+    const html = [
+        '<div class="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs space-y-2">',
+        '  <p class="text-[11px] text-slate-500 mb-1">AI가 제안한 수정안입니다. 적용 버튼을 누르면 현재 노드에 반영됩니다.</p>',
+        '  <div class="grid grid-cols-2 gap-2 text-[11px]">',
+        '    <div>',
+        '      <p class="font-semibold text-slate-500 mb-1">현재 노드</p>',
+        '      <p class="text-slate-800 line-clamp-2">제목: ' + escapeHtmlForAi(node.title || '') + '</p>',
+        '      <p class="text-slate-500">날짜: ' + escapeHtmlForAi(node.date || '') + '</p>',
+        '      <p class="text-slate-500">영상: ' + (node.videoId ? '연결됨' : '없음') + '</p>',
+        '    </div>',
+        '    <div>',
+        '      <p class="font-semibold text-slate-500 mb-1">AI 제안</p>',
+        '      <p class="text-slate-800 line-clamp-2">제목: ' + escapeHtmlForAi(newTitle) + '</p>',
+        '      <p class="text-slate-500">날짜: ' + escapeHtmlForAi(newDate) + '</p>',
+        '      <p class="text-slate-500">영상: ' + videoLabel + '</p>',
+        '    </div>',
+        '  </div>',
+        newDescription
+            ? '  <div class="mt-2 p-2 bg-white border border-slate-200 rounded-lg text-[11px] text-slate-700"><p class="font-semibold mb-1">설명 제안</p><p>' + escapeHtmlForAi(newDescription) + '</p></div>'
+            : '',
+        '  <div class="mt-2 flex justify-end gap-2">',
+        '    <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] text-slate-500 hover:bg-slate-100" onclick="closeAiHelper()">취소</button>',
+        '    <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-brand-500 text-white hover:bg-brand-600" onclick="applyAiNodeSuggestion()">이대로 적용</button>',
+        '  </div>',
+        '</div>'
+    ].join('');
+
+    box.innerHTML = html;
+}
+
+function applyAiNodeSuggestion() {
+    if (!aiNodeSuggestion || typeof state === 'undefined' || !state || !Array.isArray(state.nodes)) return;
+    const node = state.nodes.find(function (n) { return n.id === state.activeNodeId; });
+    if (!node) return;
+
+    const suggestion = aiNodeSuggestion;
+
+    if (suggestion.title) node.title = suggestion.title;
+    if (suggestion.date) node.date = suggestion.date;
+
+    let videoId = node.videoId || '';
+    if (typeof suggestion.videoId === 'string' && suggestion.videoId) {
+        videoId = suggestion.videoId;
+    } else if (!videoId && typeof suggestion.youtubeUrl === 'string' && suggestion.youtubeUrl && typeof parseYouTubeId === 'function') {
+        const parsed = parseYouTubeId(suggestion.youtubeUrl);
+        if (parsed) videoId = parsed;
+    }
+    if (videoId) node.videoId = videoId;
+
+    if (typeof suggestion.description === 'string') {
+        node.description = suggestion.description;
+    }
+
+    if (Array.isArray(suggestion.moments)) {
+        node.moments = suggestion.moments
+            .map(function (m) {
+                return {
+                    time: m && m.time ? m.time : '0:00',
+                    text: m && m.text ? m.text : '',
+                    feeling: m && m.feeling ? m.feeling : 'love'
+                };
+            })
+            .filter(function (m) { return m.text && m.text.trim().length > 0; });
+    }
+
+    if ((!node.moments || node.moments.length === 0) && node.description) {
+        node.moments = [{ time: '0:00', text: node.description, feeling: 'love' }];
+    }
+
+    // UI 업데이트
+    const detailTitle = document.getElementById('detail-title');
+    const detailDate = document.getElementById('detail-date');
+    const editTitle = document.getElementById('edit-title');
+    const editDate = document.getElementById('edit-date');
+    const editVideo = document.getElementById('edit-video');
+
+    if (detailTitle) detailTitle.innerText = node.title || '';
+    if (detailDate) detailDate.innerText = node.date || '';
+    if (editTitle) editTitle.value = node.title || '';
+    if (editDate) editDate.value = node.date || '';
+    if (editVideo) editVideo.value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
+
+    if (typeof renderMomentsList === 'function') {
+        renderMomentsList(Array.isArray(node.moments) ? node.moments : []);
+    }
+    if (typeof updateDetailMedia === 'function') {
+        updateDetailMedia(node);
+    }
+    if (typeof render === 'function') render();
+    if (typeof saveData === 'function') saveData();
+
+    if (typeof showToast === 'function') {
+        showToast('AI 제안이 노드에 적용되었습니다.');
+    }
+}
+
+function onNodeDragStartForAi(event, nodeId) {
+    if (!event.dataTransfer) return;
+    event.dataTransfer.setData('text/plain', String(nodeId));
+    event.dataTransfer.effectAllowed = 'copy';
+}
+
+function handleNodeDropForAi(event) {
+    event.preventDefault();
+    if (!event.dataTransfer) return;
+    const raw = event.dataTransfer.getData('text/plain');
+    const id = raw ? parseInt(raw, 10) : NaN;
+    if (!raw || Number.isNaN(id)) return;
+
+    if (typeof state === 'undefined' || !state || !Array.isArray(state.nodes)) return;
+    const node = state.nodes.find(function (n) { return n.id === id; });
+    if (!node) return;
+
+    state.activeNodeId = node.id;
+    prepareNodeAiContext(node);
+    setAiHelperMode('node');
+}
+
+function setupAiHelperDropZone() {
+    const panel = document.getElementById('ai-node-panel');
+    if (!panel) return;
+
+    panel.addEventListener('dragover', function (event) {
+        event.preventDefault();
+    });
+
+    panel.addEventListener('drop', handleNodeDropForAi);
 }
 
 function runAiQaHelper() {

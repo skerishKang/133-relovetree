@@ -372,6 +372,14 @@
                         <p id="detail-date" class="text-sm text-slate-500">Date</p>
                     </div>
                     <div class="flex gap-2">
+                        <button onclick="openNodeAiHelperFromDetail()"
+                            class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            title="AI로 이 노드 다듬기">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364-6.364l-2.121 2.121M8.757 15.243l-2.121 2.121m0-12.728l2.121 2.121m8.486 8.486l2.121 2.121" />
+                            </svg>
+                        </button>
                         <button onclick="enableEditMode()"
                             class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                             title="수정">
@@ -491,7 +499,7 @@
 
     <dialog id="ai-helper-modal"
         class="bg-white p-0 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md backdrop:bg-black/50 backdrop:backdrop-blur-sm">
-        <form id="ai-helper-form" method="dialog" class="flex flex-col max-h-[75vh] sm:max-h-[80vh]">
+        <form id="ai-helper-form" method="dialog" class="flex flex-col h-[75vh] sm:h-[80vh] max-h-[80vh]">
             <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
                 <h3 class="text-sm font-bold text-slate-900">AI 도우미</h3>
                 <button type="button" onclick="closeAiHelper()"
@@ -506,6 +514,8 @@
                     class="px-3 py-1.5 rounded-full bg-slate-900 text-white">트리 뼈대</button>
                 <button type="button" id="ai-mode-comment-btn" onclick="setAiHelperMode('qa')"
                     class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600">질문·도움말</button>
+                <button type="button" id="ai-mode-node-btn" onclick="setAiHelperMode('node')"
+                    class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600">노드 수정</button>
             </div>
             <div class="flex-1 overflow-y-auto px-4 pb-3 space-y-3 text-sm" id="ai-helper-body">
                 <div id="ai-tree-panel" class="space-y-2">
@@ -530,6 +540,14 @@
                     <textarea id="ai-comment-prompt" rows="3"
                         class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
                         placeholder="예: 지금 트리 구조를 더 단순하게 만들고 싶은데 어떻게 나누면 좋을까?"></textarea>
+                </div>
+                <div id="ai-node-panel" class="space-y-2 hidden">
+                    <p class="text-[11px] text-slate-500">노드를 선택한 뒤, 상단 \"AI 도우미\" 버튼을 누르거나 타임라인 카드/리스트 카드를 이 영역으로 드래그하면 이 노드를 기준으로 도와줍니다.</p>
+                    <div id="ai-node-context" class="text-[11px] text-slate-500 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 min-h-[2.5rem]"></div>
+                    <label for="ai-node-prompt" class="block text-xs font-medium text-slate-500 mt-1">이 노드를 어떻게 수정할까요?</label>
+                    <textarea id="ai-node-prompt" rows="3"
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        placeholder="예: 제목과 설명을 더 감성적으로 바꾸고, 대표 무대 영상도 추천해줘"></textarea>
                 </div>
                 <div id="ai-result" class="mt-1 space-y-2 text-sm text-slate-700"></div>
             </div>
@@ -1570,6 +1588,12 @@
                 el.style.left = node.x + 'px';
                 el.style.top = node.y + 'px';
                 el.dataset.nodeId = String(node.id);
+                el.setAttribute('draggable', 'true');
+                el.addEventListener('dragstart', (event) => {
+                    if (typeof onNodeDragStartForAi === 'function') {
+                        onNodeDragStartForAi(event, node.id);
+                    }
+                });
 
                 const hasVideo = !!node.videoId;
                 const thumbUrl = hasVideo ? getYouTubeThumb(node.videoId, 'hqdefault') : '';
@@ -1830,6 +1854,12 @@
                 const card = document.createElement('div');
                 card.className = 'timeline-card mx-auto mt-4 w-full max-w-md rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden';
                 card.dataset.nodeId = node.id;
+                card.setAttribute('draggable', 'true');
+                card.addEventListener('dragstart', (event) => {
+                    if (typeof onNodeDragStartForAi === 'function') {
+                        onNodeDragStartForAi(event, node.id);
+                    }
+                });
 
                 const hasVideo = !!node.videoId;
                 const thumbUrl = hasVideo ? getYouTubeThumb(node.videoId, 'hqdefault') : '';
@@ -2656,6 +2686,10 @@
 
         // Initial Load
         loadData();
+
+        if (typeof setupAiHelperDropZone === 'function') {
+            setupAiHelperDropZone();
+        }
 
         // 모바일 화면에서는 기본 에디터 모드를 리스트로 설정
         if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
