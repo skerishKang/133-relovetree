@@ -357,20 +357,38 @@ function escapeHtmlForAi(text) {
 }
 
 function applyAiTreeSkeleton() {
-    if (typeof state === 'undefined' || !state || !Array.isArray(state.nodes)) return;
+    console.log('[AI] applyAiTreeSkeleton called', { aiTreeSuggestions, state: typeof state });
+
+    // state 검사를 더 유연하게
+    if (typeof state === 'undefined' || !state) {
+        console.error('[AI] state is not defined');
+        if (typeof showToast === 'function') showToast('트리 상태를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+        return;
+    }
+    if (!Array.isArray(state.nodes)) {
+        state.nodes = [];
+    }
+
     if (typeof isReadOnly !== 'undefined' && isReadOnly) {
         if (typeof showToast === 'function') showToast('읽기 전용 모드에서는 사용할 수 없습니다.');
         return;
     }
-    if (!aiTreeSuggestions || aiTreeSuggestions.length === 0) return;
+    if (!aiTreeSuggestions || aiTreeSuggestions.length === 0) {
+        console.warn('[AI] No suggestions to apply');
+        if (typeof showToast === 'function') showToast('적용할 노드가 없습니다.');
+        return;
+    }
 
     if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
         const ok = window.confirm('생성된 노드 ' + aiTreeSuggestions.length + '개를 현재 트리에 추가할까요? (나중에 언제든지 수정할 수 있습니다.)');
         if (!ok) return;
     }
+
+    // maxId 계산 개선 - 숫자든 타임스탬프든 처리
     let maxId = 0;
     state.nodes.forEach(function (n) {
-        if (typeof n.id === 'number' && n.id > maxId) maxId = n.id;
+        const nId = typeof n.id === 'number' ? n.id : (parseInt(n.id, 10) || 0);
+        if (nId > maxId) maxId = nId;
     });
     const k = state.transform && state.transform.k ? state.transform.k : 1;
     const centerX = -state.transform.x / k + window.innerWidth / 2 / k - 140;
