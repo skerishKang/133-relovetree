@@ -10,20 +10,7 @@
             "**/*.bat",
             "**/*.cmd",
             "**/*.sh"
-        ],
-        "rewrites": [
-            {
-                "source": "/ai-helper",
-                "function": "aiHelper"
-            },
-            {
-                "source": "/api/admin/trees/**",
-                "function": "treeAdmin"
-            }
         ]
-    },
-    "functions": {
-        "source": "functions"
     },
     "firestore": {
         "rules": "firestore.rules"

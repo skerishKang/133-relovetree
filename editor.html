@@ -304,13 +304,10 @@
 
         <!-- 미니맵 -->
         <div id="minimap"
-            class="absolute bottom-6 left-6 w-40 h-28 bg-white/90 backdrop-blur border border-slate-200 rounded-xl shadow-lg z-30 overflow-hidden cursor-pointer hidden md:block">
-            <div
-                class="absolute top-1 left-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider pointer-events-none">
-                Map</div>
-            <canvas id="minimap-canvas" class="w-full h-full"></canvas>
+            class="absolute bottom-20 left-4 w-28 h-16 bg-slate-900/70 backdrop-blur-sm border border-slate-600/50 rounded-lg shadow-md z-30 overflow-hidden cursor-pointer hidden md:block transition-all duration-200 hover:w-36 hover:h-20 hover:shadow-lg group">
+            <canvas id="minimap-canvas" class="w-full h-full opacity-80 group-hover:opacity-100"></canvas>
             <div id="minimap-viewport"
-                class="absolute border-2 border-brand-500 bg-brand-500/20 rounded-sm pointer-events-none"></div>
+                class="absolute border border-white/80 bg-white/20 rounded-[1px] pointer-events-none"></div>
         </div>
 
         <div id="timeline" class="hidden w-full h-full overflow-y-auto pt-20 pb-24 bg-slate-100/80"></div>
@@ -2583,27 +2580,26 @@
             const scaleY = rect.height / worldHeight;
             const scale = Math.min(scaleX, scaleY);
 
-            // 클리어
+            // 클리어 (투명 배경)
             ctx.clearRect(0, 0, rect.width, rect.height);
 
-            // 배경
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(0, 0, rect.width, rect.height);
-
-            // 노드 그리기
+            // 노드 그리기 (작은 점 스타일)
             state.nodes.forEach(n => {
                 const x = (n.x - minX) * scale;
                 const y = (n.y - minY) * scale;
                 const w = nodeWidth * scale;
                 const h = nodeHeight * scale;
 
-                ctx.fillStyle = state.selectedNode === n.id ? '#f43f5e' : '#64748b';
-                ctx.fillRect(x, y, Math.max(w, 4), Math.max(h, 3));
+                // 선택된 노드는 밝게, 나머지는 어둡게
+                ctx.fillStyle = state.selectedNode === n.id ? '#f43f5e' : 'rgba(255, 255, 255, 0.6)';
+                ctx.beginPath();
+                ctx.roundRect(x, y, Math.max(w, 3), Math.max(h, 2), 1);
+                ctx.fill();
             });
 
             // 연결선 그리기
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 0.5;
             state.edges.forEach(edge => {
                 const from = state.nodes.find(n => n.id === edge.from);
                 const to = state.nodes.find(n => n.id === edge.to);
