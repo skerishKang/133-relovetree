@@ -215,8 +215,7 @@
                 <span>ZOOM</span>
                 <span id="zoom-level" class="font-bold text-slate-800">100%</span>
             </div>
-            <div
-                id="tree-stats-banner"
+            <div id="tree-stats-banner"
                 class="bg-white/80 backdrop-blur shadow-sm border border-slate-200 px-2 py-1 rounded-lg text-[11px] text-slate-500 flex items-center gap-1">
                 <span id="tree-stats-text">노드 0 · 순간 0 · 조회 0 · 좋아요 0 · 공유 0</span>
             </div>
@@ -291,7 +290,6 @@
             <!-- Nodes injected here -->
         </div>
 
-        <!-- Floating Action Button (Moved inside wrapper for mobile positioning) -->
         <button onclick="createNewNode()"
             class="absolute bottom-6 right-6 w-14 h-14 md:bottom-8 md:right-8 md:w-16 md:h-16 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40 group">
             <svg class="w-7 h-7 md:w-8 md:h-8 group-hover:rotate-90 transition-transform duration-300" fill="none"
@@ -303,6 +301,18 @@
                 새로운 순간 추가
             </span>
         </button>
+
+        <!-- 미니맵 -->
+        <div id="minimap"
+            class="absolute bottom-6 left-6 w-40 h-28 bg-white/90 backdrop-blur border border-slate-200 rounded-xl shadow-lg z-30 overflow-hidden cursor-pointer hidden md:block">
+            <div
+                class="absolute top-1 left-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider pointer-events-none">
+                Map</div>
+            <canvas id="minimap-canvas" class="w-full h-full"></canvas>
+            <div id="minimap-viewport"
+                class="absolute border-2 border-brand-500 bg-brand-500/20 rounded-sm pointer-events-none"></div>
+        </div>
+
         <div id="timeline" class="hidden w-full h-full overflow-y-auto pt-20 pb-24 bg-slate-100/80"></div>
     </div>
 
@@ -451,7 +461,8 @@
                                     <input type="text" id="new-moment-time" placeholder="0:00"
                                         class="w-16 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 text-center">
                                     <button type="button" onclick="setCurrentMomentTime()"
-                                        class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-[11px] font-medium text-slate-700 rounded-lg whitespace-nowrap">현재 시간</button>
+                                        class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-[11px] font-medium text-slate-700 rounded-lg whitespace-nowrap">현재
+                                        시간</button>
                                 </div>
                                 <div class="flex-1 flex gap-2">
                                     <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
@@ -494,7 +505,8 @@
                 <button type="button" onclick="closeAiHelper()"
                     class="w-7 h-7 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -531,9 +543,13 @@
                         placeholder="예: 지금 트리 구조를 더 단순하게 만들고 싶은데 어떻게 나누면 좋을까?"></textarea>
                 </div>
                 <div id="ai-node-panel" class="space-y-2 hidden">
-                    <p class="text-[11px] text-slate-500">노드를 선택한 뒤, 상단 \"AI 도우미\" 버튼을 누르거나 타임라인 카드/리스트 카드를 이 영역으로 드래그하면 이 노드를 기준으로 도와줍니다.</p>
-                    <div id="ai-node-context" class="text-[11px] text-slate-500 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 min-h-[2.5rem]"></div>
-                    <label for="ai-node-prompt" class="block text-xs font-medium text-slate-500 mt-1">이 노드를 어떻게 수정할까요?</label>
+                    <p class="text-[11px] text-slate-500">노드를 선택한 뒤, 상단 \"AI 도우미\" 버튼을 누르거나 타임라인 카드/리스트 카드를 이 영역으로 드래그하면
+                        이 노드를 기준으로 도와줍니다.</p>
+                    <div id="ai-node-context"
+                        class="text-[11px] text-slate-500 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 min-h-[2.5rem]">
+                    </div>
+                    <label for="ai-node-prompt" class="block text-xs font-medium text-slate-500 mt-1">이 노드를 어떻게
+                        수정할까요?</label>
                     <textarea id="ai-node-prompt" rows="3"
                         class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
                         placeholder="예: 제목과 설명을 더 감성적으로 바꾸고, 대표 무대 영상도 추천해줘"></textarea>
@@ -1496,6 +1512,11 @@
                 const to = state.nodes.find(n => n.id === edge.to);
                 if (from && to) drawConnection(from, to);
             });
+
+            // 미니맵 업데이트
+            if (typeof updateMinimap === 'function') {
+                updateMinimap();
+            }
         }
 
         function drawConnection(from, to) {
@@ -2283,6 +2304,8 @@
                 if (typeof updateTreeStatsBanner === 'function') {
                     updateTreeStatsBanner();
                 }
+                // 등록 완료 피드백
+                showToast(isKorean ? '순간이 등록되었습니다!' : 'Moment added!');
             }
         }
 
@@ -2454,6 +2477,10 @@
             if (typeof updateTreeStatsBanner === 'function') {
                 updateTreeStatsBanner();
             }
+            // 새 노드 생성 시 자동으로 편집 모드 진입
+            setTimeout(() => {
+                enableEditMode();
+            }, 100);
         }
 
         function deleteNode() {
@@ -2504,6 +2531,137 @@
                 }
             });
         }
+
+        // ================== 미니맵 기능 ==================
+        function updateMinimap() {
+            const minimapEl = document.getElementById('minimap');
+            const canvasEl = document.getElementById('minimap-canvas');
+            const viewportEl = document.getElementById('minimap-viewport');
+
+            if (!minimapEl || !canvasEl || !viewportEl) return;
+            if (!Array.isArray(state.nodes) || state.nodes.length === 0) {
+                // 노드가 없으면 미니맵 숨김
+                minimapEl.classList.add('hidden');
+                return;
+            }
+            minimapEl.classList.remove('hidden');
+            minimapEl.classList.add('md:block');
+
+            const ctx = canvasEl.getContext('2d');
+            if (!ctx) return;
+
+            // 캔버스 실제 크기 설정
+            const rect = canvasEl.getBoundingClientRect();
+            canvasEl.width = rect.width * 2; // 고해상도
+            canvasEl.height = rect.height * 2;
+            ctx.scale(2, 2);
+
+            // 노드 바운딩 박스 계산
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            const nodeWidth = 280;
+            const nodeHeight = 200;
+
+            state.nodes.forEach(n => {
+                if (n.x < minX) minX = n.x;
+                if (n.y < minY) minY = n.y;
+                if (n.x + nodeWidth > maxX) maxX = n.x + nodeWidth;
+                if (n.y + nodeHeight > maxY) maxY = n.y + nodeHeight;
+            });
+
+            // 패딩 추가
+            const padding = 100;
+            minX -= padding;
+            minY -= padding;
+            maxX += padding;
+            maxY += padding;
+
+            const worldWidth = maxX - minX;
+            const worldHeight = maxY - minY;
+
+            // 스케일 계산
+            const scaleX = rect.width / worldWidth;
+            const scaleY = rect.height / worldHeight;
+            const scale = Math.min(scaleX, scaleY);
+
+            // 클리어
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            // 배경
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, rect.width, rect.height);
+
+            // 노드 그리기
+            state.nodes.forEach(n => {
+                const x = (n.x - minX) * scale;
+                const y = (n.y - minY) * scale;
+                const w = nodeWidth * scale;
+                const h = nodeHeight * scale;
+
+                ctx.fillStyle = state.selectedNode === n.id ? '#f43f5e' : '#64748b';
+                ctx.fillRect(x, y, Math.max(w, 4), Math.max(h, 3));
+            });
+
+            // 연결선 그리기
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            state.edges.forEach(edge => {
+                const from = state.nodes.find(n => n.id === edge.from);
+                const to = state.nodes.find(n => n.id === edge.to);
+                if (!from || !to) return;
+
+                const x1 = (from.x - minX + nodeWidth) * scale;
+                const y1 = (from.y - minY + nodeHeight / 2) * scale;
+                const x2 = (to.x - minX) * scale;
+                const y2 = (to.y - minY + nodeHeight / 2) * scale;
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            });
+
+            // 뷰포트 표시
+            const vpX = (-state.transform.x / state.transform.k - minX) * scale;
+            const vpY = (-state.transform.y / state.transform.k - minY) * scale;
+            const vpW = (window.innerWidth / state.transform.k) * scale;
+            const vpH = (window.innerHeight / state.transform.k) * scale;
+
+            viewportEl.style.left = vpX + 'px';
+            viewportEl.style.top = vpY + 'px';
+            viewportEl.style.width = Math.max(vpW, 10) + 'px';
+            viewportEl.style.height = Math.max(vpH, 10) + 'px';
+
+            // 미니맵 클릭 데이터 저장
+            minimapEl.dataset.minX = minX;
+            minimapEl.dataset.minY = minY;
+            minimapEl.dataset.scale = scale;
+        }
+
+        // 미니맵 클릭으로 이동
+        (function () {
+            const minimapEl = document.getElementById('minimap');
+            if (!minimapEl) return;
+
+            minimapEl.addEventListener('click', function (e) {
+                const rect = minimapEl.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+
+                const minX = parseFloat(minimapEl.dataset.minX) || 0;
+                const minY = parseFloat(minimapEl.dataset.minY) || 0;
+                const scale = parseFloat(minimapEl.dataset.scale) || 1;
+
+                // 클릭 위치를 월드 좌표로 변환
+                const worldX = clickX / scale + minX;
+                const worldY = clickY / scale + minY;
+
+                // 뷰포트 중앙으로 이동
+                state.transform.x = -(worldX - window.innerWidth / 2 / state.transform.k) * state.transform.k;
+                state.transform.y = -(worldY - window.innerHeight / 2 / state.transform.k) * state.transform.k;
+
+                if (typeof render === 'function') render();
+            });
+        })();
 
         // Initial Load
         loadData();

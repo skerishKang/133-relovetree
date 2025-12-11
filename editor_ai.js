@@ -157,8 +157,29 @@ function onAiHelperSubmit(event) {
     if (aiHelperLoading) return;
 
     setAiHelperLoading(true);
-    if (typeof showToast === 'function') {
-        showToast('AI가 제안을 생성 중입니다...');
+
+    // 결과 영역에 진행 메시지 표시
+    const resultEl = document.getElementById('ai-result');
+    if (resultEl) {
+        const loadingMessages = [
+            'AI가 아티스트 정보를 검색하고 있습니다...',
+            '관련 무대와 영상을 찾고 있습니다...',
+            '타임라인을 구성하고 있습니다...'
+        ];
+        let msgIndex = 0;
+        resultEl.innerHTML = '<div class="flex flex-col items-center py-8 gap-3">' +
+            '<div class="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>' +
+            '<p id="ai-loading-msg" class="text-xs text-slate-500">' + loadingMessages[0] + '</p>' +
+            '</div>';
+
+        // 메시지 순환 표시
+        window._aiLoadingInterval = setInterval(function () {
+            msgIndex = (msgIndex + 1) % loadingMessages.length;
+            const msgEl = document.getElementById('ai-loading-msg');
+            if (msgEl) {
+                msgEl.textContent = loadingMessages[msgIndex];
+            }
+        }, 2000);
     }
 
     let runner = runAiTreeHelper;
@@ -171,8 +192,14 @@ function onAiHelperSubmit(event) {
         .then(() => runner())
         .finally(() => {
             setAiHelperLoading(false);
+            // 로딩 인터벌 정리
+            if (window._aiLoadingInterval) {
+                clearInterval(window._aiLoadingInterval);
+                window._aiLoadingInterval = null;
+            }
         });
 }
+
 
 function runAiTreeHelper() {
     if (typeof isReadOnly !== 'undefined' && isReadOnly) {
