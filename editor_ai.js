@@ -6,6 +6,47 @@ let momentAiSuggestions = [];
 let commentAiSuggestions = [];
 let aiNodeSuggestion = null;
 
+// YouTube Data API v3 설정
+const YOUTUBE_API_KEY = 'AIzaSyAuZpB-HKjCAai3u0dYupBy6ErTZNugLes';
+
+/**
+ * YouTube에서 영상을 검색하고 첫 번째 결과의 videoId를 반환
+ * @param {string} query - 검색어
+ * @returns {Promise<{videoId: string, title: string, description: string} | null>}
+ */
+async function searchYouTubeVideo(query) {
+    if (!query || !YOUTUBE_API_KEY) return null;
+
+    try {
+        const url = new URL('https://www.googleapis.com/youtube/v3/search');
+        url.searchParams.set('part', 'snippet');
+        url.searchParams.set('q', query);
+        url.searchParams.set('type', 'video');
+        url.searchParams.set('maxResults', '1');
+        url.searchParams.set('key', YOUTUBE_API_KEY);
+
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+            console.warn('[YouTube API] Search failed:', response.status);
+            return null;
+        }
+
+        const data = await response.json();
+        if (data.items && data.items.length > 0) {
+            const item = data.items[0];
+            return {
+                videoId: item.id.videoId,
+                title: item.snippet.title,
+                description: item.snippet.description
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('[YouTube API] Error:', error);
+        return null;
+    }
+}
+
 function openAiHelper(initialMode) {
     const modal = document.getElementById('ai-helper-modal');
     if (!modal) return;
@@ -216,7 +257,7 @@ function runAiTreeHelper() {
     }
 
     // Gemini API 호출 시도
-    return callAiHelperApi('tree', { prompt, count }).then(function (result) {
+    return callAiHelperApi('tree', { prompt, count }).then(async function (result) {
         if (Array.isArray(result)) {
             aiTreeSuggestions = result.map(function (item) {
                 const title = item && item.title ? item.title : '새 순간';
@@ -262,24 +303,27 @@ function runAiTreeHelper() {
             renderAiTreePreview();
             return;
         }
-        // 응답 형식이 예상과 다르면 더미 로직으로 폴백
-        aiTreeSuggestions = createAiTreeSkeleton(prompt, count);
+        // 응답 형식이 예상과 다르면 더미 로직으로 폴백 (YouTube 검색 포함)
+        aiTreeSuggestions = await createAiTreeSkeleton(prompt, count);
         renderAiTreePreview();
-    }).catch(function () {
-        // 에러 시에도 안전하게 폴백
-        aiTreeSuggestions = createAiTreeSkeleton(prompt, count);
+    }).catch(async function () {
+        // 에러 시에도 안전하게 폴백 (YouTube 검색 포함)
+        aiTreeSuggestions = await createAiTreeSkeleton(prompt, count);
         renderAiTreePreview();
     });
 }
 
-function createAiTreeSkeleton(prompt, count) {
+async function createAiTreeSkeleton(prompt, count) {
     const list = [];
     const titleEl = document.getElementById('tree-title');
     let base = '';
     if (prompt) base = prompt;
     else if (titleEl && titleEl.innerText) base = titleEl.innerText;
     else base = '새 러브트리';
+
     const now = new Date();
+
+    // 먼저 기본 노드 구조 생성
     for (let i = 0; i < count; i++) {
         const d = new Date(now.getTime() - (count - 1 - i) * 7 * 24 * 60 * 60 * 1000);
         const date = d.toISOString().split('T')[0];
@@ -290,9 +334,36 @@ function createAiTreeSkeleton(prompt, count) {
             date: date,
             videoId: '',
             description: '',
-            moments: []
+            moments: [],
+            _searchQuery: base + ' 무대' // YouTube 검색용 쿼리
         });
     }
+
+    // YouTube 검색 수행 (병렬로)
+    const loadingMsgEl = document.getElementById('ai-loading-msg');
+    if (loadingMsgEl) {
+        loadingMsgEl.textContent = 'YouTube에서 관련 영상을 검색 중...';
+    }
+
+    try {
+        // 각 노드에 대해 YouTube 검색 (첫 번째 노드만 검색하여 API 할당량 절약)
+        const searchQuery = base + ' 무대 공연';
+        console.log('[AI] Searching YouTube for:', searchQuery);
+
+        const result = await searchYouTubeVideo(searchQuery);
+        if (result && result.videoId) {
+            // 첫 번째 노드에 영상 적용
+            list[0].videoId = result.videoId;
+            list[0].description = result.description ? result.description.substring(0, 100) : '';
+            console.log('[AI] Found video:', result.videoId);
+        }
+    } catch (error) {
+        console.warn('[AI] YouTube search failed:', error);
+    }
+
+    // 검색 쿼리 필드 제거
+    list.forEach(item => delete item._searchQuery);
+
     return list;
 }
 
