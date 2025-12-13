@@ -7,7 +7,7 @@ let commentAiSuggestions = [];
 let aiNodeSuggestion = null;
 
 // YouTube Data API v3 설정
-const YOUTUBE_API_KEY = 'AIzaSyAuZpB-HKjCAai3u0dYupBy6ErTZNugLes';
+const YOUTUBE_API_KEY = '';
 
 /**
  * YouTube에서 영상을 검색하고 첫 번째 결과의 videoId를 반환
@@ -546,7 +546,10 @@ function runAiNodeHelper() {
     };
 
     if (box) {
-        box.innerHTML = '<p class="text-xs text-slate-400">AI가 이 노드를 분석하고 있습니다...</p>';
+        const hasLoadingUi = !!document.getElementById('ai-loading-msg');
+        if (!hasLoadingUi) {
+            box.innerHTML = '<p class="text-xs text-slate-400">AI가 이 노드를 분석하고 있습니다...</p>';
+        }
     }
 
     return callAiHelperApi('node_edit', payload).then(function (result) {
@@ -979,31 +982,41 @@ function callAiHelperApi(mode, payload) {
     return new Promise(function (resolve, reject) {
         try {
             // Netlify Functions 엔드포인트를 기본으로 사용
-            const endpoint = (typeof window !== 'undefined' && window.RELOVETREE_AI_ENDPOINT)
-                ? window.RELOVETREE_AI_ENDPOINT
-                : 'https://lovetree.limone.dev/.netlify/functions/ai-helper';
-            fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode: mode, payload: payload })
-            }).then(function (res) {
-                if (!res.ok) {
-                    reject(new Error('HTTP ' + res.status));
-                    return;
-                }
-                return res.json();
-            }).then(function (data) {
-                if (!data) {
-                    reject(new Error('Empty response'));
-                    return;
-                }
-                resolve(data.result);
-            }).catch(function (err) {
-                console.error('AI helper fetch error:', err);
-                reject(err);
-            });
+            const hasOverride = (typeof window !== 'undefined' && window.RELOVETREE_AI_ENDPOINT);
+            const localEndpoint = (typeof window !== 'undefined')
+                ? new URL('/.netlify/functions/ai-helper', window.location.origin).toString()
+                : '/.netlify/functions/ai-helper';
+            const fallbackEndpoint = 'https://lovetree.limone.dev/.netlify/functions/ai-helper';
+            const endpoint = hasOverride ? window.RELOVETREE_AI_ENDPOINT : localEndpoint;
+
+            const fetchJson = function (url) {
+                return fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode, payload: payload })
+                }).then(function (res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                });
+            };
+
+            fetchJson(endpoint)
+                .catch(function (err) {
+                    if (hasOverride) throw err;
+                    if (endpoint !== localEndpoint) throw err;
+                    return fetchJson(fallbackEndpoint);
+                })
+                .then(function (data) {
+                    if (data && data.result !== undefined) {
+                        resolve(data.result);
+                    } else {
+                        resolve(data);
+                    }
+                })
+                .catch(function (err) {
+                    reject(err);
+                });
         } catch (e) {
-            console.error('AI helper error:', e);
             reject(e);
         }
     });

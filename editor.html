@@ -1403,6 +1403,9 @@
                 if (connections) connections.innerHTML = '';
                 if (timeline) timeline.classList.remove('hidden');
                 renderTimeline();
+                if (typeof updateTreeStatsBanner === 'function') {
+                    updateTreeStatsBanner();
+                }
                 return;
             }
 
@@ -1513,6 +1516,10 @@
             // 미니맵 업데이트
             if (typeof updateMinimap === 'function') {
                 updateMinimap();
+            }
+
+            if (typeof updateTreeStatsBanner === 'function') {
+                updateTreeStatsBanner();
             }
         }
 
@@ -2207,8 +2214,16 @@
             document.getElementById('edit-date').value = node.date;
             document.getElementById('edit-video').value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
 
-            // 모달을 열 때는 읽기 모드로 두고, Edit 버튼을 눌렀을 때만 편집 폼을 연다
-            disableEditMode();
+            // 노드를 열면 바로 입력할 수 있도록 기본 편집 모드로 연다
+            if (typeof isReadOnly !== 'undefined' && isReadOnly) {
+                disableEditMode();
+            } else {
+                enableEditMode();
+                setTimeout(() => {
+                    const titleInput = document.getElementById('edit-title');
+                    if (titleInput) titleInput.focus();
+                }, 0);
+            }
 
             const iframe = document.getElementById('detail-video');
             const placeholder = document.getElementById('video-placeholder');
@@ -2366,7 +2381,14 @@
                 updateDetailMedia(node);
 
                 render();
-                saveData(); // Save after editing details
+                if (typeof saveDataImmediate === 'function') {
+                    await saveDataImmediate(true);
+                } else {
+                    saveData(); // Save after editing details
+                    if (typeof showToast === 'function') {
+                        showToast(isKorean ? '저장되었습니다' : 'Saved');
+                    }
+                }
                 disableEditMode();
             }
         }
@@ -2502,6 +2524,10 @@
                 // Re-render and save
                 render();
                 saveData();
+
+                if (typeof updateTreeStatsBanner === 'function') {
+                    updateTreeStatsBanner();
+                }
 
                 showToast(isKorean ? '노드가 삭제되었습니다' : 'Node deleted');
             }

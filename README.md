@@ -139,8 +139,39 @@
 
 ### 🌐 외부 API
 
-- **YouTube API**: 비디오 임베드 및 썸네일
+- **YouTube API**: 비디오 검색/정보 조회 및 자막 기반 순간(moments) 생성
 - **Google Fonts**: 웹 폰트 로딩
+
+## 🤖 AI 실제 콘텐츠 생성
+
+이 프로젝트의 AI 도우미는 단순한 더미 텍스트가 아니라, 실제 YouTube 영상을 검색하고(YouTube Data API), 가능한 경우 자막(YouTube timedtext)을 기반으로 타임스탬프가 포함된 순간(moments)을 생성합니다. 최종 요약/구성은 Gemini를 사용합니다.
+
+### ✅ 필요한 환경변수
+
+- **`GEMINI_API_KEYS`**
+  - 쉼표로 구분된 Gemini API Key 목록
+  - 예: `GEMINI_API_KEYS=key1,key2`
+- **`YOUTUBE_API_KEY`**
+  - YouTube Data API v3 키
+
+### 🧪 로컬 실행 방법 (권장: Netlify Functions 포함)
+
+`netlify/functions/ai-helper.js`를 사용하려면 정적 서버가 아니라 Netlify 로컬 개발 서버로 실행하는 것이 가장 간단합니다.
+
+1. 환경변수 설정
+   - Windows PowerShell 예시
+     - `setx GEMINI_API_KEYS "key1,key2"`
+     - `setx YOUTUBE_API_KEY "YOUR_YOUTUBE_API_KEY"`
+
+2. Netlify 로컬 서버 실행
+   - `npx netlify dev --port 8888`
+
+3. 접속
+   - `http://localhost:8888/editor.html`
+
+### 🧪 로컬 실행 방법 (정적 서버만 실행)
+
+정적 서버(`python -m http.server` 등)로 `editor.html`만 띄우면 `/.netlify/functions/*`가 없기 때문에, 프론트의 AI 호출은 기본적으로 프로덕션 엔드포인트로 폴백합니다.
 
 ## 📊 성능 지표
 
