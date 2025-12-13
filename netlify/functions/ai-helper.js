@@ -440,14 +440,28 @@ exports.handler = async (event, context) => {
       const built = [];
       for (const item of items) {
         const baseTitle = item && item.title ? String(item.title) : '';
-        const q = item && item.searchQuery ? String(item.searchQuery) : (payload && payload.prompt ? String(payload.prompt) : baseTitle);
-        const searchQuery = q && q.trim().length ? q.trim() : baseTitle;
+        const rawPrompt = payload && payload.prompt ? String(payload.prompt) : '';
+        const rawSearchQuery = item && item.searchQuery ? String(item.searchQuery) : '';
+        const candidates = [
+          rawSearchQuery,
+          baseTitle,
+          rawPrompt,
+          `${baseTitle} 무대`,
+          `${baseTitle} 직캠`,
+          `${baseTitle} Mcountdown`,
+          `${rawPrompt} 무대`,
+        ]
+          .map((v) => (v || '').trim())
+          .filter((v, idx, arr) => v.length > 0 && arr.indexOf(v) === idx);
 
         let found = null;
-        try {
-          found = await youtubeSearchFirstVideo(searchQuery, ytKey);
-        } catch (e) {
-          found = null;
+        for (const q of candidates) {
+          try {
+            found = await youtubeSearchFirstVideo(q, ytKey);
+          } catch (e) {
+            found = null;
+          }
+          if (found && found.videoId) break;
         }
 
         if (!found || !found.videoId) {
