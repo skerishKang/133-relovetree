@@ -10,6 +10,15 @@ function getYouTubeApiKey(env) {
   return (env.YOUTUBE_API_KEY || '').trim();
 }
 
+function getYouTubeRequestHeaders(env) {
+  const referer = (env.YOUTUBE_API_REFERER || env.URL || env.DEPLOY_PRIME_URL || '').trim();
+  if (!referer) return undefined;
+  return {
+    Referer: referer,
+    Origin: referer,
+  };
+}
+
 function clampNumber(n, min, max) {
   const v = Number(n);
   if (!Number.isFinite(v)) return min;
@@ -71,7 +80,9 @@ async function youtubeSearchFirstVideo(query, apiKey) {
   url.searchParams.set('q', query);
   url.searchParams.set('key', apiKey);
 
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), {
+    headers: getYouTubeRequestHeaders(process.env),
+  });
   if (!res.ok) {
     const t = await res.text();
     throw new Error('YouTube search failed: ' + res.status + ' ' + t);
@@ -97,7 +108,9 @@ async function youtubeGetVideoDetails(videoId, apiKey) {
   url.searchParams.set('id', videoId);
   url.searchParams.set('key', apiKey);
 
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), {
+    headers: getYouTubeRequestHeaders(process.env),
+  });
   if (!res.ok) {
     const t = await res.text();
     throw new Error('YouTube videos failed: ' + res.status + ' ' + t);
