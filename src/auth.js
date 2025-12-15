@@ -124,9 +124,11 @@ function updateLoginUI(user) {
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
     const adminLink = document.getElementById('admin-link');
+    const emailLoginLink = document.getElementById('email-login-link');
 
     if (user) {
         if (loginBtn) loginBtn.classList.add('hidden');
+        if (emailLoginLink) emailLoginLink.classList.add('hidden');
         if (userMenu) userMenu.classList.remove('hidden');
         if (userAvatar) userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
         if (userName) userName.textContent = user.displayName;
@@ -138,6 +140,7 @@ function updateLoginUI(user) {
 
     } else {
         if (loginBtn) loginBtn.classList.remove('hidden');
+        if (emailLoginLink) emailLoginLink.classList.remove('hidden');
         if (userMenu) userMenu.classList.add('hidden');
         if (adminLink) adminLink.classList.add('hidden');
     }

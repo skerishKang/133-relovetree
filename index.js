@@ -147,18 +147,18 @@ function ensureLoggedIn() {
     const user = getCurrentUser();
     if (user) return user;
 
-    const messageKo = '로그인이 필요합니다. 오른쪽 상단의 [로그인] 버튼을 눌러 구글 계정으로 로그인해 주세요.';
-    const messageEn = 'Login is required. Please use the [Login] button in the top-right corner.';
+    const messageKo = '로그인이 필요합니다. 하단의 [마이] 탭에서 로그인해 주세요.';
+    const messageEn = 'Login is required. Please open the [My] tab and sign in.';
     showError(isKorean ? messageKo : messageEn, 5000);
 
-    // 새 러브트리 생성처럼 명확한 액션에서는 바로 로그인 플로우를 띄워준다.
     try {
-        if (typeof signInWithGoogle === 'function') {
-            signInWithGoogle();
-        } else {
+        if (typeof openSettingsModal === 'function') {
+            openSettingsModal();
+        }
+        window.setTimeout(function () {
             const loginBtn = document.getElementById('login-btn');
             if (loginBtn) loginBtn.focus();
-        }
+        }, 50);
     } catch (e) {
         console.warn('자동 로그인 플로우 실행 실패:', e);
     }
@@ -661,8 +661,8 @@ async function migrateLocalTreesToAccount() {
     const user = getCurrentUser();
     if (!user) {
         const message = isKorean
-            ? '로그인이 필요합니다. 오른쪽 상단의 [로그인] 버튼으로 먼저 로그인해 주세요.'
-            : 'Login is required. Please sign in first.';
+            ? '로그인이 필요합니다. 하단의 [마이] 탭에서 먼저 로그인해 주세요.'
+            : 'Login is required. Please sign in from the [My] tab first.';
         showError(message, 4000);
         return;
     }
@@ -866,13 +866,13 @@ function updateMyCreatedTreesPlaceholder() {
     if (iconBtn) {
         iconBtn.onclick = function () {
             try {
-                if (typeof signInWithGoogle === 'function') {
-                    signInWithGoogle();
+                if (typeof openSettingsModal === 'function') {
+                    openSettingsModal();
                 } else {
                     ensureLoggedIn();
                 }
             } catch (e) {
-                console.warn('로그인 플로우 실행 실패:', e);
+                console.warn('마이 모달 열기 실패:', e);
             }
         };
     }
