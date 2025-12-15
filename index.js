@@ -1128,6 +1128,48 @@ function navigateToHome() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function scrollToTop() {
+    navigateToHome();
+}
+
+function myMenuCloseAndScrollTo(sectionId) {
+    try {
+        if (typeof closeModal === 'function') {
+            closeModal('settings-modal');
+        }
+    } catch (e) {
+    }
+
+    window.setTimeout(function () {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 50);
+}
+
+function myMenuGoCommunity() {
+    try {
+        if (typeof closeModal === 'function') {
+            closeModal('settings-modal');
+        }
+    } catch (e) {
+    }
+    window.location.href = 'community.html';
+}
+
+function myMenuGoTheme() {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+
+    window.setTimeout(function () {
+        const anchor = document.getElementById('my-theme-anchor');
+        if (anchor && typeof anchor.scrollIntoView === 'function') {
+            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 50);
+}
+
 function scrollToMyTrees() {
     setMobileMenuVisible(false);
     const section = document.getElementById('my-created-trees-section');
