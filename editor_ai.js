@@ -695,49 +695,199 @@ function renderNodeAiSuggestion(node, suggestion) {
     const newDate = suggestion.date || node.date || '';
     const newDescription = suggestion.description || node.description || '';
 
-    let hasVideo = !!node.videoId;
-    let videoId = node.videoId || '';
-    if (!videoId && typeof suggestion.videoId === 'string' && suggestion.videoId) {
-        videoId = suggestion.videoId;
-        hasVideo = true;
-    } else if (!videoId && typeof suggestion.youtubeUrl === 'string' && suggestion.youtubeUrl && typeof parseYouTubeId === 'function') {
-        const parsed = parseYouTubeId(suggestion.youtubeUrl);
-        if (parsed) {
-            videoId = parsed;
-            hasVideo = true;
-        }
+    let suggestedUrl = '';
+    if (typeof suggestion.youtubeUrl === 'string' && suggestion.youtubeUrl.trim()) {
+        suggestedUrl = suggestion.youtubeUrl.trim();
+    } else if (typeof suggestion.videoId === 'string' && suggestion.videoId) {
+        suggestedUrl = 'https://youtu.be/' + suggestion.videoId;
+    } else if (node.videoId) {
+        suggestedUrl = 'https://youtu.be/' + node.videoId;
     }
 
-    const videoLabel = hasVideo ? 'YouTube 연결됨' : 'YouTube 없음';
-
     const html = [
-        '<div class="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs space-y-2">',
-        '  <p class="text-[11px] text-slate-500 mb-1">AI가 제안한 수정안입니다. 적용 버튼을 누르면 현재 노드에 반영됩니다.</p>',
-        '  <div class="grid grid-cols-2 gap-2 text-[11px]">',
+        '<div class="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs space-y-3">',
+        '  <p class="text-[11px] text-slate-500">AI 제안은 적용 전에 직접 수정할 수 있어요.</p>',
+        '  <div class="space-y-2">',
         '    <div>',
-        '      <p class="font-semibold text-slate-500 mb-1">현재 노드</p>',
-        '      <p class="text-slate-800 line-clamp-2">제목: ' + escapeHtmlForAi(node.title || '') + '</p>',
-        '      <p class="text-slate-500">날짜: ' + escapeHtmlForAi(node.date || '') + '</p>',
-        '      <p class="text-slate-500">영상: ' + (node.videoId ? '연결됨' : '없음') + '</p>',
+        '      <label class="block text-[11px] font-bold text-slate-500 mb-1">제목</label>',
+        '      <input id="ai-node-edit-title" type="text" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500" value="' + escapeHtmlForAi(newTitle) + '">',
+        '    </div>',
+        '    <div class="grid grid-cols-2 gap-2">',
+        '      <div>',
+        '        <label class="block text-[11px] font-bold text-slate-500 mb-1">날짜</label>',
+        '        <input id="ai-node-edit-date" type="date" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500" value="' + escapeHtmlForAi(newDate) + '">',
+        '      </div>',
+        '      <div>',
+        '        <label class="block text-[11px] font-bold text-slate-500 mb-1">유튜브 URL</label>',
+        '        <input id="ai-node-edit-video" type="text" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500" value="' + escapeHtmlForAi(suggestedUrl) + '" oninput="updateAiNodeVideoPreview()">',
+        '        <p id="ai-node-edit-video-error" class="hidden mt-1 text-[11px] text-red-500"></p>',
+        '      </div>',
+        '    </div>',
+        '    <div id="ai-node-edit-video-preview" class="hidden p-2 rounded-lg border border-slate-200 bg-white">',
+        '      <div class="flex gap-3 items-start">',
+        '        <img id="ai-node-edit-video-thumb" src="" alt="YouTube Thumbnail" class="w-24 h-14 rounded-md border border-slate-200 object-cover bg-slate-100">',
+        '        <div class="flex-1 min-w-0">',
+        '          <p id="ai-node-edit-video-preview-text" class="text-[11px] text-slate-600 truncate"></p>',
+        '          <a id="ai-node-edit-video-preview-link" href="#" target="_blank" class="text-[11px] text-brand-600 hover:underline">YouTube에서 열기</a>',
+        '        </div>',
+        '        <button type="button" onclick="clearAiNodeVideoInput()" class="px-2 py-1 rounded-lg text-[11px] font-bold text-slate-500 hover:bg-slate-100">제거</button>',
+        '      </div>',
         '    </div>',
         '    <div>',
-        '      <p class="font-semibold text-slate-500 mb-1">AI 제안</p>',
-        '      <p class="text-slate-800 line-clamp-2">제목: ' + escapeHtmlForAi(newTitle) + '</p>',
-        '      <p class="text-slate-500">날짜: ' + escapeHtmlForAi(newDate) + '</p>',
-        '      <p class="text-slate-500">영상: ' + videoLabel + '</p>',
+        '      <div class="flex gap-2">',
+        '        <input type="text" id="ai-node-edit-video-search" placeholder="키워드로 영상 검색" class="flex-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] focus:outline-none focus:ring-1 focus:ring-brand-500">',
+        '        <button type="button" onclick="searchYouTubeForAiNodeEdit()" class="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-slate-800 text-white hover:bg-slate-900">검색</button>',
+        '      </div>',
+        '      <div id="ai-node-edit-video-search-result" class="mt-2 space-y-1"></div>',
+        '    </div>',
+        '    <div>',
+        '      <label class="block text-[11px] font-bold text-slate-500 mb-1">설명</label>',
+        '      <textarea id="ai-node-edit-description" rows="3" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500">' + escapeHtmlForAi(newDescription) + '</textarea>',
         '    </div>',
         '  </div>',
-        newDescription
-            ? '  <div class="mt-2 p-2 bg-white border border-slate-200 rounded-lg text-[11px] text-slate-700"><p class="font-semibold mb-1">설명 제안</p><p>' + escapeHtmlForAi(newDescription) + '</p></div>'
-            : '',
-        '  <div class="mt-2 flex justify-end gap-2">',
+        '  <div class="flex justify-end gap-2">',
         '    <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] text-slate-500 hover:bg-slate-100" onclick="closeAiHelper()">취소</button>',
-        '    <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-brand-500 text-white hover:bg-brand-600" onclick="applyAiNodeSuggestion()">이대로 적용</button>',
+        '    <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-brand-500 text-white hover:bg-brand-600" onclick="applyAiNodeSuggestion()">적용</button>',
         '  </div>',
         '</div>'
     ].join('');
 
     box.innerHTML = html;
+    if (typeof updateAiNodeVideoPreview === 'function') {
+        updateAiNodeVideoPreview();
+    }
+}
+
+function clearAiNodeVideoInput() {
+    const input = document.getElementById('ai-node-edit-video');
+    if (input) input.value = '';
+    if (typeof updateAiNodeVideoPreview === 'function') {
+        updateAiNodeVideoPreview();
+    }
+}
+
+function updateAiNodeVideoPreview() {
+    const input = document.getElementById('ai-node-edit-video');
+    const errorEl = document.getElementById('ai-node-edit-video-error');
+    const preview = document.getElementById('ai-node-edit-video-preview');
+    const thumb = document.getElementById('ai-node-edit-video-thumb');
+    const textEl = document.getElementById('ai-node-edit-video-preview-text');
+    const linkEl = document.getElementById('ai-node-edit-video-preview-link');
+
+    if (!input || !errorEl || !preview || !thumb || !textEl || !linkEl) return;
+
+    const raw = (input.value || '').trim();
+    if (!raw) {
+        errorEl.classList.add('hidden');
+        preview.classList.add('hidden');
+        return;
+    }
+
+    const videoId = (typeof validateYouTubeUrl === 'function')
+        ? (validateYouTubeUrl(raw) || '')
+        : ((raw.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/) || [])[1] || '');
+
+    if (!videoId) {
+        errorEl.textContent = '유튜브 URL을 인식하지 못했습니다.';
+        errorEl.classList.remove('hidden');
+        preview.classList.add('hidden');
+        return;
+    }
+
+    errorEl.classList.add('hidden');
+    preview.classList.remove('hidden');
+
+    const thumbUrl = (typeof getYouTubeThumb === 'function')
+        ? getYouTubeThumb(videoId)
+        : `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    thumb.src = thumbUrl;
+    textEl.textContent = `영상 ID: ${videoId}`;
+    linkEl.href = `https://www.youtube.com/watch?v=${videoId}`;
+}
+
+function renderAiNodeYouTubeSearchResults(list) {
+    const box = document.getElementById('ai-node-edit-video-search-result');
+    if (!box) return;
+    box.innerHTML = '';
+
+    if (!Array.isArray(list) || list.length === 0) {
+        box.innerHTML = '<p class="text-[11px] text-slate-400">검색 결과가 없습니다.</p>';
+        return;
+    }
+
+    list.forEach(function (item) {
+        if (!item || !item.videoId) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full text-left px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100';
+        btn.onclick = function () {
+            const input = document.getElementById('ai-node-edit-video');
+            if (input) input.value = `https://youtu.be/${item.videoId}`;
+            if (typeof updateAiNodeVideoPreview === 'function') {
+                updateAiNodeVideoPreview();
+            }
+        };
+
+        const wrap = document.createElement('div');
+        wrap.className = 'flex gap-3 items-start';
+
+        const img = document.createElement('img');
+        img.className = 'w-20 h-12 rounded-md border border-slate-200 object-cover bg-slate-100';
+        img.alt = 'YouTube Thumbnail';
+        img.src = (typeof getYouTubeThumb === 'function')
+            ? getYouTubeThumb(item.videoId)
+            : `https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg`;
+
+        const meta = document.createElement('div');
+        meta.className = 'flex-1 min-w-0';
+
+        const title = document.createElement('p');
+        title.className = 'text-[11px] font-bold text-slate-800 leading-snug line-clamp-2';
+        title.textContent = String(item.title || '제목 없음');
+
+        const sub = document.createElement('p');
+        sub.className = 'text-[10px] text-slate-500 mt-0.5 truncate';
+        const channel = item.channelTitle ? String(item.channelTitle) : '';
+        const published = item.publishedAt ? String(item.publishedAt).split('T')[0] : '';
+        sub.textContent = [channel, published].filter(Boolean).join(' · ');
+
+        meta.appendChild(title);
+        meta.appendChild(sub);
+        wrap.appendChild(img);
+        wrap.appendChild(meta);
+        btn.appendChild(wrap);
+        box.appendChild(btn);
+    });
+}
+
+function searchYouTubeForAiNodeEdit() {
+    const input = document.getElementById('ai-node-edit-video-search');
+    const box = document.getElementById('ai-node-edit-video-search-result');
+    const titleEl = document.getElementById('ai-node-edit-title');
+    const query = (input && input.value && input.value.trim())
+        ? input.value.trim()
+        : (titleEl && titleEl.value ? titleEl.value.trim() : '');
+
+    if (!box) return;
+    if (!query) {
+        box.innerHTML = '<p class="text-[11px] text-slate-400">검색어를 입력해 주세요.</p>';
+        return;
+    }
+
+    box.innerHTML = '<p class="text-[11px] text-slate-400">YouTube에서 검색 중...</p>';
+
+    if (typeof callAiHelperApi !== 'function') {
+        box.innerHTML = '<p class="text-[11px] text-slate-400">검색 기능을 사용할 수 없습니다.</p>';
+        return;
+    }
+
+    callAiHelperApi('youtube_search', { query: query, maxResults: 6 })
+        .then(function (result) {
+            renderAiNodeYouTubeSearchResults(result);
+        })
+        .catch(function () {
+            box.innerHTML = '<p class="text-[11px] text-slate-400">검색 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+        });
 }
 
 function applyAiNodeSuggestion() {
@@ -747,20 +897,53 @@ function applyAiNodeSuggestion() {
 
     const suggestion = aiNodeSuggestion;
 
-    if (suggestion.title) node.title = suggestion.title;
-    if (suggestion.date) node.date = suggestion.date;
+    const titleInput = document.getElementById('ai-node-edit-title');
+    const dateInput = document.getElementById('ai-node-edit-date');
+    const videoInput = document.getElementById('ai-node-edit-video');
+    const descInput = document.getElementById('ai-node-edit-description');
 
-    let videoId = node.videoId || '';
-    if (typeof suggestion.videoId === 'string' && suggestion.videoId) {
-        videoId = suggestion.videoId;
-    } else if (!videoId && typeof suggestion.youtubeUrl === 'string' && suggestion.youtubeUrl && typeof parseYouTubeId === 'function') {
-        const parsed = parseYouTubeId(suggestion.youtubeUrl);
-        if (parsed) videoId = parsed;
+    const nextTitle = titleInput ? String(titleInput.value || '').trim() : (suggestion.title || '');
+    const nextDate = dateInput ? String(dateInput.value || '') : (suggestion.date || '');
+    const nextDesc = descInput ? String(descInput.value || '') : (typeof suggestion.description === 'string' ? suggestion.description : '');
+
+    let nextVideoId = node.videoId || '';
+    if (videoInput) {
+        const raw = String(videoInput.value || '').trim();
+        if (!raw) {
+            nextVideoId = '';
+        } else {
+            const parsed = (typeof validateYouTubeUrl === 'function')
+                ? (validateYouTubeUrl(raw) || '')
+                : ((raw.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/) || [])[1] || '');
+            if (!parsed) {
+                if (typeof showToast === 'function') {
+                    showToast('유튜브 주소를 인식하지 못했습니다. URL을 확인해 주세요.');
+                }
+                return;
+            }
+            nextVideoId = parsed;
+        }
+    } else {
+        let videoId = node.videoId || '';
+        if (typeof suggestion.videoId === 'string' && suggestion.videoId) {
+            videoId = suggestion.videoId;
+        } else if (!videoId && typeof suggestion.youtubeUrl === 'string' && suggestion.youtubeUrl && typeof parseYouTubeId === 'function') {
+            const parsed = parseYouTubeId(suggestion.youtubeUrl);
+            if (parsed) videoId = parsed;
+        }
+        if (videoId) nextVideoId = videoId;
     }
-    if (videoId) node.videoId = videoId;
 
-    if (typeof suggestion.description === 'string') {
-        node.description = suggestion.description;
+    if (nextTitle) node.title = nextTitle;
+    if (dateInput) {
+        node.date = nextDate;
+    } else if (nextDate) {
+        node.date = nextDate;
+    }
+    node.videoId = nextVideoId;
+
+    if (typeof nextDesc === 'string') {
+        node.description = nextDesc;
     }
 
     if (Array.isArray(suggestion.moments)) {
@@ -791,6 +974,10 @@ function applyAiNodeSuggestion() {
     if (editTitle) editTitle.value = node.title || '';
     if (editDate) editDate.value = node.date || '';
     if (editVideo) editVideo.value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
+
+    if (typeof updateDetailVideoEditorUi === 'function') {
+        updateDetailVideoEditorUi();
+    }
 
     if (typeof renderMomentsList === 'function') {
         renderMomentsList(Array.isArray(node.moments) ? node.moments : []);

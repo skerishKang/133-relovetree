@@ -101,6 +101,43 @@ async function youtubeSearchFirstVideo(query, apiKey) {
   };
 }
 
+async function youtubeSearchVideos(query, apiKey, maxResults) {
+  if (!query || !apiKey) return [];
+  const safeMax = clampNumber(maxResults || 6, 1, 10);
+
+  const url = new URL('https://www.googleapis.com/youtube/v3/search');
+  url.searchParams.set('part', 'snippet');
+  url.searchParams.set('type', 'video');
+  url.searchParams.set('maxResults', String(safeMax));
+  url.searchParams.set('q', query);
+  url.searchParams.set('key', apiKey);
+
+  const res = await fetch(url.toString(), {
+    headers: getYouTubeRequestHeaders(process.env),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error('YouTube search failed: ' + res.status + ' ' + t);
+  }
+  const data = await res.json();
+  const items = data && Array.isArray(data.items) ? data.items : [];
+
+  return items
+    .map(function (item) {
+      const videoId = item && item.id && item.id.videoId;
+      const snippet = item && item.snippet;
+      if (!videoId) return null;
+      return {
+        videoId,
+        title: (snippet && snippet.title) || '',
+        description: (snippet && snippet.description) || '',
+        publishedAt: (snippet && snippet.publishedAt) || '',
+        channelTitle: (snippet && snippet.channelTitle) || '',
+      };
+    })
+    .filter(Boolean);
+}
+
 async function youtubeGetVideoDetails(videoId, apiKey) {
   if (!videoId || !apiKey) return null;
   const url = new URL('https://www.googleapis.com/youtube/v3/videos');
@@ -411,20 +448,50 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const keys = getApiKeys(process.env);
-    if (!keys.length) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'GEMINI_API_KEYS not configured' }),
-      };
-    }
-
     const bodyReq = JSON.parse(event.body || '{}');
     const { mode, payload } = bodyReq;
     if (!mode || !payload) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'mode and payload are required' }),
+      };
+    }
+
+    if (mode === 'youtube_search') {
+      const ytKey = getYouTubeApiKey(process.env);
+      if (!ytKey) {
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: 'YOUTUBE_API_KEY not configured' }),
+        };
+      }
+
+      const queryRaw =
+        (payload && (payload.query || payload.q || payload.prompt)) || '';
+      const query = String(queryRaw || '').trim();
+      if (!query) {
+        return {
+          statusCode: 200,
+          headers: { 'Access-Control-Allow-Origin': '*' },
+          body: JSON.stringify({ mode, result: [] }),
+        };
+      }
+
+      const maxResults = clampNumber(payload && payload.maxResults ? payload.maxResults : 6, 1, 10);
+      const list = await youtubeSearchVideos(query, ytKey, maxResults);
+
+      return {
+        statusCode: 200,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ mode, result: list }),
+      };
+    }
+
+    const keys = getApiKeys(process.env);
+    if (!keys.length) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'GEMINI_API_KEYS not configured' }),
       };
     }
 
