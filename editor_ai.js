@@ -18,6 +18,9 @@ let aiHelperProgressCount = 0;
 
 let aiTreeEditIndex = null;
 
+let aiTreeDraftIndex = null;
+let aiTreeDraftNode = null;
+
 // YouTube Data API v3 설정
 const YOUTUBE_API_KEY = '';
 
@@ -597,11 +600,6 @@ function renderAiTreePreview() {
         return;
     }
 
-    if (aiTreeEditIndex !== null && aiTreeEditIndex !== undefined) {
-        renderAiTreeSuggestionEditor();
-        return;
-    }
-
     const items = aiTreeSuggestions.map(function (item, index) {
         const safeTitle = escapeHtmlForAi(item.title);
         const safeDate = item.date || '';
@@ -640,8 +638,135 @@ function renderAiTreePreview() {
 
 function openAiTreeSuggestionEditor(index) {
     if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
+
+    const item = aiTreeSuggestions[index] || {};
+    const draft = {
+        title: item.title || '새 순간',
+        date: item.date || '',
+        videoId: item.videoId || '',
+        description: item.description || '',
+        moments: Array.isArray(item.moments)
+            ? item.moments.map(function (m) {
+                return {
+                    time: m && m.time ? m.time : '0:00',
+                    text: m && m.text ? m.text : '',
+                    feeling: m && m.feeling ? m.feeling : 'love'
+                };
+            })
+            : []
+    };
+
+    aiTreeDraftIndex = index;
+    aiTreeDraftNode = draft;
+
+    if (typeof closeAiHelper === 'function') {
+        closeAiHelper();
+    }
+
+    if (typeof openDetailModalForAiTreeSuggestion === 'function') {
+        openDetailModalForAiTreeSuggestion(index, draft);
+        return;
+    }
+
     aiTreeEditIndex = index;
     renderAiTreeSuggestionEditor();
+}
+
+function updateAiTreeSuggestionFromDraft(index, draft) {
+    if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
+    const item = aiTreeSuggestions[index];
+    if (!item || !draft) return;
+
+    item.title = draft.title || item.title;
+    item.date = draft.date || item.date;
+    item.videoId = draft.videoId || '';
+    item.description = draft.description || '';
+    item.moments = Array.isArray(draft.moments) ? draft.moments : [];
+
+    if ((!item.moments || item.moments.length === 0) && item.description) {
+        item.moments = [{ time: '0:00', text: item.description, feeling: 'love' }];
+    }
+}
+
+function clearAiTreeDraft() {
+    aiTreeDraftIndex = null;
+    aiTreeDraftNode = null;
+}
+
+function applyAiTreeDraftSingleToTree(index, draft) {
+    if (typeof state === 'undefined' || !state) {
+        if (typeof showToast === 'function') showToast('트리 상태를 찾을 수 없습니다.');
+        return;
+    }
+    if (!Array.isArray(state.nodes)) state.nodes = [];
+    if (!Array.isArray(state.edges)) state.edges = [];
+
+    if (typeof isReadOnly !== 'undefined' && isReadOnly) {
+        if (typeof showToast === 'function') showToast('읽기 전용 모드에서는 사용할 수 없습니다.');
+        return;
+    }
+
+    const item = draft || {};
+    let maxId = 0;
+    state.nodes.forEach(function (n) {
+        const nId = typeof n.id === 'number' ? n.id : (parseInt(n.id, 10) || 0);
+        if (nId > maxId) maxId = nId;
+    });
+
+    const k = state.transform && state.transform.k ? state.transform.k : 1;
+    const centerX = -state.transform.x / k + window.innerWidth / 2 / k - 140;
+    const baseY = -state.transform.y / k + window.innerHeight / 2 / k - 100;
+
+    const nodeObj = {
+        id: maxId + 1,
+        x: centerX,
+        y: baseY,
+        title: item.title || '새 순간',
+        date: item.date || '',
+        videoId: item.videoId || '',
+        description: item.description || '',
+        moments: Array.isArray(item.moments) ? item.moments : []
+    };
+
+    if ((!nodeObj.moments || nodeObj.moments.length === 0) && nodeObj.description) {
+        nodeObj.moments = [{ time: '0:00', text: nodeObj.description, feeling: 'love' }];
+    }
+
+    state.nodes.push(nodeObj);
+    if (typeof render === 'function') render();
+    if (typeof saveDataImmediate === 'function') {
+        saveDataImmediate(true);
+    } else if (typeof saveData === 'function') {
+        saveData();
+    }
+
+    if (typeof showToast === 'function') showToast('노드 1개가 추가되었습니다.');
+
+    if (aiTreeSuggestions && index >= 0 && index < aiTreeSuggestions.length) {
+        aiTreeSuggestions.splice(index, 1);
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.onAiTreeDraftSaved = function (index, draft) {
+        updateAiTreeSuggestionFromDraft(index, draft);
+        clearAiTreeDraft();
+        renderAiTreePreview();
+        if (typeof showToast === 'function') showToast('AI 제안이 저장되었습니다.');
+        if (typeof openAiHelper === 'function') {
+            openAiHelper('tree');
+        }
+    };
+
+    window.onAiTreeDraftApplySingle = function (index, draft) {
+        updateAiTreeSuggestionFromDraft(index, draft);
+        applyAiTreeDraftSingleToTree(index, draft);
+        clearAiTreeDraft();
+        renderAiTreePreview();
+        if (typeof openAiHelper === 'function') {
+            openAiHelper('tree');
+        }
+    };
 }
 
 function closeAiTreeSuggestionEditor() {

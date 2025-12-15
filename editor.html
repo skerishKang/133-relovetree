@@ -430,6 +430,11 @@
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
                         </div>
                         <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">설명</label>
+                            <textarea id="edit-description" rows="3"
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                        </div>
+                        <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">유튜브 URL</label>
                             <input type="text" id="edit-video" placeholder="https://youtu.be/..."
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
@@ -471,7 +476,9 @@
                         <div class="flex justify-end gap-2 pt-2">
                             <button type="button" onclick="disableEditMode()"
                                 class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200 rounded-lg">취소</button>
-                            <button type="submit"
+                            <button type="button" id="ai-draft-apply-btn" onclick="applyAiTreeDraftFromDetail()"
+                                class="hidden px-3 py-1.5 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg">이 노드만 적용</button>
+                            <button type="submit" id="edit-save-btn"
                                 class="px-3 py-1.5 text-xs font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-lg">저장</button>
                         </div>
                     </form>
@@ -2317,6 +2324,7 @@
             document.getElementById('edit-title').value = node.title;
             document.getElementById('edit-date').value = node.date;
             document.getElementById('edit-video').value = node.videoId ? `https://youtu.be/${node.videoId}` : '';
+            document.getElementById('edit-description').value = node.description || '';
 
             if (typeof updateDetailVideoEditorUi === 'function') {
                 updateDetailVideoEditorUi();
@@ -2352,6 +2360,83 @@
             renderMomentsList(node.moments);
             const modal = document.getElementById('detail-modal');
             modal.showModal();
+        }
+
+        let aiTreeDraftDetailActive = false;
+        let aiTreeDraftDetailIndex = null;
+        let aiTreeDraftDetailNode = null;
+
+        function setAiTreeDraftDetailUi(active) {
+            aiTreeDraftDetailActive = !!active;
+            const applyBtn = document.getElementById('ai-draft-apply-btn');
+            const saveBtn = document.getElementById('edit-save-btn');
+
+            if (applyBtn) {
+                applyBtn.classList.toggle('hidden', !aiTreeDraftDetailActive);
+            }
+            if (saveBtn) {
+                saveBtn.textContent = aiTreeDraftDetailActive ? '제안 저장' : '저장';
+            }
+
+            const deleteBtn = document.querySelector('#detail-modal [title="삭제"]');
+            if (deleteBtn) {
+                deleteBtn.classList.toggle('hidden', aiTreeDraftDetailActive);
+            }
+        }
+
+        function normalizeDraftNode(node) {
+            const draft = node || {};
+            const moments = Array.isArray(draft.moments) ? draft.moments : [];
+            const normalized = {
+                title: String(draft.title || '새 순간'),
+                date: String(draft.date || ''),
+                videoId: String(draft.videoId || ''),
+                description: String(draft.description || ''),
+                moments: moments.map(function (m) {
+                    return {
+                        time: m && m.time ? String(m.time) : '0:00',
+                        text: m && m.text ? String(m.text) : '',
+                        feeling: m && m.feeling ? String(m.feeling) : 'love'
+                    };
+                }).filter(function (m) { return m.text && m.text.trim().length > 0; })
+            };
+
+            if ((!normalized.moments || normalized.moments.length === 0) && normalized.description) {
+                normalized.moments = [{ time: '0:00', text: normalized.description, feeling: 'love' }];
+            }
+
+            return normalized;
+        }
+
+        function openDetailModalForAiTreeSuggestion(index, draftNode) {
+            aiTreeDraftDetailIndex = index;
+            aiTreeDraftDetailNode = normalizeDraftNode(draftNode);
+            setAiTreeDraftDetailUi(true);
+
+            document.getElementById('detail-title').innerText = aiTreeDraftDetailNode.title;
+            document.getElementById('detail-date').innerText = aiTreeDraftDetailNode.date;
+            document.getElementById('edit-title').value = aiTreeDraftDetailNode.title;
+            document.getElementById('edit-date').value = aiTreeDraftDetailNode.date;
+            document.getElementById('edit-video').value = aiTreeDraftDetailNode.videoId ? `https://youtu.be/${aiTreeDraftDetailNode.videoId}` : '';
+            document.getElementById('edit-description').value = aiTreeDraftDetailNode.description || '';
+
+            if (typeof updateDetailVideoEditorUi === 'function') {
+                updateDetailVideoEditorUi();
+            }
+
+            enableEditMode();
+
+            updateDetailMedia(aiTreeDraftDetailNode);
+            renderMomentsList(aiTreeDraftDetailNode.moments);
+
+            const modal = document.getElementById('detail-modal');
+            modal.showModal();
+        }
+
+        function resetAiTreeDraftDetail() {
+            aiTreeDraftDetailIndex = null;
+            aiTreeDraftDetailNode = null;
+            setAiTreeDraftDetailUi(false);
         }
 
         function renderMomentsList(moments) {
@@ -2413,6 +2498,15 @@
 
             if (!time || !text) return;
 
+            if (aiTreeDraftDetailActive && aiTreeDraftDetailNode) {
+                aiTreeDraftDetailNode.moments.push({ time, text, feeling });
+                renderMomentsList(aiTreeDraftDetailNode.moments);
+                document.getElementById('new-moment-text').value = '';
+                document.getElementById('new-moment-time').value = '';
+                showToast(isKorean ? '순간이 등록되었습니다!' : 'Moment added!');
+                return;
+            }
+
             const node = state.nodes.find(n => n.id === state.activeNodeId);
             if (node) {
                 node.moments.push({ time, text, feeling });
@@ -2446,6 +2540,7 @@
             const title = document.getElementById('edit-title').value;
             const date = document.getElementById('edit-date').value;
             const videoUrl = document.getElementById('edit-video').value;
+            const description = document.getElementById('edit-description').value;
             const imageFile = document.getElementById('edit-image').files[0];
 
             const trimmedVideoUrl = (videoUrl || '').trim();
@@ -2453,10 +2548,48 @@
                 ? validateYouTubeUrl(trimmedVideoUrl)
                 : (trimmedVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/) || [])[1] || '';
 
+            if (aiTreeDraftDetailActive && aiTreeDraftDetailNode) {
+                aiTreeDraftDetailNode.title = title;
+                aiTreeDraftDetailNode.date = date;
+                aiTreeDraftDetailNode.description = description || '';
+
+                if (!trimmedVideoUrl) {
+                    aiTreeDraftDetailNode.videoId = '';
+                } else if (parsedVideoId) {
+                    aiTreeDraftDetailNode.videoId = parsedVideoId;
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast('유튜브 주소를 인식하지 못했습니다. 영상은 변경하지 않았습니다.');
+                    }
+                    const editVideoEl = document.getElementById('edit-video');
+                    if (editVideoEl) {
+                        editVideoEl.value = aiTreeDraftDetailNode.videoId ? `https://youtu.be/${aiTreeDraftDetailNode.videoId}` : '';
+                    }
+                }
+
+                document.getElementById('detail-title').innerText = aiTreeDraftDetailNode.title;
+                document.getElementById('detail-date').innerText = aiTreeDraftDetailNode.date;
+
+                if (typeof updateDetailVideoEditorUi === 'function') {
+                    updateDetailVideoEditorUi();
+                }
+
+                updateDetailMedia(aiTreeDraftDetailNode);
+                renderMomentsList(aiTreeDraftDetailNode.moments);
+
+                if (typeof window.onAiTreeDraftSaved === 'function') {
+                    window.onAiTreeDraftSaved(aiTreeDraftDetailIndex, aiTreeDraftDetailNode);
+                }
+
+                disableEditMode();
+                return;
+            }
+
             const node = state.nodes.find(n => n.id === state.activeNodeId);
             if (node) {
                 node.title = title;
                 node.date = date;
+                node.description = description || '';
                 if (!trimmedVideoUrl) {
                     node.videoId = '';
                 } else if (parsedVideoId) {
@@ -2516,6 +2649,14 @@
                 }
                 disableEditMode();
             }
+        }
+
+        function applyAiTreeDraftFromDetail() {
+            if (!aiTreeDraftDetailActive || !aiTreeDraftDetailNode) return;
+            if (typeof window.onAiTreeDraftApplySingle === 'function') {
+                window.onAiTreeDraftApplySingle(aiTreeDraftDetailIndex, aiTreeDraftDetailNode);
+            }
+            closeModal('detail-modal');
         }
 
         function clearDetailVideoInput() {
@@ -2821,6 +2962,9 @@
         function closeModal(id) {
             document.getElementById(id).close();
             document.getElementById('detail-video').src = '';
+            if (id === 'detail-modal') {
+                resetAiTreeDraftDetail();
+            }
         }
 
         // 모달 바깥(backdrop)을 클릭하면 닫히도록 처리
