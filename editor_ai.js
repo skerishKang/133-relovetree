@@ -10,6 +10,14 @@ let aiHelperRequestSeq = 0;
 let aiHelperActiveRequestSeq = 0;
 let aiHelperLastNodeId = null;
 
+let aiHelperStartedAt = 0;
+let aiHelperEstimatedTotalMs = 0;
+let aiHelperProgressTimer = null;
+let aiHelperProgressMode = '';
+let aiHelperProgressCount = 0;
+
+let aiTreeEditIndex = null;
+
 // YouTube Data API v3 설정
 const YOUTUBE_API_KEY = '';
 
@@ -146,6 +154,109 @@ function clearAiHelperLoadingInterval() {
     }
 }
 
+function getAiHelperEstimateKey(mode, count) {
+    const safeMode = mode || 'unknown';
+    const safeCount = Number.isFinite(count) && count > 0 ? count : 0;
+    return 'ai_estimate_' + safeMode + '_' + safeCount;
+}
+
+function readAiHelperEstimateMs(mode, count) {
+    try {
+        const raw = localStorage.getItem(getAiHelperEstimateKey(mode, count));
+        const n = raw ? parseInt(raw, 10) : NaN;
+        return Number.isFinite(n) && n > 0 ? n : 0;
+    } catch (e) {
+        return 0;
+    }
+}
+
+function writeAiHelperEstimateMs(mode, count, durationMs) {
+    if (!durationMs || !Number.isFinite(durationMs) || durationMs <= 0) return;
+    try {
+        const prev = readAiHelperEstimateMs(mode, count);
+        const next = prev ? Math.round(prev * 0.7 + durationMs * 0.3) : Math.round(durationMs);
+        localStorage.setItem(getAiHelperEstimateKey(mode, count), String(next));
+    } catch (e) {
+    }
+}
+
+function calcAiHelperDefaultEstimateMs(mode, count) {
+    const c = Number.isFinite(count) && count > 0 ? count : 4;
+    if (mode === 'tree') {
+        return 8000 + c * 12000;
+    }
+    if (mode === 'node') {
+        return 7000 + 15000;
+    }
+    if (mode === 'qa') {
+        return 6000 + 6000;
+    }
+    return 15000;
+}
+
+function getAiHelperEstimateMs(mode, count) {
+    const saved = readAiHelperEstimateMs(mode, count);
+    return saved || calcAiHelperDefaultEstimateMs(mode, count);
+}
+
+function formatSeconds(sec) {
+    const s = Math.max(0, Math.round(sec || 0));
+    if (s < 60) return s + '초';
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return m + '분 ' + r + '초';
+}
+
+function setAiHelperProgressStage(stageText) {
+    const stageEl = document.getElementById('ai-loading-stage');
+    if (stageEl) stageEl.textContent = stageText || '';
+}
+
+function updateAiHelperEtaUi() {
+    const etaEl = document.getElementById('ai-loading-eta');
+    if (!etaEl) return;
+    const startedAt = aiHelperStartedAt || 0;
+    const totalMs = aiHelperEstimatedTotalMs || 0;
+    if (!startedAt || !totalMs) {
+        etaEl.textContent = '';
+        return;
+    }
+    const elapsedMs = Date.now() - startedAt;
+    const remainingMs = Math.max(0, totalMs - elapsedMs);
+    etaEl.textContent = '경과 ' + formatSeconds(elapsedMs / 1000) + ' · 예상 남은 ' + formatSeconds(remainingMs / 1000);
+}
+
+function startAiHelperProgress(mode, count) {
+    aiHelperProgressMode = mode || '';
+    aiHelperProgressCount = Number.isFinite(count) && count > 0 ? count : 0;
+    aiHelperStartedAt = Date.now();
+    aiHelperEstimatedTotalMs = getAiHelperEstimateMs(aiHelperProgressMode, aiHelperProgressCount);
+    if (aiHelperProgressTimer) {
+        clearInterval(aiHelperProgressTimer);
+        aiHelperProgressTimer = null;
+    }
+    updateAiHelperEtaUi();
+    aiHelperProgressTimer = setInterval(function () {
+        if (!aiHelperLoading) return;
+        updateAiHelperEtaUi();
+    }, 1000);
+}
+
+function stopAiHelperProgress(success) {
+    if (aiHelperProgressTimer) {
+        clearInterval(aiHelperProgressTimer);
+        aiHelperProgressTimer = null;
+    }
+    if (success && aiHelperStartedAt) {
+        const durationMs = Date.now() - aiHelperStartedAt;
+        writeAiHelperEstimateMs(aiHelperProgressMode, aiHelperProgressCount, durationMs);
+    }
+    aiHelperStartedAt = 0;
+    aiHelperEstimatedTotalMs = 0;
+    aiHelperProgressMode = '';
+    aiHelperProgressCount = 0;
+}
+
 function retryAiHelper() {
     if (aiHelperLoading) return;
     onAiHelperSubmit({ preventDefault: function () { } });
@@ -162,6 +273,7 @@ function onAiHelperCancel() {
         }
         aiHelperAbortController = null;
         clearAiHelperLoadingInterval();
+        stopAiHelperProgress(false);
         setAiHelperLoading(false);
 
         const box = document.getElementById('ai-result');
@@ -290,9 +402,11 @@ function onAiHelperSubmit(event) {
             ];
         }
         let msgIndex = 0;
-        resultEl.innerHTML = '<div class="flex flex-col items-center py-8 gap-3">' +
+        resultEl.innerHTML = '<div class="flex flex-col items-center py-8 gap-2">' +
             '<div class="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>' +
             '<p id="ai-loading-msg" class="text-xs text-slate-500">' + loadingMessages[0] + '</p>' +
+            '<p id="ai-loading-stage" class="text-[11px] text-slate-400">요청을 준비하고 있습니다...</p>' +
+            '<p id="ai-loading-eta" class="text-[11px] text-slate-400"></p>' +
             '</div>';
 
         // 메시지 순환 표시
@@ -306,6 +420,15 @@ function onAiHelperSubmit(event) {
         }, 2000);
     }
 
+    const countEl = document.getElementById('ai-tree-count');
+    let count = 0;
+    if (aiHelperMode === 'tree' && countEl) {
+        const n = parseInt(countEl.value, 10);
+        if (!isNaN(n) && n > 0 && n <= 12) count = n;
+    }
+    startAiHelperProgress(aiHelperMode, count);
+    setAiHelperProgressStage('AI 요청을 전송했습니다. 응답을 기다리는 중...');
+
     let runner = runAiTreeHelper;
     if (aiHelperMode === 'qa') {
         runner = runAiQaHelper;
@@ -316,6 +439,9 @@ function onAiHelperSubmit(event) {
         .then(() => runner(requestSeq))
         .finally(() => {
             if (aiHelperActiveRequestSeq !== requestSeq) return;
+            const box = document.getElementById('ai-result');
+            const success = !!(box && String(box.innerHTML || '').trim() && !document.getElementById('ai-loading-msg'));
+            stopAiHelperProgress(success);
             setAiHelperLoading(false);
             clearAiHelperLoadingInterval();
             aiHelperAbortController = null;
@@ -340,9 +466,11 @@ function runAiTreeHelper(requestSeq) {
 
     // Gemini API 호출 시도
     const signal = aiHelperAbortController ? aiHelperAbortController.signal : undefined;
+    setAiHelperProgressStage('AI가 타임라인을 구성하고 있습니다...');
     return callAiHelperApi('tree', { prompt, count }, { signal: signal }).then(async function (result) {
         if (aiHelperActiveRequestSeq !== requestSeq) return;
         if (Array.isArray(result)) {
+            setAiHelperProgressStage('결과를 정리하고 있습니다...');
             const suggestions = result.map(function (item) {
                 const title = item && item.title ? item.title : '새 순간';
                 const date = item && item.date ? item.date : new Date().toISOString().split('T')[0];
@@ -390,6 +518,7 @@ function runAiTreeHelper(requestSeq) {
             return;
         }
         // 응답 형식이 예상과 다르면 더미 로직으로 폴백 (YouTube 검색 포함)
+        setAiHelperProgressStage('대체 생성 로직으로 전환했습니다...');
         const skeleton = await createAiTreeSkeleton(prompt, count);
         if (aiHelperActiveRequestSeq !== requestSeq) return;
         aiTreeSuggestions = skeleton;
@@ -398,6 +527,7 @@ function runAiTreeHelper(requestSeq) {
         if (aiHelperActiveRequestSeq !== requestSeq) return;
         if (err && err.name === 'AbortError') return;
         // 에러 시에도 안전하게 폴백 (YouTube 검색 포함)
+        setAiHelperProgressStage('오류가 발생해 대체 생성 로직으로 전환했습니다...');
         const skeleton = await createAiTreeSkeleton(prompt, count);
         if (aiHelperActiveRequestSeq !== requestSeq) return;
         aiTreeSuggestions = skeleton;
@@ -466,15 +596,31 @@ function renderAiTreePreview() {
         box.innerHTML = '<p class="text-xs text-slate-400">생성된 노드가 없습니다. 프롬프트를 입력해 보세요.</p>';
         return;
     }
+
+    if (aiTreeEditIndex !== null && aiTreeEditIndex !== undefined) {
+        renderAiTreeSuggestionEditor();
+        return;
+    }
+
     const items = aiTreeSuggestions.map(function (item, index) {
         const safeTitle = escapeHtmlForAi(item.title);
         const safeDate = item.date || '';
+
+        const hasVideo = !!(item && item.videoId);
+        const videoText = hasVideo ? ('YouTube: ' + escapeHtmlForAi(item.videoId)) : 'YouTube 없음';
+        const descText = item && item.description ? String(item.description) : '';
+        const safeDesc = escapeHtmlForAi(descText);
+        const momentsCount = Array.isArray(item && item.moments) ? item.moments.length : 0;
+
         return '' +
             '<div class="border border-slate-200 rounded-xl p-3 bg-slate-50 flex items-start justify-between gap-3">' +
             '  <div class="flex-1 min-w-0 space-y-1">' +
             '    <div class="flex items-center justify-between gap-2">' +
             '      <p class="text-xs font-semibold text-slate-500">순간 ' + (index + 1) + '</p>' +
-            '      <button type="button" onclick="removeAiTreeSuggestion(' + index + ')" class="text-[10px] text-slate-400 hover:text-red-500">삭제</button>' +
+            '      <div class="flex items-center gap-2">' +
+            '        <button type="button" onclick="openAiTreeSuggestionEditor(' + index + ')" class="text-[10px] text-slate-500 hover:text-brand-600">상세편집</button>' +
+            '        <button type="button" onclick="removeAiTreeSuggestion(' + index + ')" class="text-[10px] text-slate-400 hover:text-red-500">삭제</button>' +
+            '      </div>' +
             '    </div>' +
             '    <input type="text" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"' +
             '      value="' + safeTitle + '"' +
@@ -482,12 +628,384 @@ function renderAiTreePreview() {
             '    <input type="date" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white text-[11px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500"' +
             '      value="' + safeDate + '"' +
             '      oninput="updateAiTreeSuggestion(' + index + ', \'date\', this.value)">' +
+            '    <p class="text-[11px] text-slate-500 truncate">' + videoText + ' · 모먼트 ' + momentsCount + '개</p>' +
+            (safeDesc ? ('    <p class="text-[11px] text-slate-600 line-clamp-2">' + safeDesc + '</p>') : '') +
             '  </div>' +
             '</div>';
     }).join('');
-    const helperText = '<p class="mt-2 text-[11px] text-slate-400">각 순간의 제목과 날짜를 먼저 확인·수정한 뒤 아래 버튼을 눌러 현재 트리에 추가하세요.</p>';
-    const applyButton = '<button type="button" onclick="applyAiTreeSkeleton()" class="w-full mt-3 px-3 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">선택한 노드들을 현재 트리에 적용</button>';
+    const helperText = '<p class="mt-2 text-[11px] text-slate-400">각 카드에서 상세 편집(영상/설명/모먼트)을 확인한 뒤 적용하세요.</p>';
+    const applyButton = '<button type="button" onclick="applyAiTreeSkeleton()" class="w-full mt-3 px-3 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">현재 트리에 적용</button>';
     box.innerHTML = items + helperText + applyButton;
+}
+
+function openAiTreeSuggestionEditor(index) {
+    if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
+    aiTreeEditIndex = index;
+    renderAiTreeSuggestionEditor();
+}
+
+function closeAiTreeSuggestionEditor() {
+    aiTreeEditIndex = null;
+    renderAiTreePreview();
+}
+
+function getAiTreeSuggestionEditingItem() {
+    if (aiTreeEditIndex === null || aiTreeEditIndex === undefined) return null;
+    if (!aiTreeSuggestions || aiTreeEditIndex < 0 || aiTreeEditIndex >= aiTreeSuggestions.length) return null;
+    return aiTreeSuggestions[aiTreeEditIndex];
+}
+
+function clearAiTreeVideoInput() {
+    const input = document.getElementById('ai-tree-edit-video');
+    if (input) input.value = '';
+    updateAiTreeVideoPreview();
+}
+
+function updateAiTreeVideoPreview() {
+    const input = document.getElementById('ai-tree-edit-video');
+    const errorEl = document.getElementById('ai-tree-edit-video-error');
+    const preview = document.getElementById('ai-tree-edit-video-preview');
+    const thumb = document.getElementById('ai-tree-edit-video-thumb');
+    const textEl = document.getElementById('ai-tree-edit-video-preview-text');
+    const linkEl = document.getElementById('ai-tree-edit-video-preview-link');
+
+    if (!input || !errorEl || !preview || !thumb || !textEl || !linkEl) return;
+
+    const raw = (input.value || '').trim();
+    if (!raw) {
+        errorEl.classList.add('hidden');
+        preview.classList.add('hidden');
+        return;
+    }
+
+    const videoId = (typeof validateYouTubeUrl === 'function')
+        ? (validateYouTubeUrl(raw) || '')
+        : ((raw.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/) || [])[1] || '');
+
+    if (!videoId) {
+        errorEl.textContent = '유튜브 URL을 인식하지 못했습니다.';
+        errorEl.classList.remove('hidden');
+        preview.classList.add('hidden');
+        return;
+    }
+
+    errorEl.classList.add('hidden');
+    preview.classList.remove('hidden');
+
+    const thumbUrl = (typeof getYouTubeThumb === 'function')
+        ? getYouTubeThumb(videoId)
+        : `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    thumb.src = thumbUrl;
+    textEl.textContent = `영상 ID: ${videoId}`;
+    linkEl.href = `https://www.youtube.com/watch?v=${videoId}`;
+}
+
+function renderAiTreeYouTubeSearchResults(list) {
+    const box = document.getElementById('ai-tree-edit-video-search-result');
+    if (!box) return;
+    box.innerHTML = '';
+
+    if (!Array.isArray(list) || list.length === 0) {
+        box.innerHTML = '<p class="text-[11px] text-slate-400">검색 결과가 없습니다.</p>';
+        return;
+    }
+
+    list.forEach(function (item) {
+        if (!item || !item.videoId) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full text-left px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100';
+        btn.onclick = function () {
+            const input = document.getElementById('ai-tree-edit-video');
+            if (input) input.value = `https://youtu.be/${item.videoId}`;
+            updateAiTreeVideoPreview();
+        };
+
+        const wrap = document.createElement('div');
+        wrap.className = 'flex gap-3 items-start';
+
+        const img = document.createElement('img');
+        img.className = 'w-20 h-12 rounded-md border border-slate-200 object-cover bg-slate-100';
+        img.alt = 'YouTube Thumbnail';
+        img.src = (typeof getYouTubeThumb === 'function')
+            ? getYouTubeThumb(item.videoId)
+            : `https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg`;
+
+        const meta = document.createElement('div');
+        meta.className = 'flex-1 min-w-0';
+
+        const title = document.createElement('p');
+        title.className = 'text-[11px] font-bold text-slate-800 leading-snug line-clamp-2';
+        title.textContent = String(item.title || '제목 없음');
+
+        const sub = document.createElement('p');
+        sub.className = 'text-[10px] text-slate-500 mt-0.5 truncate';
+        const channel = item.channelTitle ? String(item.channelTitle) : '';
+        const published = item.publishedAt ? String(item.publishedAt).split('T')[0] : '';
+        sub.textContent = [channel, published].filter(Boolean).join(' · ');
+
+        meta.appendChild(title);
+        meta.appendChild(sub);
+        wrap.appendChild(img);
+        wrap.appendChild(meta);
+        btn.appendChild(wrap);
+        box.appendChild(btn);
+    });
+}
+
+function searchYouTubeForAiTreeSuggestion() {
+    const input = document.getElementById('ai-tree-edit-video-search');
+    const box = document.getElementById('ai-tree-edit-video-search-result');
+    const titleEl = document.getElementById('ai-tree-edit-title');
+    const query = (input && input.value && input.value.trim())
+        ? input.value.trim()
+        : (titleEl && titleEl.value ? titleEl.value.trim() : '');
+
+    if (!box) return;
+    if (!query) {
+        box.innerHTML = '<p class="text-[11px] text-slate-400">검색어를 입력해 주세요.</p>';
+        return;
+    }
+
+    box.innerHTML = '<p class="text-[11px] text-slate-400">YouTube에서 검색 중...</p>';
+
+    if (typeof callAiHelperApi !== 'function') {
+        box.innerHTML = '<p class="text-[11px] text-slate-400">검색 기능을 사용할 수 없습니다.</p>';
+        return;
+    }
+
+    callAiHelperApi('youtube_search', { query: query, maxResults: 6 })
+        .then(function (result) {
+            renderAiTreeYouTubeSearchResults(result);
+        })
+        .catch(function () {
+            box.innerHTML = '<p class="text-[11px] text-slate-400">검색 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+        });
+}
+
+function addAiTreeMomentRow() {
+    const item = getAiTreeSuggestionEditingItem();
+    if (!item) return;
+    if (!Array.isArray(item.moments)) item.moments = [];
+    item.moments.push({ time: '0:00', text: '', feeling: 'love' });
+    renderAiTreeSuggestionEditor();
+}
+
+function removeAiTreeMomentRow(idx) {
+    const item = getAiTreeSuggestionEditingItem();
+    if (!item || !Array.isArray(item.moments)) return;
+    if (idx < 0 || idx >= item.moments.length) return;
+    item.moments.splice(idx, 1);
+    renderAiTreeSuggestionEditor();
+}
+
+function updateAiTreeMomentField(idx, field, value) {
+    const item = getAiTreeSuggestionEditingItem();
+    if (!item || !Array.isArray(item.moments)) return;
+    if (idx < 0 || idx >= item.moments.length) return;
+    const m = item.moments[idx];
+    if (!m) return;
+    if (field === 'time') m.time = value;
+    if (field === 'text') m.text = value;
+    if (field === 'feeling') m.feeling = value;
+}
+
+function saveAiTreeSuggestionEditorValues() {
+    const item = getAiTreeSuggestionEditingItem();
+    if (!item) return;
+
+    const titleInput = document.getElementById('ai-tree-edit-title');
+    const dateInput = document.getElementById('ai-tree-edit-date');
+    const videoInput = document.getElementById('ai-tree-edit-video');
+    const descInput = document.getElementById('ai-tree-edit-description');
+
+    const nextTitle = titleInput ? String(titleInput.value || '').trim() : '';
+    const nextDate = dateInput ? String(dateInput.value || '') : '';
+    const nextDesc = descInput ? String(descInput.value || '') : '';
+
+    let nextVideoId = '';
+    const rawVideo = videoInput ? String(videoInput.value || '').trim() : '';
+    if (rawVideo) {
+        const parsed = (typeof validateYouTubeUrl === 'function')
+            ? (validateYouTubeUrl(rawVideo) || '')
+            : ((rawVideo.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/))([^"&?\/\s]{11})/) || [])[1] || '');
+        if (!parsed) {
+            if (typeof showToast === 'function') showToast('유튜브 주소를 인식하지 못했습니다. URL을 확인해 주세요.');
+            return false;
+        }
+        nextVideoId = parsed;
+    }
+
+    item.title = nextTitle || item.title;
+    item.date = nextDate || item.date;
+    item.description = nextDesc;
+    item.videoId = nextVideoId;
+
+    if (Array.isArray(item.moments)) {
+        item.moments = item.moments
+            .map(function (m) {
+                return {
+                    time: m && m.time ? m.time : '0:00',
+                    text: m && m.text ? m.text : '',
+                    feeling: m && m.feeling ? m.feeling : 'love'
+                };
+            })
+            .filter(function (m) { return m.text && m.text.trim().length > 0; });
+    }
+
+    if ((!item.moments || item.moments.length === 0) && item.description) {
+        item.moments = [{ time: '0:00', text: item.description, feeling: 'love' }];
+    }
+
+    return true;
+}
+
+function applyAiTreeSuggestionSingle() {
+    if (!saveAiTreeSuggestionEditorValues()) return;
+    const item = getAiTreeSuggestionEditingItem();
+    if (!item) return;
+
+    if (typeof state === 'undefined' || !state) {
+        if (typeof showToast === 'function') showToast('트리 상태를 찾을 수 없습니다.');
+        return;
+    }
+    if (!Array.isArray(state.nodes)) state.nodes = [];
+    if (!Array.isArray(state.edges)) state.edges = [];
+
+    if (typeof isReadOnly !== 'undefined' && isReadOnly) {
+        if (typeof showToast === 'function') showToast('읽기 전용 모드에서는 사용할 수 없습니다.');
+        return;
+    }
+
+    let maxId = 0;
+    state.nodes.forEach(function (n) {
+        const nId = typeof n.id === 'number' ? n.id : (parseInt(n.id, 10) || 0);
+        if (nId > maxId) maxId = nId;
+    });
+
+    const k = state.transform && state.transform.k ? state.transform.k : 1;
+    const centerX = -state.transform.x / k + window.innerWidth / 2 / k - 140;
+    const baseY = -state.transform.y / k + window.innerHeight / 2 / k - 100;
+
+    const id = maxId + 1;
+    const nodeObj = {
+        id: id,
+        x: centerX,
+        y: baseY,
+        title: item.title,
+        date: item.date,
+        videoId: item.videoId,
+        description: item.description || '',
+        moments: Array.isArray(item.moments) ? item.moments : []
+    };
+
+    state.nodes.push(nodeObj);
+    if (typeof render === 'function') render();
+    if (typeof saveDataImmediate === 'function') {
+        saveDataImmediate(true);
+    } else if (typeof saveData === 'function') {
+        saveData();
+    }
+    if (typeof showToast === 'function') showToast('노드 1개가 추가되었습니다.');
+    closeAiTreeSuggestionEditor();
+    closeAiHelper();
+}
+
+function renderAiTreeSuggestionEditor() {
+    const box = document.getElementById('ai-result');
+    if (!box) return;
+    const item = getAiTreeSuggestionEditingItem();
+    if (!item) {
+        aiTreeEditIndex = null;
+        renderAiTreePreview();
+        return;
+    }
+
+    const safeTitle = escapeHtmlForAi(item.title || '');
+    const safeDate = item.date || '';
+    const urlValue = item.videoId ? ('https://youtu.be/' + item.videoId) : '';
+    const safeDesc = escapeHtmlForAi(item.description || '');
+    const moments = Array.isArray(item.moments) ? item.moments : [];
+
+    const momentsHtml = moments.map(function (m, idx) {
+        const time = escapeHtmlForAi((m && m.time) ? m.time : '0:00');
+        const text = escapeHtmlForAi((m && m.text) ? m.text : '');
+        const feeling = (m && m.feeling) ? String(m.feeling) : 'love';
+        const opt = function (v, label) {
+            return '<option value="' + v + '"' + (feeling === v ? ' selected' : '') + '>' + label + '</option>';
+        };
+        return '' +
+            '<div class="rounded-xl border border-slate-200 bg-white p-2 space-y-2">' +
+            '  <div class="flex items-center gap-2">' +
+            '    <input type="text" class="w-20 px-2 py-1 rounded-lg border border-slate-200 text-[11px]" value="' + time + '" oninput="updateAiTreeMomentField(' + idx + ', \'time\', this.value)">' +
+            '    <select class="px-2 py-1 rounded-lg border border-slate-200 text-[11px]" onchange="updateAiTreeMomentField(' + idx + ', \'feeling\', this.value)">' +
+            opt('love', '😍') + opt('tear', '😭') + opt('funny', '🤣') + opt('shock', '😲') +
+            '    </select>' +
+            '    <button type="button" class="ml-auto text-[11px] text-slate-400 hover:text-red-500" onclick="removeAiTreeMomentRow(' + idx + ')">삭제</button>' +
+            '  </div>' +
+            '  <textarea rows="2" class="w-full px-2 py-1 rounded-lg border border-slate-200 text-[11px]" oninput="updateAiTreeMomentField(' + idx + ', \'text\', this.value)">' + text + '</textarea>' +
+            '</div>';
+    }).join('');
+
+    const html = [
+        '<div class="space-y-3">',
+        '  <div class="flex items-center justify-between">',
+        '    <p class="text-xs font-bold text-slate-800">상세 편집 (순간 ' + (aiTreeEditIndex + 1) + ')</p>',
+        '    <button type="button" class="text-[11px] text-slate-500 hover:text-slate-700" onclick="closeAiTreeSuggestionEditor()">목록으로</button>',
+        '  </div>',
+        '  <div class="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs space-y-3">',
+        '    <div>',
+        '      <label class="block text-[11px] font-bold text-slate-500 mb-1">제목</label>',
+        '      <input id="ai-tree-edit-title" type="text" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px]" value="' + safeTitle + '">',
+        '    </div>',
+        '    <div>',
+        '      <label class="block text-[11px] font-bold text-slate-500 mb-1">날짜</label>',
+        '      <input id="ai-tree-edit-date" type="date" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px]" value="' + safeDate + '">',
+        '    </div>',
+        '    <div>',
+        '      <label class="block text-[11px] font-bold text-slate-500 mb-1">유튜브 URL</label>',
+        '      <input id="ai-tree-edit-video" type="text" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px]" value="' + escapeHtmlForAi(urlValue) + '" oninput="updateAiTreeVideoPreview()">',
+        '      <p id="ai-tree-edit-video-error" class="hidden mt-1 text-[11px] text-red-500"></p>',
+        '    </div>',
+        '    <div id="ai-tree-edit-video-preview" class="hidden p-2 rounded-lg border border-slate-200 bg-white">',
+        '      <div class="flex gap-3 items-start">',
+        '        <img id="ai-tree-edit-video-thumb" src="" alt="YouTube Thumbnail" class="w-24 h-14 rounded-md border border-slate-200 object-cover bg-slate-100">',
+        '        <div class="flex-1 min-w-0">',
+        '          <p id="ai-tree-edit-video-preview-text" class="text-[11px] text-slate-600 truncate"></p>',
+        '          <a id="ai-tree-edit-video-preview-link" href="#" target="_blank" class="text-[11px] text-brand-600 hover:underline">YouTube에서 열기</a>',
+        '        </div>',
+        '        <button type="button" onclick="clearAiTreeVideoInput()" class="px-2 py-1 rounded-lg text-[11px] font-bold text-slate-500 hover:bg-slate-100">제거</button>',
+        '      </div>',
+        '    </div>',
+        '    <div>',
+        '      <div class="flex gap-2">',
+        '        <input type="text" id="ai-tree-edit-video-search" placeholder="키워드로 영상 검색" class="flex-1 px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px]">',
+        '        <button type="button" onclick="searchYouTubeForAiTreeSuggestion()" class="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-slate-800 text-white hover:bg-slate-900">검색</button>',
+        '      </div>',
+        '      <div id="ai-tree-edit-video-search-result" class="mt-2 space-y-1"></div>',
+        '    </div>',
+        '    <div>',
+        '      <label class="block text-[11px] font-bold text-slate-500 mb-1">설명</label>',
+        '      <textarea id="ai-tree-edit-description" rows="3" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px]">' + safeDesc + '</textarea>',
+        '    </div>',
+        '    <div class="space-y-2">',
+        '      <div class="flex items-center justify-between">',
+        '        <p class="text-[11px] font-bold text-slate-500">모먼트</p>',
+        '        <button type="button" onclick="addAiTreeMomentRow()" class="text-[11px] text-brand-600 hover:underline">+ 추가</button>',
+        '      </div>',
+        (momentsHtml || '<p class="text-[11px] text-slate-400">모먼트가 없습니다. + 추가로 직접 입력하거나, 설명을 채우고 적용해도 됩니다.</p>'),
+        '    </div>',
+        '    <div class="flex justify-end gap-2">',
+        '      <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] text-slate-500 hover:bg-slate-100" onclick="closeAiTreeSuggestionEditor()">취소</button>',
+        '      <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-slate-800 text-white hover:bg-slate-900" onclick="if(saveAiTreeSuggestionEditorValues()){ closeAiTreeSuggestionEditor(); }">저장</button>',
+        '      <button type="button" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-brand-500 text-white hover:bg-brand-600" onclick="applyAiTreeSuggestionSingle()">이 노드만 적용</button>',
+        '    </div>',
+        '  </div>',
+        '</div>'
+    ].join('');
+
+    box.innerHTML = html;
+    updateAiTreeVideoPreview();
 }
 
 function updateAiTreeSuggestion(index, field, value) {
