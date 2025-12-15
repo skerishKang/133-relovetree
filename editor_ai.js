@@ -5,6 +5,10 @@ let aiHelperLoading = false;
 let momentAiSuggestions = [];
 let commentAiSuggestions = [];
 let aiNodeSuggestion = null;
+let aiHelperAbortController = null;
+let aiHelperRequestSeq = 0;
+let aiHelperActiveRequestSeq = 0;
+let aiHelperLastNodeId = null;
 
 // YouTube Data API v3 설정
 const YOUTUBE_API_KEY = '';
@@ -51,6 +55,10 @@ function openAiHelper(initialMode) {
     const modal = document.getElementById('ai-helper-modal');
     if (!modal) return;
 
+    const resultEl = document.getElementById('ai-result');
+    const hasResult = !!(resultEl && String(resultEl.innerHTML || '').trim());
+    const shouldReset = !aiHelperLoading && !hasResult;
+
     const treePrompt = document.getElementById('ai-tree-prompt');
     const titleEl = document.getElementById('tree-title');
     if (treePrompt && titleEl && !treePrompt.value) {
@@ -61,18 +69,18 @@ function openAiHelper(initialMode) {
     }
 
     const commentPrompt = document.getElementById('ai-comment-prompt');
-    if (commentPrompt) commentPrompt.value = '';
+    if (commentPrompt && shouldReset) commentPrompt.value = '';
 
     const nodePrompt = document.getElementById('ai-node-prompt');
-    if (nodePrompt) nodePrompt.value = '';
+    if (nodePrompt && shouldReset) nodePrompt.value = '';
 
     const ctxEl = document.getElementById('ai-node-context');
-    if (ctxEl) ctxEl.textContent = '';
+    if (ctxEl && shouldReset) ctxEl.textContent = '';
 
-    const resultEl = document.getElementById('ai-result');
-    if (resultEl) resultEl.innerHTML = '';
+    if (resultEl && shouldReset) resultEl.innerHTML = '';
 
-    setAiHelperMode(initialMode || 'tree');
+    const nextMode = initialMode || aiHelperMode || 'tree';
+    setAiHelperMode(nextMode);
     if (typeof modal.showModal === 'function') {
         modal.showModal();
     } else {
@@ -108,6 +116,13 @@ function openNodeAiHelperFromDetail() {
     const modal = document.getElementById('ai-helper-modal');
     if (!modal) return;
 
+    if (aiHelperLastNodeId !== node.id && !aiHelperLoading) {
+        const resultEl = document.getElementById('ai-result');
+        if (resultEl) resultEl.innerHTML = '';
+        aiNodeSuggestion = null;
+    }
+
+    aiHelperLastNodeId = node.id;
     prepareNodeAiContext(node);
     setAiHelperMode('node');
 
@@ -124,8 +139,49 @@ function closeAiHelper() {
     modal.close();
 }
 
+function clearAiHelperLoadingInterval() {
+    if (window._aiLoadingInterval) {
+        clearInterval(window._aiLoadingInterval);
+        window._aiLoadingInterval = null;
+    }
+}
+
+function retryAiHelper() {
+    if (aiHelperLoading) return;
+    onAiHelperSubmit({ preventDefault: function () { } });
+}
+
+function onAiHelperCancel() {
+    if (aiHelperLoading) {
+        aiHelperActiveRequestSeq = 0;
+        if (aiHelperAbortController) {
+            try {
+                aiHelperAbortController.abort();
+            } catch (e) {
+            }
+        }
+        aiHelperAbortController = null;
+        clearAiHelperLoadingInterval();
+        setAiHelperLoading(false);
+
+        const box = document.getElementById('ai-result');
+        if (box) {
+            box.innerHTML = '<div class="flex flex-col items-center py-8 gap-3">'
+                + '<p class="text-xs text-slate-500">요청이 취소되었습니다.</p>'
+                + '<div class="flex gap-2">'
+                + '<button type="button" onclick="retryAiHelper()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">재시도</button>'
+                + '<button type="button" onclick="closeAiHelper()" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100">닫기</button>'
+                + '</div>'
+                + '</div>';
+        }
+        return;
+    }
+    closeAiHelper();
+}
+
 function setAiHelperMode(mode) {
     if (mode !== 'tree' && mode !== 'qa' && mode !== 'node') return;
+    const prevMode = aiHelperMode;
     aiHelperMode = mode;
     const treeBtn = document.getElementById('ai-mode-tree-btn');
     const commentBtn = document.getElementById('ai-mode-comment-btn');
@@ -160,7 +216,7 @@ function setAiHelperMode(mode) {
     if (mode === 'node' && nodePanel) nodePanel.classList.remove('hidden');
 
     const resultEl = document.getElementById('ai-result');
-    if (resultEl) resultEl.innerHTML = '';
+    if (resultEl && prevMode !== mode) resultEl.innerHTML = '';
 }
 
 function setAiHelperLoading(isLoading) {
@@ -184,29 +240,55 @@ function setAiHelperLoading(isLoading) {
     }
 
     if (cancelBtn) {
-        cancelBtn.disabled = isLoading;
-        if (isLoading) {
-            cancelBtn.classList.add('opacity-60', 'cursor-not-allowed');
-        } else {
-            cancelBtn.classList.remove('opacity-60', 'cursor-not-allowed');
-        }
+        cancelBtn.disabled = false;
+        cancelBtn.textContent = isLoading ? '취소' : '닫기';
+        cancelBtn.classList.remove('opacity-60', 'cursor-not-allowed');
     }
 }
 
 function onAiHelperSubmit(event) {
-    event.preventDefault();
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault();
+    }
     if (aiHelperLoading) return;
+
+    aiHelperRequestSeq += 1;
+    const requestSeq = aiHelperRequestSeq;
+    aiHelperActiveRequestSeq = requestSeq;
+
+    if (aiHelperAbortController) {
+        try {
+            aiHelperAbortController.abort();
+        } catch (e) {
+        }
+    }
+    aiHelperAbortController = (typeof AbortController !== 'undefined') ? new AbortController() : null;
 
     setAiHelperLoading(true);
 
     // 결과 영역에 진행 메시지 표시
     const resultEl = document.getElementById('ai-result');
     if (resultEl) {
-        const loadingMessages = [
-            'AI가 아티스트 정보를 검색하고 있습니다...',
-            '관련 무대와 영상을 찾고 있습니다...',
-            '타임라인을 구성하고 있습니다...'
-        ];
+        let loadingMessages = [];
+        if (aiHelperMode === 'qa') {
+            loadingMessages = [
+                'AI가 질문을 읽고 있습니다...',
+                '답변을 정리하고 있습니다...',
+                '표현을 다듬고 있습니다...'
+            ];
+        } else if (aiHelperMode === 'node') {
+            loadingMessages = [
+                'AI가 노드를 분석하고 있습니다...',
+                '제목과 설명을 다듬고 있습니다...',
+                '추천 영상을 찾고 있습니다...'
+            ];
+        } else {
+            loadingMessages = [
+                'AI가 아티스트 정보를 검색하고 있습니다...',
+                '관련 무대와 영상을 찾고 있습니다...',
+                '타임라인을 구성하고 있습니다...'
+            ];
+        }
         let msgIndex = 0;
         resultEl.innerHTML = '<div class="flex flex-col items-center py-8 gap-3">' +
             '<div class="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>' +
@@ -214,6 +296,7 @@ function onAiHelperSubmit(event) {
             '</div>';
 
         // 메시지 순환 표시
+        clearAiHelperLoadingInterval();
         window._aiLoadingInterval = setInterval(function () {
             msgIndex = (msgIndex + 1) % loadingMessages.length;
             const msgEl = document.getElementById('ai-loading-msg');
@@ -230,19 +313,18 @@ function onAiHelperSubmit(event) {
         runner = runAiNodeHelper;
     }
     Promise.resolve()
-        .then(() => runner())
+        .then(() => runner(requestSeq))
         .finally(() => {
+            if (aiHelperActiveRequestSeq !== requestSeq) return;
             setAiHelperLoading(false);
-            // 로딩 인터벌 정리
-            if (window._aiLoadingInterval) {
-                clearInterval(window._aiLoadingInterval);
-                window._aiLoadingInterval = null;
-            }
+            clearAiHelperLoadingInterval();
+            aiHelperAbortController = null;
+            aiHelperActiveRequestSeq = 0;
         });
 }
 
 
-function runAiTreeHelper() {
+function runAiTreeHelper(requestSeq) {
     if (typeof isReadOnly !== 'undefined' && isReadOnly) {
         if (typeof showToast === 'function') showToast('읽기 전용 모드에서는 사용할 수 없습니다.');
         return Promise.resolve();
@@ -257,9 +339,11 @@ function runAiTreeHelper() {
     }
 
     // Gemini API 호출 시도
-    return callAiHelperApi('tree', { prompt, count }).then(async function (result) {
+    const signal = aiHelperAbortController ? aiHelperAbortController.signal : undefined;
+    return callAiHelperApi('tree', { prompt, count }, { signal: signal }).then(async function (result) {
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
         if (Array.isArray(result)) {
-            aiTreeSuggestions = result.map(function (item) {
+            const suggestions = result.map(function (item) {
                 const title = item && item.title ? item.title : '새 순간';
                 const date = item && item.date ? item.date : new Date().toISOString().split('T')[0];
 
@@ -300,15 +384,23 @@ function runAiTreeHelper() {
                     moments: moments
                 };
             });
+            if (aiHelperActiveRequestSeq !== requestSeq) return;
+            aiTreeSuggestions = suggestions;
             renderAiTreePreview();
             return;
         }
         // 응답 형식이 예상과 다르면 더미 로직으로 폴백 (YouTube 검색 포함)
-        aiTreeSuggestions = await createAiTreeSkeleton(prompt, count);
+        const skeleton = await createAiTreeSkeleton(prompt, count);
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
+        aiTreeSuggestions = skeleton;
         renderAiTreePreview();
-    }).catch(async function () {
+    }).catch(async function (err) {
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
+        if (err && err.name === 'AbortError') return;
         // 에러 시에도 안전하게 폴백 (YouTube 검색 포함)
-        aiTreeSuggestions = await createAiTreeSkeleton(prompt, count);
+        const skeleton = await createAiTreeSkeleton(prompt, count);
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
+        aiTreeSuggestions = skeleton;
         renderAiTreePreview();
     });
 }
@@ -517,7 +609,7 @@ function applyAiTreeSkeleton() {
     closeAiHelper();
 }
 
-function runAiNodeHelper() {
+function runAiNodeHelper(requestSeq) {
     const box = document.getElementById('ai-result');
     const promptEl = document.getElementById('ai-node-prompt');
 
@@ -552,7 +644,9 @@ function runAiNodeHelper() {
         }
     }
 
-    return callAiHelperApi('node_edit', payload).then(function (result) {
+    const signal = aiHelperAbortController ? aiHelperAbortController.signal : undefined;
+    return callAiHelperApi('node_edit', payload, { signal: signal }).then(function (result) {
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
         if (!result) {
             if (box) box.innerHTML = '<p class="text-xs text-slate-400">AI 응답을 가져오지 못했습니다. 다시 시도해 주세요.</p>';
             return;
@@ -574,8 +668,18 @@ function runAiNodeHelper() {
 
         aiNodeSuggestion = suggestion || null;
         renderNodeAiSuggestion(node, aiNodeSuggestion);
-    }).catch(function () {
-        if (box) box.innerHTML = '<p class="text-xs text-slate-400">AI 응답 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+    }).catch(function (err) {
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
+        if (err && err.name === 'AbortError') return;
+        if (box) {
+            box.innerHTML = '<div class="flex flex-col items-center py-8 gap-3">'
+                + '<p class="text-xs text-slate-500">AI 응답 중 오류가 발생했습니다.</p>'
+                + '<div class="flex gap-2">'
+                + '<button type="button" onclick="retryAiHelper()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">재시도</button>'
+                + '<button type="button" onclick="closeAiHelper()" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100">닫기</button>'
+                + '</div>'
+                + '</div>';
+        }
     });
 }
 
@@ -719,6 +823,14 @@ function handleNodeDropForAi(event) {
     const node = state.nodes.find(function (n) { return n.id === id; });
     if (!node) return;
 
+    if (aiHelperLastNodeId !== node.id && !aiHelperLoading) {
+        const resultEl = document.getElementById('ai-result');
+        if (resultEl) resultEl.innerHTML = '';
+        aiNodeSuggestion = null;
+    }
+
+    aiHelperLastNodeId = node.id;
+
     state.activeNodeId = node.id;
     prepareNodeAiContext(node);
     setAiHelperMode('node');
@@ -735,7 +847,7 @@ function setupAiHelperDropZone() {
     panel.addEventListener('drop', handleNodeDropForAi);
 }
 
-function runAiQaHelper() {
+function runAiQaHelper(requestSeq) {
     const promptEl = document.getElementById('ai-comment-prompt');
     const box = document.getElementById('ai-result');
     if (!promptEl || !box) return Promise.resolve();
@@ -764,15 +876,25 @@ function runAiQaHelper() {
 
     box.innerHTML = '<p class="text-xs text-slate-400">AI가 답변을 준비하고 있습니다...</p>';
 
-    return callAiHelperApi('qa', { prompt: userPrompt, context: context }).then(function (result) {
+    const signal = aiHelperAbortController ? aiHelperAbortController.signal : undefined;
+    return callAiHelperApi('qa', { prompt: userPrompt, context: context }, { signal: signal }).then(function (result) {
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
         if (!result) {
             box.innerHTML = '<p class="text-xs text-slate-400">답변을 가져오지 못했습니다. 다시 시도해 주세요.</p>';
             return;
         }
         const safe = escapeHtmlForAi(String(result)).replace(/\n/g, '<br>');
         box.innerHTML = '<div class="text-xs leading-relaxed text-slate-800">' + safe + '</div>';
-    }).catch(function () {
-        box.innerHTML = '<p class="text-xs text-slate-400">AI 답변 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+    }).catch(function (err) {
+        if (aiHelperActiveRequestSeq !== requestSeq) return;
+        if (err && err.name === 'AbortError') return;
+        box.innerHTML = '<div class="flex flex-col items-center py-8 gap-3">'
+            + '<p class="text-xs text-slate-500">AI 답변 중 오류가 발생했습니다.</p>'
+            + '<div class="flex gap-2">'
+            + '<button type="button" onclick="retryAiHelper()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">재시도</button>'
+            + '<button type="button" onclick="closeAiHelper()" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100">닫기</button>'
+            + '</div>'
+            + '</div>';
     });
 }
 
@@ -978,7 +1100,7 @@ function applyCommentAiSuggestion(index) {
     }
 }
 
-function callAiHelperApi(mode, payload) {
+function callAiHelperApi(mode, payload, options) {
     return new Promise(function (resolve, reject) {
         try {
             // Netlify Functions 엔드포인트를 기본으로 사용
@@ -993,7 +1115,8 @@ function callAiHelperApi(mode, payload) {
                 return fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mode: mode, payload: payload })
+                    body: JSON.stringify({ mode: mode, payload: payload }),
+                    signal: options && options.signal ? options.signal : undefined
                 }).then(function (res) {
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     return res.json();
@@ -1002,6 +1125,7 @@ function callAiHelperApi(mode, payload) {
 
             fetchJson(endpoint)
                 .catch(function (err) {
+                    if (err && err.name === 'AbortError') throw err;
                     if (hasOverride) throw err;
                     if (endpoint !== localEndpoint) throw err;
                     return fetchJson(fallbackEndpoint);
