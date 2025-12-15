@@ -791,6 +791,7 @@ function renderMyTreesGrid(myTrees) {
     if (!grid) return;
 
     if (!myTrees || myTrees.length === 0) {
+        updateMyCreatedTreesPlaceholder();
         grid.classList.add('hidden');
         grid.innerHTML = '';
         if (placeholder) placeholder.classList.remove('hidden');
@@ -827,6 +828,54 @@ function renderMyTreesGrid(myTrees) {
     grid.innerHTML = cardsHTML;
     grid.classList.remove('hidden');
     if (placeholder) placeholder.classList.add('hidden');
+}
+
+function updateMyCreatedTreesPlaceholder() {
+    const titleEl = document.getElementById('my-created-placeholder-title');
+    const descEl = document.getElementById('my-created-placeholder-desc');
+    const loginBtn = document.getElementById('my-created-login-btn');
+    const createBtn = document.getElementById('my-created-create-btn');
+    const iconBtn = document.getElementById('my-created-placeholder-icon');
+
+    const user = getCurrentUser();
+    const loggedIn = !!user;
+
+    if (loggedIn) {
+        if (titleEl) titleEl.textContent = isKorean ? '아직 만든 러브트리가 없어요' : 'No LoveTrees yet';
+        if (descEl) {
+            descEl.textContent = isKorean
+                ? '지금 첫 트리를 만들고, 어디서든 로그인해서 이어서 기록해 보세요.'
+                : 'Create your first tree and keep it synced across devices.';
+        }
+
+        if (loginBtn) loginBtn.classList.add('hidden');
+        if (createBtn) createBtn.classList.remove('hidden');
+        if (iconBtn) iconBtn.onclick = openCreateModal;
+        return;
+    }
+
+    if (titleEl) titleEl.textContent = isKorean ? '로그인하면 나의 러브트리를 볼 수 있어요' : 'Login to see your LoveTrees';
+    if (descEl) {
+        descEl.textContent = isKorean
+            ? '내가 만든 트리는 계정에 저장됩니다. 로그인 후 나의 트리를 확인해 보세요.'
+            : 'Your trees are saved to your account. Sign in to view them.';
+    }
+
+    if (loginBtn) loginBtn.classList.remove('hidden');
+    if (createBtn) createBtn.classList.add('hidden');
+    if (iconBtn) {
+        iconBtn.onclick = function () {
+            try {
+                if (typeof signInWithGoogle === 'function') {
+                    signInWithGoogle();
+                } else {
+                    ensureLoggedIn();
+                }
+            } catch (e) {
+                console.warn('로그인 플로우 실행 실패:', e);
+            }
+        };
+    }
 }
 
 // ================== LANGUAGE AND TRANSLATIONS ==================
@@ -882,6 +931,8 @@ function updateUIText() {
     if (elements.langBtn) elements.langBtn.innerText = t.langBtn;
     if (elements.myTreesTitle) elements.myTreesTitle.innerText = t.myTreesTitle;
     if (elements.allTreesTitle) elements.allTreesTitle.innerText = t.allTreesTitle;
+
+    updateMyCreatedTreesPlaceholder();
 }
 
 /**

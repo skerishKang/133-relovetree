@@ -608,20 +608,26 @@
                         <!-- Placeholder for Logged In/Out State -->
                         <div id="my-created-list"
                             class="bg-white/80 rounded-2xl p-8 text-center border border-white/60 shadow-md backdrop-blur-sm">
-                            <button type="button" onclick="openCreateModal()"
+                            <button id="my-created-placeholder-icon" type="button" onclick="openCreateModal()"
                                 class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent">
                                 <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
                                 </svg>
                             </button>
-                            <h3 class="text-lg font-bold text-slate-900 mb-2">첫 러브트리를 만들어보세요</h3>
-                            <p class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을
+                            <h3 id="my-created-placeholder-title" class="text-lg font-bold text-slate-900 mb-2">첫 러브트리를 만들어보세요</h3>
+                            <p id="my-created-placeholder-desc" class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을
                                 나만의 트리로 정리해 보세요.</p>
-                            <button onclick="openCreateModal()"
-                                class="bg-white border border-slate-300 text-slate-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">
-                                새로 만들기
-                            </button>
+                            <div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                                <button id="my-created-login-btn" type="button" onclick="signInWithGoogle()"
+                                    class="bg-brand-500 text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-brand-600 transition-colors hidden">
+                                    로그인
+                                </button>
+                                <button id="my-created-create-btn" type="button" onclick="openCreateModal()"
+                                    class="bg-white border border-slate-300 text-slate-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">
+                                    새로 만들기
+                                </button>
+                            </div>
                         </div>
 
                         <!-- 실제 나의 러브트리 목록 그리드 -->
