@@ -248,7 +248,6 @@ npx firebase-tools deploy --only hosting --project relovetree
 - `index.html`, `index.js` : 홈 화면
 - `editor.html`, `editor_ai.js` : 에디터 및 AI 도우미
 - `admin.html`, `admin.js` : 관리자 대시보드
-- `functions/` : (레거시) Firebase Functions 폴더 - 현재 운영은 Netlify Functions를 사용하며, 이 폴더는 미사용 상태
 - `netlify/functions/` : Netlify Functions (AI 및 관리자 API)
 - `src/` : 공용 JS 및 Tailwind 입력 CSS
 
