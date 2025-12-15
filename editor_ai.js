@@ -1028,9 +1028,3 @@ document.addEventListener('DOMContentLoaded', function () {
         form.addEventListener('submit', onAiHelperSubmit);
     }
 });
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('ai-helper-form');
-    if (form) {
-        form.addEventListener('submit', onAiHelperSubmit);
-    }
-});

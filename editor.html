@@ -38,6 +38,16 @@
             transition: background-image 0.3s ease, background-color 0.3s ease;
         }
 
+        html,
+        body {
+            height: 100%;
+        }
+
+        #wrapper {
+            height: 100vh;
+            height: 100dvh;
+        }
+
         /* 모바일 + 타임라인 모드 전용 레이아웃 */
         body.editor-mobile.editor-timeline #timeline {
             background-color: transparent;
@@ -515,7 +525,7 @@
                 <button type="button" id="ai-mode-node-btn" onclick="setAiHelperMode('node')"
                     class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600">노드 수정</button>
             </div>
-            <div class="flex-1 overflow-y-auto px-4 pb-3 space-y-3 text-sm" id="ai-helper-body">
+            <div class="flex-1 min-h-0 overflow-y-auto px-4 pb-3 space-y-3 text-sm" id="ai-helper-body">
                 <div id="ai-tree-panel" class="space-y-2">
                     <label for="ai-tree-prompt" class="block text-xs font-medium text-slate-500">어떤 트리를 만들까요?</label>
                     <textarea id="ai-tree-prompt" rows="3"
@@ -565,7 +575,7 @@
     <!-- Comments Modal -->
     <dialog id="comments-modal"
         class="bg-white p-0 rounded-2xl shadow-2xl w-full max-w-md backdrop:bg-black/50 backdrop:backdrop-blur-sm">
-        <div class="flex flex-col h-[600px] max-h-[80vh]">
+        <div class="flex flex-col h-[600px] max-h-[80vh] min-h-0">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-2xl">
                 <h3 class="font-bold text-lg text-slate-800">댓글 <span id="modal-comment-count"
                         class="text-brand-500 text-sm ml-1">0</span></h3>
@@ -578,7 +588,7 @@
                 </button>
             </div>
 
-            <div id="comments-list" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 custom-scroll">
+            <div id="comments-list" class="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 bg-slate-50 custom-scroll">
                 <!-- Comments injected here -->
                 <div class="flex flex-col items-center justify-start pt-20 h-full text-slate-400 text-sm gap-2">
                     <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1425,12 +1435,6 @@
                 el.style.left = node.x + 'px';
                 el.style.top = node.y + 'px';
                 el.dataset.nodeId = String(node.id);
-                el.setAttribute('draggable', 'true');
-                el.addEventListener('dragstart', (event) => {
-                    if (typeof onNodeDragStartForAi === 'function') {
-                        onNodeDragStartForAi(event, node.id);
-                    }
-                });
 
                 const hasVideo = !!node.videoId;
                 const thumbUrl = hasVideo ? getYouTubeThumb(node.videoId, 'hqdefault') : '';
@@ -1495,9 +1499,11 @@
                 }
 
                 el.onmousedown = (e) => startDragNode(e, node);
+                el.ontouchstart = (e) => startDragNode(e, node);
 
                 el.onclick = (e) => {
-                    if (!state.isDragging) {
+                    const justInteracted = (Date.now() - lastPointerInteractionEndAt) < 350;
+                    if (!state.isDragging && !justInteracted) {
                         e.stopPropagation();
                         openDetailModal(node);
                     }
@@ -1902,6 +1908,19 @@
         let dragStartX = 0;
         let dragStartY = 0;
         let isDraggingNode = false;
+        let panLastX = 0;
+        let panLastY = 0;
+        let lastPointerInteractionEndAt = 0;
+
+        function getClientPoint(e) {
+            if (e && e.touches && e.touches.length) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+            if (e && e.changedTouches && e.changedTouches.length) {
+                return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        }
 
         function startDragNode(e, node) {
             if (isReadOnly) return; // Prevent dragging in read-only mode
@@ -1909,40 +1928,69 @@
             e.stopPropagation();
             isDraggingNode = true;
             state.selectedNode = node.id;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
+            const point = getClientPoint(e);
+            dragStartX = point.x;
+            dragStartY = point.y;
+
+            const k = state.transform && state.transform.k ? state.transform.k : 1;
+            const offsetX = state.transform && typeof state.transform.x === 'number' ? state.transform.x : 0;
+            const offsetY = state.transform && typeof state.transform.y === 'number' ? state.transform.y : 0;
 
             state.dragStart = {
-                x: e.clientX / state.transform.k - node.x,
-                y: e.clientY / state.transform.k - node.y
+                x: (point.x - offsetX) / k - node.x,
+                y: (point.y - offsetY) / k - node.y
             };
             // Do NOT set state.isDragging = true here yet
         }
 
-        window.onmousemove = (e) => {
+        function handlePointerMove(e) {
+            const point = getClientPoint(e);
             if (isDraggingNode && state.selectedNode) {
                 // Check threshold to distinguish click from drag
-                const dist = Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY);
+                const dist = Math.hypot(point.x - dragStartX, point.y - dragStartY);
                 if (dist > 5) {
                     state.isDragging = true;
+                }
+
+                if (state.isDragging && e && e.cancelable) {
+                    e.preventDefault();
                 }
 
                 if (state.isDragging) {
                     const node = state.nodes.find(n => n.id === state.selectedNode);
                     if (node) {
-                        node.x = e.clientX / state.transform.k - state.dragStart.x;
-                        node.y = e.clientY / state.transform.k - state.dragStart.y;
+                        const k = state.transform && state.transform.k ? state.transform.k : 1;
+                        const offsetX = state.transform && typeof state.transform.x === 'number' ? state.transform.x : 0;
+                        const offsetY = state.transform && typeof state.transform.y === 'number' ? state.transform.y : 0;
+
+                        node.x = (point.x - offsetX) / k - state.dragStart.x;
+                        node.y = (point.y - offsetY) / k - state.dragStart.y;
                         render();
                     }
                 }
             } else if (state.isPanning) {
-                state.transform.x += e.movementX;
-                state.transform.y += e.movementY;
+                if (e && e.cancelable) {
+                    e.preventDefault();
+                }
+                const dx = point.x - panLastX;
+                const dy = point.y - panLastY;
+                panLastX = point.x;
+                panLastY = point.y;
+                state.transform.x += dx;
+                state.transform.y += dy;
                 render();
             }
-        };
+        }
 
-        window.onmouseup = () => {
+        window.onmousemove = handlePointerMove;
+        window.addEventListener('touchmove', handlePointerMove, { passive: false });
+
+        function endPointerInteraction() {
+            const wasDragging = !!state.isDragging;
+            const wasPanning = !!state.isPanning;
+            if (wasDragging || wasPanning) {
+                lastPointerInteractionEndAt = Date.now();
+            }
             // Delay clearing slightly to allow node.onmouseup to fire with correct state
             setTimeout(() => {
                 if (state.isDragging) {
@@ -1957,17 +2005,50 @@
                 state.isDragging = false;
                 state.isPanning = false;
             }, 0);
-        };
+        }
+
+        window.onmouseup = endPointerInteraction;
+        window.addEventListener('touchend', endPointerInteraction);
+        window.addEventListener('touchcancel', endPointerInteraction);
 
         document.getElementById('wrapper').onmousedown = (e) => {
-            if (e.target.id === 'wrapper' || e.target.id === 'canvas') {
-                state.isPanning = true;
-                state.selectedNode = null;
-                render();
-            }
+            if (editorMode !== 'tree') return;
+
+            const target = e.target;
+            if (target && target.closest && target.closest('.node')) return;
+            if (target && target.closest && target.closest('#timeline')) return;
+
+            const hitCanvas = (target && target.id === 'wrapper') || (target && target.closest && target.closest('#canvas'));
+            if (!hitCanvas) return;
+
+            const point = getClientPoint(e);
+            panLastX = point.x;
+            panLastY = point.y;
+            state.isPanning = true;
+            state.selectedNode = null;
+            render();
+        };
+
+        document.getElementById('wrapper').ontouchstart = (e) => {
+            if (editorMode !== 'tree') return;
+
+            const target = e.target;
+            if (target && target.closest && target.closest('.node')) return;
+            if (target && target.closest && target.closest('#timeline')) return;
+
+            const hitCanvas = (target && target.id === 'wrapper') || (target && target.closest && target.closest('#canvas'));
+            if (!hitCanvas) return;
+
+            const point = getClientPoint(e);
+            panLastX = point.x;
+            panLastY = point.y;
+            state.isPanning = true;
+            state.selectedNode = null;
+            render();
         };
 
         document.getElementById('wrapper').onwheel = (e) => {
+            if (editorMode !== 'tree') return;
             e.preventDefault();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;
             state.transform.k = Math.max(0.1, Math.min(3, state.transform.k * delta));
