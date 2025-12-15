@@ -33,7 +33,6 @@
   },
   "homepage": "https://github.com/skerishKang/133-relovetree#readme",
   "dependencies": {
-    "@modelcontextprotocol/server-filesystem": "^2025.11.25",
     "firebase-admin": "^12.0.0"
   }
 }

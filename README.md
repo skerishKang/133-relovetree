@@ -82,13 +82,13 @@
    ```bash
    npm run serve
    # 또는
-   python -m http.server 8000
+   python -m http.server 3133
    ```
 
 5. **웹 브라우저에서 열기**
 
    ```text
-   http://localhost:8000
+   http://localhost:3133/index.html
    ```
 
 ### 📜 사용 가능한 스크립트
@@ -97,7 +97,7 @@
 {
   "dev": "tailwindcss -i ./src/input.css -o ./output.css --watch",
   "build": "tailwindcss -i ./src/input.css -o ./output.css --minify", 
-  "serve": "python -m http.server 8000",
+  "serve": "python -m http.server 3133",
   "clean": "rm -f output.css"
 }
 ```
