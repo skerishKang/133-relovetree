@@ -1244,6 +1244,31 @@ async function seedDemoTrees(requestCount) {
             id: 'demo-tree-illit',
             name: '아일릿 성장기 데모',
             baseTitle: '아일릿 활동 타임라인'
+        },
+        {
+            id: 'demo-tree-ive',
+            name: '아이브 모먼트 데모',
+            baseTitle: '아이브 활동 기록'
+        },
+        {
+            id: 'demo-tree-leserafim',
+            name: '르세라핌 모먼트 데모',
+            baseTitle: '르세라핌 활동 기록'
+        },
+        {
+            id: 'demo-tree-aespa',
+            name: '에스파 모먼트 데모',
+            baseTitle: '에스파 컴백 기록'
+        },
+        {
+            id: 'demo-tree-riize',
+            name: '라이즈 모먼트 데모',
+            baseTitle: '라이즈 활동 기록'
+        },
+        {
+            id: 'demo-tree-iu',
+            name: '아이유 모먼트 데모',
+            baseTitle: '아이유 활동 기록'
         }
     ];
 
@@ -1285,13 +1310,20 @@ async function seedDemoTrees(requestCount) {
                 }
             }
 
+            const likeCount = 50 - i * 3;
+            const viewCount = 200 + i * 25;
+            const shareCount = 20 + i * 2;
+
             await ref.set({
                 name: tpl.name,
                 ownerId: owner.uid,
                 nodes: nodes,
                 edges: edges,
                 likes: [],
-                likeCount: 0,
+                likeCount: Math.max(0, likeCount),
+                viewCount: Math.max(0, viewCount),
+                shareCount: Math.max(0, shareCount),
+                nodeCount: nodes.length,
                 comments: [],
                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
                 isDemo: true
