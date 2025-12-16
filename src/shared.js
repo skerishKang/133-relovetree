@@ -525,6 +525,106 @@ function initApp() {
     console.log(`${APP_CONFIG.appName} v${APP_CONFIG.version} initialized`);
 }
 
+function normalizeToIsoStringForFork(value) {
+    try {
+        if (!value) return '';
+        if (value && typeof value.toDate === 'function') {
+            return value.toDate().toISOString();
+        }
+        const d = new Date(value);
+        if (isNaN(d.getTime())) return String(value);
+        return d.toISOString();
+    } catch (e) {
+        return value ? String(value) : '';
+    }
+}
+
+function extractTreeIdFromMaybeUrl(value) {
+    try {
+        const raw = String(value || '').trim();
+        if (!raw) return '';
+
+        const m = raw.match(/[?&]id=([^&#\s]+)/i);
+        if (m && m[1]) {
+            try {
+                return decodeURIComponent(m[1]);
+            } catch (e) {
+                return String(m[1]);
+            }
+        }
+
+        if (/^[a-zA-Z0-9_-]{8,}$/.test(raw)) {
+            return raw;
+        }
+
+        return '';
+    } catch (e) {
+        return '';
+    }
+}
+
+async function forkTreeToMyAccountBySourceTreeId(sourceTreeId) {
+    try {
+        if (typeof firebase === 'undefined' || !firebase.auth || !firebase.firestore) {
+            return { ok: false, error: 'Firebase를 사용할 수 없습니다.' };
+        }
+
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            return { ok: false, error: '로그인이 필요합니다.' };
+        }
+
+        const db = firebase.firestore();
+        const normalizedSourceId = extractTreeIdFromMaybeUrl(sourceTreeId);
+        if (!normalizedSourceId) {
+            return { ok: false, error: '트리 ID가 올바르지 않습니다.' };
+        }
+
+        const sourceRef = db.collection('trees').doc(normalizedSourceId);
+        const sourceSnap = await sourceRef.get();
+        if (!sourceSnap.exists) {
+            return { ok: false, error: '원본 트리를 찾을 수 없습니다.' };
+        }
+
+        const sourceData = sourceSnap.data() || {};
+        if (sourceData.ownerId && sourceData.ownerId === user.uid) {
+            return { ok: false, error: '이미 내 트리입니다.' };
+        }
+
+        const nowIso = new Date().toISOString();
+        const sourceLastUpdated = normalizeToIsoStringForFork(sourceData.lastUpdated);
+        const nodes = Array.isArray(sourceData.nodes) ? sourceData.nodes : [];
+        const edges = Array.isArray(sourceData.edges) ? sourceData.edges : [];
+        const sourceName = sourceData.name || normalizedSourceId;
+
+        const newDocRef = db.collection('trees').doc();
+        await newDocRef.set({
+            name: sourceName,
+            ownerId: user.uid,
+            nodes,
+            edges,
+            nodeCount: nodes.length,
+            lastUpdated: nowIso,
+            forkedFrom: {
+                treeId: normalizedSourceId,
+                ownerId: sourceData.ownerId || null,
+                sourceLastUpdated,
+                forkedAt: nowIso
+            }
+        }, { merge: true });
+
+        return {
+            ok: true,
+            newTreeId: newDocRef.id,
+            sourceTreeId: normalizedSourceId,
+            sourceOwnerId: sourceData.ownerId || null
+        };
+    } catch (e) {
+        console.error('forkTreeToMyAccountBySourceTreeId 실패:', e);
+        return { ok: false, error: '가져오기 실패' };
+    }
+}
+
 // ================== EXPORTS ==================
 
 // Export for use in other files
@@ -554,6 +654,7 @@ if (typeof module !== 'undefined' && module.exports) {
         safeLocalStorageRemove,
         setupGlobalErrorHandling,
         setupModalKeyboardHandlers,
+        forkTreeToMyAccountBySourceTreeId,
         initApp
     };
 }

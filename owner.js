@@ -2,6 +2,12 @@ let ownerUser = null;
 let ownerTreesCache = [];
 let ownerForkStatusCache = {};
 
+let ownerForkAutoCheckInflight = {};
+let ownerForkAutoCheckTimer = null;
+const OWNER_FORK_AUTO_CHECK_TTL_MS = 5 * 60 * 1000;
+const OWNER_FORK_AUTO_CHECK_BATCH_SIZE = 8;
+const OWNER_FORK_AUTO_CHECK_CONCURRENCY = 3;
+
 let ownerUiState = {
     pageIndex: 0,
     pageSize: 20,
@@ -100,6 +106,97 @@ function updateOwnerUrlFromState() {
     try {
         const url = buildOwnerViewUrlFromState();
         window.history.replaceState({}, '', url);
+    } catch (e) {
+    }
+}
+
+function parseTimeMs(value) {
+    try {
+        if (!value) return 0;
+        const t = Date.parse(String(value));
+        return isNaN(t) ? 0 : t;
+    } catch (e) {
+        return 0;
+    }
+}
+
+async function runOwnerForkAutoCheck(treeIds) {
+    try {
+        if (!ownerUser) return;
+        if (!Array.isArray(treeIds) || treeIds.length === 0) return;
+
+        const now = Date.now();
+        const candidates = [];
+        treeIds.forEach((id) => {
+            if (!id) return;
+            const item = ownerTreesCache.find((t) => t.id === id);
+            if (!item || !item.forkedFrom || !item.forkedFrom.treeId) return;
+
+            const cached = ownerForkStatusCache[id] || null;
+            const checkedAt = cached ? parseTimeMs(cached.checkedAt) : 0;
+            const isFresh = checkedAt && (now - checkedAt) < OWNER_FORK_AUTO_CHECK_TTL_MS;
+            if (isFresh) return;
+
+            if (ownerForkAutoCheckInflight[id]) return;
+            candidates.push(id);
+        });
+
+        const batch = candidates.slice(0, OWNER_FORK_AUTO_CHECK_BATCH_SIZE);
+        if (!batch.length) return;
+
+        batch.forEach((id) => {
+            ownerForkAutoCheckInflight[id] = true;
+        });
+
+        let didUpdate = false;
+
+        const worker = async () => {
+            while (batch.length) {
+                const id = batch.shift();
+                if (!id) continue;
+                try {
+                    const res = await checkForkUpdateStatus(id);
+                    if (res && res.ok) {
+                        ownerForkStatusCache[id] = {
+                            checkedAt: new Date().toISOString(),
+                            hasUpdate: !!res.hasUpdate,
+                            sourceLastUpdated: res.sourceLastUpdated || ''
+                        };
+                        didUpdate = true;
+                    }
+                } catch (e) {
+                } finally {
+                    delete ownerForkAutoCheckInflight[id];
+                }
+            }
+        };
+
+        const workers = [];
+        const n = Math.min(OWNER_FORK_AUTO_CHECK_CONCURRENCY, batch.length || OWNER_FORK_AUTO_CHECK_CONCURRENCY);
+        for (let i = 0; i < n; i++) {
+            workers.push(worker());
+        }
+
+        await Promise.allSettled(workers);
+        if (didUpdate) {
+            renderOwnerTrees();
+        }
+    } catch (e) {
+    }
+}
+
+function scheduleOwnerForkAutoCheck(treeIds) {
+    try {
+        if (!ownerUser) return;
+        if (!Array.isArray(treeIds) || treeIds.length === 0) return;
+
+        if (ownerForkAutoCheckTimer) {
+            clearTimeout(ownerForkAutoCheckTimer);
+        }
+        ownerForkAutoCheckTimer = setTimeout(() => {
+            ownerForkAutoCheckTimer = null;
+            runOwnerForkAutoCheck(treeIds);
+        }, 250);
     } catch (e) {
     }
 }
@@ -507,6 +604,11 @@ function renderOwnerTrees() {
     updatePagination(filteredCount);
     updateCreateUi();
     scheduleSaveOwnerUiState();
+
+    const visibleForkIds = pageItems
+        .filter((t) => t && t.forkedFrom && t.forkedFrom.treeId)
+        .map((t) => t.id);
+    scheduleOwnerForkAutoCheck(visibleForkIds);
 }
 
 function applyOwnerSort(items, sortKey) {
@@ -997,6 +1099,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (firebase && firebase.auth && firebase.auth()) {
         firebase.auth().onAuthStateChanged(async (user) => {
             ownerUser = user;
+            ownerForkStatusCache = {};
+            ownerForkAutoCheckInflight = {};
             setOwnerAuthUi(ownerUser);
             await loadOwnerTrees();
             updateCreateUi();

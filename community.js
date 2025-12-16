@@ -7,6 +7,7 @@ const COMMUNITY_COLLECTION = 'community_posts';
 let communityCurrentUser = null;
 let communityCurrentPostId = null;
 let communitySortMode = 'latest'; // 'latest' | 'popular'
+let communityCurrentTreeId = '';
 
 /**
  * 현재 로그인한 사용자를 안전하게 반환하는 헬퍼 (커뮤니티 전용)
@@ -86,11 +87,24 @@ function renderCommunityPostCard(id, data) {
     const likeCount = data.likeCount || 0;
     const commentCount = data.commentCount || 0;
 
+    const treeIdRaw = (data && data.treeId) ? String(data.treeId || '').trim() : '';
+    const treeIdForOpen = (typeof extractTreeIdFromMaybeUrl === 'function')
+        ? extractTreeIdFromMaybeUrl(treeIdRaw)
+        : treeIdRaw;
+
+    const treeBadge = treeIdForOpen
+        ? `<div class="mt-2 flex flex-wrap gap-2 items-center text-[11px]">
+                <a class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:bg-slate-50" href="editor.html?id=${encodeURIComponent(treeIdForOpen)}" target="_blank">트리 보기</a>
+                <button type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700" data-action="fork-tree" data-tree="${encodeURIComponent(treeIdRaw)}">내 트리로 가져오기</button>
+           </div>`
+        : '';
+
     return `
         <article data-post-id="${id}"
             class="cursor-pointer bg-white/90 border border-slate-200 rounded-2xl px-4 py-4 sm:px-5 sm:py-4 shadow-sm hover:shadow-md transition-shadow">
             <h2 class="text-sm sm:text-base font-bold text-slate-900 mb-1 line-clamp-1">${title}</h2>
             <p class="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">${snippet}</p>
+            ${treeBadge}
             <div class="flex items-center justify-between text-[11px] text-slate-400">
                 <span>${author}</span>
                 <div class="flex items-center gap-2">
@@ -149,6 +163,38 @@ async function loadCommunityPosts() {
             const postId = el.getAttribute('data-post-id');
             if (!postId) return;
             el.addEventListener('click', () => openCommunityPostDetail(postId));
+        });
+
+        listEl.querySelectorAll('button[data-action="fork-tree"]').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                try {
+                    const raw = btn.getAttribute('data-tree') || '';
+                    const treeId = raw ? decodeURIComponent(raw) : '';
+                    if (!treeId) return;
+
+                    const ok = confirm('이 트리를 내 트리로 가져올까요? 가져온 뒤에는 내 트리에서 자유롭게 수정할 수 있습니다.');
+                    if (!ok) return;
+
+                    if (typeof forkTreeToMyAccountBySourceTreeId !== 'function') {
+                        showError('가져오기 기능을 사용할 수 없습니다.', 4000);
+                        return;
+                    }
+
+                    const res = await forkTreeToMyAccountBySourceTreeId(treeId);
+                    if (!res || !res.ok) {
+                        showError((res && res.error) ? res.error : '가져오기 실패', 4000);
+                        return;
+                    }
+
+                    window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
+                } catch (err) {
+                    console.error('커뮤니티 카드 포크 실패:', err);
+                    showError('가져오기 실패', 4000);
+                }
+            });
         });
     } catch (e) {
         console.error('커뮤니티 글 로딩 실패:', e);
@@ -221,8 +267,10 @@ async function handleCreatePostSubmit(event) {
 
     const titleInput = document.getElementById('community-title');
     const contentInput = document.getElementById('community-content');
+    const treeIdInput = document.getElementById('community-tree-id');
     const title = titleInput ? titleInput.value.trim() : '';
     const content = contentInput ? contentInput.value.trim() : '';
+    const treeId = treeIdInput ? treeIdInput.value.trim() : '';
 
     if (!title) {
         showError('제목을 입력해 주세요.', 3000);
@@ -239,6 +287,7 @@ async function handleCreatePostSubmit(event) {
         await db.collection(COMMUNITY_COLLECTION).add({
             title,
             content,
+            treeId: treeId || '',
             authorId: user.uid,
             authorDisplayName: user.displayName || user.email || '익명',
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -268,6 +317,10 @@ async function openCommunityPostDetail(postId) {
     const metaEl = document.getElementById('detail-meta');
     const contentEl = document.getElementById('detail-content');
 
+    const treeActionsEl = document.getElementById('detail-tree-actions');
+    const treeOpenEl = document.getElementById('detail-tree-open');
+    const treeForkBtn = document.getElementById('detail-tree-fork');
+
     if (!dialog || !titleEl || !metaEl || !contentEl) return;
 
     try {
@@ -279,12 +332,56 @@ async function openCommunityPostDetail(postId) {
 
         const data = doc.data() || {};
         communityCurrentPostId = doc.id;
+        communityCurrentTreeId = data && data.treeId ? String(data.treeId || '').trim() : '';
 
         titleEl.textContent = data.title || '제목 없음';
         const created = formatCommunityDate(data.createdAt);
         const author = data.authorDisplayName || '익명';
         metaEl.textContent = `${author} · ${created}`;
         contentEl.textContent = data.content || '';
+
+        try {
+            if (treeActionsEl && treeOpenEl && treeForkBtn) {
+                const treeIdForOpen = (typeof extractTreeIdFromMaybeUrl === 'function')
+                    ? extractTreeIdFromMaybeUrl(communityCurrentTreeId)
+                    : communityCurrentTreeId;
+
+                if (treeIdForOpen) {
+                    treeOpenEl.href = 'editor.html?id=' + encodeURIComponent(treeIdForOpen);
+                    treeActionsEl.classList.remove('hidden');
+                    treeForkBtn.disabled = false;
+                } else {
+                    treeOpenEl.href = '#';
+                    treeActionsEl.classList.add('hidden');
+                    treeForkBtn.disabled = true;
+                }
+
+                treeForkBtn.onclick = async () => {
+                    try {
+                        if (!communityCurrentTreeId) return;
+                        const ok = confirm('이 트리를 내 트리로 가져올까요? 가져온 뒤에는 내 트리에서 자유롭게 수정할 수 있습니다.');
+                        if (!ok) return;
+
+                        if (typeof forkTreeToMyAccountBySourceTreeId !== 'function') {
+                            showError('가져오기 기능을 사용할 수 없습니다.', 4000);
+                            return;
+                        }
+
+                        const res = await forkTreeToMyAccountBySourceTreeId(communityCurrentTreeId);
+                        if (!res || !res.ok) {
+                            showError((res && res.error) ? res.error : '가져오기 실패', 4000);
+                            return;
+                        }
+
+                        window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
+                    } catch (e) {
+                        console.error('커뮤니티 포크 실패:', e);
+                        showError('가져오기 실패', 4000);
+                    }
+                };
+            }
+        } catch (e) {
+        }
 
         await loadCommunityComments(doc.id);
 
