@@ -458,6 +458,42 @@ function safeLocalStorageRemove(key) {
     }
 }
 
+function applyGlobalBackgroundPreference() {
+    try {
+        if (typeof document === 'undefined' || !document.body) return;
+        const config = safeLocalStorageGet('relovetree_background', null);
+        if (!config || !config.type || !config.value) return;
+
+        const body = document.body;
+        if (config.type === 'image') {
+            body.style.backgroundImage = `url('${config.value}')`;
+            body.style.backgroundSize = 'cover';
+            body.style.backgroundPosition = 'center';
+            body.style.backgroundRepeat = 'no-repeat';
+            body.style.backgroundAttachment = 'fixed';
+            body.style.backgroundColor = '';
+        } else if (config.type === 'color') {
+            body.style.backgroundImage = 'none';
+            body.style.backgroundColor = config.value;
+        }
+    } catch (e) {
+        console.warn('applyGlobalBackgroundPreference failed:', e);
+    }
+}
+
+function bindGlobalBackgroundPreferenceSync() {
+    try {
+        if (typeof window === 'undefined') return;
+        window.addEventListener('storage', function (e) {
+            if (!e) return;
+            if (e.key === 'relovetree_background') {
+                applyGlobalBackgroundPreference();
+            }
+        });
+    } catch (e) {
+    }
+}
+
 // ================== EVENT HANDLERS ==================
 
 /**
@@ -518,6 +554,9 @@ function initApp() {
     setupGlobalErrorHandling();
     setupModalKeyboardHandlers();
     initFirebase();
+
+    applyGlobalBackgroundPreference();
+    bindGlobalBackgroundPreferenceSync();
 
     // Add loaded class to body for CSS
     document.body.classList.add('app-loaded');
