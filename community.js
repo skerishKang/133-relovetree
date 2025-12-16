@@ -28,6 +28,49 @@ function getCurrentUserForCommunity() {
     }
 }
 
+async function fetchTreeSummaryForCommunity(treeIdRaw) {
+    try {
+        if (!treeIdRaw) return null;
+        if (typeof firebase === 'undefined' || !firebase.firestore) return null;
+        const db = firebase.firestore();
+
+        const treeId = (typeof extractTreeIdFromMaybeUrl === 'function')
+            ? extractTreeIdFromMaybeUrl(treeIdRaw)
+            : String(treeIdRaw || '').trim();
+
+        if (!treeId) return null;
+
+        const snap = await db.collection('trees').doc(treeId).get();
+        if (!snap.exists) return null;
+        const data = snap.data() || {};
+
+        const nodeCount = typeof data.nodeCount === 'number'
+            ? data.nodeCount
+            : (Array.isArray(data.nodes) ? data.nodes.length : 0);
+
+        let lastUpdatedIso = '';
+        const lastUpdated = data.lastUpdated;
+        if (lastUpdated && typeof lastUpdated.toDate === 'function') {
+            lastUpdatedIso = lastUpdated.toDate().toISOString();
+        } else if (lastUpdated) {
+            try {
+                lastUpdatedIso = new Date(lastUpdated).toISOString();
+            } catch (e) {
+                lastUpdatedIso = String(lastUpdated);
+            }
+        }
+
+        return {
+            treeId,
+            nodeCount,
+            lastUpdatedIso
+        };
+    } catch (e) {
+        console.error('트리 요약 조회 실패:', e);
+        return null;
+    }
+}
+
 function normalizeCommunityTreeItem(doc) {
     const data = doc && typeof doc.data === 'function' ? (doc.data() || {}) : {};
 
@@ -512,6 +555,7 @@ async function openCommunityPostDetail(postId) {
     const treeActionsEl = document.getElementById('detail-tree-actions');
     const treeOpenEl = document.getElementById('detail-tree-open');
     const treeForkBtn = document.getElementById('detail-tree-fork');
+    const treeSummaryEl = document.getElementById('detail-tree-summary');
 
     if (!dialog || !titleEl || !metaEl || !contentEl) return;
 
@@ -538,14 +582,43 @@ async function openCommunityPostDetail(postId) {
                     ? extractTreeIdFromMaybeUrl(communityCurrentTreeId)
                     : communityCurrentTreeId;
 
+                const openedPostId = communityCurrentPostId;
+
                 if (treeIdForOpen) {
                     treeOpenEl.href = 'editor.html?id=' + encodeURIComponent(treeIdForOpen);
                     treeActionsEl.classList.remove('hidden');
                     treeForkBtn.disabled = false;
+
+                    if (treeSummaryEl) {
+                        treeSummaryEl.classList.remove('hidden');
+                        treeSummaryEl.textContent = '트리 정보를 불러오는 중...';
+                        fetchTreeSummaryForCommunity(treeIdForOpen).then((summary) => {
+                            try {
+                                if (communityCurrentPostId !== openedPostId) return;
+                                if (!treeSummaryEl) return;
+                                if (!summary) {
+                                    treeSummaryEl.textContent = '트리 정보를 불러오지 못했습니다.';
+                                    return;
+                                }
+
+                                const dateText = summary.lastUpdatedIso ? String(summary.lastUpdatedIso).slice(0, 10) : '';
+                                const parts = [];
+                                parts.push('노드 ' + (summary.nodeCount || 0) + '개');
+                                if (dateText) parts.push('최근 업데이트 ' + dateText);
+                                treeSummaryEl.textContent = parts.join(' · ');
+                            } catch (e) {
+                            }
+                        });
+                    }
                 } else {
                     treeOpenEl.href = '#';
                     treeActionsEl.classList.add('hidden');
                     treeForkBtn.disabled = true;
+
+                    if (treeSummaryEl) {
+                        treeSummaryEl.classList.add('hidden');
+                        treeSummaryEl.textContent = '';
+                    }
                 }
 
                 treeForkBtn.onclick = async () => {
