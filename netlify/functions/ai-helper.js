@@ -630,6 +630,19 @@ exports.handler = async (event, context) => {
         } catch (e) {
           found = null;
         }
+
+        if (!found || !found.videoId) {
+          const retryQuery = (searchQuery && searchQuery.trim().length)
+            ? `${searchQuery} 무대`
+            : (baseTitle && baseTitle.trim().length ? `${baseTitle} 무대` : '');
+          if (retryQuery) {
+            try {
+              found = await youtubeSearchFirstVideo(retryQuery, ytKey);
+            } catch (e) {
+              found = null;
+            }
+          }
+        }
       }
 
       let details = null;
@@ -648,13 +661,38 @@ exports.handler = async (event, context) => {
       }
 
       if (found && found.videoId) {
-        const nodeObj = await buildRealNodeFromVideo({
-          baseTitle,
-          instruction,
-          video: Object.assign({}, details || {}, { videoId: found.videoId }),
-          transcriptText,
-          env: process.env,
-        });
+        let nodeObj = null;
+        try {
+          nodeObj = await buildRealNodeFromVideo({
+            baseTitle,
+            instruction,
+            video: Object.assign({}, details || {}, { videoId: found.videoId }),
+            transcriptText,
+            env: process.env,
+          });
+        } catch (e) {
+          nodeObj = null;
+        }
+
+        if (!nodeObj) {
+          const rawText = await callGeminiText(promptBody.text, process.env);
+          nodeObj = safeJsonParse(rawText) || {};
+        }
+
+        if (nodeObj && typeof nodeObj === 'object') {
+          if (!nodeObj.videoId && !nodeObj.youtubeUrl) {
+            nodeObj.videoId = found.videoId;
+          }
+          if (!nodeObj.title) {
+            nodeObj.title = baseTitle || (details && details.title) || '새 순간';
+          }
+          if (!nodeObj.description) {
+            nodeObj.description = (details && details.description)
+              ? truncateText(details.description, 240)
+              : '';
+          }
+        }
+
         result = nodeObj || {};
       } else {
         const rawText = await callGeminiText(promptBody.text, process.env);
