@@ -13,6 +13,11 @@ let communityCreateMediaUrl = '';
 
 let communityCurrentPostData = null;
 
+let communityPostsCache = [];
+let communitySearchQuery = '';
+let communityLastPostSubmitAtMs = 0;
+let communityLastCommentSubmitAtMs = 0;
+
 let communityMyTreesCache = [];
 let communityMyTreesLoaded = false;
 let communityTreePickerBound = false;
@@ -31,6 +36,124 @@ function getCurrentUserForCommunity() {
         console.warn('getCurrentUserForCommunity 실패:', e);
         return null;
     }
+}
+
+function normalizeSearchText(value) {
+    try {
+        return String(value || '').toLowerCase().trim();
+    } catch (e) {
+        return '';
+    }
+}
+
+function buildCommunityThumbnailHTML(data) {
+    try {
+        const mediaUrl = data && data.mediaUrl ? String(data.mediaUrl || '').trim() : '';
+        if (!mediaUrl) return '';
+
+        const url = normalizeCommunityMediaUrl(mediaUrl);
+        if (!url) return '';
+
+        const ytId = parseYouTubeVideoIdFromUrl(url);
+        if (ytId) {
+            const thumb = `https://i.ytimg.com/vi/${encodeURIComponent(ytId)}/hqdefault.jpg`;
+            const safeThumb = escapeHtml(thumb);
+            return `
+                <div class="mt-3 w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                    <img src="${safeThumb}" alt="유튜브 썸네일" class="w-full h-full object-cover" loading="lazy" />
+                </div>
+            `;
+        }
+
+        if (isLikelyImageUrl(url)) {
+            const safe = escapeHtml(url);
+            return `
+                <div class="mt-3 w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                    <img src="${safe}" alt="미디어 이미지" class="w-full max-h-56 object-cover" loading="lazy" />
+                </div>
+            `;
+        }
+
+        return '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function filterCommunityPosts(posts, query) {
+    const q = normalizeSearchText(query);
+    if (!q) return posts;
+
+    return (posts || []).filter(({ data }) => {
+        try {
+            const title = normalizeSearchText(data && data.title);
+            const author = normalizeSearchText(data && data.authorDisplayName);
+            const treeId = normalizeSearchText(data && data.treeId);
+            return title.includes(q) || author.includes(q) || treeId.includes(q);
+        } catch (e) {
+            return false;
+        }
+    });
+}
+
+function renderCommunityPostList() {
+    const listEl = document.getElementById('community-post-list');
+    const emptyEl = document.getElementById('community-empty-state');
+    if (!listEl) return;
+
+    const filtered = filterCommunityPosts(communityPostsCache, communitySearchQuery);
+    if (!filtered.length) {
+        listEl.innerHTML = '';
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        return;
+    }
+
+    if (emptyEl) emptyEl.classList.add('hidden');
+    listEl.innerHTML = filtered.map(p => renderCommunityPostCard(p.id, p.data)).join('');
+
+    listEl.querySelectorAll('[data-post-id]').forEach(el => {
+        const postId = el.getAttribute('data-post-id');
+        if (!postId) return;
+        el.addEventListener('click', () => openCommunityPostDetail(postId));
+    });
+
+    listEl.querySelectorAll('a[href^="editor.html?id="]').forEach((a) => {
+        a.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+
+    listEl.querySelectorAll('button[data-action="fork-tree"]').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            try {
+                const raw = btn.getAttribute('data-tree') || '';
+                const treeId = raw ? decodeURIComponent(raw) : '';
+                if (!treeId) return;
+
+                const ok = confirm('이 트리를 내 트리로 가져올까요? 가져온 뒤에는 내 트리에서 자유롭게 수정할 수 있습니다.');
+                if (!ok) return;
+
+                if (typeof forkTreeToMyAccountBySourceTreeId !== 'function') {
+                    showError('가져오기 기능을 사용할 수 없습니다.', 4000);
+                    return;
+                }
+
+                const res = await forkTreeToMyAccountBySourceTreeId(treeId);
+                if (!res || !res.ok) {
+                    showError((res && res.error) ? res.error : '가져오기 실패', 4000);
+                    return;
+                }
+
+                window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
+            } catch (err) {
+                console.error('커뮤니티 카드 포크 실패:', err);
+                showError('가져오기 실패', 4000);
+            }
+        });
+    });
 }
 
 async function updateCommunityCommentById(postId, commentId, patch) {
@@ -458,11 +581,14 @@ function renderCommunityPostCard(id, data) {
            </div>`
         : '';
 
+    const thumb = buildCommunityThumbnailHTML(data);
+
     return `
         <article data-post-id="${id}"
             class="cursor-pointer bg-white/90 border border-slate-200 rounded-2xl px-4 py-4 sm:px-5 sm:py-4 shadow-sm hover:shadow-md transition-shadow">
             <h2 class="text-sm sm:text-base font-bold text-slate-900 mb-1 line-clamp-1">${title}</h2>
             <p class="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">${snippet}</p>
+            ${thumb}
             ${treeBadge}
             <div class="flex items-center justify-between text-[11px] text-slate-400">
                 <span>${author}</span>
@@ -486,10 +612,10 @@ async function loadCommunityPosts() {
     if (!db) return;
 
     const listEl = document.getElementById('community-post-list');
-    const emptyEl = document.getElementById('community-empty-state');
     if (!listEl) return;
-
     listEl.innerHTML = '<div class="text-sm text-slate-400">불러오는 중...</div>';
+
+    const emptyEl = document.getElementById('community-empty-state');
     if (emptyEl) emptyEl.classList.add('hidden');
 
     try {
@@ -505,63 +631,13 @@ async function loadCommunityPosts() {
             .limit(30)
             .get();
 
-        if (snapshot.empty) {
-            listEl.innerHTML = '';
-            if (emptyEl) emptyEl.classList.remove('hidden');
-            return;
-        }
-
         const posts = [];
         snapshot.forEach(doc => {
             posts.push({ id: doc.id, data: doc.data() || {} });
         });
 
-        listEl.innerHTML = posts.map(p => renderCommunityPostCard(p.id, p.data)).join('');
-
-        // 카드 클릭 이벤트 바인딩
-        listEl.querySelectorAll('[data-post-id]').forEach(el => {
-            const postId = el.getAttribute('data-post-id');
-            if (!postId) return;
-            el.addEventListener('click', () => openCommunityPostDetail(postId));
-        });
-
-        listEl.querySelectorAll('a[href^="editor.html?id="]').forEach((a) => {
-            a.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        });
-
-        listEl.querySelectorAll('button[data-action="fork-tree"]').forEach((btn) => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                try {
-                    const raw = btn.getAttribute('data-tree') || '';
-                    const treeId = raw ? decodeURIComponent(raw) : '';
-                    if (!treeId) return;
-
-                    const ok = confirm('이 트리를 내 트리로 가져올까요? 가져온 뒤에는 내 트리에서 자유롭게 수정할 수 있습니다.');
-                    if (!ok) return;
-
-                    if (typeof forkTreeToMyAccountBySourceTreeId !== 'function') {
-                        showError('가져오기 기능을 사용할 수 없습니다.', 4000);
-                        return;
-                    }
-
-                    const res = await forkTreeToMyAccountBySourceTreeId(treeId);
-                    if (!res || !res.ok) {
-                        showError((res && res.error) ? res.error : '가져오기 실패', 4000);
-                        return;
-                    }
-
-                    window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
-                } catch (err) {
-                    console.error('커뮤니티 카드 포크 실패:', err);
-                    showError('가져오기 실패', 4000);
-                }
-            });
-        });
+        communityPostsCache = posts;
+        renderCommunityPostList();
     } catch (e) {
         console.error('커뮤니티 글 로딩 실패:', e);
         listEl.innerHTML = '<div class="text-sm text-red-500">글을 불러오는 중 오류가 발생했습니다.</div>';
@@ -668,6 +744,22 @@ async function handleCreatePostSubmit(event) {
         contentInput && contentInput.focus();
         return;
     }
+
+    if (title.length > 80) {
+        showError('제목은 80자 이하로 입력해 주세요.', 3000);
+        return;
+    }
+    if (content.length > 2000) {
+        showError('내용은 2000자 이하로 입력해 주세요.', 3000);
+        return;
+    }
+
+    const nowMs = Date.now();
+    if (nowMs - communityLastPostSubmitAtMs < 8000) {
+        showError('잠시 후 다시 시도해 주세요.', 2000);
+        return;
+    }
+    communityLastPostSubmitAtMs = nowMs;
 
     try {
         const ytId = mediaUrl ? parseYouTubeVideoIdFromUrl(mediaUrl) : '';
@@ -1121,6 +1213,19 @@ async function handleCommentFormSubmit(event) {
         return;
     }
 
+    if (content.length > 500) {
+        showError('댓글은 500자 이하로 입력해 주세요.', 3000);
+        input && input.focus();
+        return;
+    }
+
+    const nowMs = Date.now();
+    if (nowMs - communityLastCommentSubmitAtMs < 3000) {
+        showError('잠시 후 다시 시도해 주세요.', 2000);
+        return;
+    }
+    communityLastCommentSubmitAtMs = nowMs;
+
     try {
         await db.collection(COMMUNITY_COLLECTION)
             .doc(communityCurrentPostId)
@@ -1156,6 +1261,8 @@ function initCommunityPage() {
     const commentForm = document.getElementById('comment-form');
     const sortLatestBtn = document.getElementById('community-sort-latest');
     const sortPopularBtn = document.getElementById('community-sort-popular');
+    const searchInput = document.getElementById('community-search');
+    const searchClearBtn = document.getElementById('community-search-clear');
 
     if (createBtn) {
         createBtn.addEventListener('click', openCreatePostModal);
@@ -1179,6 +1286,20 @@ function initCommunityPage() {
             communitySortMode = 'popular';
             updateCommunitySortButtons();
             loadCommunityPosts();
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            communitySearchQuery = searchInput.value || '';
+            renderCommunityPostList();
+        });
+    }
+    if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', () => {
+            communitySearchQuery = '';
+            if (searchInput) searchInput.value = '';
+            renderCommunityPostList();
         });
     }
 
