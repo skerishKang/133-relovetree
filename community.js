@@ -26,6 +26,64 @@ function getCurrentUserForCommunity() {
             return null;
         }
 
+        return firebase.auth().currentUser;
+    } catch (e) {
+        console.warn('getCurrentUserForCommunity 실패:', e);
+        return null;
+    }
+}
+
+async function updateCommunityCommentById(postId, commentId, patch) {
+    const db = getFirestoreForCommunity();
+    if (!db) return { ok: false, error: 'DB를 사용할 수 없습니다.' };
+    if (!postId || !commentId) return { ok: false, error: '댓글을 찾을 수 없습니다.' };
+
+    try {
+        await db.collection(COMMUNITY_COLLECTION)
+            .doc(postId)
+            .collection('comments')
+            .doc(commentId)
+            .update({
+                ...patch
+            });
+        return { ok: true };
+    } catch (e) {
+        console.error('댓글 업데이트 실패:', e);
+        return { ok: false, error: '댓글 업데이트 실패' };
+    }
+}
+
+async function softDeleteCommunityComment(postId, commentId) {
+    const db = getFirestoreForCommunity();
+    if (!db) return { ok: false, error: 'DB를 사용할 수 없습니다.' };
+    if (!postId || !commentId) return { ok: false, error: '댓글을 찾을 수 없습니다.' };
+
+    try {
+        await db.runTransaction(async (tx) => {
+            const postRef = db.collection(COMMUNITY_COLLECTION).doc(postId);
+            const commentRef = postRef.collection('comments').doc(commentId);
+
+            const commentSnap = await tx.get(commentRef);
+            if (!commentSnap.exists) {
+                throw new Error('comment_not_found');
+            }
+
+            const cData = commentSnap.data() || {};
+            if (cData.isDeleted === true) {
+                return;
+            }
+
+            tx.update(commentRef, { isDeleted: true });
+            tx.update(postRef, { commentCount: firebase.firestore.FieldValue.increment(-1) });
+        });
+
+        return { ok: true };
+    } catch (e) {
+        console.error('댓글 삭제 트랜잭션 실패:', e);
+        return { ok: false, error: '댓글 삭제 실패' };
+    }
+}
+
 async function isAdminUserForCommunity(user) {
     try {
         if (!user) return false;
@@ -113,117 +171,6 @@ async function updateCommunityPostById(postId, patch) {
         console.error('게시글 업데이트 실패:', e);
         return { ok: false, error: '업데이트 실패' };
     }
-}
-
-        return firebase.auth().currentUser;
-    } catch (e) {
-        console.warn('getCurrentUserForCommunity 실패:', e);
-        return null;
-    }
-}
-
-function normalizeCommunityMediaUrl(value) {
-    try {
-        const raw = String(value || '').trim();
-        if (!raw) return '';
-        if (!/^https?:\/\//i.test(raw)) return '';
-        return raw;
-    } catch (e) {
-        return '';
-    }
-}
-
-function parseYouTubeVideoIdFromUrl(url) {
-    try {
-        const raw = String(url || '').trim();
-        if (!raw) return '';
-
-        const patterns = [
-            /(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/shorts\/|.*\/embed\/|.*\/v\/))([^"&?\/\s]{11})/i,
-            /youtube\.com\/embed\/([^"&?\/\s]{11})/i
-        ];
-
-        for (const p of patterns) {
-            const m = raw.match(p);
-            if (m && m[1]) return m[1];
-        }
-        return '';
-    } catch (e) {
-        return '';
-    }
-}
-
-function isLikelyImageUrl(url) {
-    try {
-        const u = String(url || '').toLowerCase();
-        if (!u) return false;
-        if (!/^https?:\/\//.test(u)) return false;
-        return /\.(png|jpe?g|gif|webp)(\?|#|$)/.test(u);
-    } catch (e) {
-        return false;
-    }
-}
-
-function renderCommunityMediaPreview(containerEl, mediaUrl) {
-    try {
-        if (!containerEl) return;
-        const url = normalizeCommunityMediaUrl(mediaUrl);
-        if (!url) {
-            containerEl.classList.add('hidden');
-            containerEl.innerHTML = '';
-            return;
-        }
-
-        const ytId = parseYouTubeVideoIdFromUrl(url);
-        if (ytId) {
-            const safeId = escapeHtml(ytId);
-            containerEl.classList.remove('hidden');
-            containerEl.innerHTML = `
-                <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-black">
-                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/${safeId}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-            `;
-            return;
-        }
-
-        if (isLikelyImageUrl(url)) {
-            const safe = escapeHtml(url);
-            containerEl.classList.remove('hidden');
-            containerEl.innerHTML = `<img src="${safe}" alt="미디어 미리보기" class="w-full max-h-56 object-cover rounded-xl border border-slate-200" />`;
-            return;
-        }
-
-        const safeLink = escapeHtml(url);
-        containerEl.classList.remove('hidden');
-        containerEl.innerHTML = `
-            <a href="${safeLink}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50">
-                링크 열기
-            </a>
-        `;
-    } catch (e) {
-    }
-}
-
-function resetCommunityMediaPicker() {
-    communityCreateMediaUrl = '';
-    const input = document.getElementById('community-media-url');
-    const preview = document.getElementById('community-media-preview');
-    if (input) input.value = '';
-    if (preview) {
-        preview.classList.add('hidden');
-        preview.innerHTML = '';
-    }
-}
-
-function bindCommunityMediaPicker() {
-    const input = document.getElementById('community-media-url');
-    const preview = document.getElementById('community-media-preview');
-    if (!input) return;
-
-    input.addEventListener('input', function () {
-        communityCreateMediaUrl = normalizeCommunityMediaUrl(input.value);
-        renderCommunityMediaPreview(preview, communityCreateMediaUrl);
-    });
 }
 
 async function fetchTreeSummaryForCommunity(treeIdRaw) {
@@ -1071,24 +1018,74 @@ async function loadCommunityComments(postId) {
             comments.push({ id: doc.id, data: doc.data() || {} });
         });
 
-        listEl.innerHTML = comments.map(({ data }) => {
+        const currentUser = getCurrentUserForCommunity();
+        const isAdmin = await isAdminUserForCommunity(currentUser);
+
+        listEl.innerHTML = comments.map(({ id, data }) => {
             const author = escapeHtml(data.authorDisplayName || '익명');
-            const text = escapeHtml(data.content || '');
             const created = formatCommunityDate(data.createdAt);
             const isAi = !!data.isAiBot;
+            const isDeleted = data && data.isDeleted === true;
+
+            const canDelete = !isDeleted && !!currentUser && (String(data.authorId || '') === String(currentUser.uid || '') || isAdmin);
+
+            const text = isDeleted
+                ? '<span class="text-slate-400">(삭제된 댓글입니다)</span>'
+                : escapeHtml(data.content || '');
+
+            const deleteBtn = canDelete
+                ? `<button type="button" class="text-[10px] font-bold text-red-600 hover:text-red-700" data-action="delete-comment" data-comment-id="${escapeHtml(id)}">삭제</button>`
+                : '';
+
             return `
-                <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                            <span>${author}</span>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2" data-comment-row="${escapeHtml(id)}">
+                    <div class="flex items-center justify-between mb-1 gap-2">
+                        <span class="text-xs font-semibold text-slate-700 flex items-center gap-1 min-w-0">
+                            <span class="truncate">${author}</span>
                             ${isAi ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-bold">AI</span>' : ''}
                         </span>
-                        <span class="text-[10px] text-slate-400">${created}</span>
+                        <div class="shrink-0 flex items-center gap-2">
+                            <span class="text-[10px] text-slate-400">${created}</span>
+                            ${deleteBtn}
+                        </div>
                     </div>
                     <p class="text-xs text-slate-700 whitespace-pre-wrap">${text}</p>
                 </div>
             `;
         }).join('');
+
+        listEl.querySelectorAll('button[data-action="delete-comment"]').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                try {
+                    const currentUser2 = getCurrentUserForCommunity();
+                    if (!currentUser2) {
+                        showError('로그인이 필요합니다.', 3000);
+                        return;
+                    }
+
+                    const commentId = btn.getAttribute('data-comment-id') || '';
+                    if (!commentId) return;
+
+                    const ok = confirm('이 댓글을 삭제할까요?');
+                    if (!ok) return;
+
+                    const res = await softDeleteCommunityComment(postId, commentId);
+                    if (!res || !res.ok) {
+                        showError((res && res.error) ? res.error : '삭제 실패', 4000);
+                        return;
+                    }
+
+                    await loadCommunityComments(postId);
+                    await loadCommunityPosts();
+                } catch (err) {
+                    console.error('댓글 삭제 실패:', err);
+                    showError('댓글 삭제 실패', 4000);
+                }
+            });
+        });
     } catch (e) {
         console.error('댓글 로딩 실패:', e);
         listEl.innerHTML = '<div class="text-xs text-red-500">댓글을 불러오는 중 오류가 발생했습니다.</div>';
