@@ -371,8 +371,10 @@ function buildPromptBody(mode, data) {
     const text =
       `당신은 K-pop 팬을 위한 타임라인 도우미입니다.\n` +
       `사용자의 설명을 바탕으로 ${safeCount}개의 중요한 순간을 시간순으로 제안해 주세요.\n` +
-      `각 순간은 JSON 배열 원소 하나로, 필드는 title, searchQuery 입니다.\n` +
+      `각 순간은 JSON 배열 원소 하나로, 필드는 title, searchQuery, fallbackQueries 입니다.\n` +
+      `title은 너무 추상적으로 쓰지 말고, 곡/무대/방송/쇼케이스/수상/첫 1위 같은 구체적인 단서를 포함해 주세요.\n` +
       `searchQuery는 YouTube에서 실제 영상을 찾기 위한 검색어(한국어)로 작성해 주세요.\n` +
+      `fallbackQueries는 검색이 실패할 때 쓸 대체 검색어 2~3개 배열입니다. (예: 방송명/직캠/뮤비/무대 키워드 변형)\n` +
       `출력은 오직 JSON 배열(문자열이 아닌 JSON 객체 배열)만 제공하세요.\n` +
       `한국어로 작성하세요.\n` +
       `사용자 설명: ${prompt || ''}`;
@@ -615,6 +617,12 @@ exports.handler = async (event, context) => {
       const node = payload && payload.node ? payload.node : {};
       const instruction = payload && payload.instruction ? String(payload.instruction) : '';
       const searchQuery = payload && payload.searchQuery ? String(payload.searchQuery) : '';
+      const searchFallbackQueries = Array.isArray(payload && payload.searchFallbackQueries)
+        ? payload.searchFallbackQueries
+          .map((q) => (q == null ? '' : String(q).trim()))
+          .filter((q) => q.length > 0)
+          .slice(0, 6)
+        : [];
       const baseTitle = (node && node.title) ? String(node.title) : '';
       const videoId = (node && node.videoId) ? String(node.videoId) : '';
 
@@ -622,26 +630,33 @@ exports.handler = async (event, context) => {
       if (videoId) {
         found = { videoId };
       } else if (ytKey) {
-        const query = searchQuery && searchQuery.trim().length
-          ? searchQuery
-          : (baseTitle && baseTitle.trim().length ? baseTitle : (instruction || ''));
-        try {
-          found = await youtubeSearchFirstVideo(query, ytKey);
-        } catch (e) {
-          found = null;
-        }
+        const candidates = [];
+        const trimmedSearch = searchQuery ? searchQuery.trim() : '';
+        const trimmedTitle = baseTitle ? baseTitle.trim() : '';
 
-        if (!found || !found.videoId) {
-          const retryQuery = (searchQuery && searchQuery.trim().length)
-            ? `${searchQuery} 무대`
-            : (baseTitle && baseTitle.trim().length ? `${baseTitle} 무대` : '');
-          if (retryQuery) {
-            try {
-              found = await youtubeSearchFirstVideo(retryQuery, ytKey);
-            } catch (e) {
-              found = null;
-            }
+        if (trimmedSearch) candidates.push(trimmedSearch);
+        searchFallbackQueries.forEach((q) => {
+          if (q && !candidates.includes(q)) candidates.push(q);
+        });
+        if (trimmedTitle) candidates.push(trimmedTitle);
+        if (trimmedSearch) candidates.push(`${trimmedSearch} 무대`);
+        if (trimmedSearch) candidates.push(`${trimmedSearch} 직캠`);
+        if (trimmedTitle) candidates.push(`${trimmedTitle} 무대`);
+
+        const safeCandidates = candidates
+          .map((q) => (q == null ? '' : String(q).trim()))
+          .filter((q) => q.length > 0)
+          .slice(0, 8);
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const q of safeCandidates) {
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            found = await youtubeSearchFirstVideo(q, ytKey);
+          } catch (e) {
+            found = null;
           }
+          if (found && found.videoId) break;
         }
       }
 

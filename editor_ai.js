@@ -590,13 +590,17 @@ function runAiTreeHelper(requestSeq) {
             const suggestions = items.map(function (item) {
                 const title = item && item.title ? String(item.title) : '새 순간';
                 const searchQuery = item && item.searchQuery ? String(item.searchQuery) : '';
+                const fallbackQueries = (item && Array.isArray(item.fallbackQueries))
+                    ? item.fallbackQueries.map(function (q) { return q == null ? '' : String(q).trim(); }).filter(function (q) { return q.length > 0; }).slice(0, 6)
+                    : [];
                 return {
                     title: title,
                     date: '',
                     videoId: '',
                     description: '',
                     moments: [],
-                    _searchQuery: searchQuery
+                    _searchQuery: searchQuery,
+                    _searchFallbackQueries: fallbackQueries
                 };
             });
 
@@ -619,6 +623,8 @@ function runAiTreeHelper(requestSeq) {
                         },
                         instruction: instruction,
                         searchQuery: base._searchQuery || base.title || ''
+                        ,
+                        searchFallbackQueries: Array.isArray(base._searchFallbackQueries) ? base._searchFallbackQueries : []
                     };
 
                     const nodeEditResult = await callAiHelperApi('node_edit', nodeEditPayload, { signal: signal });
