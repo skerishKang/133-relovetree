@@ -2,6 +2,9 @@ let ownerUser = null;
 let ownerTreesCache = [];
 let ownerForkStatusCache = {};
 
+let ownerForkCheckAllInflight = false;
+const OWNER_FORK_STATUS_CACHE_STORAGE_KEY_PREFIX = 'relovetree_owner_fork_status_cache_v1_';
+
 let ownerForkAutoCheckInflight = {};
 let ownerForkAutoCheckTimer = null;
 const OWNER_FORK_AUTO_CHECK_TTL_MS = 5 * 60 * 1000;
@@ -120,10 +123,78 @@ function parseTimeMs(value) {
     }
 }
 
-async function runOwnerForkAutoCheck(treeIds) {
+function getOwnerForkStatusCacheStorageKey() {
+    if (!ownerUser || !ownerUser.uid) return '';
+    return OWNER_FORK_STATUS_CACHE_STORAGE_KEY_PREFIX + String(ownerUser.uid);
+}
+
+function loadOwnerForkStatusCacheFromStorage() {
+    try {
+        if (!ownerUser) {
+            ownerForkStatusCache = {};
+            return;
+        }
+
+        const key = getOwnerForkStatusCacheStorageKey();
+        if (!key) return;
+
+        const saved = safeLocalStorageGet(key, null);
+        if (!saved || typeof saved !== 'object') return;
+
+        const now = Date.now();
+        const next = {};
+        Object.keys(saved).forEach((treeId) => {
+            const v = saved[treeId];
+            if (!v || typeof v !== 'object') return;
+            const checkedAt = parseTimeMs(v.checkedAt);
+            if (!checkedAt) return;
+            if ((now - checkedAt) > OWNER_FORK_AUTO_CHECK_TTL_MS) return;
+
+            next[String(treeId)] = {
+                checkedAt: String(v.checkedAt || ''),
+                hasUpdate: !!v.hasUpdate,
+                sourceLastUpdated: String(v.sourceLastUpdated || '')
+            };
+        });
+
+        ownerForkStatusCache = next;
+    } catch (e) {
+    }
+}
+
+function saveOwnerForkStatusCacheToStorage() {
+    try {
+        if (!ownerUser) return;
+        const key = getOwnerForkStatusCacheStorageKey();
+        if (!key) return;
+        safeLocalStorageSet(key, ownerForkStatusCache || {});
+    } catch (e) {
+    }
+}
+
+function updateForkCheckAllButtonUi() {
+    try {
+        const btn = document.getElementById('fork-check-all-btn');
+        if (!btn) return;
+        const hasFork = !!ownerUser && Array.isArray(ownerTreesCache)
+            ? ownerTreesCache.some((t) => t && t.forkedFrom && t.forkedFrom.treeId)
+            : false;
+        btn.disabled = !ownerUser || !hasFork || ownerForkCheckAllInflight;
+    } catch (e) {
+    }
+}
+
+async function runOwnerForkAutoCheck(treeIds, options) {
     try {
         if (!ownerUser) return;
         if (!Array.isArray(treeIds) || treeIds.length === 0) return;
+
+        const force = !!(options && options.force);
+        const requestedBatchSize = options && typeof options.batchSize === 'number' ? options.batchSize : OWNER_FORK_AUTO_CHECK_BATCH_SIZE;
+        const batchSize = requestedBatchSize > 0 ? requestedBatchSize : treeIds.length;
+        const concurrency = options && typeof options.concurrency === 'number' && options.concurrency > 0
+            ? options.concurrency
+            : OWNER_FORK_AUTO_CHECK_CONCURRENCY;
 
         const now = Date.now();
         const candidates = [];
@@ -135,13 +206,13 @@ async function runOwnerForkAutoCheck(treeIds) {
             const cached = ownerForkStatusCache[id] || null;
             const checkedAt = cached ? parseTimeMs(cached.checkedAt) : 0;
             const isFresh = checkedAt && (now - checkedAt) < OWNER_FORK_AUTO_CHECK_TTL_MS;
-            if (isFresh) return;
+            if (!force && isFresh) return;
 
             if (ownerForkAutoCheckInflight[id]) return;
             candidates.push(id);
         });
 
-        const batch = candidates.slice(0, OWNER_FORK_AUTO_CHECK_BATCH_SIZE);
+        const batch = candidates.slice(0, batchSize);
         if (!batch.length) return;
 
         batch.forEach((id) => {
@@ -172,16 +243,49 @@ async function runOwnerForkAutoCheck(treeIds) {
         };
 
         const workers = [];
-        const n = Math.min(OWNER_FORK_AUTO_CHECK_CONCURRENCY, batch.length || OWNER_FORK_AUTO_CHECK_CONCURRENCY);
+        const n = Math.min(concurrency, batch.length || concurrency);
         for (let i = 0; i < n; i++) {
             workers.push(worker());
         }
 
         await Promise.allSettled(workers);
         if (didUpdate) {
+            saveOwnerForkStatusCacheToStorage();
             renderOwnerTrees();
         }
     } catch (e) {
+    }
+}
+
+async function forkCheckAll() {
+    if (!ownerUser) return;
+    if (ownerForkCheckAllInflight) return;
+
+    const forkIds = Array.isArray(ownerTreesCache)
+        ? ownerTreesCache.filter((t) => t && t.forkedFrom && t.forkedFrom.treeId).map((t) => t.id)
+        : [];
+
+    if (!forkIds.length) {
+        ownerShowToast('포크된 트리가 없습니다');
+        return;
+    }
+
+    const ok = confirm('포크된 트리 전체에 대해 업데이트를 확인할까요?');
+    if (!ok) return;
+
+    ownerForkCheckAllInflight = true;
+    updateForkCheckAllButtonUi();
+
+    try {
+        ownerShowToast('전체 업데이트 확인 중...');
+        await runOwnerForkAutoCheck(forkIds, { force: true, batchSize: forkIds.length });
+        ownerShowToast('전체 업데이트 확인 완료');
+    } catch (e) {
+        console.error('forkCheckAll failed:', e);
+        ownerShowToast('확인 실패');
+    } finally {
+        ownerForkCheckAllInflight = false;
+        updateForkCheckAllButtonUi();
     }
 }
 
@@ -400,6 +504,8 @@ async function forkCheck(myTreeId) {
             sourceLastUpdated: res.sourceLastUpdated || ''
         };
 
+        saveOwnerForkStatusCacheToStorage();
+
         ownerShowToast(res.hasUpdate ? '원본이 업데이트되었습니다' : '최신 상태입니다');
         renderOwnerTrees();
     } catch (e) {
@@ -450,6 +556,8 @@ async function forkSync(myTreeId) {
             sourceLastUpdated: res.sourceLastUpdated || ''
         };
 
+        saveOwnerForkStatusCacheToStorage();
+
         ownerShowToast('동기화 완료');
         await loadOwnerTrees();
     } catch (e) {
@@ -470,6 +578,7 @@ async function loadOwnerTrees() {
         updatePagination(0);
         updateCreateUi();
         scheduleSaveOwnerUiState();
+        updateForkCheckAllButtonUi();
         return;
     }
 
@@ -542,6 +651,7 @@ function renderOwnerTrees() {
         updatePagination(filteredCount);
         updateCreateUi();
         scheduleSaveOwnerUiState();
+        updateForkCheckAllButtonUi();
         return;
     }
 
@@ -604,6 +714,8 @@ function renderOwnerTrees() {
     updatePagination(filteredCount);
     updateCreateUi();
     scheduleSaveOwnerUiState();
+
+    updateForkCheckAllButtonUi();
 
     const visibleForkIds = pageItems
         .filter((t) => t && t.forkedFrom && t.forkedFrom.treeId)
@@ -836,6 +948,11 @@ async function confirmDeleteDialog() {
     try {
         const db = firebase.firestore();
         await db.collection('trees').doc(treeId).delete();
+        try {
+            delete ownerForkStatusCache[treeId];
+            saveOwnerForkStatusCacheToStorage();
+        } catch (e) {
+        }
         ownerShowToast('삭제되었습니다');
         closeDeleteDialog();
         await loadOwnerTrees();
@@ -877,6 +994,13 @@ function bindOwnerEvents() {
     if (refreshBtn) {
         refreshBtn.addEventListener('click', () => {
             loadOwnerTrees();
+        });
+    }
+
+    const forkCheckAllBtn = document.getElementById('fork-check-all-btn');
+    if (forkCheckAllBtn) {
+        forkCheckAllBtn.addEventListener('click', () => {
+            forkCheckAll();
         });
     }
 
@@ -1091,6 +1215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     setOwnerAuthUi(ownerUser);
+    loadOwnerForkStatusCacheFromStorage();
     await loadOwnerTrees();
     updateCreateUi();
 
@@ -1101,6 +1226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ownerUser = user;
             ownerForkStatusCache = {};
             ownerForkAutoCheckInflight = {};
+            loadOwnerForkStatusCacheFromStorage();
             setOwnerAuthUi(ownerUser);
             await loadOwnerTrees();
             updateCreateUi();
