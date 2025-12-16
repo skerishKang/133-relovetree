@@ -453,7 +453,7 @@
                         L
                     </div>
                     <div class="flex flex-col leading-tight">
-                        <span class="text-sm font-semibold tracking-tight text-slate-800">ReloveTree</span>
+                        <span class="text-sm font-semibold tracking-tight text-slate-800">LoveTree</span>
                         <span class="hidden sm:block text-xs text-slate-500 leading-tight">나의 덕질 타임라인</span>
                     </div>
                 </a>
@@ -467,6 +467,14 @@
                 </a>
             </div>
             <div class="flex items-center gap-2">
+                <button id="search-btn" type="button"
+                    class="flex items-center justify-center w-9 h-9 rounded-full bg-white/80 border border-slate-200 shadow-sm hover:bg-slate-100 text-slate-600 hover:text-brand-600 transition-colors"
+                    title="검색" aria-label="검색">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
                 <button id="mobile-menu-btn" type="button"
                     class="hidden w-9 h-9 rounded-full bg-white/80 border border-slate-200 items-center justify-center shadow-sm hover:bg-slate-100"
                     onclick="toggleMobileMenu()" aria-label="메뉴 열기">
@@ -741,9 +749,48 @@
         </div>
     </dialog>
 
+    <dialog id="search-modal" class="p-0 w-[90vw] max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="p-6 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-slate-900">검색</h3>
+                <button type="button" onclick="closeSearchModal()" class="text-slate-400 hover:text-slate-600 transition-colors" aria-label="검색 닫기">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex gap-2 mb-3">
+                <input id="search-input" type="text" placeholder="아티스트/트리 이름 검색..."
+                    class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm" />
+                <button type="button" onclick="runSearchFromUI()"
+                    class="px-4 py-2 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-700 transition-colors">검색</button>
+            </div>
+
+            <div class="flex gap-2 mb-4">
+                <button id="search-tab-all" type="button" onclick="setSearchMode('all')"
+                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">전체</button>
+                <button id="search-tab-my" type="button" onclick="setSearchMode('my')"
+                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">내 트리</button>
+            </div>
+
+            <div id="search-result" class="space-y-2">
+                <div class="text-sm text-slate-400 py-4 px-2">검색어를 입력해 주세요.</div>
+            </div>
+
+            <div id="search-pagination" class="mt-4 flex items-center justify-between gap-2 hidden">
+                <button type="button" onclick="searchPrevPage()"
+                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">이전</button>
+                <div id="search-page-info" class="text-xs text-slate-500"></div>
+                <button type="button" onclick="searchNextPage()"
+                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">다음</button>
+            </div>
+        </div>
+    </dialog>
+
     <!-- Settings Modal -->
     <dialog id="settings-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div class="p-6">
+        <div class="p-6 max-h-[80vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-slate-900">마이</h3>
                 <button onclick="closeModal('settings-modal')"
@@ -798,6 +845,10 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">메뉴</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button type="button" onclick="openSearchModalFromMy()"
+                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left sm:col-span-2">
+                            검색
+                        </button>
                         <button type="button" onclick="myMenuCloseAndScrollTo('recent-section')"
                             class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
                             최근 방문한 트리

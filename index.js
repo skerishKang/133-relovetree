@@ -19,6 +19,236 @@ function debounce(func, wait) {
     };
 }
 
+// ================== SEARCH (MVP) ==================
+
+let SEARCH_MODE = 'all';
+let SEARCH_QUERY = '';
+let SEARCH_PAGE = 1;
+const SEARCH_PAGE_SIZE = 8;
+
+let myTreesCache = [];
+let recentCreatedTreesCache = [];
+let searchAllCache = [];
+
+function openSearchModal() {
+    const modal = document.getElementById('search-modal');
+    if (!modal) return;
+
+    try {
+        if (typeof modal.showModal === 'function') {
+            modal.showModal();
+        } else {
+            modal.setAttribute('open', 'open');
+        }
+    } catch (e) {
+    }
+
+    try {
+        const input = document.getElementById('search-input');
+        if (input) {
+            input.focus();
+        }
+    } catch (e) {
+    }
+
+    setSearchMode(SEARCH_MODE || 'all');
+}
+
+function closeSearchModal() {
+    const modal = document.getElementById('search-modal');
+    if (!modal) return;
+    try {
+        if (typeof modal.close === 'function') {
+            modal.close();
+        } else {
+            modal.removeAttribute('open');
+        }
+    } catch (e) {
+    }
+}
+
+function openSearchModalFromMy() {
+    try {
+        if (typeof closeModal === 'function') {
+            closeModal('settings-modal');
+        }
+    } catch (e) {
+    }
+
+    window.setTimeout(function () {
+        openSearchModal();
+    }, 50);
+}
+
+function setSearchMode(mode) {
+    SEARCH_MODE = mode === 'my' ? 'my' : 'all';
+    SEARCH_PAGE = 1;
+
+    const tabAll = document.getElementById('search-tab-all');
+    const tabMy = document.getElementById('search-tab-my');
+    if (tabAll) {
+        tabAll.className = SEARCH_MODE === 'all'
+            ? 'px-3 py-2 rounded-xl border border-brand-500 bg-brand-50 text-brand-700 text-sm font-bold'
+            : 'px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50';
+    }
+    if (tabMy) {
+        tabMy.className = SEARCH_MODE === 'my'
+            ? 'px-3 py-2 rounded-xl border border-brand-500 bg-brand-50 text-brand-700 text-sm font-bold'
+            : 'px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50';
+    }
+
+    runSearch(SEARCH_QUERY, SEARCH_MODE, SEARCH_PAGE);
+}
+
+function runSearchFromUI() {
+    const input = document.getElementById('search-input');
+    const q = input ? String(input.value || '').trim() : '';
+    SEARCH_QUERY = q;
+    SEARCH_PAGE = 1;
+    runSearch(SEARCH_QUERY, SEARCH_MODE, SEARCH_PAGE);
+}
+
+function normalizeSearchText(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function filterTreesByQuery(trees, query) {
+    const q = normalizeSearchText(query);
+    if (!q) return [];
+    const list = Array.isArray(trees) ? trees : [];
+    return list.filter((t) => {
+        const name = normalizeSearchText(t && t.name);
+        const id = normalizeSearchText(t && t.id);
+        return name.includes(q) || id.includes(q);
+    });
+}
+
+function renderSearchResults(items, page, total) {
+    const container = document.getElementById('search-result');
+    if (!container) return;
+
+    if (!SEARCH_QUERY) {
+        container.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">검색어를 입력해 주세요.</div>';
+        updateSearchPagination(0, 0);
+        return;
+    }
+
+    if (!items.length) {
+        container.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">검색 결과가 없습니다.</div>';
+        updateSearchPagination(0, 0);
+        return;
+    }
+
+    container.innerHTML = items.map((tree) => {
+        const name = tree.name || tree.id || '?';
+        const sub = tree.updated ? String(tree.updated).slice(0, 10) : (tree.lastUpdated ? String(tree.lastUpdated).slice(0, 10) : '');
+        const href = `editor.html?id=${encodeURIComponent(tree.id || '')}`;
+        return `
+            <a href="${href}" class="block bg-white border border-slate-200 rounded-xl px-4 py-3 hover:bg-slate-50 transition-colors">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-sm font-bold text-slate-900 truncate">${name}</div>
+                        <div class="text-[11px] text-slate-400 truncate">${sub}</div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 shrink-0">열기</div>
+                </div>
+            </a>
+        `;
+    }).join('');
+
+    updateSearchPagination(page, total);
+}
+
+function updateSearchPagination(page, total) {
+    const wrap = document.getElementById('search-pagination');
+    const info = document.getElementById('search-page-info');
+    if (!wrap || !info) return;
+
+    if (!total || total <= SEARCH_PAGE_SIZE) {
+        wrap.classList.add('hidden');
+        info.textContent = '';
+        return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(total / SEARCH_PAGE_SIZE));
+    wrap.classList.remove('hidden');
+    info.textContent = `${page} / ${totalPages} · ${total}개`;
+}
+
+function searchPrevPage() {
+    if (SEARCH_PAGE <= 1) return;
+    SEARCH_PAGE -= 1;
+    runSearch(SEARCH_QUERY, SEARCH_MODE, SEARCH_PAGE);
+}
+
+function searchNextPage() {
+    SEARCH_PAGE += 1;
+    runSearch(SEARCH_QUERY, SEARCH_MODE, SEARCH_PAGE);
+}
+
+async function ensureAllSearchCacheLoaded() {
+    if (searchAllCache && searchAllCache.length > 0) return;
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+
+    try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('trees')
+            .orderBy('lastUpdated', 'desc')
+            .limit(50)
+            .get();
+
+        const trees = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            let lastUpdated = data.lastUpdated;
+            if (lastUpdated && typeof lastUpdated.toDate === 'function') {
+                lastUpdated = lastUpdated.toDate().toISOString();
+            } else if (typeof lastUpdated !== 'string') {
+                lastUpdated = '';
+            }
+            trees.push({
+                id: doc.id,
+                name: data.name || decodeURIComponent(doc.id),
+                lastUpdated
+            });
+        });
+        searchAllCache = trees;
+    } catch (e) {
+        console.error('전체 검색 캐시 로드 실패:', e);
+    }
+}
+
+async function runSearch(query, mode, page) {
+    const q = String(query || '').trim();
+    const currentMode = mode === 'my' ? 'my' : 'all';
+    const currentPage = Math.max(1, Number(page) || 1);
+
+    if (!q) {
+        renderSearchResults([], 1, 0);
+        return;
+    }
+
+    if (currentMode === 'my') {
+        const filtered = filterTreesByQuery(myTreesCache, q);
+        const total = filtered.length;
+        const start = (currentPage - 1) * SEARCH_PAGE_SIZE;
+        const pageItems = filtered.slice(start, start + SEARCH_PAGE_SIZE);
+        renderSearchResults(pageItems, currentPage, total);
+        return;
+    }
+
+    await ensureAllSearchCacheLoaded();
+    const base = (searchAllCache && searchAllCache.length > 0)
+        ? searchAllCache
+        : (Array.isArray(recentCreatedTreesCache) ? recentCreatedTreesCache : []);
+
+    const filtered = filterTreesByQuery(base, q);
+    const total = filtered.length;
+    const start = (currentPage - 1) * SEARCH_PAGE_SIZE;
+    const pageItems = filtered.slice(start, start + SEARCH_PAGE_SIZE);
+    renderSearchResults(pageItems, currentPage, total);
+}
+
 // 현재 로그인한 Firebase 사용자를 안전하게 가져오기
 function getCurrentUser() {
     try {
@@ -552,6 +782,7 @@ async function loadUserTreesFromFirestore(user) {
         // Firestore 기준으로 나의 러브트리 그리드와 최근 방문 스토리를 동시에 갱신
         renderMyTreesGrid(myTrees);
         renderRecentTreesFromList(myTrees);
+        myTreesCache = myTrees.slice();
     } catch (error) {
         console.error('Failed to load trees from Firestore:', error);
         loadRecentTrees();
@@ -621,6 +852,8 @@ async function loadRecentCreatedTrees() {
                 shareCount
             });
         });
+
+        recentCreatedTreesCache = trees.slice();
 
         if (trees.length === 0) {
             return;
@@ -1493,6 +1726,7 @@ function initPage() {
         // Add event listeners for settings buttons
         const settingsBtn = document.getElementById('settings-btn');
         const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+        const searchBtn = document.getElementById('search-btn');
 
         if (settingsBtn) {
             settingsBtn.addEventListener('click', openSettingsModal);
@@ -1500,6 +1734,20 @@ function initPage() {
 
         if (mobileSettingsBtn) {
             mobileSettingsBtn.addEventListener('click', openSettingsModal);
+        }
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', openSearchModal);
+        }
+
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function (e) {
+                if (e && e.key === 'Enter') {
+                    e.preventDefault();
+                    runSearchFromUI();
+                }
+            });
         }
 
         // 배경 파일 업로드/드래그앤드롭 컨트롤 초기화
@@ -1567,6 +1815,13 @@ window.navigateToHome = navigateToHome;
 window.scrollToMyTrees = scrollToMyTrees;
 window.scrollToAllTrees = scrollToAllTrees;
 window.openSettingsModal = openSettingsModal;
+window.openSearchModal = openSearchModal;
+window.closeSearchModal = closeSearchModal;
+window.openSearchModalFromMy = openSearchModalFromMy;
+window.setSearchMode = setSearchMode;
+window.runSearchFromUI = runSearchFromUI;
+window.searchPrevPage = searchPrevPage;
+window.searchNextPage = searchNextPage;
 window.loadBackgroundPreference = loadBackgroundPreference;
 window.triggerBackgroundFileInput = triggerBackgroundFileInput;
 window.initBackgroundFileControls = initBackgroundFileControls;
