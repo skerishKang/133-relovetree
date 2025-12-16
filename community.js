@@ -9,7 +9,7 @@ let communityCurrentPostId = null;
 let communitySortMode = 'latest'; // 'latest' | 'popular'
 let communityCurrentTreeId = '';
 
-let communityCreateImageFile = null;
+let communityCreateMediaUrl = '';
 
 let communityMyTreesCache = [];
 let communityMyTreesLoaded = false;
@@ -24,92 +24,115 @@ function getCurrentUserForCommunity() {
             return null;
         }
 
-function getStorageForCommunity() {
-    try {
-        if (typeof firebase === 'undefined' || !firebase.storage) {
-            console.error('Firebase Storage 미초기화 상태입니다.');
-            return null;
-        }
-        return firebase.storage();
-    } catch (e) {
-        console.error('Firebase Storage 초기화 실패:', e);
-        return null;
-    }
-}
-
-function resetCommunityImagePicker() {
-    communityCreateImageFile = null;
-    const input = document.getElementById('community-image');
-    const wrap = document.getElementById('community-image-preview');
-    const img = document.getElementById('community-image-preview-img');
-
-    if (input) input.value = '';
-    if (img) img.src = '';
-    if (wrap) wrap.classList.add('hidden');
-}
-
-function bindCommunityImagePicker() {
-    const input = document.getElementById('community-image');
-    const wrap = document.getElementById('community-image-preview');
-    const img = document.getElementById('community-image-preview-img');
-
-    if (!input) return;
-
-    input.onchange = function () {
-        const file = input.files && input.files[0];
-        if (!file) {
-            communityCreateImageFile = null;
-            if (img) img.src = '';
-            if (wrap) wrap.classList.add('hidden');
-            return;
-        }
-
-        if (file && file.type && !String(file.type).startsWith('image/')) {
-            showError('이미지 파일만 첨부할 수 있어요.', 3000);
-            resetCommunityImagePicker();
-            return;
-        }
-
-        if (file && typeof file.size === 'number' && file.size > 5 * 1024 * 1024) {
-            showError('이미지는 5MB 이하만 첨부할 수 있어요.', 3000);
-            resetCommunityImagePicker();
-            return;
-        }
-
-        communityCreateImageFile = file;
-
-        try {
-            if (!img || !wrap) return;
-            const url = URL.createObjectURL(file);
-            img.src = url;
-            wrap.classList.remove('hidden');
-        } catch (e) {
-        }
-    };
-}
-
-async function uploadCommunityImageOrNull(user, file) {
-    if (!file) return null;
-    const storage = getStorageForCommunity();
-    if (!storage) return null;
-
-    try {
-        const ext = (file && file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
-        const path = `community_uploads/${user.uid}/${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
-        const ref = storage.ref().child(path);
-        await ref.put(file, { contentType: file.type || 'image/jpeg' });
-        const url = await ref.getDownloadURL();
-        return url;
-    } catch (e) {
-        console.error('커뮤니티 이미지 업로드 실패:', e);
-        return null;
-    }
-}
         return firebase.auth().currentUser;
     } catch (e) {
         console.warn('getCurrentUserForCommunity 실패:', e);
         return null;
     }
+}
+
+function normalizeCommunityMediaUrl(value) {
+    try {
+        const raw = String(value || '').trim();
+        if (!raw) return '';
+        if (!/^https?:\/\//i.test(raw)) return '';
+        return raw;
+    } catch (e) {
+        return '';
+    }
+}
+
+function parseYouTubeVideoIdFromUrl(url) {
+    try {
+        const raw = String(url || '').trim();
+        if (!raw) return '';
+
+        const patterns = [
+            /(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/shorts\/|.*\/embed\/|.*\/v\/))([^"&?\/\s]{11})/i,
+            /youtube\.com\/embed\/([^"&?\/\s]{11})/i
+        ];
+
+        for (const p of patterns) {
+            const m = raw.match(p);
+            if (m && m[1]) return m[1];
+        }
+        return '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function isLikelyImageUrl(url) {
+    try {
+        const u = String(url || '').toLowerCase();
+        if (!u) return false;
+        if (!/^https?:\/\//.test(u)) return false;
+        return /\.(png|jpe?g|gif|webp)(\?|#|$)/.test(u);
+    } catch (e) {
+        return false;
+    }
+}
+
+function renderCommunityMediaPreview(containerEl, mediaUrl) {
+    try {
+        if (!containerEl) return;
+        const url = normalizeCommunityMediaUrl(mediaUrl);
+        if (!url) {
+            containerEl.classList.add('hidden');
+            containerEl.innerHTML = '';
+            return;
+        }
+
+        const ytId = parseYouTubeVideoIdFromUrl(url);
+        if (ytId) {
+            const safeId = escapeHtml(ytId);
+            containerEl.classList.remove('hidden');
+            containerEl.innerHTML = `
+                <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-black">
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/${safeId}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            `;
+            return;
+        }
+
+        if (isLikelyImageUrl(url)) {
+            const safe = escapeHtml(url);
+            containerEl.classList.remove('hidden');
+            containerEl.innerHTML = `<img src="${safe}" alt="미디어 미리보기" class="w-full max-h-56 object-cover rounded-xl border border-slate-200" />`;
+            return;
+        }
+
+        const safeLink = escapeHtml(url);
+        containerEl.classList.remove('hidden');
+        containerEl.innerHTML = `
+            <a href="${safeLink}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50">
+                링크 열기
+            </a>
+        `;
+    } catch (e) {
+    }
+}
+
+function resetCommunityMediaPicker() {
+    communityCreateMediaUrl = '';
+    const input = document.getElementById('community-media-url');
+    const preview = document.getElementById('community-media-preview');
+    if (input) input.value = '';
+    if (preview) {
+        preview.classList.add('hidden');
+        preview.innerHTML = '';
+    }
+}
+
+function bindCommunityMediaPicker() {
+    const input = document.getElementById('community-media-url');
+    const preview = document.getElementById('community-media-preview');
+    if (!input) return;
+
+    input.addEventListener('input', function () {
+        communityCreateMediaUrl = normalizeCommunityMediaUrl(input.value);
+        renderCommunityMediaPreview(preview, communityCreateMediaUrl);
+    });
 }
 
 async function fetchTreeSummaryForCommunity(treeIdRaw) {
@@ -553,7 +576,7 @@ function openCreatePostModal() {
     if (treeIdInput) treeIdInput.value = '';
     if (treeSelect) treeSelect.value = '';
 
-    resetCommunityImagePicker();
+    resetCommunityMediaPicker();
 
     bindCommunityTreePicker();
     if (!communityMyTreesLoaded) {
@@ -593,6 +616,9 @@ async function handleCreatePostSubmit(event) {
     const content = contentInput ? contentInput.value.trim() : '';
     const treeId = treeIdInput ? treeIdInput.value.trim() : '';
 
+    const mediaInput = document.getElementById('community-media-url');
+    const mediaUrl = normalizeCommunityMediaUrl(mediaInput ? mediaInput.value : communityCreateMediaUrl);
+
     if (!title) {
         showError('제목을 입력해 주세요.', 3000);
         titleInput && titleInput.focus();
@@ -605,17 +631,14 @@ async function handleCreatePostSubmit(event) {
     }
 
     try {
-        let imageUrls = [];
-        if (communityCreateImageFile) {
-            const imageUrl = await uploadCommunityImageOrNull(user, communityCreateImageFile);
-            if (imageUrl) imageUrls = [imageUrl];
-        }
+        const ytId = mediaUrl ? parseYouTubeVideoIdFromUrl(mediaUrl) : '';
 
         await db.collection(COMMUNITY_COLLECTION).add({
             title,
             content,
             treeId: treeId || '',
-            imageUrls: imageUrls,
+            mediaUrl: mediaUrl || '',
+            mediaType: ytId ? 'youtube' : (mediaUrl ? 'link' : ''),
             authorId: user.uid,
             authorDisplayName: user.displayName || user.email || '익명',
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -626,7 +649,7 @@ async function handleCreatePostSubmit(event) {
         });
 
         closeModal('create-post-modal');
-        resetCommunityImagePicker();
+        resetCommunityMediaPicker();
         await loadCommunityPosts();
     } catch (e) {
         console.error('글 작성 실패:', e);
@@ -674,16 +697,40 @@ async function openCommunityPostDetail(postId) {
 
         try {
             if (imagesWrap) {
-                const urls = data && Array.isArray(data.imageUrls) ? data.imageUrls.filter(Boolean) : [];
-                if (!urls.length) {
+                const legacyUrls = data && Array.isArray(data.imageUrls) ? data.imageUrls.filter(Boolean) : [];
+                const mediaUrl = data && data.mediaUrl ? String(data.mediaUrl || '').trim() : '';
+                const items = [];
+
+                legacyUrls.forEach((u) => {
+                    const safe = escapeHtml(String(u || ''));
+                    if (safe) items.push(`<img src="${safe}" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />`);
+                });
+
+                if (mediaUrl) {
+                    const url = normalizeCommunityMediaUrl(mediaUrl);
+                    const ytId = parseYouTubeVideoIdFromUrl(url);
+                    if (ytId) {
+                        const safeId = escapeHtml(ytId);
+                        items.push(`
+                            <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-black">
+                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/${safeId}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        `);
+                    } else if (isLikelyImageUrl(url)) {
+                        const safe = escapeHtml(url);
+                        items.push(`<img src="${safe}" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />`);
+                    } else {
+                        const safe = escapeHtml(url);
+                        items.push(`<a href="${safe}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50">링크 열기</a>`);
+                    }
+                }
+
+                if (!items.length) {
                     imagesWrap.classList.add('hidden');
                     imagesWrap.innerHTML = '';
                 } else {
                     imagesWrap.classList.remove('hidden');
-                    imagesWrap.innerHTML = urls.map((url) => {
-                        const safe = escapeHtml(String(url || ''));
-                        return `<img src="${safe}" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />`;
-                    }).join('');
+                    imagesWrap.innerHTML = items.join('');
                 }
             }
         } catch (e) {
@@ -900,7 +947,7 @@ function initCommunityPage() {
         createForm.addEventListener('submit', handleCreatePostSubmit);
     }
 
-    bindCommunityImagePicker();
+    bindCommunityMediaPicker();
     if (commentForm) {
         commentForm.addEventListener('submit', handleCommentFormSubmit);
     }

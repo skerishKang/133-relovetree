@@ -17,7 +17,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <style>
         /* 커뮤니티 전용 간단 스타일 - 나머지는 Tailwind 사용 */
@@ -100,13 +99,12 @@
                         placeholder="자유롭게 작성해 주세요. 타인을 공격하거나 스포일러는 자제해주세요."></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">사진 첨부 (선택)</label>
-                    <input id="community-image" type="file" accept="image/*"
-                        class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm" />
-                    <p class="mt-2 text-[11px] text-slate-400">이미지 1장을 첨부할 수 있어요.</p>
-                    <div id="community-image-preview" class="mt-3 hidden">
-                        <img id="community-image-preview-img" alt="미리보기" class="w-full max-h-48 object-cover rounded-xl border border-slate-200" />
-                    </div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">미디어 링크 (선택)</label>
+                    <input id="community-media-url" name="mediaUrl" type="url" maxlength="500"
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        placeholder="예: https://youtu.be/... 또는 이미지 링크(https://...jpg)" />
+                    <p class="mt-2 text-[11px] text-slate-400">유튜브 링크는 자동으로 임베드되고, 이미지 링크는 미리보기로 표시됩니다.</p>
+                    <div id="community-media-preview" class="mt-3 hidden space-y-3"></div>
                 </div>
 
                 <div>
