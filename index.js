@@ -1196,6 +1196,121 @@ function scrollToAllTrees() {
     }
 }
 
+function collectLocalBackupData() {
+    const data = {
+        meta: {
+            version: '1',
+            createdAt: new Date().toISOString(),
+            prefix: 'relovetree_'
+        },
+        items: {}
+    };
+
+    try {
+        if (typeof localStorage === 'undefined') return data;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key) continue;
+            if (!key.startsWith('relovetree_')) continue;
+            data.items[key] = localStorage.getItem(key);
+        }
+    } catch (e) {
+        console.error('로컬 백업 데이터 수집 실패:', e);
+    }
+
+    return data;
+}
+
+function exportLocalBackup() {
+    try {
+        const backup = collectLocalBackupData();
+        const json = JSON.stringify(backup, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relovetree-backup-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        window.setTimeout(function () {
+            URL.revokeObjectURL(url);
+        }, 500);
+    } catch (e) {
+        console.error('백업 파일 저장 실패:', e);
+        try {
+            showError('백업 파일 저장에 실패했습니다.', 5000);
+        } catch (err) {
+        }
+    }
+}
+
+function triggerImportLocalBackup() {
+    const input = document.getElementById('local-backup-file');
+    if (!input) return;
+    input.value = '';
+
+    try {
+        input.onchange = function () {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            importLocalBackupFromFile(file);
+        };
+    } catch (e) {
+    }
+
+    input.click();
+}
+
+function importLocalBackupFromFile(file) {
+    try {
+        if (!file) return;
+
+        const ok = window.confirm('백업 파일을 불러오면, 현재 기기의 relovetree_* 데이터가 모두 삭제되고 백업으로 덮어씌워집니다. 계속할까요?');
+        if (!ok) return;
+
+        const reader = new FileReader();
+        reader.onload = function () {
+            try {
+                const text = String(reader.result || '');
+                const parsed = JSON.parse(text);
+
+                if (!parsed || typeof parsed !== 'object' || !parsed.items || typeof parsed.items !== 'object') {
+                    showError('백업 파일 형식이 올바르지 않습니다.', 5000);
+                    return;
+                }
+
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('relovetree_')) keysToRemove.push(key);
+                }
+                keysToRemove.forEach((k) => localStorage.removeItem(k));
+
+                Object.keys(parsed.items).forEach((k) => {
+                    if (!k || !k.startsWith('relovetree_')) return;
+                    const v = parsed.items[k];
+                    if (typeof v !== 'string') return;
+                    localStorage.setItem(k, v);
+                });
+
+                window.location.reload();
+            } catch (e) {
+                console.error('백업 파일 불러오기 실패:', e);
+                try {
+                    showError('백업 파일 불러오기에 실패했습니다.', 5000);
+                } catch (err) {
+                }
+            }
+        };
+        reader.readAsText(file);
+    } catch (e) {
+        console.error('백업 파일 불러오기 실패:', e);
+    }
+}
+
 // ================== BACKGROUND PREFERENCES ==================
 
 const BG_STORAGE_KEY = 'relovetree_background';
