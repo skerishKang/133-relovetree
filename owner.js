@@ -14,6 +14,95 @@ let deleteTargetTreeId = '';
 const OWNER_UI_STATE_STORAGE_KEY = 'relovetree_owner_console_ui_state_v1';
 let ownerUiStateSaveTimer = null;
 
+const OWNER_URL_KEYS = {
+    query: 'q',
+    sortKey: 'sort',
+    pageSize: 'size',
+    pageIndex: 'page'
+};
+
+function isValidSortKey(v) {
+    return v === 'updated_desc'
+        || v === 'updated_asc'
+        || v === 'name_asc'
+        || v === 'name_desc'
+        || v === 'nodes_desc'
+        || v === 'likes_desc'
+        || v === 'views_desc';
+}
+
+function parseOwnerUiStateFromUrl() {
+    const params = new URLSearchParams(window.location.search || '');
+    const result = {};
+    let hasAny = false;
+
+    const q = params.get(OWNER_URL_KEYS.query);
+    if (q != null) {
+        result.query = String(q);
+        hasAny = true;
+    }
+
+    const sortKey = params.get(OWNER_URL_KEYS.sortKey);
+    if (sortKey && isValidSortKey(sortKey)) {
+        result.sortKey = sortKey;
+        hasAny = true;
+    }
+
+    const size = params.get(OWNER_URL_KEYS.pageSize);
+    if (size) {
+        const n = parseInt(String(size), 10);
+        if (!isNaN(n) && (n === 10 || n === 20 || n === 50)) {
+            result.pageSize = n;
+            hasAny = true;
+        }
+    }
+
+    const page = params.get(OWNER_URL_KEYS.pageIndex);
+    if (page) {
+        const n = parseInt(String(page), 10);
+        if (!isNaN(n) && n >= 1) {
+            result.pageIndex = n - 1;
+            hasAny = true;
+        }
+    }
+
+    return { hasAny, state: result };
+}
+
+function applyOwnerUiStatePatch(patch) {
+    if (!patch || typeof patch !== 'object') return;
+    if (typeof patch.query === 'string') ownerUiState.query = patch.query;
+    if (typeof patch.sortKey === 'string' && isValidSortKey(patch.sortKey)) ownerUiState.sortKey = patch.sortKey;
+    if (typeof patch.pageSize === 'number' && (patch.pageSize === 10 || patch.pageSize === 20 || patch.pageSize === 50)) ownerUiState.pageSize = patch.pageSize;
+    if (typeof patch.pageIndex === 'number' && patch.pageIndex >= 0) ownerUiState.pageIndex = patch.pageIndex;
+}
+
+function buildOwnerViewUrlFromState() {
+    const base = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+
+    const q = String(ownerUiState.query || '').trim();
+    const sortKey = String(ownerUiState.sortKey || 'updated_desc');
+    const size = ownerUiState.pageSize || 20;
+    const page = (ownerUiState.pageIndex || 0) + 1;
+
+    if (q) params.set(OWNER_URL_KEYS.query, q);
+    if (sortKey && sortKey !== 'updated_desc') params.set(OWNER_URL_KEYS.sortKey, sortKey);
+    if (size && size !== 20) params.set(OWNER_URL_KEYS.pageSize, String(size));
+    if (page && page !== 1) params.set(OWNER_URL_KEYS.pageIndex, String(page));
+
+    const qs = params.toString();
+    return qs ? (base + '?' + qs) : base;
+}
+
+function updateOwnerUrlFromState() {
+    try {
+        const url = buildOwnerViewUrlFromState();
+        window.history.replaceState({}, '', url);
+    } catch (e) {
+    }
+}
+
 function loadOwnerUiStateFromStorage() {
     const saved = safeLocalStorageGet(OWNER_UI_STATE_STORAGE_KEY, null);
     if (!saved || typeof saved !== 'object') return;
@@ -48,6 +137,8 @@ function scheduleSaveOwnerUiState() {
             sortKey: ownerUiState.sortKey || 'updated_desc',
             query: ownerUiState.query || ''
         });
+
+        updateOwnerUrlFromState();
     }, 200);
 }
 
@@ -186,8 +277,9 @@ function renderOwnerTrees() {
     if (!tbody) return;
 
     const searchInput = document.getElementById('tree-search');
-    const q = searchInput ? String(searchInput.value || '').trim().toLowerCase() : '';
-    ownerUiState.query = q;
+    const qRaw = searchInput ? String(searchInput.value || '').trim() : '';
+    const q = qRaw.toLowerCase();
+    ownerUiState.query = qRaw;
 
     const sortSelect = document.getElementById('sort-select');
     const sortKey = sortSelect ? String(sortSelect.value || 'updated_desc') : 'updated_desc';
@@ -225,6 +317,7 @@ function renderOwnerTrees() {
         updateResultsSummary(totalCount, filteredCount);
         updatePagination(filteredCount);
         updateCreateUi();
+        scheduleSaveOwnerUiState();
         return;
     }
 
@@ -537,6 +630,32 @@ function bindOwnerEvents() {
         });
     }
 
+    const copyViewLinkBtn = document.getElementById('copy-view-link-btn');
+    if (copyViewLinkBtn) {
+        copyViewLinkBtn.addEventListener('click', () => {
+            const url = buildOwnerViewUrlFromState();
+            copyTextToClipboard(url).then((ok) => {
+                ownerShowToast(ok ? '링크가 복사되었습니다' : '복사 실패');
+            });
+        });
+    }
+
+    const resetFiltersBtn = document.getElementById('reset-filters-btn');
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', () => {
+            ownerUiState = {
+                pageIndex: 0,
+                pageSize: 20,
+                sortKey: 'updated_desc',
+                query: ''
+            };
+
+            safeLocalStorageRemove(OWNER_UI_STATE_STORAGE_KEY);
+            applyOwnerUiStateToControls();
+            renderOwnerTrees();
+        });
+    }
+
     const searchInput = document.getElementById('tree-search');
     if (searchInput) {
         searchInput.addEventListener('input', () => {
@@ -700,7 +819,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         initAuth();
     }
 
-    loadOwnerUiStateFromStorage();
+    const urlState = parseOwnerUiStateFromUrl();
+    if (urlState && urlState.hasAny) {
+        loadOwnerUiStateFromStorage();
+        applyOwnerUiStatePatch(urlState.state);
+    } else {
+        loadOwnerUiStateFromStorage();
+    }
     applyOwnerUiStateToControls();
 
     bindOwnerEvents();
@@ -715,9 +840,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadOwnerTrees();
     updateCreateUi();
 
-    if (ownerUiState.pageIndex > 0) {
-        renderOwnerTrees();
-    }
+    updateOwnerUrlFromState();
 
     if (firebase && firebase.auth && firebase.auth()) {
         firebase.auth().onAuthStateChanged(async (user) => {
