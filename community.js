@@ -176,12 +176,16 @@ async function updateCommunityCommentById(postId, commentId, patch) {
     }
 }
 
-async function softDeleteCommunityComment(postId, commentId) {
+async function softDeleteCommunityComment(postId, commentId, options) {
     const db = getFirestoreForCommunity();
     if (!db) return { ok: false, error: 'DB를 사용할 수 없습니다.' };
     if (!postId || !commentId) return { ok: false, error: '댓글을 찾을 수 없습니다.' };
 
     try {
+        const deletedByUid = options && options.deletedByUid ? String(options.deletedByUid || '') : '';
+        const deletedByEmail = options && options.deletedByEmail ? String(options.deletedByEmail || '') : '';
+        const deletedReason = options && options.deletedReason ? String(options.deletedReason || '') : '';
+
         await db.runTransaction(async (tx) => {
             const postRef = db.collection(COMMUNITY_COLLECTION).doc(postId);
             const commentRef = postRef.collection('comments').doc(commentId);
@@ -196,7 +200,13 @@ async function softDeleteCommunityComment(postId, commentId) {
                 return;
             }
 
-            tx.update(commentRef, { isDeleted: true });
+            tx.update(commentRef, {
+                isDeleted: true,
+                deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                deletedBy: deletedByUid || '',
+                deletedByEmail: deletedByEmail || '',
+                deletedReason: deletedReason || ''
+            });
             tx.update(postRef, { commentCount: firebase.firestore.FieldValue.increment(-1) });
         });
 
@@ -930,8 +940,14 @@ async function openCommunityPostDetail(postId) {
                         const ok = confirm('이 게시글을 삭제할까요?');
                         if (!ok) return;
 
+                        const reason = (prompt('삭제 사유를 입력해 주세요. (선택)', '') || '').trim();
+
                         const res = await updateCommunityPostById(communityCurrentPostId, {
-                            isDeleted: true
+                            isDeleted: true,
+                            deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            deletedBy: String(currentUser.uid || ''),
+                            deletedByEmail: String(currentUser.email || ''),
+                            deletedReason: reason
                         });
                         if (!res || !res.ok) {
                             showError((res && res.error) ? res.error : '삭제 실패', 4000);
@@ -1164,7 +1180,13 @@ async function loadCommunityComments(postId) {
                     const ok = confirm('이 댓글을 삭제할까요?');
                     if (!ok) return;
 
-                    const res = await softDeleteCommunityComment(postId, commentId);
+                    const reason = (prompt('삭제 사유를 입력해 주세요. (선택)', '') || '').trim();
+
+                    const res = await softDeleteCommunityComment(postId, commentId, {
+                        deletedByUid: String(currentUser2.uid || ''),
+                        deletedByEmail: String(currentUser2.email || ''),
+                        deletedReason: reason
+                    });
                     if (!res || !res.ok) {
                         showError((res && res.error) ? res.error : '삭제 실패', 4000);
                         return;
