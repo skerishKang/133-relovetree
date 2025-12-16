@@ -462,6 +462,8 @@
                                         class="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-[11px] focus:ring-2 focus:ring-brand-500 focus:outline-none" />
                                     <button type="button" onclick="searchYouTubeForDetail()"
                                         class="px-3 py-2 rounded-lg text-[11px] font-bold bg-slate-800 text-white hover:bg-slate-900">검색</button>
+                                    <button type="button" onclick="recommendYouTubeForDetail()"
+                                        class="px-3 py-2 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">추천 3개</button>
                                 </div>
                                 <div id="edit-video-search-result" class="mt-2 space-y-1"></div>
                             </div>
@@ -2885,6 +2887,42 @@
                 renderDetailYouTubeSearchResults(result);
             } catch (e) {
                 box.innerHTML = '<p class="text-[11px] text-slate-400">검색 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
+            }
+        }
+
+        async function recommendYouTubeForDetail() {
+            const input = document.getElementById('edit-video-search');
+            const box = document.getElementById('edit-video-search-result');
+            const titleEl = document.getElementById('edit-title');
+            const treeTitleEl = document.getElementById('tree-title');
+
+            if (!box) return;
+
+            const nodeTitle = titleEl && titleEl.value ? String(titleEl.value).trim() : '';
+            const treeTitle = treeTitleEl ? String(treeTitleEl.innerText || '').trim() : '';
+            const query = [treeTitle, nodeTitle, '무대'].filter(Boolean).join(' ');
+
+            if (!query) {
+                box.innerHTML = '<p class="text-[11px] text-slate-400">추천을 만들 수 없습니다.</p>';
+                return;
+            }
+
+            if (input && (!input.value || !input.value.trim())) {
+                input.value = query;
+            }
+
+            box.innerHTML = '<p class="text-[11px] text-slate-400">YouTube 추천을 불러오는 중...</p>';
+
+            try {
+                if (typeof callAiHelperApi !== 'function') {
+                    box.innerHTML = '<p class="text-[11px] text-slate-400">추천 기능을 사용할 수 없습니다.</p>';
+                    return;
+                }
+
+                const result = await callAiHelperApi('youtube_search', { query: query, maxResults: 3 });
+                renderDetailYouTubeSearchResults(result);
+            } catch (e) {
+                box.innerHTML = '<p class="text-[11px] text-slate-400">추천 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</p>';
             }
         }
 
