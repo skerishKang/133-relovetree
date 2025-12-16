@@ -11,6 +11,8 @@ let communityCurrentTreeId = '';
 
 let communityCreateMediaUrl = '';
 
+let communityCurrentPostData = null;
+
 let communityMyTreesCache = [];
 let communityMyTreesLoaded = false;
 let communityTreePickerBound = false;
@@ -23,6 +25,95 @@ function getCurrentUserForCommunity() {
         if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
             return null;
         }
+
+async function isAdminUserForCommunity(user) {
+    try {
+        if (!user) return false;
+        const email = String(user.email || '').toLowerCase();
+
+        try {
+            if (typeof AUTH_CONFIG !== 'undefined' && AUTH_CONFIG && Array.isArray(AUTH_CONFIG.adminEmails)) {
+                const list = AUTH_CONFIG.adminEmails.map((x) => String(x || '').toLowerCase());
+                if (email && list.includes(email)) return true;
+            }
+        } catch (e) {
+        }
+
+        const db = getFirestoreForCommunity();
+        if (!db) return false;
+        const snap = await db.collection('users').doc(user.uid).get();
+        if (!snap.exists) return false;
+        const data = snap.data() || {};
+        return String(data.role || '').toLowerCase() === 'admin';
+    } catch (e) {
+        return false;
+    }
+}
+
+function isOwnerOfPost(user, postData) {
+    try {
+        if (!user || !postData) return false;
+        return String(postData.authorId || '') === String(user.uid || '');
+    } catch (e) {
+        return false;
+    }
+}
+
+function setCommunityPostActionUiVisible(canEditOrDelete) {
+    const wrap = document.getElementById('detail-post-actions');
+    if (!wrap) return;
+    if (canEditOrDelete) wrap.classList.remove('hidden');
+    else wrap.classList.add('hidden');
+}
+
+function setCommunityPostEditMode(isEditMode, postData) {
+    const titleEl = document.getElementById('detail-title');
+    const contentEl = document.getElementById('detail-content');
+    const editBtn = document.getElementById('detail-post-edit');
+    const delBtn = document.getElementById('detail-post-delete');
+    if (!titleEl || !contentEl || !editBtn || !delBtn) return;
+
+    if (!isEditMode) {
+        titleEl.setAttribute('contenteditable', 'false');
+        contentEl.setAttribute('contenteditable', 'false');
+        titleEl.classList.remove('outline', 'outline-2', 'outline-brand-400', 'rounded');
+        contentEl.classList.remove('outline', 'outline-2', 'outline-brand-400', 'rounded');
+        editBtn.textContent = '수정';
+        delBtn.textContent = '삭제';
+        return;
+    }
+
+    titleEl.setAttribute('contenteditable', 'true');
+    contentEl.setAttribute('contenteditable', 'true');
+    titleEl.classList.add('outline', 'outline-2', 'outline-brand-400', 'rounded');
+    contentEl.classList.add('outline', 'outline-2', 'outline-brand-400', 'rounded');
+    editBtn.textContent = '저장';
+    delBtn.textContent = '취소';
+
+    try {
+        titleEl.focus();
+    } catch (e) {
+    }
+}
+
+async function updateCommunityPostById(postId, patch) {
+    const db = getFirestoreForCommunity();
+    if (!db) return { ok: false, error: 'DB를 사용할 수 없습니다.' };
+    if (!postId) return { ok: false, error: '게시글이 선택되지 않았습니다.' };
+
+    try {
+        await db.collection(COMMUNITY_COLLECTION)
+            .doc(postId)
+            .update({
+                ...patch,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        return { ok: true };
+    } catch (e) {
+        console.error('게시글 업데이트 실패:', e);
+        return { ok: false, error: '업데이트 실패' };
+    }
+}
 
         return firebase.auth().currentUser;
     } catch (e) {
@@ -463,6 +554,7 @@ async function loadCommunityPosts() {
         }
 
         const snapshot = await query
+            .where('isDeleted', '==', false)
             .limit(30)
             .get();
 
@@ -676,6 +768,10 @@ async function openCommunityPostDetail(postId) {
 
     const imagesWrap = document.getElementById('detail-images');
 
+    const postActionsWrap = document.getElementById('detail-post-actions');
+    const postEditBtn = document.getElementById('detail-post-edit');
+    const postDeleteBtn = document.getElementById('detail-post-delete');
+
     if (!dialog || !titleEl || !metaEl || !contentEl) return;
 
     try {
@@ -689,11 +785,135 @@ async function openCommunityPostDetail(postId) {
         communityCurrentPostId = doc.id;
         communityCurrentTreeId = data && data.treeId ? String(data.treeId || '').trim() : '';
 
+        communityCurrentPostData = data;
+
         titleEl.textContent = data.title || '제목 없음';
         const created = formatCommunityDate(data.createdAt);
         const author = data.authorDisplayName || '익명';
         metaEl.textContent = `${author} · ${created}`;
         contentEl.textContent = data.content || '';
+
+        setCommunityPostEditMode(false);
+        setCommunityPostActionUiVisible(false);
+
+        try {
+            const user = getCurrentUserForCommunity();
+            const isOwner = isOwnerOfPost(user, data);
+            const isAdmin = await isAdminUserForCommunity(user);
+            const canEditOrDelete = !!(isOwner || isAdmin);
+
+            setCommunityPostActionUiVisible(canEditOrDelete);
+
+            if (postEditBtn && postDeleteBtn) {
+                let editing = false;
+
+                postEditBtn.onclick = async () => {
+                    try {
+                        const currentUser = getCurrentUserForCommunity();
+                        if (!currentUser) {
+                            showError('로그인이 필요합니다.', 3000);
+                            return;
+                        }
+
+                        const latestIsOwner = isOwnerOfPost(currentUser, communityCurrentPostData);
+                        const latestIsAdmin = await isAdminUserForCommunity(currentUser);
+                        if (!latestIsOwner && !latestIsAdmin) {
+                            showError('권한이 없습니다.', 3000);
+                            return;
+                        }
+
+                        if (!editing) {
+                            editing = true;
+                            setCommunityPostEditMode(true, communityCurrentPostData);
+                            return;
+                        }
+
+                        const newTitle = (titleEl.textContent || '').trim();
+                        const newContent = (contentEl.textContent || '').trim();
+
+                        if (!newTitle) {
+                            showError('제목을 입력해 주세요.', 3000);
+                            return;
+                        }
+                        if (!newContent) {
+                            showError('내용을 입력해 주세요.', 3000);
+                            return;
+                        }
+
+                        const res = await updateCommunityPostById(communityCurrentPostId, {
+                            title: newTitle,
+                            content: newContent
+                        });
+                        if (!res || !res.ok) {
+                            showError((res && res.error) ? res.error : '저장 실패', 4000);
+                            return;
+                        }
+
+                        communityCurrentPostData = {
+                            ...(communityCurrentPostData || {}),
+                            title: newTitle,
+                            content: newContent
+                        };
+
+                        editing = false;
+                        setCommunityPostEditMode(false);
+                        showError('저장되었습니다.', 2000);
+                        await loadCommunityPosts();
+                    } catch (e) {
+                        console.error('게시글 수정 실패:', e);
+                        showError('수정 실패', 4000);
+                    }
+                };
+
+                postDeleteBtn.onclick = async () => {
+                    try {
+                        if (editing) {
+                            editing = false;
+                            titleEl.textContent = (communityCurrentPostData && communityCurrentPostData.title) ? communityCurrentPostData.title : '';
+                            contentEl.textContent = (communityCurrentPostData && communityCurrentPostData.content) ? communityCurrentPostData.content : '';
+                            setCommunityPostEditMode(false);
+                            return;
+                        }
+
+                        const currentUser = getCurrentUserForCommunity();
+                        if (!currentUser) {
+                            showError('로그인이 필요합니다.', 3000);
+                            return;
+                        }
+
+                        const latestIsOwner = isOwnerOfPost(currentUser, communityCurrentPostData);
+                        const latestIsAdmin = await isAdminUserForCommunity(currentUser);
+                        if (!latestIsOwner && !latestIsAdmin) {
+                            showError('권한이 없습니다.', 3000);
+                            return;
+                        }
+
+                        const ok = confirm('이 게시글을 삭제할까요?');
+                        if (!ok) return;
+
+                        const res = await updateCommunityPostById(communityCurrentPostId, {
+                            isDeleted: true
+                        });
+                        if (!res || !res.ok) {
+                            showError((res && res.error) ? res.error : '삭제 실패', 4000);
+                            return;
+                        }
+
+                        closeModal('post-detail-modal');
+                        await loadCommunityPosts();
+                    } catch (e) {
+                        console.error('게시글 삭제 실패:', e);
+                        showError('삭제 실패', 4000);
+                    }
+                };
+            }
+
+            if (!canEditOrDelete && postActionsWrap) {
+                postActionsWrap.classList.add('hidden');
+            }
+        } catch (e) {
+            setCommunityPostActionUiVisible(false);
+        }
 
         try {
             if (imagesWrap) {
