@@ -1,5 +1,6 @@
 let ownerUser = null;
 let ownerTreesCache = [];
+let ownerForkStatusCache = {};
 
 let ownerUiState = {
     pageIndex: 0,
@@ -226,12 +227,138 @@ function normalizeTreeItem(doc) {
         id: doc && doc.id ? doc.id : '',
         name: data.name || (doc && doc.id ? decodeURIComponent(doc.id) : ''),
         ownerId: data.ownerId || null,
+        forkedFrom: (data && typeof data.forkedFrom === 'object' && data.forkedFrom) ? data.forkedFrom : null,
         lastUpdated,
         nodeCount,
         likeCount,
         viewCount,
         shareCount
     };
+}
+
+function normalizeToIsoString(value) {
+    try {
+        if (!value) return '';
+        if (value && typeof value.toDate === 'function') {
+            return value.toDate().toISOString();
+        }
+        const d = new Date(value);
+        if (isNaN(d.getTime())) return String(value);
+        return d.toISOString();
+    } catch (e) {
+        return value ? String(value) : '';
+    }
+}
+
+async function fetchTreeDoc(treeId) {
+    if (!treeId) return null;
+    if (!firebase || !firebase.firestore) return null;
+    const db = firebase.firestore();
+    const snap = await db.collection('trees').doc(treeId).get();
+    if (!snap.exists) return null;
+    return snap.data() || null;
+}
+
+async function checkForkUpdateStatus(myTreeId) {
+    const item = ownerTreesCache.find((t) => t.id === myTreeId);
+    if (!item || !item.forkedFrom || !item.forkedFrom.treeId) {
+        return { ok: false, error: '포크 정보가 없습니다.' };
+    }
+
+    const sourceTreeId = String(item.forkedFrom.treeId || '');
+    const source = await fetchTreeDoc(sourceTreeId);
+    if (!source) {
+        return { ok: false, error: '원본 트리를 찾을 수 없습니다.' };
+    }
+
+    const sourceLastUpdated = normalizeToIsoString(source.lastUpdated);
+    const sourceSaved = normalizeToIsoString(item.forkedFrom.sourceLastUpdated);
+    const hasUpdate = !!sourceLastUpdated && !!sourceSaved
+        ? (sourceLastUpdated !== sourceSaved)
+        : !!sourceLastUpdated;
+
+    return {
+        ok: true,
+        hasUpdate,
+        sourceTreeId,
+        sourceLastUpdated,
+        sourceNodeCount: Array.isArray(source.nodes) ? source.nodes.length : (typeof source.nodeCount === 'number' ? source.nodeCount : 0),
+        sourceData: source
+    };
+}
+
+async function forkCheck(myTreeId) {
+    if (!ownerUser) return;
+    try {
+        ownerShowToast('업데이트 확인 중...');
+        const res = await checkForkUpdateStatus(myTreeId);
+        if (!res.ok) {
+            ownerShowToast('확인 실패');
+            return;
+        }
+
+        ownerForkStatusCache[myTreeId] = {
+            checkedAt: new Date().toISOString(),
+            hasUpdate: !!res.hasUpdate,
+            sourceLastUpdated: res.sourceLastUpdated || ''
+        };
+
+        ownerShowToast(res.hasUpdate ? '원본이 업데이트되었습니다' : '최신 상태입니다');
+        renderOwnerTrees();
+    } catch (e) {
+        console.error('forkCheck failed:', e);
+        ownerShowToast('확인 실패');
+    }
+}
+
+async function forkSync(myTreeId) {
+    if (!ownerUser) return;
+    try {
+        const res = await checkForkUpdateStatus(myTreeId);
+        if (!res.ok) {
+            ownerShowToast('동기화 실패');
+            return;
+        }
+
+        if (!res.hasUpdate) {
+            ownerShowToast('이미 최신 상태입니다');
+            return;
+        }
+
+        const ok = confirm('원본 트리의 최신 내용을 내 트리에 덮어쓸까요? (내 트리의 현재 내용은 변경됩니다)');
+        if (!ok) return;
+
+        const source = res.sourceData || {};
+        const nodes = Array.isArray(source.nodes) ? source.nodes : [];
+        const edges = Array.isArray(source.edges) ? source.edges : [];
+        const nowIso = new Date().toISOString();
+
+        const db = firebase.firestore();
+        await db.collection('trees').doc(myTreeId).set({
+            nodes: nodes,
+            edges: edges,
+            nodeCount: nodes.length,
+            lastUpdated: nowIso,
+            forkedFrom: {
+                treeId: res.sourceTreeId,
+                ownerId: (source && source.ownerId) ? source.ownerId : (ownerTreesCache.find((t) => t.id === myTreeId)?.forkedFrom?.ownerId || null),
+                sourceLastUpdated: res.sourceLastUpdated || '',
+                syncedAt: nowIso
+            }
+        }, { merge: true });
+
+        ownerForkStatusCache[myTreeId] = {
+            checkedAt: nowIso,
+            hasUpdate: false,
+            sourceLastUpdated: res.sourceLastUpdated || ''
+        };
+
+        ownerShowToast('동기화 완료');
+        await loadOwnerTrees();
+    } catch (e) {
+        console.error('forkSync failed:', e);
+        ownerShowToast('동기화 실패');
+    }
 }
 
 async function loadOwnerTrees() {
@@ -330,6 +457,24 @@ function renderOwnerTrees() {
         const updatedFull = formatDateTimeFull(t.lastUpdated);
         const updatedRel = formatRelativeTime(t.lastUpdated);
 
+        const forkedFrom = t.forkedFrom && t.forkedFrom.treeId ? t.forkedFrom : null;
+        const forkStatus = ownerForkStatusCache[t.id] || null;
+        const sourceId = forkedFrom ? String(forkedFrom.treeId) : '';
+        const sourceUrl = sourceId ? ('editor.html?id=' + encodeURIComponent(sourceId)) : '';
+        const forkBadge = forkedFrom
+            ? `<div class="mt-1 text-[10px] text-slate-400">원본: <a class="text-brand-600 hover:underline" href="${sourceUrl}" target="_blank">${escapeHtml(sourceId)}</a></div>`
+            : '';
+        const updateBadge = forkStatus
+            ? `<div class="mt-1 text-[10px] ${forkStatus.hasUpdate ? 'text-amber-600' : 'text-emerald-600'}">${forkStatus.hasUpdate ? '업데이트 있음' : '최신'}</div>`
+            : '';
+
+        const forkButtons = forkedFrom
+            ? `
+                <button type="button" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" data-action="fork-check" data-id="${escapeHtml(String(t.id || ''))}">업데이트 확인</button>
+                <button type="button" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-50" data-action="fork-sync" data-id="${escapeHtml(String(t.id || ''))}">동기화</button>
+            `
+            : '';
+
         tr.innerHTML = `
             <td class="px-5 py-3">
                 <div class="flex flex-col">
@@ -338,6 +483,8 @@ function renderOwnerTrees() {
                         <a class="text-[11px] text-slate-400 truncate hover:underline" href="${editorUrl}">${escapeHtml(String(t.id || ''))}</a>
                         <button type="button" class="px-2 py-1 rounded-lg text-[10px] font-black bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0" data-action="copy-id" data-id="${escapeHtml(String(t.id || ''))}">ID 복사</button>
                     </div>
+                    ${forkBadge}
+                    ${updateBadge}
                 </div>
             </td>
             <td class="px-5 py-3 text-[11px] text-slate-600" title="${escapeHtml(updatedFull)}">${escapeHtml(updatedRel)}</td>
@@ -347,6 +494,7 @@ function renderOwnerTrees() {
                 <div class="flex flex-wrap gap-2">
                     <a href="${editorUrl}" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-brand-500 text-white hover:bg-brand-600">열기</a>
                     <button type="button" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" data-action="rename" data-id="${escapeHtml(String(t.id || ''))}">이름 변경</button>
+                    ${forkButtons}
                     <button type="button" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-red-600 hover:bg-red-50" data-action="delete" data-id="${escapeHtml(String(t.id || ''))}">삭제</button>
                 </div>
             </td>
@@ -770,6 +918,10 @@ function bindOwnerEvents() {
                 copyTextToClipboard(id).then((ok) => {
                     ownerShowToast(ok ? '트리 ID가 복사되었습니다' : '복사 실패');
                 });
+            } else if (action === 'fork-check') {
+                forkCheck(id);
+            } else if (action === 'fork-sync') {
+                forkSync(id);
             } else if (action === 'rename') {
                 openRenameDialog(id);
             } else if (action === 'delete') {
