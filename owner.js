@@ -11,6 +11,74 @@ let ownerUiState = {
 let renameTargetTreeId = '';
 let deleteTargetTreeId = '';
 
+const OWNER_UI_STATE_STORAGE_KEY = 'relovetree_owner_console_ui_state_v1';
+let ownerUiStateSaveTimer = null;
+
+function loadOwnerUiStateFromStorage() {
+    const saved = safeLocalStorageGet(OWNER_UI_STATE_STORAGE_KEY, null);
+    if (!saved || typeof saved !== 'object') return;
+
+    if (typeof saved.pageIndex === 'number' && saved.pageIndex >= 0) ownerUiState.pageIndex = saved.pageIndex;
+    if (typeof saved.pageSize === 'number' && saved.pageSize > 0) ownerUiState.pageSize = saved.pageSize;
+    if (typeof saved.sortKey === 'string') ownerUiState.sortKey = saved.sortKey;
+    if (typeof saved.query === 'string') ownerUiState.query = saved.query;
+}
+
+function applyOwnerUiStateToControls() {
+    const searchInput = document.getElementById('tree-search');
+    if (searchInput && typeof ownerUiState.query === 'string') searchInput.value = ownerUiState.query;
+
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect && ownerUiState.sortKey) sortSelect.value = ownerUiState.sortKey;
+
+    const pageSizeSelect = document.getElementById('page-size');
+    if (pageSizeSelect && ownerUiState.pageSize) pageSizeSelect.value = String(ownerUiState.pageSize);
+}
+
+function scheduleSaveOwnerUiState() {
+    try {
+        if (ownerUiStateSaveTimer) window.clearTimeout(ownerUiStateSaveTimer);
+    } catch (e) {
+    }
+
+    ownerUiStateSaveTimer = window.setTimeout(() => {
+        safeLocalStorageSet(OWNER_UI_STATE_STORAGE_KEY, {
+            pageIndex: ownerUiState.pageIndex || 0,
+            pageSize: ownerUiState.pageSize || 20,
+            sortKey: ownerUiState.sortKey || 'updated_desc',
+            query: ownerUiState.query || ''
+        });
+    }, 200);
+}
+
+async function copyTextToClipboard(text) {
+    const value = String(text || '');
+    if (!value) return false;
+
+    try {
+        if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            await navigator.clipboard.writeText(value);
+            return true;
+        }
+    } catch (e) {
+    }
+
+    try {
+        const el = document.createElement('textarea');
+        el.value = value;
+        el.setAttribute('readonly', '');
+        el.style.position = 'fixed';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        const ok = document.execCommand('copy');
+        el.remove();
+        return !!ok;
+    } catch (e) {
+        return false;
+    }
+}
+
 function ownerShowToast(message) {
     try {
         const toast = document.createElement('div');
@@ -86,6 +154,7 @@ async function loadOwnerTrees() {
         updateResultsSummary(0, 0);
         updatePagination(0);
         updateCreateUi();
+        scheduleSaveOwnerUiState();
         return;
     }
 
@@ -173,7 +242,10 @@ function renderOwnerTrees() {
             <td class="px-5 py-3">
                 <div class="flex flex-col">
                     <span class="text-sm font-black text-slate-900 truncate">${escapeHtml(String(t.name || ''))}</span>
-                    <a class="text-[11px] text-slate-400 truncate hover:underline" href="${editorUrl}">${escapeHtml(String(t.id || ''))}</a>
+                    <div class="flex items-center gap-2 min-w-0">
+                        <a class="text-[11px] text-slate-400 truncate hover:underline" href="${editorUrl}">${escapeHtml(String(t.id || ''))}</a>
+                        <button type="button" class="px-2 py-1 rounded-lg text-[10px] font-black bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0" data-action="copy-id" data-id="${escapeHtml(String(t.id || ''))}">ID 복사</button>
+                    </div>
                 </div>
             </td>
             <td class="px-5 py-3 text-[11px] text-slate-600" title="${escapeHtml(updatedFull)}">${escapeHtml(updatedRel)}</td>
@@ -194,6 +266,7 @@ function renderOwnerTrees() {
     updateResultsSummary(totalCount, filteredCount);
     updatePagination(filteredCount);
     updateCreateUi();
+    scheduleSaveOwnerUiState();
 }
 
 function applyOwnerSort(items, sortKey) {
@@ -575,7 +648,11 @@ function bindOwnerEvents() {
             const id = btn.getAttribute('data-id');
             if (!action || !id) return;
 
-            if (action === 'rename') {
+            if (action === 'copy-id') {
+                copyTextToClipboard(id).then((ok) => {
+                    ownerShowToast(ok ? '트리 ID가 복사되었습니다' : '복사 실패');
+                });
+            } else if (action === 'rename') {
                 openRenameDialog(id);
             } else if (action === 'delete') {
                 openDeleteDialog(id);
@@ -624,6 +701,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         initAuth();
     }
 
+    loadOwnerUiStateFromStorage();
+    applyOwnerUiStateToControls();
+
     bindOwnerEvents();
 
     try {
@@ -635,6 +715,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setOwnerAuthUi(ownerUser);
     await loadOwnerTrees();
     updateCreateUi();
+
+    if (ownerUiState.pageIndex > 0) {
+        renderOwnerTrees();
+    }
 
     if (firebase && firebase.auth && firebase.auth()) {
         firebase.auth().onAuthStateChanged(async (user) => {
