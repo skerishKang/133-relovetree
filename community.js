@@ -17,6 +17,12 @@ let communityPostsCache = [];
 let communitySearchQuery = '';
 let communityLastPostSubmitAtMs = 0;
 let communityLastCommentSubmitAtMs = 0;
+let communityLastPostContentSig = '';
+let communityLastPostContentSigAtMs = 0;
+let communityLastCommentContentSig = '';
+let communityLastCommentContentSigAtMs = 0;
+
+let communityDeleteReasonModalState = null;
 
 let communityMyTreesCache = [];
 let communityMyTreesLoaded = false;
@@ -30,10 +36,89 @@ function getCurrentUserForCommunity() {
         if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
             return null;
         }
+
         return firebase.auth().currentUser;
     } catch (e) {
         console.warn('getCurrentUserForCommunity 실패:', e);
         return null;
+    }
+}
+
+function normalizeModerationReason(reason) {
+    try {
+        const r = String(reason || '').trim();
+        if (!r) return '';
+        return r.slice(0, 200);
+    } catch (e) {
+        return '';
+    }
+}
+
+function openDeleteReasonModal(options) {
+    return new Promise((resolve) => {
+        const dialog = document.getElementById('delete-reason-modal');
+        const titleEl = document.getElementById('delete-reason-title');
+        const descEl = document.getElementById('delete-reason-desc');
+        const inputEl = document.getElementById('delete-reason-input');
+        const formEl = document.getElementById('delete-reason-form');
+
+        if (!dialog || !inputEl || !formEl) {
+            resolve({ ok: false, canceled: true, reason: '' });
+            return;
+        }
+
+        const title = options && options.title ? String(options.title || '') : '삭제 사유';
+        const desc = options && options.desc ? String(options.desc || '') : '삭제 사유를 입력해 주세요. (선택)';
+        if (titleEl) titleEl.textContent = title;
+        if (descEl) descEl.textContent = desc;
+        inputEl.value = '';
+
+        const finalize = (result) => {
+            if (communityDeleteReasonModalState && communityDeleteReasonModalState.resolve) {
+                communityDeleteReasonModalState.resolve(result);
+            }
+            communityDeleteReasonModalState = null;
+        };
+
+        if (communityDeleteReasonModalState && communityDeleteReasonModalState.resolve) {
+            try {
+                communityDeleteReasonModalState.resolve({ ok: false, canceled: true, reason: '' });
+            } catch (e) {
+            }
+        }
+
+        communityDeleteReasonModalState = { resolve: finalize };
+
+        dialog.addEventListener('close', function onClose() {
+            dialog.removeEventListener('close', onClose);
+            if (!communityDeleteReasonModalState) return;
+            finalize({ ok: false, canceled: true, reason: '' });
+        });
+
+        formEl.onsubmit = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const reason = normalizeModerationReason(inputEl.value);
+            closeModal('delete-reason-modal');
+            finalize({ ok: true, canceled: false, reason });
+        };
+
+        if (typeof dialog.showModal === 'function') dialog.showModal();
+        else dialog.setAttribute('open', '');
+    });
+}
+
+async function logCommunityModerationEvent(eventType, payload) {
+    try {
+        const db = getFirestoreForCommunity();
+        if (!db) return;
+        await db.collection('community_moderation_logs').add({
+            eventType: String(eventType || ''),
+            payload: payload || {},
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (e) {
+        console.warn('커뮤니티 moderation log 실패:', e);
     }
 }
 
@@ -793,6 +878,14 @@ async function handleCreatePostSubmit(event) {
     }
     communityLastPostSubmitAtMs = nowMs;
 
+    const postSig = (title + '\n' + content + '\n' + (treeId || '') + '\n' + (mediaUrl || '')).trim();
+    if (postSig && postSig === communityLastPostContentSig && (nowMs - communityLastPostContentSigAtMs) < 60000) {
+        showError('동일한 내용이 반복되고 있습니다. 잠시 후 다시 시도해 주세요.', 3000);
+        return;
+    }
+    communityLastPostContentSig = postSig;
+    communityLastPostContentSigAtMs = nowMs;
+
     try {
         const ytId = mediaUrl ? parseYouTubeVideoIdFromUrl(mediaUrl) : '';
 
@@ -872,6 +965,12 @@ async function openCommunityPostDetail(postId) {
             const isOwner = isOwnerOfPost(user, data);
             const isAdmin = await isAdminUserForCommunity(user);
             const canEditOrDelete = !!(isOwner || isAdmin);
+
+            if (!isAdmin && data && data.isDeleted === true) {
+                showError('삭제된 게시글입니다.', 3000);
+                closeModal('post-detail-modal');
+                return;
+            }
 
             if (isAdmin && data && data.isDeleted === true) {
                 metaEl.innerHTML = `${escapeHtml(author)} · ${escapeHtml(created)}${buildDeletedInfoHtmlForAdmin(data)}`;
@@ -966,7 +1065,12 @@ async function openCommunityPostDetail(postId) {
                         const ok = confirm('이 게시글을 삭제할까요?');
                         if (!ok) return;
 
-                        const reason = (prompt('삭제 사유를 입력해 주세요. (선택)', '') || '').trim();
+                        const modalRes = await openDeleteReasonModal({
+                            title: '게시글 삭제',
+                            desc: '삭제 사유를 입력해 주세요. (선택)'
+                        });
+                        if (!modalRes || modalRes.canceled) return;
+                        const reason = modalRes.reason || '';
 
                         const res = await updateCommunityPostById(communityCurrentPostId, {
                             isDeleted: true,
@@ -979,6 +1083,13 @@ async function openCommunityPostDetail(postId) {
                             showError((res && res.error) ? res.error : '삭제 실패', 4000);
                             return;
                         }
+
+                        await logCommunityModerationEvent('post_delete', {
+                            postId: String(communityCurrentPostId || ''),
+                            deletedBy: String(currentUser.uid || ''),
+                            deletedByEmail: String(currentUser.email || ''),
+                            deletedReason: reason
+                        });
 
                         closeModal('post-detail-modal');
                         await loadCommunityPosts();
@@ -1211,7 +1322,12 @@ async function loadCommunityComments(postId) {
                     const ok = confirm('이 댓글을 삭제할까요?');
                     if (!ok) return;
 
-                    const reason = (prompt('삭제 사유를 입력해 주세요. (선택)', '') || '').trim();
+                    const modalRes = await openDeleteReasonModal({
+                        title: '댓글 삭제',
+                        desc: '삭제 사유를 입력해 주세요. (선택)'
+                    });
+                    if (!modalRes || modalRes.canceled) return;
+                    const reason = modalRes.reason || '';
 
                     const res = await softDeleteCommunityComment(postId, commentId, {
                         deletedByUid: String(currentUser2.uid || ''),
@@ -1222,6 +1338,14 @@ async function loadCommunityComments(postId) {
                         showError((res && res.error) ? res.error : '삭제 실패', 4000);
                         return;
                     }
+
+                    await logCommunityModerationEvent('comment_delete', {
+                        postId: String(postId || ''),
+                        commentId: String(commentId || ''),
+                        deletedBy: String(currentUser2.uid || ''),
+                        deletedByEmail: String(currentUser2.email || ''),
+                        deletedReason: reason
+                    });
 
                     await loadCommunityComments(postId);
                     await loadCommunityPosts();
@@ -1278,6 +1402,14 @@ async function handleCommentFormSubmit(event) {
         return;
     }
     communityLastCommentSubmitAtMs = nowMs;
+
+    const commentSig = (String(communityCurrentPostId || '') + '\n' + content).trim();
+    if (commentSig && commentSig === communityLastCommentContentSig && (nowMs - communityLastCommentContentSigAtMs) < 30000) {
+        showError('동일한 댓글이 반복되고 있습니다. 잠시 후 다시 시도해 주세요.', 3000);
+        return;
+    }
+    communityLastCommentContentSig = commentSig;
+    communityLastCommentContentSigAtMs = nowMs;
 
     try {
         await db.collection(COMMUNITY_COLLECTION)
