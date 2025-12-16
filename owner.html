@@ -15,34 +15,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen" data-page="owner">
     <div class="max-w-5xl mx-auto px-4 py-8">
-        <div class="flex items-center justify-between gap-3 mb-6">
-            <div class="flex items-center gap-3 min-w-0">
-                <a href="index.html"
-                    class="shrink-0 w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50">
-                    <span class="text-brand-600 font-black">R</span>
-                </a>
-                <div class="min-w-0">
-                    <h1 class="text-xl font-black text-slate-900 truncate">내 트리 관리</h1>
-                    <p class="text-xs text-slate-500 truncate" id="owner-subtitle">로그인한 계정의 트리만 표시됩니다.</p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <a href="index.html"
-                    class="px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
-                    홈
-                </a>
-                <button id="owner-login-btn" type="button"
-                    class="hidden px-3 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">
-                    로그인
-                </button>
-                <button id="owner-logout-btn" type="button"
-                    class="hidden px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
-                    로그아웃
-                </button>
-            </div>
+        <div class="mb-6">
+            <h1 class="text-xl font-black text-slate-900">내 트리 관리</h1>
+            <p class="text-xs text-slate-500" id="owner-subtitle">로그인한 계정의 트리만 표시됩니다.</p>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 mb-6">
