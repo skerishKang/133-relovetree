@@ -275,6 +275,10 @@
                 </svg>
                 <span id="comment-count">0</span>
             </button>
+            <button id="fork-btn" onclick="forkTreeToMyAccount()" type="button"
+                class="hidden bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-emerald-50 text-emerald-600 text-xs font-bold transition-colors flex items-center gap-1">
+                내 트리로 가져오기
+            </button>
             <button id="share-btn" onclick="shareTree()"
                 class="bg-brand-500 shadow-lg text-white px-3 py-1.5 rounded-lg hover:bg-brand-600 text-xs font-bold transition-colors flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -831,6 +835,7 @@
         let storage;
         let currentUser = null;
         let isReadOnly = false;
+        let currentTreeDocData = null;
 
         // YouTube Player State
         let ytPlayer = null;
@@ -901,6 +906,7 @@
                     if (docSnap.exists) {
                         const data = docSnap.data();
                         console.log("Document data from Firebase:", data);
+                        currentTreeDocData = data;
 
                         const baseView = typeof data.viewCount === 'number' ? data.viewCount : 0;
                         const baseShare = typeof data.shareCount === 'number' ? data.shareCount : 0;
@@ -1053,6 +1059,94 @@
 
                 // Disable Title Edit (visual only, logic handled in save)
                 document.getElementById('tree-title').contentEditable = "false";
+            }
+
+            const forkBtn = document.getElementById('fork-btn');
+            if (forkBtn) {
+                const canFork = !!currentUser && !!db && !!currentTreeDocData && !!currentTreeDocData.ownerId && currentTreeDocData.ownerId !== currentUser.uid;
+                if (canFork) {
+                    forkBtn.classList.remove('hidden');
+                } else {
+                    forkBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        async function forkTreeToMyAccount() {
+            try {
+                if (!currentUser) {
+                    if (typeof showToast === 'function') {
+                        showToast('로그인이 필요합니다.');
+                    }
+                    return;
+                }
+
+                if (!db) {
+                    if (typeof showToast === 'function') {
+                        showToast('클라우드 기능을 사용할 수 없습니다.');
+                    }
+                    return;
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const sourceTreeId = urlParams.get('id') || 'bts';
+
+                if (!currentTreeDocData || !currentTreeDocData.ownerId || currentTreeDocData.ownerId === currentUser.uid) {
+                    if (typeof showToast === 'function') {
+                        showToast('가져올 수 있는 트리가 아닙니다.');
+                    }
+                    return;
+                }
+
+                const ok = confirm('이 트리를 내 트리로 가져올까요? 가져온 뒤에는 내 트리에서 자유롭게 수정할 수 있습니다.');
+                if (!ok) return;
+
+                if (typeof showToast === 'function') {
+                    showToast('내 트리로 가져오는 중...');
+                }
+
+                let sourceLastUpdated = currentTreeDocData.lastUpdated;
+                if (sourceLastUpdated && typeof sourceLastUpdated.toDate === 'function') {
+                    sourceLastUpdated = sourceLastUpdated.toDate().toISOString();
+                } else if (sourceLastUpdated) {
+                    try {
+                        sourceLastUpdated = new Date(sourceLastUpdated).toISOString();
+                    } catch (e) {
+                        sourceLastUpdated = String(sourceLastUpdated);
+                    }
+                } else {
+                    sourceLastUpdated = '';
+                }
+
+                const sourceName = currentTreeDocData.name || decodeURIComponent(sourceTreeId);
+                const nodes = Array.isArray(currentTreeDocData.nodes) ? currentTreeDocData.nodes : (Array.isArray(state.nodes) ? state.nodes : []);
+                const edges = Array.isArray(currentTreeDocData.edges) ? currentTreeDocData.edges : (Array.isArray(state.edges) ? state.edges : []);
+
+                const newDocRef = db.collection('trees').doc();
+                const newTreeId = newDocRef.id;
+                const nowIso = new Date().toISOString();
+
+                await newDocRef.set({
+                    name: sourceName,
+                    ownerId: currentUser.uid,
+                    nodes: nodes,
+                    edges: edges,
+                    nodeCount: nodes.length,
+                    lastUpdated: nowIso,
+                    forkedFrom: {
+                        treeId: sourceTreeId,
+                        ownerId: currentTreeDocData.ownerId,
+                        sourceLastUpdated: sourceLastUpdated,
+                        forkedAt: nowIso
+                    }
+                }, { merge: true });
+
+                window.location.href = 'editor.html?id=' + encodeURIComponent(newTreeId);
+            } catch (e) {
+                console.error('forkTreeToMyAccount failed:', e);
+                if (typeof showToast === 'function') {
+                    showToast('가져오기 실패');
+                }
             }
         }
 
