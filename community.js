@@ -9,6 +9,10 @@ let communityCurrentPostId = null;
 let communitySortMode = 'latest'; // 'latest' | 'popular'
 let communityCurrentTreeId = '';
 
+let communityMyTreesCache = [];
+let communityMyTreesLoaded = false;
+let communityTreePickerBound = false;
+
 /**
  * 현재 로그인한 사용자를 안전하게 반환하는 헬퍼 (커뮤니티 전용)
  */
@@ -21,6 +25,173 @@ function getCurrentUserForCommunity() {
     } catch (e) {
         console.warn('getCurrentUserForCommunity 실패:', e);
         return null;
+    }
+}
+
+function normalizeCommunityTreeItem(doc) {
+    const data = doc && typeof doc.data === 'function' ? (doc.data() || {}) : {};
+
+    let lastUpdated = data.lastUpdated;
+    if (lastUpdated && typeof lastUpdated.toDate === 'function') {
+        lastUpdated = lastUpdated.toDate().toISOString();
+    } else if (!lastUpdated) {
+        lastUpdated = '';
+    } else {
+        try {
+            lastUpdated = new Date(lastUpdated).toISOString();
+        } catch (e) {
+            lastUpdated = String(lastUpdated);
+        }
+    }
+
+    const id = doc && doc.id ? String(doc.id) : '';
+    const name = data && data.name ? String(data.name) : (id || '내 트리');
+
+    return {
+        id,
+        name,
+        lastUpdated,
+        nodeCount: typeof data.nodeCount === 'number' ? data.nodeCount : (Array.isArray(data.nodes) ? data.nodes.length : 0)
+    };
+}
+
+function renderCommunityTreeSelectOptions(queryText) {
+    const selectEl = document.getElementById('community-tree-select');
+    if (!selectEl) return;
+
+    const treeIdInput = document.getElementById('community-tree-id');
+    const qRaw = String(queryText || '').trim().toLowerCase();
+
+    const items = Array.isArray(communityMyTreesCache) ? communityMyTreesCache.slice() : [];
+    const filtered = qRaw
+        ? items.filter((t) => {
+            const id = String(t.id || '').toLowerCase();
+            const name = String(t.name || '').toLowerCase();
+            return id.includes(qRaw) || name.includes(qRaw);
+        })
+        : items;
+
+    const currentUser = getCurrentUserForCommunity();
+    if (!currentUser) {
+        selectEl.innerHTML = '<option value="">(로그인 후 내 트리를 선택할 수 있어요)</option>';
+        return;
+    }
+
+    if (!communityMyTreesLoaded) {
+        selectEl.innerHTML = '<option value="">내 트리를 불러오는 중...</option>';
+        return;
+    }
+
+    if (!filtered.length) {
+        selectEl.innerHTML = '<option value="">(표시할 내 트리가 없습니다)</option>';
+        return;
+    }
+
+    const currentRaw = treeIdInput ? String(treeIdInput.value || '').trim() : '';
+    const currentNormalized = (typeof extractTreeIdFromMaybeUrl === 'function')
+        ? extractTreeIdFromMaybeUrl(currentRaw)
+        : currentRaw;
+
+    selectEl.innerHTML = ['<option value="">(내 트리 선택 안함)</option>']
+        .concat(filtered.map((t) => {
+            const id = String(t.id || '');
+            const name = String(t.name || id || '내 트리');
+            const label = name + ' (' + id + ')';
+            return `<option value="${escapeHtml(id)}">${escapeHtml(label)}</option>`;
+        }))
+        .join('');
+
+    if (currentNormalized) {
+        selectEl.value = currentNormalized;
+        if (selectEl.value !== currentNormalized) {
+            selectEl.value = '';
+        }
+    }
+}
+
+function bindCommunityTreePicker() {
+    if (communityTreePickerBound) return;
+    communityTreePickerBound = true;
+
+    const searchEl = document.getElementById('community-tree-search');
+    const selectEl = document.getElementById('community-tree-select');
+    const treeIdInput = document.getElementById('community-tree-id');
+
+    if (searchEl) {
+        searchEl.addEventListener('input', () => {
+            renderCommunityTreeSelectOptions(searchEl.value);
+        });
+    }
+
+    if (selectEl && treeIdInput) {
+        selectEl.addEventListener('change', () => {
+            const v = String(selectEl.value || '').trim();
+            if (!v) {
+                treeIdInput.value = '';
+                return;
+            }
+            treeIdInput.value = v;
+        });
+    }
+
+    if (treeIdInput && selectEl) {
+        treeIdInput.addEventListener('input', () => {
+            const raw = String(treeIdInput.value || '').trim();
+            const normalized = (typeof extractTreeIdFromMaybeUrl === 'function')
+                ? extractTreeIdFromMaybeUrl(raw)
+                : raw;
+
+            if (!normalized) {
+                selectEl.value = '';
+                return;
+            }
+
+            selectEl.value = normalized;
+            if (selectEl.value !== normalized) {
+                selectEl.value = '';
+            }
+        });
+    }
+}
+
+async function loadMyTreesForCommunity(user) {
+    const db = getFirestoreForCommunity();
+    if (!db) return;
+
+    const selectEl = document.getElementById('community-tree-select');
+    if (!selectEl) return;
+
+    if (!user) {
+        communityMyTreesCache = [];
+        communityMyTreesLoaded = false;
+        renderCommunityTreeSelectOptions('');
+        return;
+    }
+
+    selectEl.innerHTML = '<option value="">내 트리를 불러오는 중...</option>';
+    communityMyTreesLoaded = false;
+
+    try {
+        const snapshot = await db.collection('trees')
+            .where('ownerId', '==', user.uid)
+            .limit(100)
+            .get();
+
+        const items = [];
+        snapshot.forEach((doc) => {
+            items.push(normalizeCommunityTreeItem(doc));
+        });
+
+        items.sort((a, b) => new Date(b.lastUpdated || 0) - new Date(a.lastUpdated || 0));
+        communityMyTreesCache = items;
+        communityMyTreesLoaded = true;
+
+        renderCommunityTreeSelectOptions('');
+    } catch (e) {
+        console.error('내 트리 목록 로딩 실패:', e);
+        communityMyTreesCache = [];
+        communityMyTreesLoaded = false;
+        selectEl.innerHTML = '<option value="">내 트리를 불러오지 못했습니다</option>';
     }
 }
 
@@ -240,12 +411,27 @@ function openCreatePostModal() {
         return;
     }
 
+    communityCurrentUser = user;
+
     const dialog = document.getElementById('create-post-modal');
     const titleInput = document.getElementById('community-title');
     const contentInput = document.getElementById('community-content');
+    const treeSearchInput = document.getElementById('community-tree-search');
+    const treeIdInput = document.getElementById('community-tree-id');
+    const treeSelect = document.getElementById('community-tree-select');
 
     if (titleInput) titleInput.value = '';
     if (contentInput) contentInput.value = '';
+    if (treeSearchInput) treeSearchInput.value = '';
+    if (treeIdInput) treeIdInput.value = '';
+    if (treeSelect) treeSelect.value = '';
+
+    bindCommunityTreePicker();
+    if (!communityMyTreesLoaded) {
+        loadMyTreesForCommunity(user);
+    } else {
+        renderCommunityTreeSelectOptions('');
+    }
 
     if (dialog) {
         if (typeof dialog.showModal === 'function') {
@@ -550,16 +736,34 @@ function initCommunityPage() {
             communityCurrentUser = user;
             updateCommunitySortButtons();
             loadCommunityPosts();
+            bindCommunityTreePicker();
+            loadMyTreesForCommunity(user);
         }).catch((e) => {
             console.error('waitForAuth 실패:', e);
             updateCommunitySortButtons();
             loadCommunityPosts();
+            bindCommunityTreePicker();
+            loadMyTreesForCommunity(null);
         });
     } else {
         // 혹시 waitForAuth가 없더라도 최소한 리스트는 로딩
         updateCommunitySortButtons();
         loadCommunityPosts();
+        bindCommunityTreePicker();
+        const u = getCurrentUserForCommunity();
+        communityCurrentUser = u;
+        loadMyTreesForCommunity(u);
     }
+}
+
+try {
+    window.onAuthReady = function (user) {
+        communityCurrentUser = user;
+        communityMyTreesCache = [];
+        communityMyTreesLoaded = false;
+        loadMyTreesForCommunity(user);
+    };
+} catch (e) {
 }
 
 // DOM 준비 후 초기화

@@ -553,11 +553,9 @@ function extractTreeIdFromMaybeUrl(value) {
             }
         }
 
-        if (/^[a-zA-Z0-9_-]{8,}$/.test(raw)) {
-            return raw;
-        }
-
-        return '';
+        if (/\s/.test(raw)) return '';
+        if (raw.includes('/')) return '';
+        return raw;
     } catch (e) {
         return '';
     }
