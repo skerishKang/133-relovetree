@@ -494,6 +494,20 @@ function bindGlobalBackgroundPreferenceSync() {
     }
 }
 
+function registerPwaServiceWorker() {
+    try {
+        if (typeof window === 'undefined' || typeof navigator === 'undefined') return;
+        if (!('serviceWorker' in navigator)) return;
+
+        const isSecure = window.isSecureContext || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (!isSecure) return;
+
+        navigator.serviceWorker.register('/sw.js').catch(function () {
+        });
+    } catch (e) {
+    }
+}
+
 // ================== EVENT HANDLERS ==================
 
 /**
@@ -557,6 +571,7 @@ function initApp() {
 
     applyGlobalBackgroundPreference();
     bindGlobalBackgroundPreferenceSync();
+    registerPwaServiceWorker();
 
     // Add loaded class to body for CSS
     document.body.classList.add('app-loaded');
