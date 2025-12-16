@@ -172,7 +172,6 @@ async function loadOwnerTrees() {
 
         items.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
         ownerTreesCache = items;
-        ownerUiState.pageIndex = 0;
         renderOwnerTrees();
     } catch (e) {
         console.error('loadOwnerTrees failed:', e);
