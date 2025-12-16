@@ -469,73 +469,178 @@ function runAiTreeHelper(requestSeq) {
 
     // Gemini API 호출 시도
     const signal = aiHelperAbortController ? aiHelperAbortController.signal : undefined;
-    setAiHelperProgressStage('AI가 타임라인을 구성하고 있습니다...');
-    return callAiHelperApi('tree', { prompt, count }, { signal: signal }).then(async function (result) {
-        if (aiHelperActiveRequestSeq !== requestSeq) return;
-        if (Array.isArray(result)) {
-            setAiHelperProgressStage('결과를 정리하고 있습니다...');
-            const suggestions = result.map(function (item) {
-                const title = item && item.title ? item.title : '새 순간';
-                const date = item && item.date ? item.date : new Date().toISOString().split('T')[0];
 
-                let videoId = '';
-                if (item && typeof item.videoId === 'string' && item.videoId) {
-                    videoId = item.videoId;
-                } else if (item && typeof item.youtubeUrl === 'string' && item.youtubeUrl && typeof parseYouTubeId === 'function') {
-                    const parsed = parseYouTubeId(item.youtubeUrl);
-                    if (parsed) videoId = parsed;
-                }
+    const buildSuggestionFromNodeEdit = function (base, result) {
+        const fallbackTitle = base && base.title ? String(base.title) : '새 순간';
+        const fallbackDate = base && base.date ? String(base.date) : '';
 
-                let moments = [];
-                if (item && Array.isArray(item.moments)) {
-                    moments = item.moments
-                        .map(function (m) {
-                            return {
-                                time: m && m.time ? m.time : '0:00',
-                                text: m && m.text ? m.text : '',
-                                feeling: m && m.feeling ? m.feeling : 'love'
-                            };
-                        })
-                        .filter(function (m) {
-                            return m.text && m.text.trim().length > 0;
-                        });
-                }
+        let obj = result;
+        if (typeof obj === 'string') {
+            try {
+                obj = JSON.parse(obj);
+            } catch (e) {
+                obj = null;
+            }
+        }
 
-                const description = item && item.description ? item.description : '';
+        const next = {
+            title: fallbackTitle,
+            date: fallbackDate,
+            videoId: '',
+            description: '',
+            moments: []
+        };
 
-                if ((!moments || moments.length === 0) && description) {
-                    moments = [{ time: '0:00', text: description, feeling: 'love' }];
-                }
+        if (obj && typeof obj === 'object') {
+            if (obj.title) next.title = String(obj.title);
+            if (obj.date) next.date = String(obj.date);
 
+            if (typeof obj.videoId === 'string' && obj.videoId) {
+                next.videoId = obj.videoId;
+            } else if (typeof obj.youtubeUrl === 'string' && obj.youtubeUrl && typeof parseYouTubeId === 'function') {
+                const parsed = parseYouTubeId(obj.youtubeUrl);
+                if (parsed) next.videoId = parsed;
+            }
+
+            if (typeof obj.description === 'string') {
+                next.description = obj.description;
+            }
+
+            if (Array.isArray(obj.moments)) {
+                next.moments = obj.moments
+                    .map(function (m) {
+                        return {
+                            time: m && m.time ? m.time : '0:00',
+                            text: m && m.text ? m.text : '',
+                            feeling: m && m.feeling ? m.feeling : 'love'
+                        };
+                    })
+                    .filter(function (m) { return m.text && m.text.trim().length > 0; });
+            }
+        }
+
+        if ((!next.moments || next.moments.length === 0) && next.description) {
+            next.moments = [{ time: '0:00', text: next.description, feeling: 'love' }];
+        }
+
+        return next;
+    };
+
+    const fallbackTreeOnePass = function () {
+        setAiHelperProgressStage('기존 방식으로 결과를 생성 중입니다...');
+        return callAiHelperApi('tree', { prompt, count }, { signal: signal }).then(async function (result) {
+            if (aiHelperActiveRequestSeq !== requestSeq) return;
+            if (Array.isArray(result)) {
+                setAiHelperProgressStage('결과를 정리하고 있습니다...');
+                const suggestions = result.map(function (item) {
+                    const title = item && item.title ? item.title : '새 순간';
+                    const date = item && item.date ? item.date : '';
+                    let videoId = '';
+                    if (item && typeof item.videoId === 'string' && item.videoId) {
+                        videoId = item.videoId;
+                    } else if (item && typeof item.youtubeUrl === 'string' && item.youtubeUrl && typeof parseYouTubeId === 'function') {
+                        const parsed = parseYouTubeId(item.youtubeUrl);
+                        if (parsed) videoId = parsed;
+                    }
+
+                    let moments = [];
+                    if (item && Array.isArray(item.moments)) {
+                        moments = item.moments
+                            .map(function (m) {
+                                return {
+                                    time: m && m.time ? m.time : '0:00',
+                                    text: m && m.text ? m.text : '',
+                                    feeling: m && m.feeling ? m.feeling : 'love'
+                                };
+                            })
+                            .filter(function (m) { return m.text && m.text.trim().length > 0; });
+                    }
+                    const description = item && item.description ? item.description : '';
+                    if ((!moments || moments.length === 0) && description) {
+                        moments = [{ time: '0:00', text: description, feeling: 'love' }];
+                    }
+
+                    return { title, date, videoId, description, moments };
+                });
+                if (aiHelperActiveRequestSeq !== requestSeq) return;
+                aiTreeSuggestions = suggestions;
+                renderAiTreePreview();
+                return;
+            }
+
+            setAiHelperProgressStage('대체 생성 로직으로 전환했습니다...');
+            const skeleton = await createAiTreeSkeleton(prompt, count);
+            if (aiHelperActiveRequestSeq !== requestSeq) return;
+            aiTreeSuggestions = skeleton;
+            renderAiTreePreview();
+        });
+    };
+
+    setAiHelperProgressStage('1/2: 타임라인 뼈대를 생성하고 있습니다...');
+
+    return callAiHelperApi('tree_skeleton', { prompt, count }, { signal: signal })
+        .then(async function (skeletonResult) {
+            if (aiHelperActiveRequestSeq !== requestSeq) return;
+            const skeleton = Array.isArray(skeletonResult) ? skeletonResult : [];
+            const items = skeleton.slice(0, count);
+            if (!items.length) {
+                return fallbackTreeOnePass();
+            }
+
+            const suggestions = items.map(function (item) {
+                const title = item && item.title ? String(item.title) : '새 순간';
+                const searchQuery = item && item.searchQuery ? String(item.searchQuery) : '';
                 return {
                     title: title,
-                    date: date,
-                    videoId: videoId,
-                    description: description,
-                    moments: moments
+                    date: '',
+                    videoId: '',
+                    description: '',
+                    moments: [],
+                    _searchQuery: searchQuery
                 };
             });
+
+            const total = suggestions.length;
+
+            for (let i = 0; i < total; i++) {
+                if (aiHelperActiveRequestSeq !== requestSeq) return;
+                setAiHelperProgressStage('2/2: 순간 ' + (i + 1) + '/' + total + ' 내용을 채우는 중...');
+
+                const base = suggestions[i];
+                const instruction = '이 순간을 대표하는 영상과 핵심 모먼트를 3~6개로 정리해줘.';
+                try {
+                    const nodeEditPayload = {
+                        node: {
+                            title: base.title || '',
+                            date: base.date || '',
+                            videoId: base.videoId || '',
+                            description: base.description || '',
+                            moments: Array.isArray(base.moments) ? base.moments : []
+                        },
+                        instruction: instruction,
+                        searchQuery: base._searchQuery || base.title || ''
+                    };
+
+                    const nodeEditResult = await callAiHelperApi('node_edit', nodeEditPayload, { signal: signal });
+                    if (aiHelperActiveRequestSeq !== requestSeq) return;
+                    const enriched = buildSuggestionFromNodeEdit(base, nodeEditResult);
+                    suggestions[i] = Object.assign({}, enriched, { _searchQuery: base._searchQuery || '' });
+                } catch (e) {
+                    if (e && e.name === 'AbortError') return;
+                }
+            }
+
+            suggestions.forEach(function (s) { delete s._searchQuery; });
             if (aiHelperActiveRequestSeq !== requestSeq) return;
+            setAiHelperProgressStage('완료! 결과를 표시합니다.');
             aiTreeSuggestions = suggestions;
             renderAiTreePreview();
-            return;
-        }
-        // 응답 형식이 예상과 다르면 더미 로직으로 폴백 (YouTube 검색 포함)
-        setAiHelperProgressStage('대체 생성 로직으로 전환했습니다...');
-        const skeleton = await createAiTreeSkeleton(prompt, count);
-        if (aiHelperActiveRequestSeq !== requestSeq) return;
-        aiTreeSuggestions = skeleton;
-        renderAiTreePreview();
-    }).catch(async function (err) {
-        if (aiHelperActiveRequestSeq !== requestSeq) return;
-        if (err && err.name === 'AbortError') return;
-        // 에러 시에도 안전하게 폴백 (YouTube 검색 포함)
-        setAiHelperProgressStage('오류가 발생해 대체 생성 로직으로 전환했습니다...');
-        const skeleton = await createAiTreeSkeleton(prompt, count);
-        if (aiHelperActiveRequestSeq !== requestSeq) return;
-        aiTreeSuggestions = skeleton;
-        renderAiTreePreview();
-    });
+        })
+        .catch(function (err) {
+            if (aiHelperActiveRequestSeq !== requestSeq) return;
+            if (err && err.name === 'AbortError') return;
+            return fallbackTreeOnePass();
+        });
 }
 
 async function createAiTreeSkeleton(prompt, count) {

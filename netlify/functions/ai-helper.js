@@ -365,6 +365,21 @@ function buildPromptBody(mode, data) {
     return { text, count: safeCount };
   }
 
+  if (mode === 'tree_skeleton') {
+    const { prompt, count } = data || {};
+    const safeCount = clampNumber(count || 4, 1, 12);
+    const text =
+      `당신은 K-pop 팬을 위한 타임라인 도우미입니다.\n` +
+      `사용자의 설명을 바탕으로 ${safeCount}개의 중요한 순간을 시간순으로 제안해 주세요.\n` +
+      `각 순간은 JSON 배열 원소 하나로, 필드는 title, searchQuery 입니다.\n` +
+      `searchQuery는 YouTube에서 실제 영상을 찾기 위한 검색어(한국어)로 작성해 주세요.\n` +
+      `출력은 오직 JSON 배열(문자열이 아닌 JSON 객체 배열)만 제공하세요.\n` +
+      `한국어로 작성하세요.\n` +
+      `사용자 설명: ${prompt || ''}`;
+
+    return { text, count: safeCount };
+  }
+
   if (mode === 'node_edit') {
     const { node, instruction } = data || {};
     const title = (node && node.title) || '';
@@ -501,6 +516,12 @@ exports.handler = async (event, context) => {
     if (mode === 'qa') {
       const rawText = await callGeminiText(promptBody.text, process.env);
       result = rawText;
+    } else if (mode === 'tree_skeleton') {
+      const rawText = await callGeminiText(promptBody.text, process.env);
+      const skeleton = safeJsonParse(rawText);
+      const list = Array.isArray(skeleton) ? skeleton : [];
+      const safeCount = clampNumber((payload && payload.count) || promptBody.count || 4, 1, 12);
+      result = list.slice(0, safeCount);
     } else if (mode === 'tree') {
       const ytKey = getYouTubeApiKey(process.env);
       if (!ytKey) {
@@ -593,6 +614,7 @@ exports.handler = async (event, context) => {
       const ytKey = getYouTubeApiKey(process.env);
       const node = payload && payload.node ? payload.node : {};
       const instruction = payload && payload.instruction ? String(payload.instruction) : '';
+      const searchQuery = payload && payload.searchQuery ? String(payload.searchQuery) : '';
       const baseTitle = (node && node.title) ? String(node.title) : '';
       const videoId = (node && node.videoId) ? String(node.videoId) : '';
 
@@ -600,7 +622,9 @@ exports.handler = async (event, context) => {
       if (videoId) {
         found = { videoId };
       } else if (ytKey) {
-        const query = baseTitle && baseTitle.trim().length ? baseTitle : (instruction || '');
+        const query = searchQuery && searchQuery.trim().length
+          ? searchQuery
+          : (baseTitle && baseTitle.trim().length ? baseTitle : (instruction || ''));
         try {
           found = await youtubeSearchFirstVideo(query, ytKey);
         } catch (e) {
