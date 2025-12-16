@@ -1158,6 +1158,16 @@ function myMenuGoCommunity() {
     window.location.href = 'community.html';
 }
 
+function myMenuGoOwnerConsole() {
+    try {
+        if (typeof closeModal === 'function') {
+            closeModal('settings-modal');
+        }
+    } catch (e) {
+    }
+    window.location.href = 'owner.html';
+}
+
 function myMenuGoTheme() {
     const modal = document.getElementById('settings-modal');
     if (!modal) return;
