@@ -30,11 +30,33 @@ function getCurrentUserForCommunity() {
         if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
             return null;
         }
-
         return firebase.auth().currentUser;
     } catch (e) {
         console.warn('getCurrentUserForCommunity 실패:', e);
         return null;
+    }
+}
+
+function buildDeletedInfoHtmlForAdmin(data) {
+    try {
+        if (!data || data.isDeleted !== true) return '';
+
+        const reason = escapeHtml(String(data.deletedReason || '').trim());
+        const byEmail = escapeHtml(String(data.deletedByEmail || '').trim());
+        const byUid = escapeHtml(String(data.deletedBy || '').trim());
+        const byText = byEmail || byUid;
+        const atText = formatCommunityDate(data.deletedAt);
+
+        const parts = [];
+        if (atText) parts.push(atText);
+        if (byText) parts.push(byText);
+
+        const meta = parts.length ? `(${escapeHtml(parts.join(' · '))})` : '';
+        const reasonText = reason ? ` - ${reason}` : '';
+
+        return `<div class="mt-2 text-[11px] text-slate-500">삭제 정보 ${meta}${reasonText}</div>`;
+    } catch (e) {
+        return '';
     }
 }
 
@@ -851,6 +873,10 @@ async function openCommunityPostDetail(postId) {
             const isAdmin = await isAdminUserForCommunity(user);
             const canEditOrDelete = !!(isOwner || isAdmin);
 
+            if (isAdmin && data && data.isDeleted === true) {
+                metaEl.innerHTML = `${escapeHtml(author)} · ${escapeHtml(created)}${buildDeletedInfoHtmlForAdmin(data)}`;
+            }
+
             setCommunityPostActionUiVisible(canEditOrDelete);
 
             if (postEditBtn && postDeleteBtn) {
@@ -1141,6 +1167,10 @@ async function loadCommunityComments(postId) {
                 ? '<span class="text-slate-400">(삭제된 댓글입니다)</span>'
                 : escapeHtml(data.content || '');
 
+            const deletedInfo = (isAdmin && isDeleted)
+                ? buildDeletedInfoHtmlForAdmin(data)
+                : '';
+
             const deleteBtn = canDelete
                 ? `<button type="button" class="text-[10px] font-bold text-red-600 hover:text-red-700" data-action="delete-comment" data-comment-id="${escapeHtml(id)}">삭제</button>`
                 : '';
@@ -1158,6 +1188,7 @@ async function loadCommunityComments(postId) {
                         </div>
                     </div>
                     <p class="text-xs text-slate-700 whitespace-pre-wrap">${text}</p>
+                    ${deletedInfo}
                 </div>
             `;
         }).join('');
