@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 트리 관리 - Relovetree</title>
+    <link rel="stylesheet" href="output.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen">
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <div class="flex items-center justify-between gap-3 mb-6">
+            <div class="flex items-center gap-3 min-w-0">
+                <a href="index.html"
+                    class="shrink-0 w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50">
+                    <span class="text-brand-600 font-black">R</span>
+                </a>
+                <div class="min-w-0">
+                    <h1 class="text-xl font-black text-slate-900 truncate">내 트리 관리</h1>
+                    <p class="text-xs text-slate-500 truncate" id="owner-subtitle">로그인한 계정의 트리만 표시됩니다.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="index.html"
+                    class="px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
+                    홈
+                </a>
+                <button id="owner-login-btn" type="button"
+                    class="hidden px-3 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white hover:bg-brand-600">
+                    로그인
+                </button>
+                <button id="owner-logout-btn" type="button"
+                    class="hidden px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
+                    로그아웃
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-end gap-3">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">새 트리 만들기</label>
+                    <input id="new-tree-name" type="text" placeholder="예: 엔믹스, 뉴진스, 방탄소년단"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                    <p class="mt-2 text-[11px] text-slate-400">이름을 입력하면 에디터로 이동하며, 없는 트리는 자동으로 생성됩니다.</p>
+                </div>
+                <button id="create-tree-btn" type="button"
+                    class="px-4 py-3 rounded-xl text-sm font-black bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                    에디터 열기
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+                <div>
+                    <h2 class="text-sm font-black text-slate-900">내 트리 목록</h2>
+                    <p class="text-xs text-slate-500">이 페이지에서는 본인 소유 트리만 수정/삭제할 수 있습니다.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input id="tree-search" type="text" placeholder="이름/ID 검색"
+                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                    <button id="refresh-btn" type="button"
+                        class="px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
+                        새로고침
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-700">
+                    <thead class="bg-slate-50 text-[11px] uppercase font-black text-slate-500">
+                        <tr>
+                            <th class="px-5 py-3">트리</th>
+                            <th class="px-5 py-3">노드</th>
+                            <th class="px-5 py-3">조회/좋아요/공유</th>
+                            <th class="px-5 py-3">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-tree-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="mt-6 text-[11px] text-slate-400">Relovetree Owner Console</p>
+    </div>
+
+    <script src="src/shared.js"></script>
+    <script src="src/auth.js"></script>
+    <script src="owner.js"></script>
+</body>
+
+</html>
