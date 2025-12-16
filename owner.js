@@ -668,8 +668,22 @@ function renderOwnerTrees() {
         const forkStatus = ownerForkStatusCache[t.id] || null;
         const sourceId = forkedFrom ? String(forkedFrom.treeId) : '';
         const sourceUrl = sourceId ? ('editor.html?id=' + encodeURIComponent(sourceId)) : '';
+        const forkedAtIso = forkedFrom ? normalizeToIsoString(forkedFrom.forkedAt) : '';
+        const syncedAtIso = forkedFrom ? normalizeToIsoString(forkedFrom.syncedAt) : '';
+        const forkedRel = forkedAtIso ? formatRelativeTime(forkedAtIso) : '';
+        const syncedRel = syncedAtIso ? formatRelativeTime(syncedAtIso) : '';
+        const forkedFull = forkedAtIso ? formatDateTimeFull(forkedAtIso) : '';
+        const syncedFull = syncedAtIso ? formatDateTimeFull(syncedAtIso) : '';
+
+        const forkTimeBadge = forkedRel
+            ? `<div class="mt-1 text-[10px] text-slate-400" title="${escapeHtml(forkedFull)}">포크: ${escapeHtml(forkedRel)}</div>`
+            : '';
+        const syncTimeBadge = syncedRel
+            ? `<div class="mt-1 text-[10px] text-slate-400" title="${escapeHtml(syncedFull)}">동기화: ${escapeHtml(syncedRel)}</div>`
+            : '';
+
         const forkBadge = forkedFrom
-            ? `<div class="mt-1 text-[10px] text-slate-400">원본: <a class="text-brand-600 hover:underline" href="${sourceUrl}" target="_blank">${escapeHtml(sourceId)}</a></div>`
+            ? `<div class="mt-1 text-[10px] text-slate-400">원본: <a class="text-brand-600 hover:underline" href="${sourceUrl}" target="_blank">${escapeHtml(sourceId)}</a></div>${forkTimeBadge}${syncTimeBadge}`
             : '';
         const updateBadge = forkStatus
             ? `<div class="mt-1 text-[10px] ${forkStatus.hasUpdate ? 'text-amber-600' : 'text-emerald-600'}">${forkStatus.hasUpdate ? '업데이트 있음' : '최신'}</div>`
@@ -677,6 +691,7 @@ function renderOwnerTrees() {
 
         const forkButtons = forkedFrom
             ? `
+                <a href="${sourceUrl}" target="_blank" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">원본 열기</a>
                 <button type="button" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-slate-700 hover:bg-slate-50" data-action="fork-check" data-id="${escapeHtml(String(t.id || ''))}">업데이트 확인</button>
                 <button type="button" class="px-3 py-1.5 rounded-lg text-[11px] font-black bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-50" data-action="fork-sync" data-id="${escapeHtml(String(t.id || ''))}">동기화</button>
             `
