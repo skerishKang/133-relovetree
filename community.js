@@ -9,6 +9,8 @@ let communityCurrentPostId = null;
 let communitySortMode = 'latest'; // 'latest' | 'popular'
 let communityCurrentTreeId = '';
 
+let communityCreateImageFile = null;
+
 let communityMyTreesCache = [];
 let communityMyTreesLoaded = false;
 let communityTreePickerBound = false;
@@ -21,6 +23,88 @@ function getCurrentUserForCommunity() {
         if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
             return null;
         }
+
+function getStorageForCommunity() {
+    try {
+        if (typeof firebase === 'undefined' || !firebase.storage) {
+            console.error('Firebase Storage 미초기화 상태입니다.');
+            return null;
+        }
+        return firebase.storage();
+    } catch (e) {
+        console.error('Firebase Storage 초기화 실패:', e);
+        return null;
+    }
+}
+
+function resetCommunityImagePicker() {
+    communityCreateImageFile = null;
+    const input = document.getElementById('community-image');
+    const wrap = document.getElementById('community-image-preview');
+    const img = document.getElementById('community-image-preview-img');
+
+    if (input) input.value = '';
+    if (img) img.src = '';
+    if (wrap) wrap.classList.add('hidden');
+}
+
+function bindCommunityImagePicker() {
+    const input = document.getElementById('community-image');
+    const wrap = document.getElementById('community-image-preview');
+    const img = document.getElementById('community-image-preview-img');
+
+    if (!input) return;
+
+    input.onchange = function () {
+        const file = input.files && input.files[0];
+        if (!file) {
+            communityCreateImageFile = null;
+            if (img) img.src = '';
+            if (wrap) wrap.classList.add('hidden');
+            return;
+        }
+
+        if (file && file.type && !String(file.type).startsWith('image/')) {
+            showError('이미지 파일만 첨부할 수 있어요.', 3000);
+            resetCommunityImagePicker();
+            return;
+        }
+
+        if (file && typeof file.size === 'number' && file.size > 5 * 1024 * 1024) {
+            showError('이미지는 5MB 이하만 첨부할 수 있어요.', 3000);
+            resetCommunityImagePicker();
+            return;
+        }
+
+        communityCreateImageFile = file;
+
+        try {
+            if (!img || !wrap) return;
+            const url = URL.createObjectURL(file);
+            img.src = url;
+            wrap.classList.remove('hidden');
+        } catch (e) {
+        }
+    };
+}
+
+async function uploadCommunityImageOrNull(user, file) {
+    if (!file) return null;
+    const storage = getStorageForCommunity();
+    if (!storage) return null;
+
+    try {
+        const ext = (file && file.name && file.name.includes('.')) ? file.name.split('.').pop() : 'jpg';
+        const path = `community_uploads/${user.uid}/${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
+        const ref = storage.ref().child(path);
+        await ref.put(file, { contentType: file.type || 'image/jpeg' });
+        const url = await ref.getDownloadURL();
+        return url;
+    } catch (e) {
+        console.error('커뮤니티 이미지 업로드 실패:', e);
+        return null;
+    }
+}
         return firebase.auth().currentUser;
     } catch (e) {
         console.warn('getCurrentUserForCommunity 실패:', e);
@@ -469,6 +553,8 @@ function openCreatePostModal() {
     if (treeIdInput) treeIdInput.value = '';
     if (treeSelect) treeSelect.value = '';
 
+    resetCommunityImagePicker();
+
     bindCommunityTreePicker();
     if (!communityMyTreesLoaded) {
         loadMyTreesForCommunity(user);
@@ -519,10 +605,17 @@ async function handleCreatePostSubmit(event) {
     }
 
     try {
+        let imageUrls = [];
+        if (communityCreateImageFile) {
+            const imageUrl = await uploadCommunityImageOrNull(user, communityCreateImageFile);
+            if (imageUrl) imageUrls = [imageUrl];
+        }
+
         await db.collection(COMMUNITY_COLLECTION).add({
             title,
             content,
             treeId: treeId || '',
+            imageUrls: imageUrls,
             authorId: user.uid,
             authorDisplayName: user.displayName || user.email || '익명',
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -533,6 +626,7 @@ async function handleCreatePostSubmit(event) {
         });
 
         closeModal('create-post-modal');
+        resetCommunityImagePicker();
         await loadCommunityPosts();
     } catch (e) {
         console.error('글 작성 실패:', e);
@@ -557,6 +651,8 @@ async function openCommunityPostDetail(postId) {
     const treeForkBtn = document.getElementById('detail-tree-fork');
     const treeSummaryEl = document.getElementById('detail-tree-summary');
 
+    const imagesWrap = document.getElementById('detail-images');
+
     if (!dialog || !titleEl || !metaEl || !contentEl) return;
 
     try {
@@ -575,6 +671,23 @@ async function openCommunityPostDetail(postId) {
         const author = data.authorDisplayName || '익명';
         metaEl.textContent = `${author} · ${created}`;
         contentEl.textContent = data.content || '';
+
+        try {
+            if (imagesWrap) {
+                const urls = data && Array.isArray(data.imageUrls) ? data.imageUrls.filter(Boolean) : [];
+                if (!urls.length) {
+                    imagesWrap.classList.add('hidden');
+                    imagesWrap.innerHTML = '';
+                } else {
+                    imagesWrap.classList.remove('hidden');
+                    imagesWrap.innerHTML = urls.map((url) => {
+                        const safe = escapeHtml(String(url || ''));
+                        return `<img src="${safe}" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />`;
+                    }).join('');
+                }
+            }
+        } catch (e) {
+        }
 
         try {
             if (treeActionsEl && treeOpenEl && treeForkBtn) {
@@ -786,6 +899,8 @@ function initCommunityPage() {
     if (createForm) {
         createForm.addEventListener('submit', handleCreatePostSubmit);
     }
+
+    bindCommunityImagePicker();
     if (commentForm) {
         commentForm.addEventListener('submit', handleCommentFormSubmit);
     }
