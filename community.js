@@ -165,6 +165,12 @@ async function loadCommunityPosts() {
             el.addEventListener('click', () => openCommunityPostDetail(postId));
         });
 
+        listEl.querySelectorAll('a[href^="editor.html?id="]').forEach((a) => {
+            a.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
         listEl.querySelectorAll('button[data-action="fork-tree"]').forEach((btn) => {
             btn.addEventListener('click', async (e) => {
                 e.preventDefault();
