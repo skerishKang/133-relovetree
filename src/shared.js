@@ -126,6 +126,8 @@ function shouldInjectGlobalLayout() {
     try {
         if (typeof document === 'undefined') return false;
         const page = document.body ? String(document.body.getAttribute('data-page') || '') : '';
+        if (page === 'home') return false;
+        if (page === 'admin') return false;
         if (page === 'editor') return false;
         return true;
     } catch (e) {
@@ -266,6 +268,24 @@ function ensureGlobalLayoutInjected() {
                     if (typeof modal.showModal === 'function') modal.showModal();
                     else modal.setAttribute('open', 'open');
                 } catch (e) {
+                }
+            });
+        }
+
+        const myModal = document.getElementById('settings-modal');
+        if (myModal && !myModal.dataset.outsideClickBound) {
+            myModal.dataset.outsideClickBound = '1';
+            myModal.addEventListener('click', function (e) {
+                try {
+                    const rect = myModal.getBoundingClientRect();
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    const isOutside = x < rect.left || x > rect.right || y < rect.top || y > rect.bottom;
+                    if (isOutside) {
+                        if (typeof myModal.close === 'function') myModal.close();
+                        else myModal.removeAttribute('open');
+                    }
+                } catch (err) {
                 }
             });
         }

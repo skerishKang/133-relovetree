@@ -177,6 +177,52 @@ window.editBotProfile = async function (uid) {
         });
     }
 
+    // 공통 '마이' 모달(settings-modal) 열기
+    const adminMyBtn = document.getElementById('adminMyBtn');
+    if (adminMyBtn) {
+        adminMyBtn.addEventListener('click', () => {
+            try {
+                let modal = document.getElementById('settings-modal');
+                if (!modal) {
+                    if (typeof buildGlobalMyModalHTML === 'function') {
+                        const wrap = document.createElement('div');
+                        wrap.innerHTML = buildGlobalMyModalHTML();
+                        const el = wrap.firstElementChild;
+                        if (el) document.body.appendChild(el);
+                    }
+                    modal = document.getElementById('settings-modal');
+                }
+
+                if (!modal) {
+                    alert('마이 메뉴를 열 수 없습니다.');
+                    return;
+                }
+
+                if (!modal.dataset.outsideClickBound) {
+                    modal.dataset.outsideClickBound = '1';
+                    modal.addEventListener('click', function (e) {
+                        try {
+                            const rect = modal.getBoundingClientRect();
+                            const x = e.clientX;
+                            const y = e.clientY;
+                            const isOutside = x < rect.left || x > rect.right || y < rect.top || y > rect.bottom;
+                            if (isOutside) {
+                                if (typeof modal.close === 'function') modal.close();
+                                else modal.removeAttribute('open');
+                            }
+                        } catch (err) {
+                        }
+                    });
+                }
+
+                if (typeof modal.showModal === 'function') modal.showModal();
+                else modal.setAttribute('open', 'open');
+            } catch (e) {
+                console.warn('adminMyBtn open settings-modal 실패:', e);
+            }
+        });
+    }
+
     // AI 로그 새로고침 버튼
     const refreshAiLogsBtn = document.getElementById('refreshAiLogsBtn');
     if (refreshAiLogsBtn) {
