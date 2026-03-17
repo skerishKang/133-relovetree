@@ -1,3 +1,36 @@
+# Fossil 공통 제외 - 바이너리 문서
+*.pdf
+*.hwp
+*.hwpx
+*.docx
+*.xlsx
+*.pptx
+
+# Fossil 공통 제외 - 이미지
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.svg
+*.ico
+
+# Fossil 공통 제외 - 영상/오디오
+*.mp4
+*.mov
+*.avi
+*.mp3
+*.wav
+*.m4a
+*.flac
+
+# Fossil 공통 제외 - 압축파일
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+
 node_modules/
 .next/
 .netlify/
