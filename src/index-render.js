@@ -140,23 +140,24 @@
 
         const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
         const loggedIn = !!user;
+        const isKorean = typeof window.IndexI18n !== 'undefined' ? window.IndexI18n.isKorean : true;
 
         if (!myTrees || myTrees.length === 0) {
             if (loggedIn) {
-                if (placeholderTitle) placeholderTitle.textContent = '나만의 러브트리를 시작해 보세요';
-                if (placeholderDesc) placeholderDesc.textContent = '아직 만들어진 트리가 없습니다. 좋아하는 아티스트의 첫 번째 순간을 지금 기록해 보세요!';
+                if (placeholderTitle) placeholderTitle.textContent = isKorean ? '나만의 러브트리를 시작해 보세요' : 'Start your own LoveTree';
+                if (placeholderDesc) placeholderDesc.textContent = isKorean ? '아직 만들어진 트리가 없습니다. 좋아하는 아티스트의 첫 번째 순간을 지금 기록해 보세요!' : 'No trees yet. Record your first moment with your favorite artist now!';
                 if (loginBtn) loginBtn.classList.add('hidden');
                 if (createBtn) {
                     createBtn.classList.remove('hidden');
-                    createBtn.textContent = '+ 첫 트리 만들기';
+                    createBtn.textContent = isKorean ? '+ 첫 트리 만들기' : '+ Create First Tree';
                 }
                 if (iconBtn && typeof openCreateModal === 'function') iconBtn.onclick = openCreateModal;
             } else {
-                if (placeholderTitle) placeholderTitle.textContent = '내 러브트리를 안전하게 보관하세요';
-                if (placeholderDesc) placeholderDesc.textContent = '로그인하면 내가 만든 트리를 모든 기기에서 확인하고 관리할 수 있습니다.';
+                if (placeholderTitle) placeholderTitle.textContent = isKorean ? '내 러브트리를 안전하게 보관하세요' : 'Keep your LoveTrees safe';
+                if (placeholderDesc) placeholderDesc.textContent = isKorean ? '로그인하면 내가 만든 트리를 모든 기기에서 확인하고 관리할 수 있습니다.' : 'Log in to access your trees from any device.';
                 if (loginBtn) {
                     loginBtn.classList.remove('hidden');
-                    loginBtn.textContent = '지금 로그인하기';
+                    loginBtn.textContent = isKorean ? '지금 로그인하기' : 'Login Now';
                 }
                 if (createBtn) createBtn.classList.add('hidden');
                 if (iconBtn && typeof openSettingsModal === 'function') {
@@ -183,12 +184,17 @@
         if (placeholder) placeholder.classList.add('hidden');
     }
 
+    function updateMyCreatedTreesPlaceholder() {
+        // Called by language toggle - just re-render current state
+    }
+
     window.IndexRender = {
         getFallbackColor,
         resolveArtistThumbnail,
         createArtistCard,
         renderArtistCards,
         renderRecentTreesFromList,
-        renderMyTreesGrid
+        renderMyTreesGrid,
+        updateMyCreatedTreesPlaceholder
     };
 })();

@@ -88,35 +88,10 @@
             box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
         }
 
-        /* Hero enhancement */
-        .hero-gradient {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(248, 250, 252, 0.5) 100%);
-        }
-
-        .text-shadow-sm {
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-        }
-
         /* 전체 페이지에서 가로 스크롤 방지 */
         html,
         body {
             overflow-x: hidden;
-        }
-
-        .loading-skeleton {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
         }
 
         /* Dialog styles */
@@ -132,30 +107,7 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        /* Custom scrollbar with better performance */
-        @supports (scrollbar-width: thin) {
-            .custom-scrollbar {
-                scrollbar-width: thin;
-                scrollbar-color: #cbd5e1 transparent;
-            }
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        
 
         /* Line clamp utilities */
         .line-clamp-1 {
@@ -993,9 +945,14 @@
     <script src="src/shared-layout.js"></script>
     <script src="src/shared-utils.js"></script>
     <script src="src/shared.js"></script>
-    <script src="src/index-settings.js"></script>
+    <script src="src/index-data.js"></script>
+    <script src="src/index-i18n.js"></script>
+    <script src="src/index-artists.js"></script>
+    <script src="src/index-utils.js"></script>
     <script src="src/index-render.js"></script>
+    <script src="src/index-settings.js"></script>
     <script src="src/index-search.js"></script>
+    <script src="src/index-runtime.js"></script>
     <script src="index.js"></script>
     <script src="src/auth.js"></script>
     <script src="src/payment.js"></script>

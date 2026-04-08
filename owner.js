@@ -53,10 +53,6 @@ Object.defineProperty(window, 'OWNER_UI_STATE', {
     }
 });
 
-function isValidSortKey(v) {
-    return window.OwnerUiStateHelpers.isValidSortKey(v);
-}
-
 function parseOwnerUiStateFromUrl() {
     return window.OwnerUiStateHelpers.parseOwnerUiStateFromUrl(OWNER_URL_KEYS);
 }
@@ -71,13 +67,6 @@ function buildOwnerViewUrlFromState() {
 
 function updateOwnerUrlFromState() {
     window.OwnerUiStateHelpers.updateOwnerUrlFromState(ownerUiState, OWNER_URL_KEYS);
-}
-
-function getOwnerForkStatusCacheStorageKey() {
-    return window.OwnerForkCacheHelpers.getOwnerForkStatusCacheStorageKey({
-        ownerUser: ownerUser,
-        storageKeyPrefix: OWNER_FORK_STATUS_CACHE_STORAGE_KEY_PREFIX
-    });
 }
 
 function loadOwnerForkStatusCacheFromStorage() {
@@ -101,25 +90,6 @@ function updateForkCheckAllButtonUi() {
         ownerUser: ownerUser,
         ownerTreesCache: ownerTreesCache,
         ownerForkCheckAllInflight: ownerForkCheckAllInflight
-    });
-}
-
-async function runOwnerForkAutoCheck(treeIds, options) {
-    return window.OwnerForkAutoCheck.runOwnerForkAutoCheck({
-        ownerUser: ownerUser,
-        ownerTreesCache: ownerTreesCache,
-        ownerForkStatusCache: ownerForkStatusCache,
-        ownerForkAutoCheckInflight: ownerForkAutoCheckInflight,
-        treeIds: treeIds,
-        force: !!(options && options.force),
-        batchSize: options && typeof options.batchSize === 'number' ? options.batchSize : undefined,
-        concurrency: options && typeof options.concurrency === 'number' ? options.concurrency : undefined,
-        batchSizeDefault: OWNER_FORK_AUTO_CHECK_BATCH_SIZE,
-        concurrencyDefault: OWNER_FORK_AUTO_CHECK_CONCURRENCY,
-        ttlMs: OWNER_FORK_AUTO_CHECK_TTL_MS,
-        checkForkUpdateStatus: checkForkUpdateStatus,
-        saveForkStatusCache: saveOwnerForkStatusCacheToStorage,
-        renderOwnerTrees: renderOwnerTrees
     });
 }
 
@@ -198,7 +168,7 @@ function normalizeToIsoString(value) {
     return window.OwnerApiClient.normalizeToIsoString(value);
 }
 
-async async function checkForkUpdateStatus(myTreeId) {
+async function checkForkUpdateStatus(myTreeId) {
     return window.OwnerApiClient.checkForkUpdateStatus(myTreeId, ownerTreesCache);
 }
 

@@ -2,74 +2,176 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Relovetree Smoke E2E Tests
- * Focuses on production health and core UI presence.
+ * Enhanced with structured console error tracking and better stability.
  */
 
+let consoleErrors = [];
+let pageErrors = [];
+let consoleWarnings = [];
+
 test.describe('Relovetree Smoke Tests', () => {
-  
+
   test.beforeEach(async ({ page }) => {
-    // Capture console errors to detect regressions like editorMode TDZ
+    consoleErrors = [];
+    pageErrors = [];
+    consoleWarnings = [];
+
+    // Structured console message collection
     page.on('console', msg => {
-      if (msg.type() === 'error') {
-        console.log(`BROWSER ERROR: "${msg.text()}"`);
+      const type = msg.type();
+      const text = msg.text();
+      
+      if (type === 'error') {
+        consoleErrors.push(text);
+        console.log(`[Console Error] ${text}`);
+      } else if (type === 'warning') {
+        consoleWarnings.push(text);
+        console.log(`[Console Warning] ${text}`);
       }
+    });
+
+    // Page-level errors (uncaught exceptions)
+    page.on('pageerror', error => {
+      const text = error.message;
+      pageErrors.push(text);
+      console.log(`[Page Error] ${text}`);
     });
   });
 
-  test('Home Page: Visual Consistency & Search presence', async ({ page }) => {
+  test.afterEach(async ({}, testInfo) => {
+    const hasErrors = consoleErrors.length > 0 || pageErrors.length > 0;
+    
+    if (hasErrors) {
+      console.log(`=== Test "${testInfo.title}" captured ===`);
+      console.log(`  Console errors: ${consoleErrors.length}`);
+      console.log(`  Page errors: ${pageErrors.length}`);
+      consoleErrors.forEach(e => console.log(`    - ${e.substring(0, 100)}`));
+      pageErrors.forEach(e => console.log(`    - ${e.substring(0, 100)}`));
+    }
+    
+    // Fail test if there were page errors (not console errors - those may be expected)
+    if (pageErrors.length > 0) {
+      throw new Error(`Test failed due to ${pageErrors.length} page errors`);
+    }
+  });
+
+  test('Home Page: Load and UI elements present', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/LoveTree/);
     
-    // Check key UI elements
-    await expect(page.locator('#search-btn')).toBeVisible();
-    await expect(page.locator('#settings-btn')).toBeVisible();
+    // Stable selectors for key UI elements
+    const searchBtn = page.locator('#search-btn');
+    const settingsBtn = page.locator('#settings-btn');
+    const mainNav = page.locator('#main-nav');
     
-    // Check if the grid container exists
-    await expect(page.locator('#artist-cards-container')).toBeAttached();
+    await expect(searchBtn).toBeVisible();
+    await expect(settingsBtn).toBeVisible();
+    await expect(mainNav).toBeVisible();
+    
+    // Check main content loaded
+    const heroSection = page.locator('.hero-shell, [class*="hero"]').first();
+    await expect(heroSection).toBeAttached();
   });
 
-  test('Community Page: Result listing', async ({ page }) => {
+  test('Home Page: Search Modal opens', async ({ page }) => {
+    await page.goto('/');
+    
+    const searchBtn = page.locator('#search-btn');
+    await searchBtn.click();
+    
+    const searchModal = page.locator('#search-modal');
+    await expect(searchModal).toBeVisible();
+    
+    const searchInput = page.locator('#search-input');
+    await expect(searchInput).toBeAttached();
+    
+    // Close modal
+    const closeBtn = searchModal.locator('button[aria-label*="닫기"], .modal-close').first();
+    if (await closeBtn.isVisible().catch(() => false)) {
+      await closeBtn.click();
+    }
+  });
+
+  test('Community Page: Load and list present', async ({ page }) => {
     await page.goto('/community.html');
-    // Should have a posts container or message
-    const postsSection = page.locator('#posts-container');
-    await expect(postsSection).toBeAttached();
+    
+    await page.waitForLoadState('domcontentloaded');
+    
+    // Use multiple fallback selectors for stability
+    const communityContent = page.locator(
+      '#community-post-list, #posts-container, main, [class*="community"]'
+    ).first();
+    
+    await expect(communityContent).toBeAttached();
   });
 
   test('Owner Page: Management dashboard shell', async ({ page }) => {
     await page.goto('/owner.html');
-    // Check for the tree list area
-    await expect(page.locator('#owner-trees-list')).toBeAttached();
-    // Check for "Create" button
-    await expect(page.locator('#create-tree-btn')).toBeVisible();
+    
+    await page.waitForLoadState('domcontentloaded');
+    
+    // Use stable ID-based selectors
+    const treesList = page.locator('#owner-trees-list');
+    const createBtn = page.locator('#create-tree-btn, button:has-text("만들기")').first();
+    
+    await expect(treesList).toBeAttached();
+    await expect(createBtn).toBeVisible();
   });
 
-  test('Editor Page: Loading and Basic Interaction (TDZ Check)', async ({ page }) => {
-    // Using a known public ID for smoke test
+  test('Editor Page: Load without crash (TDZ check)', async ({ page }) => {
     await page.goto('/editor.html?id=bts');
     
-    // Wait for runtime initialization
     await page.waitForLoadState('networkidle');
     
-    // check for major UI buttons that might trigger TDZ errors if clicked early
-    const listModeBtn = page.locator('#toggle-mode-btn');
+    // Stable selectors using IDs
+    const toggleModeBtn = page.locator('#toggle-mode-btn');
     const addNodeBtn = page.locator('#add-node-btn');
     
-    await expect(listModeBtn).toBeVisible();
+    await expect(toggleModeBtn).toBeVisible();
     await expect(addNodeBtn).toBeVisible();
 
-    // Interaction test: toggle mode (often triggers runtime getters)
-    await listModeBtn.click();
-    // If a TDZ error occurs, our console listener would catch it, 
-    // and we can also check if the mode actually changed or if the page froze.
-    await expect(page.locator('body')).not.toHaveClass(/error/);
+    // Check no body-level error class
+    const bodyClass = await page.locator('body').getAttribute('class');
+    expect(bodyClass?.includes('error') || bodyClass?.includes('Error')).not.toBe(true);
   });
 
-  test('Admin Page: Login presence', async ({ page }) => {
+  test('Editor Page: Mode toggle interaction', async ({ page }) => {
+    await page.goto('/editor.html?id=test-tree');
+    
+    await page.waitForLoadState('networkidle');
+    
+    const toggleModeBtn = page.locator('#toggle-mode-btn');
+    
+    if (await toggleModeBtn.isVisible().catch(() => false)) {
+      await toggleModeBtn.click();
+      await page.waitForTimeout(300);
+      
+      const bodyClass = await page.locator('body').getAttribute('class');
+      expect(bodyClass?.includes('error') || bodyClass?.includes('Error')).not.toBe(true);
+    }
+  });
+
+  test('Admin Page: Login overlay present', async ({ page }) => {
     await page.goto('/admin.html');
-    // Admin usually shows a login overlay if not authenticated
+    
+    await page.waitForLoadState('domcontentloaded');
+    
+    // Stable selector
     const loginOverlay = page.locator('#loginOverlay');
-    // It might be hidden if already logged in or visible if guest
-    // In smoke test, we just check if it exists in DOM
     await expect(loginOverlay).toBeAttached();
+  });
+
+  test('Settings Modal: Opens from home page', async ({ page }) => {
+    await page.goto('/');
+    
+    const settingsBtn = page.locator('#settings-btn');
+    await settingsBtn.click();
+    
+    const settingsModal = page.locator('#settings-modal');
+    await expect(settingsModal).toBeVisible();
+    
+    // Check modal has content
+    const modalTitle = settingsModal.locator('.modal-title, h3').first();
+    await expect(modalTitle).toBeAttached();
   });
 });

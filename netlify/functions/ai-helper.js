@@ -1,75 +1,16 @@
-// Netlify Function: Gemini 2.5 Flash 프록시
-// - 여러 GEMINI_API_KEYS 를 순차적으로 사용
-// - 트리 뼈대 / 코멘트 추천 / QA(질문·도움말) 모드를 지원
-// - 프런트에서는 /.netlify/functions/ai-helper 로 호출
-
-const GEMINI_ENDPOINT =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
-
 function getYouTubeApiKey(env) {
   return (env.YOUTUBE_API_KEY || '').trim();
 }
 
-function getYouTubeRequestHeaders(env) {
-  const referer = (env.YOUTUBE_API_REFERER || env.URL || env.DEPLOY_PRIME_URL || '').trim();
-  if (!referer) return undefined;
-  return {
-    Referer: referer,
-    Origin: referer,
-  };
-}
+const {
+  clampNumber,
+  isoToDate,
+  msToTime,
+  truncateText,
+  safeJsonParse,
+  getYouTubeRequestHeaders
+} = require('./_lib/ai-helper-utils');
 
-function clampNumber(n, min, max) {
-  const v = Number(n);
-  if (!Number.isFinite(v)) return min;
-  return Math.max(min, Math.min(max, v));
-}
-
-function isoToDate(iso) {
-  if (!iso || typeof iso !== 'string') return '';
-  const t = iso.split('T')[0];
-  return t || '';
-}
-
-function msToTime(ms) {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-function truncateText(text, maxChars) {
-  if (!text || typeof text !== 'string') return '';
-  if (!Number.isFinite(maxChars) || maxChars <= 0) return text;
-  if (text.length <= maxChars) return text;
-  return text.slice(0, maxChars);
-}
-
-function safeJsonParse(raw) {
-  if (!raw || typeof raw !== 'string') return null;
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    const firstObj = raw.indexOf('{');
-    const firstArr = raw.indexOf('[');
-    let start = -1;
-    if (firstObj >= 0 && firstArr >= 0) start = Math.min(firstObj, firstArr);
-    else start = Math.max(firstObj, firstArr);
-
-    if (start < 0) return null;
-
-    const lastObj = raw.lastIndexOf('}');
-    const lastArr = raw.lastIndexOf(']');
-    const end = Math.max(lastObj, lastArr);
-    if (end <= start) return null;
-    const sliced = raw.slice(start, end + 1);
-    try {
-      return JSON.parse(sliced);
-    } catch (e2) {
-      return null;
-    }
-  }
-}
 
 async function youtubeSearchFirstVideo(query, apiKey) {
   if (!query || !apiKey) return null;

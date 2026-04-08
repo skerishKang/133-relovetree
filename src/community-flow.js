@@ -232,9 +232,36 @@
         window.CommunityCommentsHelpers.renderCommunityComments(opts);
     }
 
+    async function handleForkTree(treeIdRaw) {
+        try {
+            const treeId = treeIdRaw ? decodeURIComponent(treeIdRaw) : '';
+            if (!treeId) return;
+
+            const ok = confirm('이 트리를 내 트리로 가져올까요? 가져온 뒤에는 내 트리에서 자유롭게 수정할 수 있습니다.');
+            if (!ok) return;
+
+            if (typeof forkTreeToMyAccountBySourceTreeId !== 'function') {
+                showError('가져오기 기능을 사용할 수 없습니다.', 4000);
+                return;
+            }
+
+            const res = await forkTreeToMyAccountBySourceTreeId(treeId);
+            if (!res || !res.ok) {
+                showError(res && res.error ? res.error : '가져오기 실패', 4000);
+                return;
+            }
+
+            window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
+        } catch (err) {
+            console.error('커뮤니티 카드 포크 실패:', err);
+            showError('가져오기 실패', 4000);
+        }
+    }
+
     window.CommunityFlowHelpers = {
         validateCommunityCreatePostSubmit: validateCommunityCreatePostSubmit,
         bindCommunityDetailActionHandlers: bindCommunityDetailActionHandlers,
-        renderCommunityCommentsSuccess: renderCommunityCommentsSuccess
+        renderCommunityCommentsSuccess: renderCommunityCommentsSuccess,
+        handleForkTree: handleForkTree
     };
 })();
