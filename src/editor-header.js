@@ -1,8 +1,4 @@
 (function () {
-    function runtime() {
-        return window.__editorRuntime;
-    }
-
     const translations = {
         ko: {
             defaultTreeTitle: '나의 러브트리',
@@ -153,9 +149,9 @@
         setOrientationMode: setOrientationMode
     };
     window.toggleLanguage = function () {
-        return toggleLanguage(runtime());
+        return toggleLanguage(window.__editorRuntime);
     };
     window.setOrientationMode = function (mode) {
-        return setOrientationMode(runtime(), mode);
+        return setOrientationMode(window.__editorRuntime, mode);
     };
 })();

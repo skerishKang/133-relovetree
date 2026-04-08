@@ -1,8 +1,4 @@
 (function () {
-    function runtime() {
-        return window.__editorRuntime;
-    }
-
     function applyBackgroundConfig(runtime, config) {
         const body = document.body;
         if (!body || !config) return;
@@ -103,18 +99,18 @@
         setEditorMode: setEditorMode
     };
     window.setEditorMode = function (mode) {
-        return setEditorMode(runtime(), mode);
+        return setEditorMode(window.__editorRuntime, mode);
     };
     window.applyBackgroundConfig = function (config) {
-        return applyBackgroundConfig(runtime(), config);
+        return applyBackgroundConfig(window.__editorRuntime, config);
     };
     window.loadBackgroundPreference = function () {
-        return loadBackgroundPreference(runtime());
+        return loadBackgroundPreference(window.__editorRuntime);
     };
     window.updateTreeStatsBanner = function () {
-        return updateTreeStatsBanner(runtime());
+        return updateTreeStatsBanner(window.__editorRuntime);
     };
     window.showToast = function (message) {
-        return showToast(runtime(), message);
+        return showToast(window.__editorRuntime, message);
     };
 })();

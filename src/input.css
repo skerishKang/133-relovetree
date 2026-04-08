@@ -57,6 +57,14 @@
     @apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50;
   }
 
+  .ui-btn-brand-outline {
+    @apply bg-white/80 text-brand-500 hover:bg-brand-50;
+  }
+
+  .ui-btn-subtle-outline {
+    @apply border-slate-300;
+  }
+
   .ui-btn-dark {
     @apply bg-slate-800 text-white hover:bg-slate-700;
   }
@@ -91,6 +99,10 @@
 
   .empty-state-icon {
     @apply mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent;
+  }
+
+  .empty-state-svg {
+    @apply h-8 w-8 text-slate-300;
   }
 
   .empty-state-title {
@@ -143,6 +155,38 @@
 
   .modal-action-btn {
     @apply px-5 py-2.5;
+  }
+
+  .modal-submit-btn {
+    @apply shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105;
+  }
+
+  .icon-svg-sm {
+    @apply h-5 w-5;
+  }
+
+  .icon-svg-md {
+    @apply h-6 w-6;
+  }
+
+  .icon-svg-muted {
+    @apply text-slate-300;
+  }
+
+  .icon-svg-nudge {
+    @apply ml-0.5;
+  }
+
+  .artist-card-name {
+    @apply truncate text-sm font-bold text-slate-900;
+  }
+
+  .artist-card-subtitle {
+    @apply truncate text-xs text-slate-500;
+  }
+
+  .artist-card-action-icon {
+    @apply h-6 w-6;
   }
 
   .modal-form-stack {
@@ -293,6 +337,102 @@
     @apply px-3 pb-3;
   }
 
+  .artist-card {
+    @apply flex h-full flex-col overflow-hidden rounded-2xl border border-white/80 bg-white/80 shadow-lg backdrop-blur-sm transition-shadow hover:shadow-xl;
+  }
+
+  .artist-card-header {
+    @apply flex items-center justify-between p-3;
+  }
+
+  .artist-card-profile {
+    @apply flex items-center gap-2;
+  }
+
+  .artist-card-avatar {
+    @apply flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold;
+  }
+
+  .artist-card-copy {
+    @apply min-w-0;
+  }
+
+  .artist-card-menu {
+    @apply shrink-0 text-slate-400 transition-colors hover:text-slate-600;
+  }
+
+  .artist-card-thumb {
+    @apply relative aspect-video bg-slate-100;
+  }
+
+  .artist-card-thumb-image {
+    @apply h-full w-full object-cover transition-transform duration-500 group-hover/thumb:scale-105;
+  }
+
+  .artist-card-thumb-overlay {
+    @apply absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover/thumb:bg-black/25;
+  }
+
+  .artist-card-play {
+    @apply flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover/thumb:scale-110;
+  }
+
+  .artist-card-actions {
+    @apply flex items-center gap-4 border-b border-slate-50 px-4 py-3;
+  }
+
+  .artist-card-action {
+    @apply flex items-center gap-1.5 text-slate-600 transition-colors;
+  }
+
+  .artist-card-action-like {
+    @apply hover:text-rose-500;
+  }
+
+  .artist-card-action-comment {
+    @apply hover:text-blue-500;
+  }
+
+  .artist-card-action-share {
+    @apply ml-auto hover:text-emerald-500;
+  }
+
+  .artist-card-footer {
+    @apply mt-auto px-4 pb-4;
+  }
+
+  .artist-card-footer-title {
+    @apply mb-1 text-sm font-bold text-slate-900;
+  }
+
+  .artist-card-footer-meta {
+    @apply text-xs text-slate-500;
+  }
+
+  .home-recent-empty {
+    @apply flex min-w-[200px] flex-col items-center justify-start px-2 py-2;
+  }
+
+  .home-recent-empty-label {
+    @apply text-[11px] font-medium text-slate-400;
+  }
+
+  .home-recent-item {
+    @apply flex w-20 shrink-0 snap-start flex-col items-center gap-2;
+  }
+
+  .home-recent-avatar-shell {
+    @apply flex h-16 w-16 overflow-hidden rounded-full border-2 p-1 transition-colors;
+  }
+
+  .home-recent-avatar-core {
+    @apply flex h-full w-full items-center justify-center rounded-full bg-white text-xl font-bold;
+  }
+
+  .home-recent-name {
+    @apply w-full truncate px-1 text-center text-xs font-medium text-slate-700;
+  }
+
   .modal-shell {
     @apply p-0 bg-white rounded-2xl shadow-2xl overflow-hidden;
   }
@@ -431,6 +571,10 @@
     @apply mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-300;
   }
 
+  .search-empty-svg {
+    @apply h-8 w-8 text-slate-300;
+  }
+
   .search-empty-copy {
     @apply space-y-1;
   }
@@ -451,6 +595,34 @@
     @apply mb-4;
   }
 
+  .hero-shell {
+    @apply relative z-10 mb-8 px-4 pt-8 text-center sm:mb-12 sm:pt-12 sm:text-left;
+  }
+
+  .page-section {
+    @apply px-4 mb-12;
+  }
+
+  .page-section-compact {
+    @apply px-4 mb-8;
+  }
+
+  .section-card-grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3;
+  }
+
+  .desktop-my-trees {
+    @apply mb-8 hidden;
+  }
+
+  .desktop-my-trees-heading {
+    @apply mb-4 flex items-center gap-2 text-xl font-bold text-slate-800;
+  }
+
+  .desktop-my-trees-grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3;
+  }
+
   .section-heading-row {
     @apply mb-4 flex items-center justify-between gap-3;
   }
@@ -461,6 +633,18 @@
 
   .section-title-icon {
     @apply flex items-center gap-2;
+  }
+
+  .section-title-svg {
+    @apply h-5 w-5;
+  }
+
+  .section-title-svg-hot {
+    @apply text-red-500;
+  }
+
+  .section-title-svg-brand {
+    @apply text-brand-500;
   }
 
   .section-desc {
@@ -621,12 +805,28 @@
     @apply shrink-0;
   }
 
+  .notice-banner-action-warn {
+    @apply bg-amber-600 text-white hover:bg-amber-700;
+  }
+
+  .notice-banner-desc-warn {
+    @apply text-amber-700;
+  }
+
   .settings-swatch-grid {
     @apply grid grid-cols-3 gap-3;
   }
 
+  .settings-preset-grid {
+    @apply settings-swatch-grid;
+  }
+
   .settings-swatch {
     @apply relative aspect-video overflow-hidden rounded-lg border-2 border-transparent transition-all hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .settings-preset-btn {
+    @apply settings-swatch glass-panel;
   }
 
   .settings-swatch-overlay {
@@ -641,8 +841,64 @@
     @apply flex flex-wrap gap-3;
   }
 
+  .settings-color-grid {
+    @apply settings-color-row;
+  }
+
   .settings-color-chip {
     @apply h-10 w-10 rounded-full border transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .settings-color-btn {
+    @apply settings-color-chip glass-panel;
+  }
+
+  .settings-color-default {
+    @apply bg-slate-50 border-slate-200;
+  }
+
+  .settings-color-white {
+    @apply bg-white border-slate-200;
+  }
+
+  .settings-color-dark {
+    @apply bg-slate-800 border-slate-600;
+  }
+
+  .settings-color-pink {
+    @apply bg-pink-50 border-pink-200;
+  }
+
+  .settings-color-sky {
+    @apply bg-sky-50 border-sky-200;
+  }
+
+  .settings-color-green {
+    @apply bg-green-50 border-green-200;
+  }
+
+  .settings-label-tight {
+    @apply mb-2;
+  }
+
+  .settings-upload-prompt {
+    @apply mb-1 font-medium;
+  }
+
+  .mobile-menu-panel {
+    @apply hidden fixed inset-0 z-50 bg-black/40 flex items-start justify-center pt-20;
+  }
+
+  .mobile-menu-shell {
+    @apply mobile-menu-sheet;
+  }
+
+  .mobile-menu-list {
+    @apply mobile-menu-nav;
+  }
+
+  .mobile-menu-item {
+    @apply mobile-menu-link;
   }
 
   .settings-dropzone {

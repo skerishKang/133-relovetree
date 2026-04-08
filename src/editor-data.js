@@ -1,8 +1,4 @@
 (function () {
-    function getRuntime() {
-        return window.__editorRuntime;
-    }
-
     function debounce(func, wait) {
         let timeout;
         return function () {
@@ -334,9 +330,9 @@
     };
     window.debounce = debounce;
     window.initState = function (data) {
-        return initState(getRuntime(), data);
+        return initState(window.__editorRuntime, data);
     };
     window.saveDataImmediate = function (showToastOnSuccess) {
-        return saveDataImmediate(getRuntime(), showToastOnSuccess);
+        return saveDataImmediate(window.__editorRuntime, showToastOnSuccess);
     };
 })();

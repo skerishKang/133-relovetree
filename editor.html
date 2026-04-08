@@ -687,11 +687,9 @@
     <script>
         let isKorean = true;
 
-        // --- State & Logic ---
         const urlParams = new URLSearchParams(window.location.search);
-        const treeId = urlParams.get('id') || 'bts'; // Default to bts if no ID provided
+        const treeId = urlParams.get('id') || 'bts';
 
-        // Expanded Test Data (Personas)
         const dummyData = {
             'bts': {
                 name: '방탄소년단 (BTS)',
@@ -814,10 +812,8 @@
             }
         };
 
-        // Local Storage Key (Backup)
         const STORAGE_KEY = `relovetree_data_${treeId}`;
 
-        // Initialize Firebase
         let db;
         let auth;
         let storage;
@@ -828,7 +824,6 @@
         let originalNodes = [];
         let orientationMode = 'portrait';
 
-        // Global State
         const state = {
             nodes: [],
             edges: [],
@@ -888,28 +883,13 @@
             await window.EditorBootstrapHelpers.initApp(window.__editorRuntime);
         });
 
-        // Load Data (Firebase -> LocalStorage -> Dummy)
-        // Default to 'bts' data if treeId not found in dummyData
-        // let initialData = ... (Removed to avoid duplication, declared below)
-
-        // Removed redundant loadFromLocalOrDummy and initialData
-        // All loading logic is now handled in loadData() and initState()
-
-        // Global State moved to top of script
-        // initialData usage removed
-
         let editorMode = 'tree';
 
-        // ================== BACKGROUND PREFERENCES (Copied from index.js) ==================
         const BG_STORAGE_KEY = 'relovetree_background';
 
-        // Save Data (Firebase + LocalStorage)
         const saveData = window.debounce(() => {
-            // 일반 편집 동작에서는 디바운스된 저장을 사용
             window.saveDataImmediate(true);
-        }, 1000); // Debounce 1s
-
-        // --- Community Features ---
+        }, 1000);
 
         let commentsUnsubscribe = null;
 

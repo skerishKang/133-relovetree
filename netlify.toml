@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
   publish = "."
+  env_file = ".env"
 
 [functions]
   directory = "netlify/functions"

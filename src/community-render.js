@@ -41,6 +41,109 @@
         }
     }
 
+    function buildCommunityTreeBadgeHtml(treeIdRaw, treeIdForOpen) {
+        if (!treeIdForOpen) return '';
+
+        return '\
+            <div class="mt-2 flex flex-wrap gap-2 items-center text-[11px]">\
+                <a class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:bg-slate-50" href="editor.html?id=' + encodeURIComponent(treeIdForOpen) + '" target="_blank">트리 보기</a>\
+                <button type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700" data-action="fork-tree" data-tree="' + encodeURIComponent(treeIdRaw) + '">내 트리로 가져오기</button>\
+           </div>\
+        ';
+    }
+
+    function buildCommunityPostMetaHtml(author, created, commentCount) {
+        return '\
+            <div class="flex items-center justify-between text-[11px] text-slate-400">\
+                <span>' + author + '</span>\
+                <div class="flex items-center gap-2">\
+                    <span>' + created + '</span>\
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400">\
+                        <span>💬</span>\
+                        <span>' + commentCount + '</span>\
+                    </span>\
+                </div>\
+            </div>\
+        ';
+    }
+
+    function buildCommunityPostCardTemplate(options) {
+        const opts = options || {};
+        return '\
+        <article data-post-id="' + opts.id + '"\
+            class="cursor-pointer bg-white/90 border border-slate-200 rounded-2xl px-4 py-4 sm:px-5 sm:py-4 shadow-sm hover:shadow-md transition-shadow">\
+            <h2 class="text-sm sm:text-base font-bold text-slate-900 mb-1 line-clamp-1">' + (opts.title || '') + '</h2>\
+            <p class="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">' + (opts.snippet || '') + '</p>\
+            ' + (opts.thumb || '') + '\
+            ' + (opts.treeBadge || '') + '\
+            ' + (opts.meta || '') + '\
+        </article>\
+    ';
+    }
+
+    function buildCommunityDetailImageHtml(url) {
+        const safe = escapeHtml(String(url || '').trim());
+        if (!safe) return '';
+        return '<img src="' + safe + '" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />';
+    }
+
+    function buildCommunityDetailYoutubeHtml(videoId) {
+        const safeId = escapeHtml(String(videoId || '').trim());
+        if (!safeId) return '';
+        return '\
+            <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-black">\
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/' + safeId + '" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>\
+            </div>\
+        ';
+    }
+
+    function buildCommunityDetailLinkHtml(url) {
+        const safe = escapeHtml(String(url || '').trim());
+        if (!safe) return '';
+        return '<a href="' + safe + '" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50">링크 열기</a>';
+    }
+
+    function buildCommunityDetailMetaHtml(options) {
+        const opts = options || {};
+        const author = escapeHtml(opts.author || '익명');
+        const created = escapeHtml(opts.created || '');
+        const deletedInfoHtml = opts.deletedInfoHtml || '';
+        return author + ' · ' + created + deletedInfoHtml;
+    }
+
+    function buildCommunityDetailActionLabels(isEditMode) {
+        if (isEditMode) {
+            return {
+                editText: '저장',
+                deleteText: '취소'
+            };
+        }
+
+        return {
+            editText: '수정',
+            deleteText: '삭제'
+        };
+    }
+
+    function buildCommunityTreeSummaryText(options) {
+        const opts = options || {};
+        const status = opts.status || 'loaded';
+
+        if (status === 'loading') {
+            return '트리 정보를 불러오는 중...';
+        }
+
+        if (status === 'error') {
+            return '트리 정보를 불러오지 못했습니다.';
+        }
+
+        const summary = opts.summary || {};
+        const dateText = summary.lastUpdatedIso ? String(summary.lastUpdatedIso).slice(0, 10) : '';
+        const parts = ['노드 ' + (summary.nodeCount || 0) + '개'];
+        if (dateText) parts.push('최근 업데이트 ' + dateText);
+        return parts.join(' · ');
+    }
+
     function filterCommunityPosts(posts, query) {
         const q = normalizeSearchText(query);
         if (!q) return posts;
@@ -71,34 +174,18 @@
             ? extractTreeIdFromMaybeUrl(treeIdRaw)
             : treeIdRaw;
 
-        const treeBadge = treeIdForOpen
-            ? '<div class="mt-2 flex flex-wrap gap-2 items-center text-[11px]">\
-                <a class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:bg-slate-50" href="editor.html?id=' + encodeURIComponent(treeIdForOpen) + '" target="_blank">트리 보기</a>\
-                <button type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700" data-action="fork-tree" data-tree="' + encodeURIComponent(treeIdRaw) + '">내 트리로 가져오기</button>\
-           </div>'
-            : '';
-
+        const treeBadge = buildCommunityTreeBadgeHtml(treeIdRaw, treeIdForOpen);
         const thumb = buildCommunityThumbnailHTML(data);
+        const meta = buildCommunityPostMetaHtml(author, created, commentCount);
 
-        return '\
-        <article data-post-id="' + id + '"\
-            class="cursor-pointer bg-white/90 border border-slate-200 rounded-2xl px-4 py-4 sm:px-5 sm:py-4 shadow-sm hover:shadow-md transition-shadow">\
-            <h2 class="text-sm sm:text-base font-bold text-slate-900 mb-1 line-clamp-1">' + title + '</h2>\
-            <p class="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">' + snippet + '</p>\
-            ' + thumb + '\
-            ' + treeBadge + '\
-            <div class="flex items-center justify-between text-[11px] text-slate-400">\
-                <span>' + author + '</span>\
-                <div class="flex items-center gap-2">\
-                    <span>' + created + '</span>\
-                    <span class="flex items-center gap-1 text-[10px] text-slate-400">\
-                        <span>💬</span>\
-                        <span>' + commentCount + '</span>\
-                    </span>\
-                </div>\
-            </div>\
-        </article>\
-    ';
+        return buildCommunityPostCardTemplate({
+            id: id,
+            title: title,
+            snippet: snippet,
+            thumb: thumb,
+            treeBadge: treeBadge,
+            meta: meta
+        });
     }
 
     async function handleForkTree(treeIdRaw) {
@@ -180,14 +267,15 @@
         const editBtn = document.getElementById('detail-post-edit');
         const delBtn = document.getElementById('detail-post-delete');
         if (!titleEl || !contentEl || !editBtn || !delBtn) return;
+        const labels = buildCommunityDetailActionLabels(isEditMode);
 
         if (!isEditMode) {
             titleEl.setAttribute('contenteditable', 'false');
             contentEl.setAttribute('contenteditable', 'false');
             titleEl.classList.remove('outline', 'outline-2', 'outline-brand-400', 'rounded');
             contentEl.classList.remove('outline', 'outline-2', 'outline-brand-400', 'rounded');
-            editBtn.textContent = '수정';
-            delBtn.textContent = '삭제';
+            editBtn.textContent = labels.editText;
+            delBtn.textContent = labels.deleteText;
             return;
         }
 
@@ -195,8 +283,8 @@
         contentEl.setAttribute('contenteditable', 'true');
         titleEl.classList.add('outline', 'outline-2', 'outline-brand-400', 'rounded');
         contentEl.classList.add('outline', 'outline-2', 'outline-brand-400', 'rounded');
-        editBtn.textContent = '저장';
-        delBtn.textContent = '취소';
+        editBtn.textContent = labels.editText;
+        delBtn.textContent = labels.deleteText;
 
         try {
             titleEl.focus();
@@ -215,11 +303,13 @@
 
         titleEl.textContent = data.title || '제목 없음';
         contentEl.textContent = data.content || '';
-        metaEl.textContent = author + ' · ' + created;
-
-        if (options && options.isAdmin && data && data.isDeleted === true) {
-            metaEl.innerHTML = escapeHtml(author) + ' · ' + escapeHtml(created) + buildDeletedInfoHtmlForAdmin(data);
-        }
+        metaEl.innerHTML = buildCommunityDetailMetaHtml({
+            author: author,
+            created: created,
+            deletedInfoHtml: options && options.isAdmin && data && data.isDeleted === true
+                ? buildDeletedInfoHtmlForAdmin(data)
+                : ''
+        });
     }
 
     function renderCommunityDetailMedia(data) {
@@ -231,22 +321,22 @@
         const items = [];
 
         legacyUrls.forEach(function (u) {
-            const safe = escapeHtml(String(u || ''));
-            if (safe) items.push('<img src="' + safe + '" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />');
+            const imageHtml = buildCommunityDetailImageHtml(u);
+            if (imageHtml) items.push(imageHtml);
         });
 
         if (mediaUrl) {
             const url = normalizeCommunityMediaUrl(mediaUrl);
             const ytId = parseYouTubeVideoIdFromUrl(url);
             if (ytId) {
-                const safeId = escapeHtml(ytId);
-                items.push('\n                            <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-black">\n                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/' + safeId + '" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>\n                            </div>\n                        ');
+                const youtubeHtml = buildCommunityDetailYoutubeHtml(ytId);
+                if (youtubeHtml) items.push(youtubeHtml);
             } else if (isLikelyImageUrl(url)) {
-                const safe = escapeHtml(url);
-                items.push('<img src="' + safe + '" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />');
+                const imageHtml = buildCommunityDetailImageHtml(url);
+                if (imageHtml) items.push(imageHtml);
             } else {
-                const safe = escapeHtml(url);
-                items.push('<a href="' + safe + '" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50">링크 열기</a>');
+                const linkHtml = buildCommunityDetailLinkHtml(url);
+                if (linkHtml) items.push(linkHtml);
             }
         }
 
@@ -288,19 +378,23 @@
 
         if (treeSummaryEl) {
             treeSummaryEl.classList.remove('hidden');
-            treeSummaryEl.textContent = '트리 정보를 불러오는 중...';
+            treeSummaryEl.textContent = buildCommunityTreeSummaryText({
+                status: 'loading'
+            });
             options.fetchTreeSummary(treeIdForOpen).then(function (summary) {
                 try {
                     if (options.getCurrentPostId() !== options.postId) return;
                     if (!summary) {
-                        treeSummaryEl.textContent = '트리 정보를 불러오지 못했습니다.';
+                        treeSummaryEl.textContent = buildCommunityTreeSummaryText({
+                            status: 'error'
+                        });
                         return;
                     }
 
-                    const dateText = summary.lastUpdatedIso ? String(summary.lastUpdatedIso).slice(0, 10) : '';
-                    const parts = ['노드 ' + (summary.nodeCount || 0) + '개'];
-                    if (dateText) parts.push('최근 업데이트 ' + dateText);
-                    treeSummaryEl.textContent = parts.join(' · ');
+                    treeSummaryEl.textContent = buildCommunityTreeSummaryText({
+                        status: 'loaded',
+                        summary: summary
+                    });
                 } catch (e) {
                 }
             });
@@ -314,6 +408,15 @@
     window.CommunityRenderHelpers = {
         normalizeSearchText: normalizeSearchText,
         buildCommunityThumbnailHTML: buildCommunityThumbnailHTML,
+        buildCommunityTreeBadgeHtml: buildCommunityTreeBadgeHtml,
+        buildCommunityPostMetaHtml: buildCommunityPostMetaHtml,
+        buildCommunityPostCardTemplate: buildCommunityPostCardTemplate,
+        buildCommunityDetailImageHtml: buildCommunityDetailImageHtml,
+        buildCommunityDetailYoutubeHtml: buildCommunityDetailYoutubeHtml,
+        buildCommunityDetailLinkHtml: buildCommunityDetailLinkHtml,
+        buildCommunityDetailMetaHtml: buildCommunityDetailMetaHtml,
+        buildCommunityDetailActionLabels: buildCommunityDetailActionLabels,
+        buildCommunityTreeSummaryText: buildCommunityTreeSummaryText,
         filterCommunityPosts: filterCommunityPosts,
         renderCommunityPostCard: renderCommunityPostCard,
         renderCommunityPostList: renderCommunityPostList,
@@ -326,6 +429,8 @@
 
     window.normalizeSearchText = normalizeSearchText;
     window.buildCommunityThumbnailHTML = buildCommunityThumbnailHTML;
+    window.buildCommunityTreeBadgeHtml = buildCommunityTreeBadgeHtml;
+    window.buildCommunityPostCardTemplate = buildCommunityPostCardTemplate;
     window.filterCommunityPosts = filterCommunityPosts;
     window.renderCommunityPostCard = renderCommunityPostCard;
     window.setCommunityPostActionUiVisible = setCommunityPostActionUiVisible;

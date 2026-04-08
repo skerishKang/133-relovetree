@@ -159,48 +159,6 @@
         return window.EditorMinimapHelpers.updateMinimap(runtime());
     }
 
-    window.EditorOrchestrationHelpers = {
-        drawConnection: drawConnection,
-        onConnectionHandleClick: onConnectionHandleClick,
-        autoConnectTimeline: autoConnectTimeline,
-        clearAllConnections: clearAllConnections,
-        renderTimeline: renderTimeline,
-        openDetailFromTimeline: openDetailFromTimeline,
-        toggleQuickEdit: toggleQuickEdit,
-        saveQuickEdit: saveQuickEdit,
-        addQuickFeeling: addQuickFeeling,
-        startDragNode: startDragNode,
-        zoomIn: zoomIn,
-        zoomOut: zoomOut,
-        resetLayout: resetLayout,
-        onYouTubeIframeAPIReady: onYouTubeIframeAPIReady,
-        startVideo: startVideo,
-        setCurrentMomentTime: setCurrentMomentTime,
-        openDetailModal: openDetailModal,
-        openDetailModalForAiTreeSuggestion: openDetailModalForAiTreeSuggestion,
-        resetAiTreeDraftDetail: resetAiTreeDraftDetail,
-        renderMomentsList: renderMomentsList,
-        getFeelingEmoji: getFeelingEmoji,
-        seekVideo: seekVideo,
-        addMomentFromDetail: addMomentFromDetail,
-        enableEditMode: enableEditMode,
-        disableEditMode: disableEditMode,
-        saveNodeDetails: saveNodeDetails,
-        applyAiTreeDraftFromDetail: applyAiTreeDraftFromDetail,
-        clearDetailVideoInput: clearDetailVideoInput,
-        updateDetailVideoEditorUi: updateDetailVideoEditorUi,
-        renderDetailYouTubeSearchResults: renderDetailYouTubeSearchResults,
-        searchYouTubeForDetail: searchYouTubeForDetail,
-        recommendYouTubeForDetail: recommendYouTubeForDetail,
-        setupDetailVideoEditor: setupDetailVideoEditor,
-        removeImage: removeImage,
-        updateDetailMedia: updateDetailMedia,
-        createNewNode: createNewNode,
-        deleteNode: deleteNode,
-        closeModal: closeModal,
-        updateMinimap: updateMinimap
-    };
-
     window.drawConnection = drawConnection;
     window.onConnectionHandleClick = onConnectionHandleClick;
     window.autoConnectTimeline = autoConnectTimeline;
