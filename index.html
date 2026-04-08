@@ -463,9 +463,7 @@
         <div id="nav-inner" class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <a href="index.html" class="flex items-center gap-3 hover:opacity-95 transition" title="홈으로 이동">
-                    <div
-                        class="w-8 h-8 rounded-2xl bg-brand-500 text-white text-sm font-bold flex items-center justify-center shadow-sm"
-                        aria-hidden="true">
+                    <div class="brand-mark" aria-hidden="true">
                         L
                     </div>
                     <div class="flex flex-col leading-tight">
@@ -473,18 +471,15 @@
                         <span class="hidden sm:block text-xs text-slate-500 leading-tight">나의 덕질 타임라인</span>
                     </div>
                 </a>
-                <a href="community.html"
-                    class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">
+                <a href="community.html" class="nav-link">
                     커뮤니티
                 </a>
-                <a href="owner.html"
-                    class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">
+                <a href="owner.html" class="nav-link">
                     내 트리 관리
                 </a>
             </div>
             <div class="flex items-center gap-2.5">
-                <button id="search-btn" type="button"
-                    class="flex items-center justify-center w-11 h-11 rounded-full bg-white/80 border border-slate-200 shadow-sm hover:bg-slate-100 text-slate-600 hover:text-brand-600 transition-all focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                <button id="search-btn" type="button" class="nav-icon-btn"
                     title="러브트리 검색" aria-label="러브트리 검색">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -492,14 +487,13 @@
                     </svg>
                 </button>
                 <button id="mobile-menu-btn" type="button"
-                    class="hidden w-11 h-11 rounded-full bg-white/80 border border-slate-200 items-center justify-center shadow-sm hover:bg-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    class="nav-icon-btn hidden"
                     onclick="toggleMobileMenu()" aria-label="메뉴 열기">
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full"></span>
                 </button>
-                <button id="settings-btn" type="button"
-                    class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-all focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                <button id="settings-btn" type="button" class="nav-user-btn"
                     title="마이페이지 및 설정" aria-label="마이페이지 및 설정">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -513,26 +507,20 @@
 
     <!-- 모바일용 햄버거 메뉴 패널 -->
     <div id="mobile-menu-panel" class="hidden fixed inset-0 z-50 bg-black/40 flex items-start justify-center pt-20">
-        <div class="w-72 max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+        <div class="mobile-menu-sheet">
+            <div class="mobile-menu-header">
                 <span class="text-sm font-bold text-slate-800">메뉴</span>
-                <button type="button"
-                    class="w-7 h-7 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100"
+                <button type="button" class="mobile-menu-close"
                     onclick="toggleMobileMenu()" aria-label="메뉴 닫기">
                     <span class="text-lg leading-none">&times;</span>
                 </button>
             </div>
-            <nav class="py-2 text-sm text-slate-700">
-                <button type="button" onclick="navigateToHome()"
-                    class="w-full text-left px-4 py-2 hover:bg-slate-50">홈</button>
-                <button type="button" onclick="window.location.href='community.html'"
-                    class="w-full text-left px-4 py-2 hover:bg-slate-50">커뮤니티</button>
-                <button type="button" onclick="window.location.href='owner.html'"
-                    class="w-full text-left px-4 py-2 hover:bg-slate-50">내 트리 관리</button>
-                <button type="button" onclick="scrollToMyTrees()"
-                    class="w-full text-left px-4 py-2 hover:bg-slate-50">최근 방문한 트리</button>
-                <button type="button" onclick="scrollToAllTrees()"
-                    class="w-full text-left px-4 py-2 hover:bg-slate-50">모든 러브트리</button>
+            <nav class="mobile-menu-nav">
+                <button type="button" onclick="navigateToHome()" class="mobile-menu-link">홈</button>
+                <button type="button" onclick="window.location.href='community.html'" class="mobile-menu-link">커뮤니티</button>
+                <button type="button" onclick="window.location.href='owner.html'" class="mobile-menu-link">내 트리 관리</button>
+                <button type="button" onclick="scrollToMyTrees()" class="mobile-menu-link">최근 방문한 트리</button>
+                <button type="button" onclick="scrollToAllTrees()" class="mobile-menu-link">모든 러브트리</button>
             </nav>
         </div>
     </div>
@@ -549,16 +537,16 @@
             <main class="flex-1 max-w-7xl mx-auto w-full pb-10" id="main-content">
 
                 <header class="px-4 pt-8 mb-8 sm:pt-12 sm:mb-12 text-center sm:text-left relative z-10">
-                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-white shadow-md animate-slide-up">
-                        <span class="w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                    <div class="hero-badge animate-slide-up">
+                        <span class="hero-badge-mark">
                             ♥
                         </span>
-                        <span class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">My Lovetree Timeline</span>
+                        <span class="hero-badge-text">My Lovetree Timeline</span>
                     </div>
-                    <h1 class="mt-5 text-responsive-xl font-extrabold tracking-tight text-slate-900 animate-slide-up text-shadow-sm" id="page-title">
+                    <h1 class="hero-title animate-slide-up" id="page-title">
                         사랑에 빠진 모든 순간을<br class="sm:hidden"> 기록해 보세요
                     </h1>
-                    <p class="mt-3 max-w-2xl text-sm sm:text-lg text-slate-700 font-medium animate-slide-up leading-relaxed text-shadow-sm" id="page-subtitle">
+                    <p class="hero-subtitle animate-slide-up" id="page-subtitle">
                         나의 러브트리로 좋아하는 아티스트의 모든 순간을<br class="hidden sm:block"> 한 곳에 차곡차곡 모아 보세요.
                     </p>
                 </header>
@@ -566,7 +554,9 @@
                 <!-- 3. Recent Visits (최근 방문한 트리) - Renamed from Hero -->
                 <section id="recent-section" class="px-4 mb-12">
                     <div class="section-shell">
-                        <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
+                        <div class="section-heading">
+                            <h2 class="section-title">최근 방문한 트리</h2>
+                        </div>
 
                         <!-- Horizontal Scroll Container -->
                         <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
@@ -579,14 +569,16 @@
                 <!-- 1. Trending Section (지금 뜨는 러브트리) - Moved to Top -->
                 <section id="discovery-section" class="px-4 mb-12">
                     <div class="section-shell">
-                        <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <div class="section-heading">
+                            <h2 class="section-title section-title-icon">
                             <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            지금 뜨는 러브트리
-                        </h2>
+                                지금 뜨는 러브트리
+                            </h2>
+                        </div>
                         <div id="popular-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             <!-- Feed Cards injected here by JS -->
                         </div>
@@ -596,8 +588,8 @@
                 <!-- 2. My Created Trees (나의 러브트리) - New Section -->
                 <section id="my-created-trees-section" class="px-4 mb-12">
                     <div class="section-shell">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
+                        <div class="section-heading-row">
+                            <h2 class="section-title">나의 러브트리</h2>
                             <button onclick="openCreateModal()"
                                 class="ui-btn ui-btn-secondary ui-btn-pill ui-btn-sm border-brand-400 bg-white/80 text-brand-500 hover:border-brand-500 hover:bg-brand-50">+ 만들기</button>
                         </div>
@@ -634,14 +626,14 @@
 
                         <div id="local-migration-banner"
                             class="notice-banner notice-banner-warn notice-banner-actions mt-4 hidden">
-                            <div>
-                                <p class="font-semibold">이 기기에만 저장된 러브트리가 있습니다.</p>
-                                <p id="local-migration-text" class="text-xs text-amber-700">
+                            <div class="notice-banner-copy">
+                                <p class="notice-banner-title">이 기기에만 저장된 러브트리가 있습니다.</p>
+                                <p id="local-migration-text" class="notice-banner-desc text-amber-700">
                                     로그인한 계정으로 가져오면, 데스크탑과 모바일에서 함께 볼 수 있어요.
                                 </p>
                             </div>
                             <button onclick="migrateLocalTreesToAccount()"
-                                class="ui-btn ui-btn-sm ui-btn-pill bg-amber-600 text-white hover:bg-amber-700">
+                                class="ui-btn ui-btn-sm ui-btn-pill notice-banner-action bg-amber-600 text-white hover:bg-amber-700">
                                 계정으로 가져오기
                             </button>
                         </div>
@@ -650,7 +642,9 @@
 
                 <section id="recent-created-section" class="px-4 mb-8">
                     <div class="section-shell">
-                        <h2 class="text-xl font-bold text-slate-900 mb-4">최근 만들어진 러브트리</h2>
+                        <div class="section-heading">
+                            <h2 class="section-title">최근 만들어진 러브트리</h2>
+                        </div>
                         <div id="recent-created-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                             <div class="empty-state-inline">아직 만들어진 러브트리가 없습니다.</div>
                         </div>
@@ -732,10 +726,10 @@
     </div>
 
     <!-- Create Modal -->
-    <dialog id="create-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div class="p-6">
-            <h3 class="text-xl font-bold text-slate-900 mb-2" id="modal-title">누구의 팬이신가요?</h3>
-            <p class="text-slate-500 text-sm mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
+    <dialog id="create-modal" class="modal-shell modal-shell-sm">
+        <div class="modal-panel">
+            <h3 class="modal-title mb-2" id="modal-title">누구의 팬이신가요?</h3>
+            <p class="modal-desc mb-6" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
 
             <form method="dialog" onsubmit="handleCreate(event)" novalidate>
                 <div class="mb-6">
@@ -748,11 +742,11 @@
                     <p id="artist-name-help" class="text-xs text-slate-400 mt-1">최대 50자까지 입력 가능합니다
                     </p>
                 </div>
-                <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeModal('create-modal')"
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal('create-modal')"
                         class="ui-btn ui-btn-soft px-5 py-2.5 font-medium"
                         id="btn-cancel">취소</button>
-                <button type="submit"
+                    <button type="submit"
                         class="ui-btn ui-btn-primary px-5 py-2.5 shadow-lg shadow-brand-500/30 hover:scale-105 transition-all transform"
                         id="btn-start">시작하기</button>
                 </div>
@@ -760,25 +754,25 @@
         </div>
     </dialog>
 
-    <dialog id="search-modal" class="p-0 w-[90vw] max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div class="p-6 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-slate-900">검색</h3>
-                <button type="button" onclick="closeSearchModal()" class="text-slate-400 hover:text-slate-600 transition-colors" aria-label="검색 닫기">
+    <dialog id="search-modal" class="modal-shell modal-shell-lg">
+        <div class="modal-panel">
+            <div class="modal-header mb-4">
+                <h3 class="modal-title">검색</h3>
+                <button type="button" onclick="closeSearchModal()" class="modal-close" aria-label="검색 닫기">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
-            <div class="flex gap-2 mb-3">
+            <div class="search-toolbar">
                 <input id="search-input" type="text" placeholder="아티스트/트리 이름 검색..."
-                    class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm" />
+                    class="search-input" />
                 <button type="button" onclick="runSearchFromUI()"
-                    class="ui-btn ui-btn-dark">검색</button>
+                    class="ui-btn ui-btn-dark search-submit-btn">검색</button>
             </div>
 
-            <div class="flex gap-2 mb-4">
+            <div class="search-tabs">
                 <button id="search-tab-all" type="button" onclick="setSearchMode('all')"
                     class="action-chip">전체</button>
                 <button id="search-tab-my" type="button" onclick="setSearchMode('my')"
@@ -789,10 +783,10 @@
                 <div class="empty-state-inline">검색어를 입력해 주세요.</div>
             </div>
 
-            <div id="search-pagination" class="mt-4 flex items-center justify-between gap-2 hidden">
+            <div id="search-pagination" class="search-pagination hidden">
                 <button type="button" onclick="searchPrevPage()"
                     class="action-chip">이전</button>
-                <div id="search-page-info" class="text-xs text-slate-500"></div>
+                <div id="search-page-info" class="search-page-info"></div>
                 <button type="button" onclick="searchNextPage()"
                     class="action-chip">다음</button>
             </div>
@@ -800,12 +794,12 @@
     </dialog>
 
     <!-- Settings Modal -->
-    <dialog id="settings-modal" class="p-0 w-[90vw] max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div class="p-6 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-slate-900">마이</h3>
+    <dialog id="settings-modal" class="modal-shell modal-shell-sm">
+        <div class="modal-panel">
+            <div class="modal-header mb-6">
+                <h3 class="modal-title">마이</h3>
                 <button onclick="closeModal('settings-modal')"
-                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    class="modal-close">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
@@ -828,16 +822,16 @@
                             </a>
 
                             <div id="user-menu" class="hidden flex flex-col gap-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3 min-w-0">
-                                        <img id="user-avatar" src="" alt="Profile" class="w-10 h-10 rounded-full bg-white border border-slate-200" />
-                                        <div class="min-w-0">
-                                            <p class="text-sm font-bold text-slate-800 truncate" id="user-name"></p>
-                                            <p class="text-xs text-slate-500 truncate">로그인됨</p>
+                                <div class="settings-profile-row">
+                                    <div class="settings-profile-main">
+                                        <img id="user-avatar" src="" alt="Profile" class="settings-profile-avatar" />
+                                        <div class="settings-profile-text">
+                                            <p class="settings-profile-name" id="user-name"></p>
+                                            <p class="settings-profile-meta">로그인됨</p>
                                         </div>
                                     </div>
                                     <a href="admin.html" id="admin-link"
-                                        class="hidden text-xs font-bold text-slate-500 hover:text-brand-600">
+                                        class="settings-inline-link hidden">
                                         관리자
                                     </a>
                                 </div>
@@ -855,9 +849,9 @@
 
                 <div>
                     <label class="settings-section-label">메뉴</label>
-                    <div class="action-row">
+                    <div class="action-row settings-action-grid">
                         <button type="button" onclick="openSearchModalFromMy()"
-                            class="action-tile action-row-single">
+                            class="action-tile action-row-single settings-action-wide">
                             검색
                         </button>
                         <button type="button" onclick="myMenuCloseAndScrollTo('recent-section')"
@@ -881,7 +875,7 @@
                             커뮤니티
                         </button>
                         <button type="button" onclick="myMenuGoTheme()"
-                            class="action-tile action-row-single">
+                            class="action-tile action-row-single settings-action-wide">
                             테마 설정
                         </button>
                     </div>
@@ -894,49 +888,49 @@
                     <div class="settings-swatch-grid">
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop')"
-                            class="settings-swatch group">
+                            class="settings-swatch glass-panel group">
                             <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=200&auto=format&fit=crop"
-                                class="w-full h-full object-cover" alt="Beach">
+                                class="settings-swatch-media" alt="Beach">
                             <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')"
-                            class="settings-swatch group">
+                            class="settings-swatch glass-panel group">
                             <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200&auto=format&fit=crop"
-                                class="w-full h-full object-cover" alt="Space">
+                                class="settings-swatch-media" alt="Space">
                             <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=2592&auto=format&fit=crop')"
-                            class="settings-swatch group">
+                            class="settings-swatch glass-panel group">
                             <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=200&auto=format&fit=crop"
-                                class="w-full h-full object-cover" alt="Nature">
+                                class="settings-swatch-media" alt="Nature">
                             <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop')"
-                            class="settings-swatch group">
+                            class="settings-swatch glass-panel group">
                             <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=200&auto=format&fit=crop"
-                                class="w-full h-full object-cover" alt="City">
+                                class="settings-swatch-media" alt="City">
                             <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2072&auto=format&fit=crop')"
-                            class="settings-swatch group">
+                            class="settings-swatch glass-panel group">
                             <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=200&auto=format&fit=crop"
-                                class="w-full h-full object-cover" alt="Sunset">
+                                class="settings-swatch-media" alt="Sunset">
                             <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop')"
-                            class="settings-swatch group">
+                            class="settings-swatch glass-panel group">
                             <img src="https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=200&auto=format&fit=crop"
-                                class="w-full h-full object-cover" alt="Abstract">
+                                class="settings-swatch-media" alt="Abstract">
                             <div class="settings-swatch-overlay">
                             </div>
                         </button>
@@ -948,22 +942,22 @@
                     <label class="settings-section-label">단색 배경</label>
                     <div class="settings-color-row">
                         <button onclick="setBackground('color', '#f8fafc')"
-                            class="settings-color-chip bg-slate-50 border-slate-200"
+                            class="settings-color-chip glass-panel bg-slate-50 border-slate-200"
                             title="기본 (Slate 50)"></button>
                         <button onclick="setBackground('color', '#ffffff')"
-                            class="settings-color-chip bg-white border-slate-200"
+                            class="settings-color-chip glass-panel bg-white border-slate-200"
                             title="화이트"></button>
                         <button onclick="setBackground('color', '#1e293b')"
-                            class="settings-color-chip bg-slate-800 border-slate-600"
+                            class="settings-color-chip glass-panel bg-slate-800 border-slate-600"
                             title="다크"></button>
                         <button onclick="setBackground('color', '#fdf2f8')"
-                            class="settings-color-chip bg-pink-50 border-pink-200"
+                            class="settings-color-chip glass-panel bg-pink-50 border-pink-200"
                             title="핑크"></button>
                         <button onclick="setBackground('color', '#f0f9ff')"
-                            class="settings-color-chip bg-sky-50 border-sky-200"
+                            class="settings-color-chip glass-panel bg-sky-50 border-sky-200"
                             title="스카이"></button>
                         <button onclick="setBackground('color', '#f0fdf4')"
-                            class="settings-color-chip bg-green-50 border-green-200"
+                            class="settings-color-chip glass-panel bg-green-50 border-green-200"
                             title="그린"></button>
                     </div>
                 </div>
@@ -975,9 +969,9 @@
                         입력</label>
                     <div class="settings-input-row">
                         <input type="url" id="custom-bg-url" placeholder="https://..."
-                            class="input-field flex-1 text-sm">
+                            class="modal-input">
                         <button onclick="applyCustomBackground()"
-                            class="ui-btn ui-btn-dark">적용</button>
+                            class="btn-brand">적용</button>
                     </div>
                     <!-- Local file upload / drag & drop -->
                     <div class="mt-3 space-y-2">
@@ -994,20 +988,23 @@
                 <!-- Pro Upgrade -->
                 <div class="settings-section mb-4">
                     <div class="settings-upgrade-card">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-bold text-lg">Pro 멤버십</h4>
+                        <div class="settings-upgrade-head">
+                            <h4 class="settings-upgrade-title">Pro 멤버십</h4>
                             <span class="settings-upgrade-badge">Best</span>
                         </div>
-                        <p class="text-white/90 text-sm mb-3">무제한 트리 생성과 프리미엄 테마를 신청하고, 서버 확인 후 혜택을 반영합니다.</p>
-                        <button onclick="handleProUpgrade()" class="settings-upgrade-action">
-                            Pro 신청하기 (₩9,900)
-                        </button>
+                        <p class="settings-upgrade-desc">무제한 트리 생성과 프리미엄 테마를 신청하고, 서버 확인 후 혜택을 반영합니다.</p>
+                        <div class="settings-upgrade-footer">
+                            <span class="settings-upgrade-price">₩9,900 / month</span>
+                            <button onclick="handleProUpgrade()" class="settings-upgrade-action">
+                                Pro 신청하기
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="settings-section">
                     <label class="settings-section-label">백업</label>
-                    <div class="action-row">
+                    <div class="action-row settings-backup-grid">
                         <button type="button" onclick="exportLocalBackup()"
                             class="action-tile">
                             백업 파일 저장

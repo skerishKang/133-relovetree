@@ -124,19 +124,78 @@ function filterTreesByQuery(trees, query) {
     });
 }
 
+function getTreeMetaSummary(tree) {
+    const nodeCount = typeof tree.nodeCount === 'number' ? tree.nodeCount : 0;
+    const viewCount = typeof tree.viewCount === 'number' ? tree.viewCount : 0;
+    const likeCount = typeof tree.likeCount === 'number' ? tree.likeCount : 0;
+    const shareCount = typeof tree.shareCount === 'number' ? tree.shareCount : 0;
+    return `${nodeCount}개의 순간 · 조회 ${viewCount} · 좋아요 ${likeCount} · 공유 ${shareCount}`;
+}
+
+function renderHomeTreeCard(tree, options) {
+    const card = tree || {};
+    const opts = options || {};
+    const name = card.name || card.id || '?';
+    const initial = name.charAt(0).toUpperCase();
+    const href = opts.href || `editor.html?id=${encodeURIComponent(card.id || '')}`;
+    const subtitle = opts.subtitle || '';
+    const title = opts.title || name;
+    const likeCount = typeof card.likeCount === 'number' ? card.likeCount : 0;
+    const baseClass = opts.compact
+        ? 'tree-card-base tree-card-base-compact'
+        : 'tree-card-base';
+    const topbarClass = opts.compact
+        ? 'tree-card-topbar tree-card-topbar-padded'
+        : 'tree-card-topbar';
+    const identityClass = opts.compact
+        ? 'tree-card-identity tree-card-identity-tight'
+        : 'tree-card-identity';
+    const avatarClass = opts.compact
+        ? 'initials-avatar initials-avatar-sm'
+        : 'initials-avatar';
+    const metaClass = opts.compact
+        ? 'tree-card-meta tree-card-meta-padded'
+        : 'tree-card-meta';
+
+    return `
+        <a href="${href}" class="${baseClass}" title="${title}">
+            <div class="${topbarClass}">
+                <div class="${identityClass}">
+                    <div class="${avatarClass}">
+                        ${initial}
+                    </div>
+                    <div class="tree-card-body">
+                        <p class="tree-card-title">${name}</p>
+                        <p class="tree-card-subtitle">${subtitle}</p>
+                    </div>
+                </div>
+                ${opts.showLikeBadge ? `
+                    <div class="tree-card-likebar">
+                        <span class="tree-card-likeicon">♥</span>
+                        <span>${likeCount}</span>
+                    </div>
+                ` : ''}
+            </div>
+            <p class="${metaClass}">
+                ${getTreeMetaSummary(card)}
+            </p>
+        </a>
+    `;
+}
+
 function renderSearchResults(items, page, total) {
     const container = document.getElementById('search-result');
     if (!container) return;
 
     if (!SEARCH_QUERY) {
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+            <div class="search-empty">
+                <div class="search-empty-icon">
                     <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <p class="text-sm font-medium text-slate-500">궁금한 아티스트나 트리를 검색해 보세요</p>
+                <p class="search-empty-title">궁금한 아티스트나 트리를 검색해 보세요</p>
             </div>
         `;
         updateSearchPagination(0, 0);
@@ -145,14 +204,14 @@ function renderSearchResults(items, page, total) {
 
     if (!items.length) {
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+            <div class="search-empty">
+                <div class="search-empty-icon">
                     <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <p class="text-sm font-bold text-slate-800 mb-1">'${SEARCH_QUERY}'에 대한 결과가 없습니다</p>
-                <p class="text-xs text-slate-500">다른 검색어를 입력하거나 오타를 확인해 보세요</p>
+                <p class="search-empty-title-strong">'${SEARCH_QUERY}'에 대한 결과가 없습니다</p>
+                <p class="search-empty-desc">다른 검색어를 입력하거나 오타를 확인해 보세요</p>
             </div>
         `;
         updateSearchPagination(0, 0);
@@ -164,13 +223,16 @@ function renderSearchResults(items, page, total) {
         const sub = tree.updated ? String(tree.updated).slice(0, 10) : (tree.lastUpdated ? String(tree.lastUpdated).slice(0, 10) : '');
         const href = `editor.html?id=${encodeURIComponent(tree.id || '')}`;
         return `
-            <a href="${href}" class="block bg-white border border-slate-200 rounded-xl px-4 py-3 hover:bg-slate-50 transition-colors">
-                <div class="flex items-center justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="text-sm font-bold text-slate-900 truncate">${name}</div>
-                        <div class="text-[11px] text-slate-400 truncate">${sub}</div>
+            <a href="${href}" class="search-result-card">
+                <div class="search-result-row">
+                    <div class="search-result-main">
+                        <div class="search-result-title">${name}</div>
+                        <div class="search-result-meta">
+                            <div class="search-result-date">${sub}</div>
+                            <div class="search-result-status">러브트리</div>
+                        </div>
                     </div>
-                    <div class="text-[11px] text-slate-500 shrink-0">열기</div>
+                    <div class="search-result-open search-result-cta">열기</div>
                 </div>
             </a>
         `;
@@ -352,37 +414,11 @@ async function loadPopularTrees() {
         trees.sort((a, b) => (b.popularityScore || 0) - (a.popularityScore || 0));
 
         const cardsHTML = trees.map((tree) => {
-            const initial = tree.name ? tree.name.charAt(0).toUpperCase() : '?';
-            const likeCount = tree.likeCount || 0;
-            const nodeCount = typeof tree.nodeCount === 'number' ? tree.nodeCount : 0;
-            const viewCount = typeof tree.viewCount === 'number' ? tree.viewCount : 0;
-            const shareCount = typeof tree.shareCount === 'number' ? tree.shareCount : 0;
-
-            return `
-                <a href="editor.html?id=${encodeURIComponent(tree.id)}"
-                   class="flex flex-col bg-white/90 rounded-2xl overflow-hidden shadow-lg border border-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow h-full">
-                    <div class="flex items-center justify-between p-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-xs font-bold text-pink-600">
-                                ${initial}
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-slate-900 truncate">${tree.name}</p>
-                                <p class="text-xs text-slate-500 truncate">${tree.updated || ''}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1 text-[11px] text-slate-500">
-                            <span class="text-pink-500">♥</span>
-                            <span>${likeCount}</span>
-                        </div>
-                    </div>
-                    <div class="px-3 pb-3">
-                        <p class="text-[11px] text-slate-500">
-                            ${nodeCount}개의 순간 · 조회 ${viewCount} · 좋아요 ${likeCount} · 공유 ${shareCount}
-                        </p>
-                    </div>
-                </a>
-            `;
+            return renderHomeTreeCard(tree, {
+                compact: true,
+                subtitle: tree.updated || '',
+                showLikeBadge: true
+            });
         }).join('');
 
         container.innerHTML = cardsHTML;
@@ -881,28 +917,11 @@ async function loadRecentCreatedTrees() {
         }
 
         const cardsHTML = trees.map((tree) => {
-            const name = tree.name || '?';
-            const initial = name.charAt(0).toUpperCase();
             const updatedDate = (tree.lastUpdated || '').slice(0, 10);
-
-            return `
-                <a href="editor.html?id=${encodeURIComponent(tree.id)}"
-                   class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-all"
-                   title="${name} 러브트리 보기">
-                    <div class="flex items-center gap-3 w-full">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
-                            ${initial}
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm font-bold text-slate-900 truncate">${name}</p>
-                            <p class="text-[11px] text-slate-400">최근 업데이트: ${updatedDate}</p>
-                        </div>
-                    </div>
-                    <p class="text-[11px] text-slate-500">
-                        ${tree.nodeCount}개의 순간 · 조회 ${tree.viewCount} · 좋아요 ${tree.likeCount} · 공유 ${tree.shareCount}
-                    </p>
-                </a>
-            `;
+            return renderHomeTreeCard(tree, {
+                title: `${tree.name || '?'} 러브트리 보기`,
+                subtitle: `최근 업데이트: ${updatedDate}`
+            });
         }).join('');
 
         grid.innerHTML = cardsHTML;
@@ -1062,31 +1081,11 @@ function renderMyTreesGrid(myTrees) {
     }
 
     const cardsHTML = myTrees.map(tree => {
-        const initial = tree.name ? tree.name.charAt(0).toUpperCase() : '?';
-        const nodeCount = typeof tree.nodeCount === 'number' ? tree.nodeCount : 0;
-        const viewCount = typeof tree.viewCount === 'number' ? tree.viewCount : 0;
-        const likeCount = typeof tree.likeCount === 'number' ? tree.likeCount : 0;
-        const shareCount = typeof tree.shareCount === 'number' ? tree.shareCount : 0;
         const updated = (tree.lastUpdated || '').slice(0, 10);
-
-        return `
-            <a href="editor.html?id=${encodeURIComponent(tree.id)}"
-               class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-all"
-               title="${tree.name} 러브트리 계속 편집하기">
-                <div class="flex items-center gap-3 w-full">
-                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
-                        ${initial}
-                    </div>
-                    <div class="min-w-0">
-                        <p class="text-sm font-bold text-slate-900 truncate">${tree.name}</p>
-                        <p class="text-xs text-slate-500">최근 업데이트: ${updated}</p>
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-500">
-                    ${nodeCount}개의 순간 · 조회 ${viewCount} · 좋아요 ${likeCount} · 공유 ${shareCount}
-                </p>
-            </a>
-        `;
+        return renderHomeTreeCard(tree, {
+            title: `${tree.name} 러브트리 계속 편집하기`,
+            subtitle: `최근 업데이트: ${updated}`
+        });
     }).join('');
 
     grid.innerHTML = cardsHTML;

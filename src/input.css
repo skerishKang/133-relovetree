@@ -49,6 +49,10 @@
     @apply bg-brand-500 text-white hover:bg-brand-600 shadow-lg shadow-brand-500/20;
   }
 
+  .btn-brand {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-600 shadow-lg shadow-brand-500/20;
+  }
+
   .ui-btn-secondary {
     @apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50;
   }
@@ -71,6 +75,10 @@
 
   .section-shell {
     @apply rounded-2xl border border-white/80 bg-transparent px-4 py-5 shadow-lg backdrop-blur-sm sm:px-6 sm:py-6;
+  }
+
+  .glass-panel {
+    @apply border border-white/70 bg-white/70 shadow-md backdrop-blur-sm;
   }
 
   .empty-state {
@@ -113,6 +121,10 @@
     @apply flex gap-2;
   }
 
+  .modal-input {
+    @apply w-full flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
   .action-row {
     @apply grid grid-cols-1 gap-2 sm:grid-cols-2;
   }
@@ -133,6 +145,326 @@
     @apply border-brand-500 bg-brand-50 text-brand-600;
   }
 
+  .tree-card-base {
+    @apply flex flex-col items-start gap-2 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 shadow-md ring-1 ring-white/60 backdrop-blur-sm transition-all hover:border-brand-500 hover:shadow-lg;
+  }
+
+  .tree-card-base-compact {
+    @apply gap-0 overflow-hidden px-0 py-0 shadow-lg border-white/80;
+  }
+
+  .tree-card-topbar {
+    @apply flex w-full items-center justify-between gap-3;
+  }
+
+  .tree-card-topbar-padded {
+    @apply p-3;
+  }
+
+  .tree-card-identity {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .tree-card-identity-tight {
+    @apply gap-2;
+  }
+
+  .initials-avatar {
+    @apply flex items-center justify-center rounded-full font-bold;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.875rem;
+    line-height: 1;
+    background: rgb(241 245 249);
+    color: rgb(51 65 85);
+  }
+
+  .initials-avatar-sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+    background: rgb(252 231 243);
+    color: rgb(219 39 119);
+  }
+
+  .tree-card-body {
+    @apply min-w-0;
+  }
+
+  .tree-card-title {
+    @apply truncate text-sm font-bold text-slate-900;
+  }
+
+  .tree-card-subtitle {
+    @apply truncate text-slate-500;
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .tree-card-likebar {
+    @apply flex items-center gap-1 text-slate-500;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+  }
+
+  .tree-card-likeicon {
+    @apply text-pink-500;
+  }
+
+  .tree-card-meta {
+    @apply text-slate-500;
+    font-size: 0.6875rem;
+    line-height: 1.45;
+  }
+
+  .tree-card-meta-padded {
+    @apply px-3 pb-3;
+  }
+
+  .modal-shell {
+    @apply p-0 bg-white rounded-2xl shadow-2xl overflow-hidden;
+  }
+
+  .modal-shell-sm {
+    @apply w-[90vw] max-w-md;
+  }
+
+  .modal-shell-lg {
+    @apply w-[90vw] max-w-2xl;
+  }
+
+  .modal-panel {
+    @apply p-6 max-h-[80vh] overflow-y-auto;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .modal-title {
+    @apply text-xl font-bold text-slate-900;
+  }
+
+  .modal-desc {
+    @apply text-sm text-slate-500;
+  }
+
+  .modal-close {
+    @apply inline-flex items-center justify-center rounded-full p-1 text-slate-400 transition-colors hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  .modal-actions {
+    @apply flex justify-end gap-3;
+  }
+
+  .search-result-card {
+    @apply block rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:bg-slate-50;
+  }
+
+  .search-result-row {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .search-result-main {
+    @apply min-w-0;
+  }
+
+  .search-result-meta {
+    @apply mt-1 flex items-center gap-2;
+  }
+
+  .search-result-title {
+    @apply truncate text-sm font-bold text-slate-900;
+  }
+
+  .search-result-date {
+    @apply truncate text-slate-400;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+  }
+
+  .search-result-subtitle {
+    @apply truncate text-slate-400;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+  }
+
+  .search-result-status {
+    @apply inline-flex shrink-0 items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500;
+  }
+
+  .search-result-open {
+    @apply shrink-0 text-slate-500;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+  }
+
+  .search-result-cta {
+    @apply inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-bold text-slate-600 transition-colors hover:bg-slate-100;
+  }
+
+  .search-empty {
+    @apply flex flex-col items-center justify-center px-4 py-12 text-center;
+  }
+
+  .search-empty-icon {
+    @apply mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-300;
+  }
+
+  .search-empty-title {
+    @apply text-sm font-medium text-slate-500;
+  }
+
+  .search-empty-title-strong {
+    @apply mb-1 text-sm font-bold text-slate-800;
+  }
+
+  .search-empty-desc {
+    @apply text-xs text-slate-500;
+  }
+
+  .section-heading {
+    @apply mb-4;
+  }
+
+  .section-heading-row {
+    @apply mb-4 flex items-center justify-between gap-3;
+  }
+
+  .section-title {
+    @apply text-xl font-bold text-slate-900;
+  }
+
+  .section-title-icon {
+    @apply flex items-center gap-2;
+  }
+
+  .section-desc {
+    @apply mt-1 text-sm text-slate-500;
+  }
+
+  .settings-profile-row {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .settings-profile-main {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .settings-profile-avatar {
+    @apply h-10 w-10 rounded-full border border-slate-200 bg-white object-cover;
+  }
+
+  .settings-profile-text {
+    @apply min-w-0;
+  }
+
+  .settings-profile-name {
+    @apply truncate text-sm font-bold text-slate-800;
+  }
+
+  .settings-profile-meta {
+    @apply truncate text-xs text-slate-500;
+  }
+
+  .settings-inline-link {
+    @apply text-xs font-bold text-slate-500 transition-colors hover:text-brand-600;
+  }
+
+  .nav-link {
+    @apply inline-flex items-center text-sm font-medium text-slate-600 transition-colors hover:text-brand-600;
+  }
+
+  .nav-icon-btn {
+    @apply flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-600 shadow-sm transition-all hover:bg-slate-100 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .nav-user-btn {
+    @apply flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-100 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .brand-mark {
+    @apply flex h-8 w-8 items-center justify-center rounded-2xl bg-brand-500 text-sm font-bold text-white shadow-sm;
+  }
+
+  .mobile-menu-sheet {
+    @apply w-72 max-w-[90vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl;
+  }
+
+  .mobile-menu-header {
+    @apply flex items-center justify-between border-b border-slate-100 px-4 py-3;
+  }
+
+  .mobile-menu-close {
+    @apply flex h-7 w-7 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100;
+  }
+
+  .mobile-menu-nav {
+    @apply py-2 text-sm text-slate-700;
+  }
+
+  .mobile-menu-link {
+    @apply w-full px-4 py-2 text-left transition-colors hover:bg-slate-50;
+  }
+
+  .hero-badge {
+    @apply inline-flex items-center gap-2 rounded-full border border-white bg-white/80 px-3 py-1.5 shadow-md;
+  }
+
+  .hero-badge-mark {
+    @apply flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white shadow-sm;
+  }
+
+  .hero-badge-text {
+    @apply text-[11px] font-bold uppercase tracking-wider text-brand-600;
+  }
+
+  .hero-title {
+    @apply mt-5 font-extrabold tracking-tight text-slate-900;
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.05;
+  }
+
+  .hero-subtitle {
+    @apply mt-3 max-w-2xl text-sm font-medium leading-relaxed text-slate-700 sm:text-lg;
+  }
+
+  .search-toolbar {
+    @apply mb-3 flex gap-2;
+  }
+
+  .search-input {
+    @apply flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .search-submit-btn {
+    @apply bg-slate-800 text-white hover:bg-slate-700;
+  }
+
+  .search-tabs {
+    @apply mb-4 flex gap-2;
+  }
+
+  .search-pagination {
+    @apply mt-4 flex items-center justify-between gap-2;
+  }
+
+  .search-page-info {
+    @apply text-xs text-slate-500;
+  }
+
+  .settings-action-grid {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-2;
+  }
+
+  .settings-action-wide {
+    @apply sm:col-span-2;
+  }
+
+  .settings-backup-grid {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-2;
+  }
+
   .notice-banner {
     @apply rounded-2xl border px-4 py-3 text-sm;
   }
@@ -145,6 +477,22 @@
     @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
   }
 
+  .notice-banner-copy {
+    @apply min-w-0;
+  }
+
+  .notice-banner-title {
+    @apply font-semibold;
+  }
+
+  .notice-banner-desc {
+    @apply text-xs;
+  }
+
+  .notice-banner-action {
+    @apply shrink-0;
+  }
+
   .settings-swatch-grid {
     @apply grid grid-cols-3 gap-3;
   }
@@ -155,6 +503,10 @@
 
   .settings-swatch-overlay {
     @apply absolute inset-0 bg-black/20 transition-colors group-hover:bg-transparent;
+  }
+
+  .settings-swatch-media {
+    @apply h-full w-full object-cover;
   }
 
   .settings-color-row {
@@ -173,12 +525,32 @@
     @apply rounded-xl bg-gradient-to-r from-brand-500 to-pink-500 p-4 text-white shadow-lg;
   }
 
+  .settings-upgrade-head {
+    @apply mb-2 flex items-center justify-between gap-3;
+  }
+
+  .settings-upgrade-title {
+    @apply text-lg font-bold;
+  }
+
+  .settings-upgrade-desc {
+    @apply mb-3 text-sm text-white/90;
+  }
+
+  .settings-upgrade-footer {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .settings-upgrade-price {
+    @apply text-xs font-semibold uppercase tracking-wide text-white/80;
+  }
+
   .settings-upgrade-badge {
     @apply rounded bg-white/20 px-2 py-0.5 text-xs font-bold;
   }
 
   .settings-upgrade-action {
-    @apply w-full rounded-lg bg-white py-2 font-bold text-brand-600 shadow-sm transition-colors hover:bg-slate-50;
+    @apply inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 font-bold text-brand-600 shadow-sm transition-colors hover:bg-slate-50;
   }
 
   .settings-reset-btn {
