@@ -60,15 +60,18 @@ function httpError(status, message, details) {
   return error;
 }
 
-function handleError(scope, error) {
+function handleError(scope, error, requestOrigin) {
   console.error(`${scope} error:`, error);
+  const headers = getCorsHeaders(requestOrigin, {
+    'Content-Type': 'application/json; charset=utf-8',
+  });
   if (error && typeof error.status === 'number') {
     return buildResponse(error.status, {
       error: error.message || 'Error',
       details: error.details || null,
-    });
+    }, headers);
   }
-  return buildResponse(500, { error: 'Internal error' });
+  return buildResponse(500, { error: 'Internal error' }, headers);
 }
 
 module.exports = {

@@ -105,6 +105,6 @@ exports.handler = async (event, context) => {
 
     return buildResponse(405, { error: 'Method not allowed' });
   } catch (err) {
-    return handleError('tree-admin', err);
+    return handleError('tree-admin', err, requestOrigin);
   }
 };

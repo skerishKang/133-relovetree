@@ -21,6 +21,6 @@ exports.handler = async (event) => {
     const data = await executeFirestoreApi(event, body);
     return buildResponse(200, data);
   } catch (error) {
-    return handleError('firestore-api', error);
+    return handleError('firestore-api', error, requestOrigin);
   }
 };

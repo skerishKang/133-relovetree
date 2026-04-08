@@ -314,3 +314,10 @@ grep -n "rate" netlify/functions/ai-helper.js
 - Netlify built-in rate limiting은 사이트 단위 적용
 - 함수별 개별 rate limit은 별도 구현 필요 (Redis 등)
 - 현재는 GEMINI_API_KEYS 다중 키로 quota 소진 시 자동 전환됨
+
+
+## Runtime Config Injection
+
+- `src/runtime-config.js`가 클라이언트 런타임 설정 진입점입니다.
+- 결제를 활성화하려면 `meta[name="relovetree-payment-client-key"]`에 Toss client key를 넣어야 합니다.
+- App Check를 활성화하려면 `meta[name="relovetree-app-check-site-key"]`에 Firebase App Check site key를 넣어야 합니다.

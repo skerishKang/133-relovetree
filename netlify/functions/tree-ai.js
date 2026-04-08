@@ -199,6 +199,6 @@ exports.handler = async (event, context) => {
       },
     });
   } catch (err) {
-    return handleError('tree-ai', err);
+    return handleError('tree-ai', err, requestOrigin);
   }
 };

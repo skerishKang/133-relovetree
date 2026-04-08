@@ -530,6 +530,7 @@ exports.handler = async (event, context) => {
     console.error('ai-helper error:', e);
     return {
       statusCode: 500,
+      headers: getCorsHeaders(requestOrigin),
       body: JSON.stringify({ error: 'Internal error' }),
     };
   }

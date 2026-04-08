@@ -95,7 +95,7 @@ async function verifyPayment(event) {
     if (err.status === 401) {
       return buildResponse(401, { error: 'Authentication required' }, getCorsHeaders(requestOrigin));
     }
-    return handleError('payment-verify', err);
+    return handleError('payment-verify', err, requestOrigin);
   }
 }
 
