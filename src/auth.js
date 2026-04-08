@@ -132,6 +132,20 @@ function updateLoginUI(user) {
     const userName = document.getElementById('user-name');
     const adminLink = document.getElementById('admin-link');
     const emailLoginLink = document.getElementById('email-login-link');
+    const settingsBtn = document.getElementById('settings-btn');
+    const globalSettingsBtn = document.getElementById('global-settings-btn');
+
+    const updateSettingsButton = (button, loggedIn) => {
+        if (!button) return;
+        const label = loggedIn ? '마이' : '로그인';
+        const title = loggedIn ? '마이페이지 및 설정' : '로그인 및 설정';
+        button.title = title;
+        button.setAttribute('aria-label', title);
+        const textEl = button.querySelector('span');
+        if (textEl) {
+            textEl.textContent = label;
+        }
+    };
 
     if (user) {
         if (loginBtn) loginBtn.classList.add('hidden');
@@ -139,6 +153,8 @@ function updateLoginUI(user) {
         if (userMenu) userMenu.classList.remove('hidden');
         if (userAvatar) userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
         if (userName) userName.textContent = user.displayName;
+        updateSettingsButton(settingsBtn, true);
+        updateSettingsButton(globalSettingsBtn, true);
 
         // Check Admin Role (Client-side check for UI only, secured by Rules/Backend)
         checkAdminRole(user).then(isAdmin => {
@@ -150,6 +166,8 @@ function updateLoginUI(user) {
         if (emailLoginLink) emailLoginLink.classList.remove('hidden');
         if (userMenu) userMenu.classList.add('hidden');
         if (adminLink) adminLink.classList.add('hidden');
+        updateSettingsButton(settingsBtn, false);
+        updateSettingsButton(globalSettingsBtn, false);
     }
 }
 

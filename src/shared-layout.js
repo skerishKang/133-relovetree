@@ -43,11 +43,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </a>
-                <button id="global-settings-btn" type="button" class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-colors" title="마이" aria-label="마이">
+                <button id="global-settings-btn" type="button" class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-colors" title="로그인 및 설정" aria-label="로그인 및 설정">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
-                    <span class="hidden sm:inline">마이</span>
+                    <span class="hidden sm:inline">로그인</span>
                 </button>
             </div>
         </div>
