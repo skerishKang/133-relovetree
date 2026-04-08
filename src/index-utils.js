@@ -72,11 +72,20 @@
         });
     }
 
+    function onDomReady(callback) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', callback, { once: true });
+            return;
+        }
+        callback();
+    }
+
     window.IndexUtils = {
         debounce: debounce,
         cacheElements: cacheElements,
         showLoading: showLoading,
         hideLoading: hideLoading,
-        initializeLazyLoading: initializeLazyLoading
+        initializeLazyLoading: initializeLazyLoading,
+        onDomReady: onDomReady
     };
 })();

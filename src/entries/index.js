@@ -125,20 +125,14 @@ function initPage() {
 
 // ================== EVENT LISTENERS ==================
 
-// Wait for DOM to be ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initPage();
-        if (typeof window.homeSettings.loadBackgroundPreference === 'function') {
-            window.homeSettings.loadBackgroundPreference();
-        }
-    });
-} else {
+function handleDomReady() {
     initPage();
     if (typeof window.homeSettings.loadBackgroundPreference === 'function') {
         window.homeSettings.loadBackgroundPreference();
     }
 }
+
+window.IndexUtils.onDomReady(handleDomReady);
 
 // Handle page visibility change for performance
 document.addEventListener('visibilitychange', () => {
@@ -168,22 +162,23 @@ function handleProUpgrade() {
     requestPayment(user.email, user.displayName);
 }
 
-// Export functions for global access
-window.toggleLanguage = window.IndexI18n.toggleLanguage;
-window.handleProfileClick = handleProfileClick;
-window.handleProUpgrade = handleProUpgrade;
-window.toggleMobileMenu = window.IndexRuntime.toggleMobileMenu;
-window.navigateToHome = window.IndexRuntime.navigateToHome;
-window.scrollToMyTrees = window.IndexRuntime.scrollToMyTrees;
-window.scrollToAllTrees = window.IndexRuntime.scrollToAllTrees;
-window.openSearchModal = window.openSearchModal;
-window.closeSearchModal = window.closeSearchModal;
-window.openSearchModalFromMy = window.openSearchModalFromMy;
-window.setSearchMode = window.setSearchMode;
-window.runSearchFromUI = window.runSearchFromUI;
-window.searchPrevPage = window.searchPrevPage;
-window.searchNextPage = window.searchNextPage;
-window.migrateLocalTreesToAccount = migrateLocalTreesToAccount;
+Object.assign(window, {
+    toggleLanguage: window.IndexI18n.toggleLanguage,
+    handleProfileClick: handleProfileClick,
+    handleProUpgrade: handleProUpgrade,
+    toggleMobileMenu: window.IndexRuntime.toggleMobileMenu,
+    navigateToHome: window.IndexRuntime.navigateToHome,
+    scrollToMyTrees: window.IndexRuntime.scrollToMyTrees,
+    scrollToAllTrees: window.IndexRuntime.scrollToAllTrees,
+    openSearchModal: window.openSearchModal,
+    closeSearchModal: window.closeSearchModal,
+    openSearchModalFromMy: window.openSearchModalFromMy,
+    setSearchMode: window.setSearchMode,
+    runSearchFromUI: window.runSearchFromUI,
+    searchPrevPage: window.searchPrevPage,
+    searchNextPage: window.searchNextPage,
+    migrateLocalTreesToAccount: migrateLocalTreesToAccount
+});
 
 // Auth 모듈에서 호출하는 전역 콜백: 로그인/로그아웃 시점에 최근 트리 목록을 갱신
 window.onAuthReady = function (user) {
