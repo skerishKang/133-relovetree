@@ -20,15 +20,12 @@
 async function migrateLocalTreesToAccount() {
     const user = getCurrentUser();
     if (!user) {
-        const message = window.IndexI18n.isKorean
-            ? '로그인이 필요합니다. 하단의 [마이] 탭에서 먼저 로그인해 주세요.'
-            : 'Login is required. Please sign in from the [My] tab first.';
-        showError(message, 4000);
+        showError(window.IndexI18n.getMessage('loginRequiredMyTab'), 4000);
         return;
     }
 
     if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
-        showError(window.IndexI18n.isKorean ? '저장소 초기화 중입니다. 잠시 후 다시 시도해 주세요.' : 'Storage is not ready. Please try again.', 4000);
+        showError(window.IndexI18n.getMessage('storageNotReady'), 4000);
         return;
     }
 
@@ -38,16 +35,10 @@ async function migrateLocalTreesToAccount() {
     const migratedNames = await window.IndexDataLoader.migrateLocalTrees(user);
 
     if (migratedNames.length > 0) {
-        const message = window.IndexI18n.isKorean
-            ? '로컬 러브트리 ' + migratedNames.length + '개를 계정으로 가져왔습니다.'
-            : 'Imported ' + migratedNames.length + ' local trees into your account.';
-        showError(message, 4000);
+        showError(window.IndexI18n.formatMessage('importLocalTreesSuccess', migratedNames.length), 4000);
         await window.IndexRuntime.loadUserTreesFromFirestore(user);
     } else {
-        const message = window.IndexI18n.isKorean
-            ? '가져올 로컬 러브트리를 찾지 못했습니다.'
-            : 'No local trees to import.';
-        showError(message, 3000);
+        showError(window.IndexI18n.getMessage('importLocalTreesEmpty'), 3000);
     }
 }
 
@@ -85,21 +76,9 @@ function initPage() {
             }, 300));
         }
 
-        const settingsBtn = document.getElementById('settings-btn');
-        const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
-        const searchBtn = document.getElementById('search-btn');
-
-        if (settingsBtn && typeof window.homeSettings.openSettingsModal === 'function') {
-            settingsBtn.addEventListener('click', window.homeSettings.openSettingsModal);
-        }
-
-        if (mobileSettingsBtn && typeof window.homeSettings.openSettingsModal === 'function') {
-            mobileSettingsBtn.addEventListener('click', window.homeSettings.openSettingsModal);
-        }
-
-        if (searchBtn) {
-            searchBtn.addEventListener('click', window.openSearchModal);
-        }
+        window.IndexUtils.bindClickIfExists('settings-btn', window.homeSettings.openSettingsModal);
+        window.IndexUtils.bindClickIfExists('mobile-settings-btn', window.homeSettings.openSettingsModal);
+        window.IndexUtils.bindClickIfExists('search-btn', window.openSearchModal);
 
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
@@ -117,7 +96,7 @@ function initPage() {
 
     } catch (error) {
         console.error('Page initialization error:', error);
-        showError('페이지 로딩 중 오류가 발생했습니다.', 3000);
+        showError(window.IndexI18n.getMessage('pageLoadError'), 3000);
     } finally {
         window.IndexUtils.hideLoading();
     }
@@ -147,16 +126,16 @@ document.addEventListener('visibilitychange', () => {
  * Handle profile button click
  */
 function handleProfileClick() {
-    showError(window.IndexI18n.isKorean ? '로그인 기능은 준비 중입니다.' : 'Login feature is coming soon.', 2000);
+    showError(window.IndexI18n.getMessage('loginComingSoon'), 2000);
 }
 
 /**
  * Handle Pro Upgrade Click
  */
 function handleProUpgrade() {
-    const user = firebase.auth().currentUser;
+    const user = getCurrentUser();
     if (!user) {
-        alert('로그인이 필요합니다.');
+        alert(window.IndexI18n.getMessage('loginRequired'));
         return;
     }
     requestPayment(user.email, user.displayName);

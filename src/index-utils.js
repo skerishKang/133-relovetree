@@ -13,6 +13,7 @@
         };
     }
 
+    // Must be called early from the page entry before render/update helpers use window.elements.
     function cacheElements() {
         window.elements = {
             pageTitle: document.getElementById('page-title'),
@@ -72,7 +73,15 @@
         });
     }
 
+    function bindClickIfExists(id, handler) {
+        var element = document.getElementById(id);
+        if (!element || typeof handler !== 'function') return null;
+        element.addEventListener('click', handler);
+        return element;
+    }
+
     function onDomReady(callback) {
+        if (typeof callback !== 'function') return;
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', callback, { once: true });
             return;
@@ -86,6 +95,7 @@
         showLoading: showLoading,
         hideLoading: hideLoading,
         initializeLazyLoading: initializeLazyLoading,
+        bindClickIfExists: bindClickIfExists,
         onDomReady: onDomReady
     };
 })();
