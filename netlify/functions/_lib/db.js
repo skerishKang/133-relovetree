@@ -2,6 +2,13 @@ const { Pool } = require('pg');
 
 let pool;
 
+function createMissingDbError() {
+  const error = new Error('Database is not configured');
+  error.status = 503;
+  error.details = 'Missing Postgres connection string';
+  return error;
+}
+
 function getDatabaseUrl() {
   return (
     process.env.NETLIFY_DATABASE_URL ||
@@ -16,7 +23,7 @@ function getPool() {
 
   const connectionString = getDatabaseUrl();
   if (!connectionString) {
-    throw new Error('Missing Postgres connection string');
+    throw createMissingDbError();
   }
 
   pool = new Pool({
@@ -53,6 +60,7 @@ async function withTransaction(fn) {
 }
 
 module.exports = {
+  getDatabaseUrl,
   getPool,
   query,
   withTransaction,

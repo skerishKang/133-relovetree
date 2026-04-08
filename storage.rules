@@ -1,8 +1,8 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow public read access to all files
-    match /{allPaths=**} {
+    // Shared tree assets only: public read for images/videos already embedded in public trees.
+    match /users/{userId}/trees/{allPaths=**} {
       allow read: if true;
     }
 

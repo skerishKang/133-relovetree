@@ -24,7 +24,8 @@
 | `YOUTUBE_API_KEY` | ✅ | YouTube Data API v3 key |
 | `YOUTUBE_API_REFERER` | Recommended | Referer header for YouTube API |
 | `TOSS_SECRET_KEY` | For payment | Toss Payments secret key (production) |
-| `ADMIN_EMAILS` | Recommended | Comma-separated admin emails (server fallback allowlist) |
+| `TOSS_PRO_AMOUNT` | Optional | Server-side expected amount for Pro verification |
+| `ADMIN_EMAILS` | Legacy only | Historical allowlist env (current server 권한은 DB role 기준) |
 
 ### 확인 방법
 
@@ -69,7 +70,8 @@ netlify deploy --prod
 |------|-------------|------------------------|
 | `DATABASE_URL` | `postgresql://...neondb?sslmode=require` | 동일해야 함 |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | 로컬 JSON 파일 | Netlify env에 동일 내용 |
-| `ADMIN_EMAILS` | Dashboard 값 사용 | `skerish@naver.com,padiemipu@gmail.com` |
+| `ADMIN_EMAILS` | Optional legacy | 더 이상 권한 판정 source of truth 아님 |
+| `TOSS_PRO_AMOUNT` | Optional | `9900` |
 | env_file 참조 | netlify.toml의 `env_file = ".env"` | 무시됨 |
 
 ### ⚠️ 주의사항
@@ -84,25 +86,23 @@ netlify deploy --prod
 
 ### 현재 운영 계정
 
-- **Admin allowlist env**: `skerish@naver.com,padiemipu@gmail.com`
 - **Primary admin**: `skerish@naver.com`
 - **Role source of truth**: DB `users.role = 'admin'`
 
 ### Admin 판정 로직
 
 **서버 (firestore-api.js)**:
-1. `ADMIN_EMAILS` env check
-2. DB `users.role = 'admin'` check
+1. DB `users.role = 'admin'` check
 
 **클라이언트 (auth.js / admin entry)**:
 1. DB `users.role = 'admin'` check
-2. 서버 판정은 항상 Netlify env + DB role 재확인
+2. 서버 판정은 DB role 재확인
 
 ### 권장 운영 방식
 
-1. `ADMIN_EMAILS` env를 Netlify에 유지 (서버 allowlist fallback)
-2. DB `users.role`로 실제 admin 권한 관리
-3. 클라이언트는 서버 ACL을 대체하지 않음
+1. DB `users.role`로 실제 admin 권한 관리
+2. 클라이언트는 서버 ACL을 대체하지 않음
+3. `ADMIN_EMAILS`는 과거 호환용 문서 항목으로만 유지하거나 제거 검토
 
 ### Role 종류
 
@@ -218,6 +218,24 @@ netlify functions:invoke firestore-api --payload '{"op":"getDoc","path":"trees/t
 |----------|----------|------|
 | `GEMINI_API_KEYS` | ✅ | Comma-separated keys (여러 개면 순차 사용) |
 | `GEMINI_API_KEY` | Alternative | 단일 키 |
+
+---
+
+## Payment Runtime Note
+
+- 클라이언트 결제 버튼은 `window.RELOVETREE_PAYMENT_CONFIG`가 설정된 경우에만 활성 동작합니다.
+- 최소 필요 값:
+  - `clientKey`
+  - `amount`
+- 서버 검증은 `TOSS_SECRET_KEY`와 `TOSS_PRO_AMOUNT`를 사용합니다.
+- 설정이 없으면 결제 기능은 의도적으로 비활성화됩니다.
+
+---
+
+## Firebase App Check
+
+- 클라이언트는 `window.RELOVETREE_APP_CHECK_CONFIG.siteKey`가 설정된 경우에만 App Check를 초기화합니다.
+- 현재 코드는 선택적 초기화만 추가된 상태이며, 실제 활성화에는 Firebase Console 설정과 사이트 키 등록이 필요합니다.
 | `YOUTUBE_API_KEY` | ✅ | YouTube Data API v3 |
 | `YOUTUBE_API_REFERER` | Recommended | Referer 헤더 (localhost/netlify URL) |
 

@@ -4,13 +4,18 @@
  * Note: role/pro 권한 변경은 서버 검증 후에만 처리되어야 한다.
  */
 
-// Configuration
-const PAYMENT_CONFIG = {
-    clientKey: 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq', // Test Key from 26-md-reader
-    amount: 9900,
-    orderName: 'Relovetree Pro (무제한 이용권)',
-    verifyEndpoint: '/api/payment/verify'
-};
+function getPaymentConfig() {
+    const runtimeConfig = window.RELOVETREE_PAYMENT_CONFIG || {};
+    const clientKey = String(runtimeConfig.clientKey || '').trim();
+    const amount = Number(runtimeConfig.amount || 0);
+
+    return {
+        clientKey: clientKey,
+        amount: amount,
+        orderName: runtimeConfig.orderName || 'Relovetree Pro (무제한 이용권)',
+        verifyEndpoint: runtimeConfig.verifyEndpoint || '/api/payment/verify'
+    };
+}
 
 let tossPayments = null;
 
@@ -22,8 +27,15 @@ function clearPaymentStatusFromUrl() {
  * Initialize Payment System
  */
 function initPayment() {
+    const paymentConfig = getPaymentConfig();
+    if (!paymentConfig.clientKey || !paymentConfig.amount) {
+        console.warn('Payment config not set. Payment features are disabled.');
+        tossPayments = null;
+        return;
+    }
+
     if (window.TossPayments) {
-        tossPayments = TossPayments(PAYMENT_CONFIG.clientKey);
+        tossPayments = TossPayments(paymentConfig.clientKey);
     } else {
         console.warn('Toss Payments SDK not loaded');
     }
@@ -35,6 +47,13 @@ function initPayment() {
  * @param {string} userName - User's name
  */
 function requestPayment(userEmail, userName) {
+    const paymentConfig = getPaymentConfig();
+
+    if (!paymentConfig.clientKey || !paymentConfig.amount) {
+        alert('결제 설정이 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.');
+        return;
+    }
+
     if (!tossPayments) {
         alert('결제 시스템을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
         return;
@@ -43,9 +62,9 @@ function requestPayment(userEmail, userName) {
     const orderId = 'ORDER_' + new Date().getTime();
 
     tossPayments.requestPayment('카드', {
-        amount: PAYMENT_CONFIG.amount,
+        amount: paymentConfig.amount,
         orderId: orderId,
-        orderName: PAYMENT_CONFIG.orderName,
+        orderName: paymentConfig.orderName,
         customerName: userName || 'Relovetree User',
         customerEmail: userEmail,
         successUrl: window.location.origin + '/index.html?payment=success&orderId=' + orderId,
@@ -54,7 +73,7 @@ function requestPayment(userEmail, userName) {
         // Toss Payments v1 SDK returns paymentKey in result
         // After payment success, we need to verify on the server
         if (result && result.paymentKey) {
-            verifyPaymentWithServer(result.paymentKey, orderId, PAYMENT_CONFIG.amount).then(function(verifyResult) {
+            verifyPaymentWithServer(result.paymentKey, orderId, paymentConfig.amount).then(function(verifyResult) {
                 if (verifyResult.ok && verifyResult.isPro) {
                     alert('결제가 완료되었습니다. Pro 혜택이 적용되었습니다!');
                     if (typeof window.refreshUserMenu === 'function') {
@@ -82,9 +101,10 @@ function requestPayment(userEmail, userName) {
  * @returns {Promise<{ok: boolean, isPro?: boolean, error?: string}>}
  */
 async function verifyPaymentWithServer(paymentKey, orderId, amount) {
+    const paymentConfig = getPaymentConfig();
     try {
         const token = await getAuthToken();
-        const response = await fetch(PAYMENT_CONFIG.verifyEndpoint, {
+        const response = await fetch(paymentConfig.verifyEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -129,6 +149,7 @@ async function getAuthToken() {
  * Check Payment Result (on page load)
  */
 async function checkPaymentResult() {
+    const paymentConfig = getPaymentConfig();
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const orderId = urlParams.get('orderId');
@@ -138,8 +159,13 @@ async function checkPaymentResult() {
         
         if (paymentKey) {
             clearPaymentStatusFromUrl();
-            
-            const result = await verifyPaymentWithServer(paymentKey, orderId, PAYMENT_CONFIG.amount);
+
+            if (!paymentConfig.amount) {
+                alert('결제 설정이 없어 검증을 진행할 수 없습니다. 고객센터에 문의해주세요.');
+                return;
+            }
+
+            const result = await verifyPaymentWithServer(paymentKey, orderId, paymentConfig.amount);
             
             if (result.ok && result.isPro) {
                 alert('결제가 완료되었습니다. Pro 혜택이 적용되었습니다!');

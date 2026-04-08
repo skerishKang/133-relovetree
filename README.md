@@ -108,9 +108,9 @@
 
 ### CSS 운영 방식
 
-- 앱은 이제 [`assets/css/app.css`](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/assets/css/app.css) 를 직접 사용합니다.
+- 앱은 이제 `assets/css/app.css` 를 직접 사용합니다.
 - 즉, **평소 실행/개발에는 `npm run build`가 필요 없습니다.**
-- CSS는 [`assets/css/app.css`](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/assets/css/app.css) 하나만 직접 수정하면 됩니다.
+- CSS는 `assets/css/app.css` 하나만 직접 수정하면 됩니다.
 
 ## 🎨 디자인 시스템
 

@@ -93,6 +93,32 @@ function initFirebase() {
     return true;
 }
 
+function initFirebaseAppCheck() {
+    try {
+        if (typeof window === 'undefined' || typeof firebase === 'undefined') return false;
+        if (!firebase.apps || !firebase.apps.length) return false;
+
+        const config = window.RELOVETREE_APP_CHECK_CONFIG || {};
+        const siteKey = String(config.siteKey || '').trim();
+        const autoRefresh = config.autoRefreshToken !== false;
+
+        if (!siteKey) return false;
+        if (typeof firebase.appCheck !== 'function') {
+            console.warn('Firebase App Check SDK not loaded');
+            return false;
+        }
+
+        const appCheck = firebase.appCheck();
+        if (appCheck && typeof appCheck.activate === 'function') {
+            appCheck.activate(siteKey, autoRefresh);
+            return true;
+        }
+    } catch (error) {
+        console.warn('Firebase App Check initialization skipped:', error);
+    }
+    return false;
+}
+
 /**
  * Initialize the application
  */
@@ -109,6 +135,7 @@ function initApp() {
         sharedDom.setupModalKeyboardHandlers();
     }
     initFirebase();
+    initFirebaseAppCheck();
 
     if (typeof sharedLayout.ensureGlobalLayoutInjected === 'function') {
         sharedLayout.ensureGlobalLayoutInjected();

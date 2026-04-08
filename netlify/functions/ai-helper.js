@@ -1,3 +1,5 @@
+const { getCorsHeaders } = require('./_lib/http');
+
 function getYouTubeApiKey(env) {
   return (env.YOUTUBE_API_KEY || '').trim();
 }
@@ -248,14 +250,12 @@ function buildPromptBody(mode, data) {
 }
 
 exports.handler = async (event, context) => {
+  const requestOrigin = event && event.headers ? (event.headers.origin || event.headers.Origin || '') : '';
+
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers: getCorsHeaders(requestOrigin),
       body: '',
     };
   }
@@ -292,7 +292,7 @@ exports.handler = async (event, context) => {
       if (!query) {
         return {
           statusCode: 200,
-          headers: { 'Access-Control-Allow-Origin': '*' },
+          headers: getCorsHeaders(requestOrigin),
           body: JSON.stringify({ mode, result: [] }),
         };
       }
@@ -302,7 +302,7 @@ exports.handler = async (event, context) => {
 
       return {
         statusCode: 200,
-        headers: { 'Access-Control-Allow-Origin': '*' },
+        headers: getCorsHeaders(requestOrigin),
         body: JSON.stringify({ mode, result: list }),
       };
     }
@@ -523,7 +523,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers: { 'Access-Control-Allow-Origin': '*' },
+      headers: getCorsHeaders(requestOrigin),
       body: JSON.stringify({ mode, result }),
     };
   } catch (e) {

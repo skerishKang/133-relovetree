@@ -8,14 +8,10 @@ service cloud.firestore {
     }
 
     // 공통 헬퍼: 관리자 판별
-    // 1) 특정 관리자 이메일
-    // 2) users/{uid}.role == 'admin'
+    // users/{uid}.role == 'admin' 인 경우만 관리자 권한으로 간주
     function isAdmin() {
-      return isSignedIn() && (
-        request.auth.token.email == 'padiemipu@gmail.com' ||
-        request.auth.token.email == 'limone@example.com' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
-      );
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // User profiles
@@ -68,6 +64,7 @@ service cloud.firestore {
       match /comments/{commentId} {
         allow read: if true;
         allow create: if isSignedIn();
+        allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
       }
     }
   }

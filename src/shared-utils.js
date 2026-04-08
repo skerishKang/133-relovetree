@@ -4,6 +4,24 @@
  */
 
 // ================== CONFIGURATION ==================
+const BASE_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDQNR8bNIp4LG4EGNwl1ew8B7Har-KJC90",
+    authDomain: "relovetree.firebaseapp.com",
+    projectId: "relovetree",
+    storageBucket: "relovetree.firebasestorage.app",
+    messagingSenderId: "1091063063536",
+    appId: "1:1091063063536:web:065a746e2578c47dd7b335",
+    measurementId: "G-D4R5XMGFK5"
+};
+
+function getRuntimeFirebaseConfig() {
+    const runtimeConfig = typeof window !== 'undefined' && window.RELOVETREE_FIREBASE_CONFIG
+        ? window.RELOVETREE_FIREBASE_CONFIG
+        : {};
+
+    return Object.assign({}, BASE_FIREBASE_CONFIG, runtimeConfig || {});
+}
+
 const APP_CONFIG = {
     // App metadata
     appName: 'Relovetree',
@@ -11,15 +29,7 @@ const APP_CONFIG = {
     author: 'skerishKang',
 
     // Firebase Configuration
-    firebase: {
-        apiKey: "AIzaSyDQNR8bNIp4LG4EGNwl1ew8B7Har-KJC90",
-        authDomain: "relovetree.firebaseapp.com",
-        projectId: "relovetree",
-        storageBucket: "relovetree.firebasestorage.app",
-        messagingSenderId: "1091063063536",
-        appId: "1:1091063063536:web:065a746e2578c47dd7b335",
-        measurementId: "G-D4R5XMGFK5"
-    },
+    firebase: getRuntimeFirebaseConfig(),
 
     // Validation limits
     validation: {
@@ -215,23 +225,7 @@ function getYouTubeThumb(videoId, quality = 'hqdefault') {
 
     const normalizedQuality = quality.endsWith('.jpg') ? quality : `${quality}.jpg`;
     const hostname = 'https://img.youtube.com/vi/';
-    const thumbUrl = `${hostname}${videoId}/${normalizedQuality}`;
-
-    // Add defensive fallback: if thumbnail request fails after retries, use default placeholder image from app config
-    const img = new Image();
-    img.src = thumbUrl;
-    let retries = 0;
-    const maxRetries = 3;
-    img.onerror = function () {
-        retries++;
-        if (retries < maxRetries) {
-            img.src = thumbUrl;
-        } else {
-            img.src = APP_CONFIG.defaultThumbnail;
-        }
-    };
-
-    return thumbUrl;
+    return `${hostname}${videoId}/${normalizedQuality}`;
 }
 
 /**

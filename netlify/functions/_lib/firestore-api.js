@@ -12,12 +12,6 @@ const SELF_MUTABLE_USER_FIELDS = new Set([
 
 async function isAdminUser(user) {
   if (!user || !user.uid) return false;
-  const email = String(user.email || '').toLowerCase();
-  const adminEmails = String(process.env.ADMIN_EMAILS || '')
-    .split(',')
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean);
-  if (email && adminEmails.includes(email)) return true;
   const role = await documentStore.getUserRole(user.uid);
   return role === 'admin';
 }

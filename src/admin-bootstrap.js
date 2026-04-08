@@ -1,13 +1,9 @@
 (function () {
-    const firebaseConfig = {
-        apiKey: "AIzaSyDQNR8bNIp4LG4EGNwl1ew8B7Har-KJC90",
-        authDomain: "relovetree.firebaseapp.com",
-        projectId: "relovetree",
-        storageBucket: "relovetree.firebasestorage.app",
-        messagingSenderId: "1091063063536",
-        appId: "1:1091063063536:web:065a746e2578c47dd7b335",
-        measurementId: "G-D4R5XMGFK5"
-    };
+    const firebaseConfig = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.firebase)
+        ? APP_CONFIG.firebase
+        : ((typeof window !== 'undefined' && window.RELOVETREE_FIREBASE_CONFIG)
+            ? window.RELOVETREE_FIREBASE_CONFIG
+            : null);
 
     function setStatus(msg) {
         const loginStatus = document.getElementById('loginStatus');
@@ -215,7 +211,7 @@
 
     function bootAdminPage(adminEmails) {
         document.addEventListener('DOMContentLoaded', () => {
-            if (!firebase.apps.length) {
+            if (!firebase.apps.length && firebaseConfig) {
                 firebase.initializeApp(firebaseConfig);
             }
 

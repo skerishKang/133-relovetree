@@ -1,11 +1,42 @@
+function getAllowedOrigins() {
+  const raw = process.env.CORS_ALLOWED_ORIGINS || process.env.URL || 'https://lovetree.limone.dev';
+  return String(raw)
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function resolveCorsOrigin(requestOrigin) {
+  const allowedOrigins = getAllowedOrigins();
+
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+
+  return allowedOrigins[0] || 'https://lovetree.limone.dev';
+}
+
+function getCorsHeaders(requestOrigin, extraHeaders) {
+  return Object.assign(
+    {
+      'Access-Control-Allow-Origin': resolveCorsOrigin(requestOrigin),
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+      'Vary': 'Origin',
+    },
+    extraHeaders || {}
+  );
+}
+
 function buildResponse(statusCode, bodyObj, extraHeaders) {
   return {
     statusCode,
     headers: Object.assign(
       {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': resolveCorsOrigin(),
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+        'Vary': 'Origin',
         'Content-Type': 'application/json; charset=utf-8',
       },
       extraHeaders || {}
@@ -42,6 +73,7 @@ function handleError(scope, error) {
 
 module.exports = {
   buildResponse,
+  getCorsHeaders,
   ok,
   noContent,
   httpError,
