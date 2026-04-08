@@ -1,4 +1,8 @@
 (function () {
+    function getRuntime() {
+        return window.__editorRuntime;
+    }
+
     function debounce(func, wait) {
         let timeout;
         return function () {
@@ -327,5 +331,12 @@
         forkTreeToMyAccount: forkTreeToMyAccount,
         initState: initState,
         saveDataImmediate: saveDataImmediate
+    };
+    window.debounce = debounce;
+    window.initState = function (data) {
+        return initState(getRuntime(), data);
+    };
+    window.saveDataImmediate = function (showToastOnSuccess) {
+        return saveDataImmediate(getRuntime(), showToastOnSuccess);
     };
 })();

@@ -89,13 +89,13 @@ function setSearchMode(mode) {
     const tabMy = document.getElementById('search-tab-my');
     if (tabAll) {
         tabAll.className = SEARCH_MODE === 'all'
-            ? 'action-chip action-chip-active'
-            : 'action-chip';
+            ? 'search-tab-btn search-tab-btn-active'
+            : 'search-tab-btn';
     }
     if (tabMy) {
         tabMy.className = SEARCH_MODE === 'my'
-            ? 'action-chip action-chip-active'
-            : 'action-chip';
+            ? 'search-tab-btn search-tab-btn-active'
+            : 'search-tab-btn';
     }
 
     runSearch(SEARCH_QUERY, SEARCH_MODE, SEARCH_PAGE);
@@ -195,7 +195,9 @@ function renderSearchResults(items, page, total) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <p class="search-empty-title">궁금한 아티스트나 트리를 검색해 보세요</p>
+                <div class="search-empty-copy">
+                    <p class="search-empty-title">궁금한 아티스트나 트리를 검색해 보세요</p>
+                </div>
             </div>
         `;
         updateSearchPagination(0, 0);
@@ -210,8 +212,10 @@ function renderSearchResults(items, page, total) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <p class="search-empty-title-strong">'${SEARCH_QUERY}'에 대한 결과가 없습니다</p>
-                <p class="search-empty-desc">다른 검색어를 입력하거나 오타를 확인해 보세요</p>
+                <div class="search-empty-copy">
+                    <p class="search-empty-title-strong">'${SEARCH_QUERY}'에 대한 결과가 없습니다</p>
+                    <p class="search-empty-desc">다른 검색어를 입력하거나 오타를 확인해 보세요</p>
+                </div>
             </div>
         `;
         updateSearchPagination(0, 0);
@@ -225,7 +229,7 @@ function renderSearchResults(items, page, total) {
         return `
             <a href="${href}" class="search-result-card">
                 <div class="search-result-row">
-                    <div class="search-result-main">
+                    <div class="search-result-copy">
                         <div class="search-result-title">${name}</div>
                         <div class="search-result-meta">
                             <div class="search-result-date">${sub}</div>
@@ -1030,7 +1034,7 @@ function renderRecentTreesFromList(myTrees) {
         elements.recentSection.classList.remove('hidden');
         elements.recentTreesScroll.innerHTML = `
             <div class="flex flex-col items-center justify-start py-2 px-2 min-w-[200px]">
-                <div class="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-2">
+                <div class="initials-avatar mb-2">
                     <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>

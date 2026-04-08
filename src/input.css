@@ -125,6 +125,50 @@
     @apply w-full flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-500;
   }
 
+  .modal-field {
+    @apply mb-6;
+  }
+
+  .modal-label {
+    @apply mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500;
+  }
+
+  .modal-help {
+    @apply mt-1 text-xs text-slate-400;
+  }
+
+  .modal-actions-spacious {
+    @apply gap-3;
+  }
+
+  .modal-action-btn {
+    @apply px-5 py-2.5;
+  }
+
+  .settings-auth-stack {
+    @apply flex flex-col gap-2;
+  }
+
+  .settings-section-stack {
+    @apply space-y-6;
+  }
+
+  .settings-section-block {
+    @apply space-y-3;
+  }
+
+  .settings-section-pane {
+    @apply border-t border-slate-100 pt-4 space-y-3;
+  }
+
+  .settings-auth-btn {
+    @apply w-full;
+  }
+
+  .settings-logout-btn {
+    @apply text-slate-600 hover:text-red-500;
+  }
+
   .action-row {
     @apply grid grid-cols-1 gap-2 sm:grid-cols-2;
   }
@@ -143,6 +187,18 @@
 
   .action-chip-active {
     @apply border-brand-500 bg-brand-50 text-brand-600;
+  }
+
+  .search-tab-btn {
+    @apply action-chip;
+  }
+
+  .search-tab-btn-active {
+    @apply action-chip-active;
+  }
+
+  .search-page-btn {
+    @apply action-chip;
   }
 
   .tree-card-base {
@@ -237,8 +293,24 @@
     @apply p-6 max-h-[80vh] overflow-y-auto;
   }
 
+  .modal-stack {
+    @apply space-y-6;
+  }
+
+  .modal-intro {
+    @apply space-y-2;
+  }
+
   .modal-header {
     @apply flex items-center justify-between gap-3;
+  }
+
+  .modal-header-spaced {
+    @apply mb-4;
+  }
+
+  .modal-header-roomy {
+    @apply mb-6;
   }
 
   .modal-title {
@@ -261,6 +333,14 @@
     @apply block rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:bg-slate-50;
   }
 
+  .search-modal-stack {
+    @apply space-y-4;
+  }
+
+  .search-results-list {
+    @apply space-y-2;
+  }
+
   .search-result-row {
     @apply flex items-center justify-between gap-3;
   }
@@ -269,8 +349,12 @@
     @apply min-w-0;
   }
 
+  .search-result-copy {
+    @apply min-w-0 space-y-1;
+  }
+
   .search-result-meta {
-    @apply mt-1 flex items-center gap-2;
+    @apply flex items-center gap-2;
   }
 
   .search-result-title {
@@ -309,6 +393,10 @@
 
   .search-empty-icon {
     @apply mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-300;
+  }
+
+  .search-empty-copy {
+    @apply space-y-1;
   }
 
   .search-empty-title {
@@ -369,6 +457,10 @@
 
   .settings-inline-link {
     @apply text-xs font-bold text-slate-500 transition-colors hover:text-brand-600;
+  }
+
+  .settings-card-note {
+    @apply mt-3 text-xs text-slate-500;
   }
 
   .nav-link {
@@ -519,6 +611,22 @@
 
   .settings-dropzone {
     @apply flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-5 text-xs text-slate-500 transition-colors hover:bg-slate-100;
+  }
+
+  .settings-upload-stack {
+    @apply mt-3 space-y-2;
+  }
+
+  .settings-upload-label {
+    @apply text-xs font-bold uppercase tracking-wider text-slate-500;
+  }
+
+  .settings-upload-help {
+    @apply text-[11px] text-slate-400;
+  }
+
+  .settings-note {
+    @apply mt-2 text-xs text-slate-500;
   }
 
   .settings-upgrade-card {

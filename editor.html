@@ -681,6 +681,9 @@
     <script src="src/editor-timeline.js"></script>
     <script src="src/editor-bootstrap.js"></script>
     <script src="src/editor-orchestration.js"></script>
+    <script src="src/editor-render-ui.js"></script>
+    <script src="src/editor-render-main.js"></script>
+    <script src="src/editor-runtime.js"></script>
     <script>
         let isKorean = true;
 
@@ -839,42 +842,42 @@
             comments: []
         };
 
-        window.__editorRuntime = {
-            get treeId() { return treeId; },
-            get STORAGE_KEY() { return STORAGE_KEY; },
-            get BG_STORAGE_KEY() { return BG_STORAGE_KEY; },
-            get dummyData() { return dummyData; },
-            get db() { return db; },
-            set db(value) { db = value; },
-            get auth() { return auth; },
-            set auth(value) { auth = value; },
-            get storage() { return storage; },
-            set storage(value) { storage = value; },
-            get currentUser() { return currentUser; },
-            set currentUser(value) { currentUser = value; },
-            get isReadOnly() { return isReadOnly; },
-            set isReadOnly(value) { isReadOnly = value; },
-            get currentTreeDocData() { return currentTreeDocData; },
-            set currentTreeDocData(value) { currentTreeDocData = value; },
-            get originalNodes() { return originalNodes; },
-            set originalNodes(value) { originalNodes = value; },
-            get editorMode() { return editorMode; },
-            set editorMode(value) { editorMode = value; },
-            get isKorean() { return isKorean; },
-            set isKorean(value) { isKorean = !!value; },
-            get orientationMode() { return orientationMode; },
-            set orientationMode(value) { orientationMode = value; },
-            get commentsUnsubscribe() { return commentsUnsubscribe; },
-            set commentsUnsubscribe(value) { commentsUnsubscribe = value; },
-            get state() { return state; },
-            get firebase() { return firebase; },
-            get showToast() { return window.showToast; },
-            get render() { return render; },
-            get initState() { return initState; },
-            get updateTreeStatsBanner() { return updateTreeStatsBanner; },
-            get saveData() { return saveData; },
-            get saveDataImmediate() { return saveDataImmediate; }
-        };
+        window.__editorRuntime = window.EditorRuntimeHelpers.createRuntime({
+            getTreeId: () => treeId,
+            getStorageKey: () => STORAGE_KEY,
+            getBackgroundStorageKey: () => BG_STORAGE_KEY,
+            getDummyData: () => dummyData,
+            getDb: () => db,
+            setDb: (value) => { db = value; },
+            getAuth: () => auth,
+            setAuth: (value) => { auth = value; },
+            getStorage: () => storage,
+            setStorage: (value) => { storage = value; },
+            getCurrentUser: () => currentUser,
+            setCurrentUser: (value) => { currentUser = value; },
+            getIsReadOnly: () => isReadOnly,
+            setIsReadOnly: (value) => { isReadOnly = value; },
+            getCurrentTreeDocData: () => currentTreeDocData,
+            setCurrentTreeDocData: (value) => { currentTreeDocData = value; },
+            getOriginalNodes: () => originalNodes,
+            setOriginalNodes: (value) => { originalNodes = value; },
+            getEditorMode: () => editorMode,
+            setEditorMode: (value) => { editorMode = value; },
+            getIsKorean: () => isKorean,
+            setIsKorean: (value) => { isKorean = !!value; },
+            getOrientationMode: () => orientationMode,
+            setOrientationMode: (value) => { orientationMode = value; },
+            getCommentsUnsubscribe: () => commentsUnsubscribe,
+            setCommentsUnsubscribe: (value) => { commentsUnsubscribe = value; },
+            getState: () => state,
+            getFirebase: () => firebase,
+            getShowToast: () => window.showToast,
+            getRender: () => render,
+            getInitState: () => window.initState,
+            getUpdateTreeStatsBanner: () => window.updateTreeStatsBanner,
+            getSaveData: () => saveData,
+            getSaveDataImmediate: () => window.saveDataImmediate
+        });
 
         window.isKorean = isKorean;
         if (window.EditorHeaderHelpers && typeof window.EditorHeaderHelpers.syncHeaderState === 'function') {
@@ -895,81 +898,30 @@
         // Global State moved to top of script
         // initialData usage removed
 
-        // Initialize State with Data
-        function initState(data) {
-            return window.EditorDataHelpers.initState(window.__editorRuntime, data);
-        }
-
         let editorMode = 'tree';
 
         // ================== BACKGROUND PREFERENCES (Copied from index.js) ==================
         const BG_STORAGE_KEY = 'relovetree_background';
 
         // Save Data (Firebase + LocalStorage)
-        // Simple debounce function
-        function debounce(func, wait) {
-            return window.EditorDataHelpers.debounce(func, wait);
-        }
-
-        async function saveDataImmediate(showToastOnSuccess = true) {
-            return window.EditorDataHelpers.saveDataImmediate(window.__editorRuntime, showToastOnSuccess);
-        }
-
-        const saveData = debounce(() => {
+        const saveData = window.debounce(() => {
             // 일반 편집 동작에서는 디바운스된 저장을 사용
-            saveDataImmediate(true);
+            window.saveDataImmediate(true);
         }, 1000); // Debounce 1s
 
         // --- Community Features ---
 
         let commentsUnsubscribe = null;
 
-        const canvas = document.getElementById('canvas');
-        const connections = document.getElementById('connections');
-
         function render() {
-            const timeline = document.getElementById('timeline');
+            const refs = window.EditorRenderUiHelpers.getRenderRefs();
 
             if (editorMode === 'timeline') {
-                if (canvas) canvas.classList.add('hidden');
-                if (connections) connections.innerHTML = '';
-                if (timeline) timeline.classList.remove('hidden');
-                renderTimeline();
-                if (typeof updateTreeStatsBanner === 'function') {
-                    updateTreeStatsBanner();
-                }
+                window.EditorRenderMainHelpers.renderTimelineBranch(window.__editorRuntime, refs);
                 return;
             }
 
-            if (timeline) timeline.classList.add('hidden');
-            if (canvas) canvas.classList.remove('hidden');
-
-            canvas.style.transform = `translate(${state.transform.x}px, ${state.transform.y}px) scale(${state.transform.k})`;
-            document.getElementById('zoom-level').innerText = Math.round(state.transform.k * 100) + '%';
-
-            connections.innerHTML = '';
-            document.querySelectorAll('.node').forEach(el => el.remove());
-
-            state.nodes.forEach(node => {
-                const el = window.EditorTreeViewHelpers.createNodeElement(window.__editorRuntime, node);
-                canvas.appendChild(el);
-            });
-
-            // 노드 DOM이 모두 생성된 이후에 실제 핸들 위치를 기준으로 연결선을 그림
-            state.edges.forEach(edge => {
-                const from = state.nodes.find(n => n.id === edge.from);
-                const to = state.nodes.find(n => n.id === edge.to);
-                if (from && to) drawConnection(from, to);
-            });
-
-            // 미니맵 업데이트
-            if (typeof updateMinimap === 'function') {
-                updateMinimap();
-            }
-
-            if (typeof updateTreeStatsBanner === 'function') {
-                updateTreeStatsBanner();
-            }
+            window.EditorRenderMainHelpers.renderTreeBranch(window.__editorRuntime, refs);
         }
 
         window.EditorBootstrapHelpers.finalizeBootstrap(window.__editorRuntime);
