@@ -81,7 +81,7 @@
                 return;
             }
 
-            window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
+            window.location.href = '/pages/editor.html?id=' + encodeURIComponent(res.newTreeId);
         } catch (err) {
             console.error('커뮤니티 카드 포크 실패:', err);
             showError('가져오기 실패', 4000);
@@ -96,11 +96,11 @@
         const filtered = filterCommunityPosts(options.posts, options.query);
         if (!filtered.length) {
             listEl.innerHTML = '';
-            if (emptyEl) emptyEl.classList.remove('hidden');
+            if (emptyEl) emptyEl.classList.remove('is-hidden');
             return;
         }
 
-        if (emptyEl) emptyEl.classList.add('hidden');
+        if (emptyEl) emptyEl.classList.add('is-hidden');
         listEl.innerHTML = filtered.map(function (item) {
             return renderCommunityPostCard(item.id, item.data);
         }).join('');
@@ -113,7 +113,7 @@
             });
         });
 
-        listEl.querySelectorAll('a[href^="editor.html?id="]').forEach(function (a) {
+        listEl.querySelectorAll('a[href^="/pages/editor.html?id="]').forEach(function (a) {
             a.addEventListener('click', function (e) {
                 e.stopPropagation();
             });
@@ -131,8 +131,8 @@
     function setCommunityPostActionUiVisible(canEditOrDelete) {
         const wrap = document.getElementById('detail-post-actions');
         if (!wrap) return;
-        if (canEditOrDelete) wrap.classList.remove('hidden');
-        else wrap.classList.add('hidden');
+        if (canEditOrDelete) wrap.classList.remove('is-hidden');
+        else wrap.classList.add('is-hidden');
     }
 
     function setCommunityPostEditMode(isEditMode) {
@@ -227,12 +227,12 @@
         }
 
         if (!items.length) {
-            imagesWrap.classList.add('hidden');
+            imagesWrap.classList.add('is-hidden');
             imagesWrap.innerHTML = '';
             return;
         }
 
-        imagesWrap.classList.remove('hidden');
+        imagesWrap.classList.remove('is-hidden');
         imagesWrap.innerHTML = items.join('');
     }
 
@@ -249,24 +249,24 @@
 
         if (!treeIdForOpen) {
             treeOpenEl.href = '#';
-            treeActionsEl.classList.add('hidden');
+            treeActionsEl.classList.add('is-hidden');
             treeForkBtn.disabled = true;
             if (treeSummaryEl) {
-                treeSummaryEl.classList.add('hidden');
+                treeSummaryEl.classList.add('is-hidden');
                 treeSummaryEl.textContent = '';
             }
             return;
         }
 
-        treeOpenEl.href = 'editor.html?id=' + encodeURIComponent(treeIdForOpen);
-        treeActionsEl.classList.remove('hidden');
+        treeOpenEl.href = '/pages/editor.html?id=' + encodeURIComponent(treeIdForOpen);
+        treeActionsEl.classList.remove('is-hidden');
         treeForkBtn.disabled = false;
 
         if (treeSummaryEl) {
             const buildSummary = getTemplateFn('buildCommunityTreeSummaryText');
             const summaryFn = buildSummary || function() { return ''; };
 
-            treeSummaryEl.classList.remove('hidden');
+            treeSummaryEl.classList.remove('is-hidden');
             treeSummaryEl.textContent = summaryFn({ status: 'loading' });
             options.fetchTreeSummary(treeIdForOpen).then(function (summary) {
                 try {

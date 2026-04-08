@@ -129,58 +129,6 @@ async function createAiTreeSkeleton(prompt, count) {
     return list;
 }
 
-function openAiTreeSuggestionEditor(index) {
-    if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
-
-    const item = aiTreeSuggestions[index] || {};
-    const draft = {
-        title: item.title || '새 순간',
-        date: item.date || '',
-        videoId: item.videoId || '',
-        description: item.description || '',
-        moments: Array.isArray(item.moments)
-            ? item.moments.map(function (m) {
-                return {
-                    time: m && m.time ? m.time : '0:00',
-                    text: m && m.text ? m.text : '',
-                    feeling: m && m.feeling ? m.feeling : 'love'
-                };
-            })
-            : []
-    };
-
-    aiTreeDraftIndex = index;
-    aiTreeDraftNode = draft;
-
-    if (typeof closeAiHelper === 'function') {
-        closeAiHelper();
-    }
-
-    if (typeof openDetailModalForAiTreeSuggestion === 'function') {
-        openDetailModalForAiTreeSuggestion(index, draft);
-        return;
-    }
-
-    aiTreeEditIndex = index;
-    renderAiTreeSuggestionEditor();
-}
-
-function updateAiTreeSuggestionFromDraft(index, draft) {
-    if (!aiTreeSuggestions || index < 0 || index >= aiTreeSuggestions.length) return;
-    const item = aiTreeSuggestions[index];
-    if (!item || !draft) return;
-
-    item.title = draft.title || item.title;
-    item.date = draft.date || item.date;
-    item.videoId = draft.videoId || '';
-    item.description = draft.description || '';
-    item.moments = Array.isArray(draft.moments) ? draft.moments : [];
-
-    if ((!item.moments || item.moments.length === 0) && item.description) {
-        item.moments = [{ time: '0:00', text: item.description, feeling: 'love' }];
-    }
-}
-
 async function openMomentAiHelper() {
     const input = document.getElementById('new-moment-text');
     let base = '';
@@ -200,7 +148,7 @@ async function openMomentAiHelper() {
 
     const box = document.getElementById('moment-ai-result');
     if (box) {
-        box.innerHTML = '<p class="text-xs text-slate-400">AI가 추천 문장을 생성 중입니다...</p>';
+        box.innerHTML = '<p class="editor-empty-copy">AI가 추천 문장을 생성 중입니다...</p>';
     }
 
     return callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {
@@ -235,7 +183,7 @@ async function openCommentAiHelper() {
 
     const box = document.getElementById('comment-ai-result');
     if (box) {
-        box.innerHTML = '<p class="text-xs text-slate-400">AI가 추천 문장을 생성 중입니다...</p>';
+        box.innerHTML = '<p class="editor-empty-copy">AI가 추천 문장을 생성 중입니다...</p>';
     }
 
     return callAiHelperApi('comment', { prompt: base, nodeTitle: base }).then(function (result) {

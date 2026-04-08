@@ -36,13 +36,13 @@
         titleEl.textContent = config.title;
         descEl.textContent = config.description;
         inputEl.value = '';
-        modal.classList.remove('hidden');
+        modal.classList.remove('is-hidden');
     }
 
     function closeDemoSeedModal() {
         const modal = document.getElementById('demoSeedModal');
         if (!modal) return;
-        modal.classList.add('hidden');
+        modal.classList.add('is-hidden');
         window.currentDemoSeedMode = null;
     }
 

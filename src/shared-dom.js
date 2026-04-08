@@ -38,7 +38,7 @@
     function hideError() {
         const errorDiv = document.getElementById('error-message');
         if (errorDiv) {
-            errorDiv.classList.add('hidden');
+            errorDiv.classList.add('is-hidden');
         }
     }
 
@@ -49,14 +49,14 @@
         if (!errorDiv) {
             errorDiv = createElement('div', {
                 id: 'error-message',
-                className: 'hidden fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-4',
+                className: 'is-hidden ui-error-banner',
                 role: 'alert',
                 'aria-live': 'polite'
             });
 
             const errorText = createElement('span', { id: 'error-text' });
             const closeBtn = createElement('button', {
-                className: 'text-white hover:text-red-200',
+                className: 'ui-error-close',
                 'aria-label': '오류 메시지 닫기'
             });
             closeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
@@ -70,7 +70,7 @@
         if (errorText) {
             errorText.textContent = message;
         }
-        errorDiv.classList.remove('hidden');
+        errorDiv.classList.remove('is-hidden');
 
         if (timeout > 0) {
             window.setTimeout(hideError, timeout);
@@ -144,12 +144,12 @@
     function showToast(message) {
         try {
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-sm opacity-0 transition-opacity duration-300 z-50';
+            toast.className = 'ui-toast';
             toast.innerText = message;
             document.body.appendChild(toast);
-            requestAnimationFrame(function () { toast.classList.add('opacity-100'); });
+            requestAnimationFrame(function () { toast.classList.add('is-visible'); });
             setTimeout(function () {
-                toast.classList.remove('opacity-100');
+                toast.classList.remove('is-visible');
                 setTimeout(function () { toast.remove(); }, 300);
             }, 2000);
         } catch (e) {

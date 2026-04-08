@@ -12,9 +12,9 @@
         const connections = refs && refs.connections ? refs.connections : document.getElementById('connections');
         const timeline = refs && refs.timeline ? refs.timeline : document.getElementById('timeline');
 
-        if (canvas) canvas.classList.add('hidden');
+        if (canvas) canvas.classList.add('is-hidden');
         if (connections) connections.innerHTML = '';
-        if (timeline) timeline.classList.remove('hidden');
+        if (timeline) timeline.classList.remove('is-hidden');
 
         if (typeof window.updateTreeStatsBanner === 'function') {
             window.updateTreeStatsBanner();
@@ -25,8 +25,8 @@
         const canvas = refs && refs.canvas ? refs.canvas : document.getElementById('canvas');
         const timeline = refs && refs.timeline ? refs.timeline : document.getElementById('timeline');
 
-        if (timeline) timeline.classList.add('hidden');
-        if (canvas) canvas.classList.remove('hidden');
+        if (timeline) timeline.classList.add('is-hidden');
+        if (canvas) canvas.classList.remove('is-hidden');
     }
 
     function updateZoomLabel(runtime) {

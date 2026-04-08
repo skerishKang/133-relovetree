@@ -62,12 +62,10 @@
 
     function setToggleButtonState(activeBtn, inactiveBtn) {
         if (activeBtn) {
-            activeBtn.classList.add('bg-slate-800', 'text-white');
-            activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+            activeBtn.classList.add('is-active');
         }
         if (inactiveBtn) {
-            inactiveBtn.classList.remove('bg-slate-800', 'text-white');
-            inactiveBtn.classList.add('bg-slate-100', 'text-slate-600');
+            inactiveBtn.classList.remove('is-active');
         }
     }
 
@@ -105,13 +103,12 @@
 
         if (titleEl) {
             titleEl.contentEditable = isReadOnly ? 'false' : 'true';
-            titleEl.classList.toggle('bg-slate-100', isReadOnly);
-            titleEl.classList.toggle('text-slate-500', isReadOnly);
+            titleEl.classList.toggle('is-readonly', isReadOnly);
         }
 
         if (badgeEl) {
             badgeEl.textContent = t.readOnlyBadge;
-            badgeEl.classList.toggle('hidden', !isReadOnly);
+            badgeEl.classList.toggle('is-hidden', !isReadOnly);
         }
     }
 

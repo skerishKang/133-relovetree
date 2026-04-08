@@ -26,7 +26,7 @@
         const defaultThumb = 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
 
         return `
-        <a href="editor.html?id=${artist.id}"
+        <a href="/pages/editor.html?id=${artist.id}"
             data-artist-id="${artist.id}"
             class="artist-card">
             
@@ -91,7 +91,7 @@
         if (!recentTreesScroll || !recentSection) return;
 
         if (!myTrees || myTrees.length === 0) {
-            recentSection.classList.remove('hidden');
+            recentSection.classList.remove('is-hidden');
             recentTreesScroll.innerHTML = `
                 <div class="home-recent-empty">
                     <div class="initials-avatar mb-2">
@@ -105,14 +105,14 @@
             return;
         }
 
-        recentSection.classList.remove('hidden');
+        recentSection.classList.remove('is-hidden');
 
         const myTreesHTML = myTrees.map(tree => {
             const colorIndex = tree.id.length % COLORS.length;
             const color = COLORS[colorIndex];
 
             return `
-                <a href="editor.html?id=${encodeURIComponent(tree.id)}"
+                <a href="/pages/editor.html?id=${encodeURIComponent(tree.id)}"
                     class="home-recent-item group">
                     <div class="home-recent-avatar-shell bg-${color}-100 border-${color}-200 group-hover:border-${color}-500">
                         <div class="home-recent-avatar-core text-${color}-500">
@@ -146,9 +146,9 @@
             if (loggedIn) {
                 if (placeholderTitle) placeholderTitle.textContent = isKorean ? '나만의 러브트리를 시작해 보세요' : 'Start your own LoveTree';
                 if (placeholderDesc) placeholderDesc.textContent = isKorean ? '아직 만들어진 트리가 없습니다. 좋아하는 아티스트의 첫 번째 순간을 지금 기록해 보세요!' : 'No trees yet. Record your first moment with your favorite artist now!';
-                if (loginBtn) loginBtn.classList.add('hidden');
+                if (loginBtn) loginBtn.classList.add('is-hidden');
                 if (createBtn) {
-                    createBtn.classList.remove('hidden');
+                    createBtn.classList.remove('is-hidden');
                     createBtn.textContent = isKorean ? '+ 첫 트리 만들기' : '+ Create First Tree';
                 }
                 if (iconBtn && typeof openCreateModal === 'function') iconBtn.onclick = openCreateModal;
@@ -156,18 +156,18 @@
                 if (placeholderTitle) placeholderTitle.textContent = isKorean ? '내 러브트리를 안전하게 보관하세요' : 'Keep your LoveTrees safe';
                 if (placeholderDesc) placeholderDesc.textContent = isKorean ? '로그인하면 내가 만든 트리를 모든 기기에서 확인하고 관리할 수 있습니다.' : 'Log in to access your trees from any device.';
                 if (loginBtn) {
-                    loginBtn.classList.remove('hidden');
+                    loginBtn.classList.remove('is-hidden');
                     loginBtn.textContent = isKorean ? '지금 로그인하기' : 'Login Now';
                 }
-                if (createBtn) createBtn.classList.add('hidden');
+                if (createBtn) createBtn.classList.add('is-hidden');
                 if (iconBtn && typeof openSettingsModal === 'function') {
                     iconBtn.onclick = openSettingsModal;
                 }
             }
 
-            grid.classList.add('hidden');
+            grid.classList.add('is-hidden');
             grid.innerHTML = '';
-            if (placeholder) placeholder.classList.remove('hidden');
+            if (placeholder) placeholder.classList.remove('is-hidden');
             return;
         }
 
@@ -180,8 +180,8 @@
         }).join('');
 
         grid.innerHTML = cardsHTML;
-        grid.classList.remove('hidden');
-        if (placeholder) placeholder.classList.add('hidden');
+        grid.classList.remove('is-hidden');
+        if (placeholder) placeholder.classList.add('is-hidden');
     }
 
     function updateMyCreatedTreesPlaceholder() {

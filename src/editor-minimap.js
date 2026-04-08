@@ -6,12 +6,12 @@
 
         if (!minimapEl || !canvasEl || !viewportEl) return;
         if (!Array.isArray(runtime.state.nodes) || runtime.state.nodes.length === 0) {
-            minimapEl.classList.add('hidden');
+            minimapEl.classList.add('is-hidden');
             return;
         }
 
-        minimapEl.classList.remove('hidden');
-        minimapEl.classList.add('md:block');
+        minimapEl.classList.remove('is-hidden');
+        minimapEl.classList.add('editor-desktop-block');
 
         const ctx = canvasEl.getContext('2d');
         if (!ctx) return;

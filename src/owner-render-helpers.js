@@ -112,14 +112,14 @@
         const tree = options.tree;
         const forkStatus = options.forkStatus || null;
 
-        const editorUrl = 'editor.html?id=' + encodeURIComponent(tree.id);
+        const editorUrl = '/pages/editor.html?id=' + encodeURIComponent(tree.id);
         const viewText = (tree.viewCount || 0) + ' / ' + (tree.likeCount || 0) + ' / ' + (tree.shareCount || 0);
         const updatedFull = formatDateTimeFull(tree.lastUpdated);
         const updatedRel = formatRelativeTime(tree.lastUpdated);
 
         const forkedFrom = tree.forkedFrom && tree.forkedFrom.treeId ? tree.forkedFrom : null;
         const sourceId = forkedFrom ? String(forkedFrom.treeId) : '';
-        const sourceUrl = sourceId ? ('editor.html?id=' + encodeURIComponent(sourceId)) : '';
+        const sourceUrl = sourceId ? ('/pages/editor.html?id=' + encodeURIComponent(sourceId)) : '';
         const forkedAtIso = forkedFrom ? options.normalizeToIsoString(forkedFrom.forkedAt) : '';
         const syncedAtIso = forkedFrom ? options.normalizeToIsoString(forkedFrom.syncedAt) : '';
         const forkedRel = forkedAtIso ? formatRelativeTime(forkedAtIso) : '';

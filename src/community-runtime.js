@@ -21,16 +21,16 @@
         if (refs.titleEl) refs.titleEl.textContent = '';
         if (refs.metaEl) refs.metaEl.textContent = '';
         if (refs.contentEl) refs.contentEl.textContent = '';
-        if (refs.treeActionsEl) refs.treeActionsEl.classList.add('hidden');
+        if (refs.treeActionsEl) refs.treeActionsEl.classList.add('is-hidden');
         if (refs.treeSummaryEl) {
-            refs.treeSummaryEl.classList.add('hidden');
+            refs.treeSummaryEl.classList.add('is-hidden');
             refs.treeSummaryEl.innerHTML = '';
         }
         if (refs.imagesWrap) {
-            refs.imagesWrap.classList.add('hidden');
+            refs.imagesWrap.classList.add('is-hidden');
             refs.imagesWrap.innerHTML = '';
         }
-        if (refs.postActionsWrap) refs.postActionsWrap.classList.add('hidden');
+        if (refs.postActionsWrap) refs.postActionsWrap.classList.add('is-hidden');
     }
 
     function bootstrapCommunityAuth(options) {

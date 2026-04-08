@@ -38,8 +38,16 @@ node_modules/
 .codex
 *.fossil
 _FOSSIL_
+_FOSSIL_-journal
 .env
 .DS_Store
 Thumbs.db
 .firebase/hosting..cache
 relovetree-firebase-adminsdk-*.json
+.secrets/
+.gemini/
+.playwright-mcp/
+.mcp.json
+playwright-report/
+test-results/
+nul

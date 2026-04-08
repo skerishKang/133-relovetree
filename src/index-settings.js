@@ -24,12 +24,12 @@
 
     function myMenuGoCommunity() {
         closeSettingsModalIfOpen();
-        window.location.href = 'community.html';
+        window.location.href = '/pages/community.html';
     }
 
     function myMenuGoOwnerConsole() {
         closeSettingsModalIfOpen();
-        window.location.href = 'owner.html';
+        window.location.href = '/pages/owner.html';
     }
 
     function myMenuGoTheme() {
@@ -331,7 +331,7 @@
         try {
             if (name) {
                 const encodedName = encodeURIComponent(name);
-                window.location.href = `editor.html?id=${encodedName}`;
+                window.location.href = `/pages/editor.html?id=${encodedName}`;
             }
         } catch (error) {
             console.error('Navigation error:', error);

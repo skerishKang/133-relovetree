@@ -19,12 +19,12 @@
 
     function showElement(elementId) {
         const el = document.getElementById(elementId);
-        if (el) el.classList.remove('hidden');
+        if (el) el.classList.remove('is-hidden');
     }
 
     function hideElement(elementId) {
         const el = document.getElementById(elementId);
-        if (el) el.classList.add('hidden');
+        if (el) el.classList.add('is-hidden');
     }
 
     window.AdminStatsDisplay = {

@@ -12,8 +12,8 @@
                 const thumb = 'https://i.ytimg.com/vi/' + encodeURIComponent(ytId) + '/hqdefault.jpg';
                 const safeThumb = escapeHtml(thumb);
                 return '\
-                <div class="mt-3 w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-900">\
-                    <img src="' + safeThumb + '" alt="유튜브 썸네일" class="w-full h-full object-cover" loading="lazy" />\
+                <div class="community-media-frame community-media-frame-video">\
+                    <img src="' + safeThumb + '" alt="유튜브 썸네일" class="community-media-image" loading="lazy" />\
                 </div>\
             ';
             }
@@ -21,8 +21,8 @@
             if (isLikelyImageUrl(url)) {
                 const safe = escapeHtml(url);
                 return '\
-                <div class="mt-3 w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-50">\
-                    <img src="' + safe + '" alt="미디어 이미지" class="w-full max-h-56 object-cover" loading="lazy" />\
+                <div class="community-media-frame community-media-frame-image">\
+                    <img src="' + safe + '" alt="미디어 이미지" class="community-media-image community-media-image-tall" loading="lazy" />\
                 </div>\
             ';
             }
@@ -37,20 +37,20 @@
         if (!treeIdForOpen) return '';
 
         return '\
-            <div class="mt-2 flex flex-wrap gap-2 items-center text-[11px]">\
-                <a class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-600 hover:bg-slate-50" href="editor.html?id=' + encodeURIComponent(treeIdForOpen) + '" target="_blank">트리 보기</a>\
-                <button type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700" data-action="fork-tree" data-tree="' + encodeURIComponent(treeIdRaw) + '">내 트리로 가져오기</button>\
+            <div class="community-meta-actions">\
+                <a class="community-meta-btn" href="/pages/editor.html?id=' + encodeURIComponent(treeIdForOpen) + '" target="_blank">트리 보기</a>\
+                <button type="button" class="community-meta-btn community-meta-btn-emerald" data-action="fork-tree" data-tree="' + encodeURIComponent(treeIdRaw) + '">내 트리로 가져오기</button>\
            </div>\
         ';
     }
 
     function buildCommunityPostMetaHtml(author, created, commentCount) {
         return '\
-            <div class="flex items-center justify-between text-[11px] text-slate-400">\
+            <div class="community-meta-row">\
                 <span>' + author + '</span>\
-                <div class="flex items-center gap-2">\
+                <div class="community-meta-inline">\
                     <span>' + created + '</span>\
-                    <span class="flex items-center gap-1 text-[10px] text-slate-400">\
+                    <span class="community-meta-chip">\
                         <span>💬</span>\
                         <span>' + commentCount + '</span>\
                     </span>\
@@ -63,9 +63,9 @@
         const opts = options || {};
         return '\
         <article data-post-id="' + opts.id + '"\
-            class="cursor-pointer bg-white/90 border border-slate-200 rounded-2xl px-4 py-4 sm:px-5 sm:py-4 shadow-sm hover:shadow-md transition-shadow">\
-            <h2 class="text-sm sm:text-base font-bold text-slate-900 mb-1 line-clamp-1">' + (opts.title || '') + '</h2>\
-            <p class="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2">' + (opts.snippet || '') + '</p>\
+            class="community-post-card">\
+            <h2 class="community-post-title">' + (opts.title || '') + '</h2>\
+            <p class="community-post-copy">' + (opts.snippet || '') + '</p>\
             ' + (opts.thumb || '') + '\
             ' + (opts.treeBadge || '') + '\
             ' + (opts.meta || '') + '\
@@ -76,15 +76,15 @@
     function buildCommunityDetailImageHtml(url) {
         const safe = escapeHtml(String(url || '').trim());
         if (!safe) return '';
-        return '<img src="' + safe + '" alt="첨부 이미지" class="w-full rounded-xl border border-slate-200" />';
+        return '<img src="' + safe + '" alt="첨부 이미지" class="community-media-image community-media-frame" />';
     }
 
     function buildCommunityDetailYoutubeHtml(videoId) {
         const safeId = escapeHtml(String(videoId || '').trim());
         if (!safeId) return '';
         return '\
-            <div class="w-full aspect-video rounded-xl overflow-hidden border border-slate-200 bg-black">\
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/' + safeId + '" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>\
+            <div class="community-media-frame community-media-frame-video">\
+                <iframe class="community-media-image" src="https://www.youtube.com/embed/' + safeId + '" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>\
             </div>\
         ';
     }
@@ -92,7 +92,7 @@
     function buildCommunityDetailLinkHtml(url) {
         const safe = escapeHtml(String(url || '').trim());
         if (!safe) return '';
-        return '<a href="' + safe + '" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50">링크 열기</a>';
+        return '<a href="' + safe + '" target="_blank" rel="noopener" class="community-meta-btn">링크 열기</a>';
     }
 
     function buildCommunityDetailMetaHtml(options) {

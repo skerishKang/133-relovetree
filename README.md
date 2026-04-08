@@ -37,16 +37,20 @@
 ```text
 133-relovetree/
 ├── 📄 index.html          # 메인 페이지
-├── 📄 editor.html         # 에디터 페이지  
 ├── 📄 package.json        # 프로젝트 설정
-├── 📄 tailwind.config.js  # Tailwind CSS 설정
-├── 📄 postcss.config.js   # PostCSS 설정
-├── 📄 run_lovetree.bat    # Windows 실행 파일
-├── 📄 output.css          # 빌드된 CSS (auto-generated)
+├── 📄 sw.js               # 사이트 전체 범위 서비스워커
+├── 📁 assets/
+│   └── 📁 css/            # 빌드된 CSS 및 페이지별 CSS
+├── 📁 config/             # Tailwind / PostCSS / Playwright 설정
+├── 📁 pages/              # 서브 페이지 엔트리
+├── 📁 scripts/
+│   ├── 📁 dev/            # 로컬 실행/브라우저 확인 스크립트
+│   └── 📁 ops/            # 배포/운영 스크립트
 ├── 📁 src/
-│   ├── 📄 input.css       # 소스 CSS 파일
+│   ├── 📄 app.css         # 공통 plain CSS 파일
 │   ├── 📄 shared.js       # 공유 유틸리티 모듈
-│   └── 📁 js/             # JavaScript 모듈들
+│   └── 📁 entries/        # 페이지 엔트리 JS
+├── 📁 docs/               # 운영/분석/계획 문서
 └── 📄 README.md           # 이 문서
 ```
 
@@ -95,12 +99,18 @@
 
 ```json
 {
-  "dev": "tailwindcss -i ./src/input.css -o ./output.css --watch",
-  "build": "tailwindcss -i ./src/input.css -o ./output.css --minify", 
+  "dev": "python -m http.server 3133",
+  "build": "정적 CSS 스냅샷 모드: 별도 빌드 불필요",
   "serve": "python -m http.server 3133",
-  "clean": "rm -f output.css"
+  "clean": "정리할 생성물 없음"
 }
 ```
+
+### CSS 운영 방식
+
+- 앱은 이제 [`assets/css/app.css`](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/assets/css/app.css) 를 직접 사용합니다.
+- 즉, **평소 실행/개발에는 `npm run build`가 필요 없습니다.**
+- CSS는 [`assets/css/app.css`](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/assets/css/app.css) 하나만 직접 수정하면 됩니다.
 
 ## 🎨 디자인 시스템
 
@@ -167,11 +177,11 @@
    - `npx netlify dev --port 8888`
 
 3. 접속
-   - `http://localhost:8888/editor.html`
+   - `http://localhost:8888/pages/editor.html`
 
 ### 🧪 로컬 실행 방법 (정적 서버만 실행)
 
-정적 서버(`python -m http.server` 등)로 `editor.html`만 띄우면 `/.netlify/functions/*`가 없기 때문에, 프론트의 AI 호출은 기본적으로 프로덕션 엔드포인트로 폴백합니다.
+정적 서버(`python -m http.server` 등)로 `pages/editor.html`만 띄우면 `/.netlify/functions/*`가 없기 때문에, 프론트의 AI 호출은 기본적으로 프로덕션 엔드포인트로 폴백합니다.
 
 ## 📊 성능 지표
 
@@ -281,7 +291,7 @@ https://github.com/skerishKang/133-relovetree/issues
 
 ### 🆘 도움말
 
-- **문서**: 이 README.md 파일 참조
+- **문서**: `README.md`, `docs/ops/OPERATIONS.md`, `docs/guides/TUTORIAL.md`
 - **FAQ**: GitHub Wiki 확인
 - **커뮤니티**: GitHub Discussions
 

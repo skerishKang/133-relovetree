@@ -24,26 +24,26 @@
         modalCountEl.innerText = runtime.state.comments.length;
 
         if (runtime.state.comments.length === 0) {
-            listEl.innerHTML = '<div class="text-center text-slate-400 text-sm py-10">첫 번째 댓글을 남겨보세요!</div>';
+            listEl.innerHTML = '<div class="editor-comments-empty">첫 번째 댓글을 남겨보세요!</div>';
             return;
         }
 
         listEl.innerHTML = runtime.state.comments.map(function (comment) {
             return '\n' +
-                '                <div class="flex gap-3">\n' +
-                '                    <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">\n' +
+                '                <div class="editor-comment-row">\n' +
+                '                    <div class="editor-comment-avatar">\n' +
                 '                        ' + (comment.userName ? comment.userName[0].toUpperCase() : '?') + '\n' +
                 '                    </div>\n' +
-                '                    <div class="flex-1">\n' +
-                '                        <div class="bg-white p-3 rounded-r-xl rounded-bl-xl border border-slate-100 shadow-sm">\n' +
-                '                            <div class="flex justify-between items-center mb-1">\n' +
-                '                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1">\n' +
+                '                    <div class="editor-comment-content">\n' +
+                '                        <div class="editor-comment-bubble">\n' +
+                '                            <div class="editor-comment-head">\n' +
+                '                                <span class="editor-comment-author">\n' +
                 '                                    <span>' + (comment.userName || '익명') + '</span>\n' +
-                '                                    ' + (comment.isAiBot ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-bold">AI</span>' : '') + '\n' +
+                '                                    ' + (comment.isAiBot ? '<span class="editor-comment-ai-badge">AI</span>' : '') + '\n' +
                 '                                </span>\n' +
-                '                                <span class="text-[10px] text-slate-400">' + new Date(comment.createdAt?.toDate()).toLocaleDateString() + '</span>\n' +
+                '                                <span class="editor-comment-date">' + new Date(comment.createdAt?.toDate()).toLocaleDateString() + '</span>\n' +
                 '                            </div>\n' +
-                '                            <p class="text-sm text-slate-800">' + comment.text + '</p>\n' +
+                '                            <p class="editor-comment-copy">' + comment.text + '</p>\n' +
                 '                        </div>\n' +
                 '                    </div>\n' +
                 '                </div>\n';

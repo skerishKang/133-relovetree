@@ -5,17 +5,17 @@
         listEl.dataset.commentState = next || '';
 
         if (next === 'loading') {
-            listEl.innerHTML = '<div class="text-xs text-slate-400">댓글을 불러오는 중...</div>';
+            listEl.innerHTML = '<div class="community-comment-state">댓글을 불러오는 중...</div>';
             return;
         }
 
         if (next === 'error') {
-            listEl.innerHTML = '<div class="text-xs text-red-500">댓글을 불러오는 중 오류가 발생했습니다.</div>';
+            listEl.innerHTML = '<div class="community-comment-state is-error">댓글을 불러오는 중 오류가 발생했습니다.</div>';
             return;
         }
 
         if (next === 'empty') {
-            listEl.innerHTML = '<div class="text-xs text-slate-400">아직 댓글이 없습니다. 첫 댓글을 남겨보세요.</div>';
+            listEl.innerHTML = '<div class="community-comment-state">아직 댓글이 없습니다. 첫 댓글을 남겨보세요.</div>';
         }
     }
 

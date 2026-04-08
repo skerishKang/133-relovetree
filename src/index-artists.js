@@ -128,7 +128,7 @@
 
     function navigateToArtist(artistId) {
         if (!artistId) return;
-        window.location.href = `editor.html?id=${encodeURIComponent(artistId)}`;
+        window.location.href = `/pages/editor.html?id=${encodeURIComponent(artistId)}`;
     }
 
     function attachArtistCardEvents() {

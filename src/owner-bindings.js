@@ -67,7 +67,7 @@
             }
             const input = document.getElementById('new-tree-name');
             const name = input ? String(input.value || '').trim() : '';
-            if (name) window.location.href = 'editor.html?id=' + encodeURIComponent(name);
+            if (name) window.location.href = '/pages/editor.html?id=' + encodeURIComponent(name);
         });
 
         const createNameInput = document.getElementById('new-tree-name');

@@ -42,13 +42,13 @@ window.IndexRuntime = (function() {
             const localOnlyCount = window.IndexDataLoader.countLocalOnlyTrees(existingIds);
 
             if (localOnlyCount > 0) {
-                window.elements.localMigrationBanner.classList.remove('hidden');
+                window.elements.localMigrationBanner.classList.remove('is-hidden');
                 const textEl = document.getElementById('local-migration-text');
                 if (textEl) {
                     textEl.textContent = '이 기기에만 저장된 러브트리 ' + localOnlyCount + '개를 계정으로 가져올 수 있습니다.';
                 }
             } else {
-                window.elements.localMigrationBanner.classList.add('hidden');
+                window.elements.localMigrationBanner.classList.add('is-hidden');
             }
         }
 
@@ -66,7 +66,7 @@ window.IndexRuntime = (function() {
 
         if (!section || !grid) return;
 
-        section.classList.add('hidden');
+        section.classList.add('is-hidden');
 
         const trees = await window.IndexDataLoader.loadRecentCreatedTreesFromFirestore();
         if (!trees || trees.length === 0) return;
@@ -82,7 +82,7 @@ window.IndexRuntime = (function() {
         }).join('');
 
         grid.innerHTML = cardsHTML;
-        section.classList.remove('hidden');
+        section.classList.remove('is-hidden');
     }
 
     /**
@@ -92,16 +92,16 @@ window.IndexRuntime = (function() {
         const panel = document.getElementById('mobile-menu-panel');
         if (!panel) return;
         if (visible) {
-            panel.classList.remove('hidden');
+            panel.classList.remove('is-hidden');
         } else {
-            panel.classList.add('hidden');
+            panel.classList.add('is-hidden');
         }
     }
 
     function toggleMobileMenu() {
         const panel = document.getElementById('mobile-menu-panel');
         if (!panel) return;
-        const isHidden = panel.classList.contains('hidden');
+        const isHidden = panel.classList.contains('is-hidden');
         setMobileMenuVisible(isHidden);
     }
 

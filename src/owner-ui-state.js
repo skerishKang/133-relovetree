@@ -130,12 +130,12 @@
         const subtitle = document.getElementById('owner-subtitle');
 
         if (user) {
-            if (loginBtn) loginBtn.classList.add('hidden');
-            if (logoutBtn) logoutBtn.classList.remove('hidden');
+            if (loginBtn) loginBtn.classList.add('is-hidden');
+            if (logoutBtn) logoutBtn.classList.remove('is-hidden');
             if (subtitle) subtitle.textContent = user.email ? ('로그인됨: ' + user.email) : '로그인됨';
         } else {
-            if (loginBtn) loginBtn.classList.remove('hidden');
-            if (logoutBtn) logoutBtn.classList.add('hidden');
+            if (loginBtn) loginBtn.classList.remove('is-hidden');
+            if (logoutBtn) logoutBtn.classList.add('is-hidden');
             if (subtitle) subtitle.textContent = '로그인이 필요합니다. (본인 트리만 표시)';
         }
     }

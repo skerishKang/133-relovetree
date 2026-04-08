@@ -66,7 +66,7 @@
 
                 sections.forEach(section => {
                     const isTarget = section.id === targetId;
-                    section.classList.toggle('hidden', !isTarget);
+                    section.classList.toggle('is-hidden', !isTarget);
                     section.classList.toggle('active', isTarget);
                 });
             });
@@ -230,7 +230,7 @@
 
             firebase.auth().onAuthStateChanged(async (user) => {
                 if (!user) {
-                    if (loginOverlay) loginOverlay.classList.remove('hidden');
+                    if (loginOverlay) loginOverlay.classList.remove('is-hidden');
                     setStatus('로그인이 필요합니다.');
                     return;
                 }
@@ -241,11 +241,11 @@
 
                 if (!isAdmin) {
                     setStatus('관리자 권한이 없습니다. (' + user.email + ')');
-                    if (loginOverlay) loginOverlay.classList.remove('hidden');
+                    if (loginOverlay) loginOverlay.classList.remove('is-hidden');
                     return;
                 }
 
-                if (loginOverlay) loginOverlay.classList.add('hidden');
+                if (loginOverlay) loginOverlay.classList.add('is-hidden');
                 initDashboard(user);
             });
         });

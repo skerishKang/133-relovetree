@@ -148,9 +148,9 @@ function updateLoginUI(user) {
     };
 
     if (user) {
-        if (loginBtn) loginBtn.classList.add('hidden');
-        if (emailLoginLink) emailLoginLink.classList.add('hidden');
-        if (userMenu) userMenu.classList.remove('hidden');
+        if (loginBtn) loginBtn.classList.add('is-hidden');
+        if (emailLoginLink) emailLoginLink.classList.add('is-hidden');
+        if (userMenu) userMenu.classList.remove('is-hidden');
         if (userAvatar) userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
         if (userName) userName.textContent = user.displayName;
         updateSettingsButton(settingsBtn, true);
@@ -158,14 +158,14 @@ function updateLoginUI(user) {
 
         // Check Admin Role (Client-side check for UI only, secured by Rules/Backend)
         checkAdminRole(user).then(isAdmin => {
-            if (isAdmin && adminLink) adminLink.classList.remove('hidden');
+            if (isAdmin && adminLink) adminLink.classList.remove('is-hidden');
         });
 
     } else {
-        if (loginBtn) loginBtn.classList.remove('hidden');
-        if (emailLoginLink) emailLoginLink.classList.remove('hidden');
-        if (userMenu) userMenu.classList.add('hidden');
-        if (adminLink) adminLink.classList.add('hidden');
+        if (loginBtn) loginBtn.classList.remove('is-hidden');
+        if (emailLoginLink) emailLoginLink.classList.remove('is-hidden');
+        if (userMenu) userMenu.classList.add('is-hidden');
+        if (adminLink) adminLink.classList.add('is-hidden');
         updateSettingsButton(settingsBtn, false);
         updateSettingsButton(globalSettingsBtn, false);
     }

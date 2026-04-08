@@ -41,14 +41,14 @@
     function showLoading() {
         var indicator = document.getElementById('loading-indicator');
         if (indicator) {
-            indicator.classList.remove('hidden');
+            indicator.classList.remove('is-hidden');
         }
     }
 
     function hideLoading() {
         var indicator = document.getElementById('loading-indicator');
         if (indicator) {
-            indicator.classList.add('hidden');
+            indicator.classList.add('is-hidden');
         }
     }
 

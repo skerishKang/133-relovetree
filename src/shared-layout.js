@@ -24,21 +24,21 @@
             : 'ui-link-nav';
 
         return `
-    <nav data-global-header="1" class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40" role="navigation" aria-label="메인 네비게이션">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="flex items-center gap-3 hover:opacity-95 transition">
+    <nav data-global-header="1" class="top-nav" role="navigation" aria-label="메인 네비게이션">
+        <div class="top-nav-inner">
+            <div class="top-nav-group">
+                <a href="/index.html" class="brand-link">
                     <div class="brand-mark brand-mark-sm" aria-hidden="true">L</div>
-                    <div class="flex flex-col leading-tight">
-                        <span class="text-sm font-semibold tracking-tight text-slate-800">LoveTree</span>
-                        <span class="hidden sm:block text-xs text-slate-500 leading-tight">나의 덕질 타임라인</span>
+                    <div class="brand-copy">
+                        <span class="brand-title">LoveTree</span>
+                        <span class="brand-subtitle">나의 덕질 타임라인</span>
                     </div>
                 </a>
-                <a href="community.html" class="${communityClass}">커뮤니티</a>
-                <a href="owner.html" class="${ownerClass}">내 트리 관리</a>
+                <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+                <a href="/pages/owner.html" class="${ownerClass}">내 트리 관리</a>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="index.html#search" class="ui-btn-icon" title="검색" aria-label="검색">
+            <div class="top-nav-actions">
+                <a href="/index.html#search" class="ui-btn-icon" title="검색" aria-label="검색">
                     <svg class="ui-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -47,7 +47,7 @@
                     <svg class="ui-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
-                    <span class="hidden sm:inline">로그인</span>
+                    <span class="is-hidden ui-inline-desktop">로그인</span>
                 </button>
             </div>
         </div>
@@ -70,39 +70,39 @@
 
             <div class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">계정</label>
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-                        <div class="flex flex-col gap-2">
-                            <button id="login-btn" type="button" class="w-full px-4 py-3 bg-brand-500 text-white text-sm font-bold rounded-xl hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/20">구글로 로그인</button>
-                            <a id="email-login-link" href="login.html" class="w-full px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-center">이메일로 로그인</a>
-                            <div id="user-menu" class="hidden flex flex-col gap-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3 min-w-0">
-                                        <img id="user-avatar" src="" alt="Profile" class="w-10 h-10 rounded-full bg-white border border-slate-200" />
+                    <label class="menu-section-label">계정</label>
+                    <div class="auth-panel">
+                        <div class="auth-panel-stack">
+                            <button id="login-btn" type="button" class="auth-primary-btn">구글로 로그인</button>
+                            <a id="email-login-link" href="/pages/login.html" class="auth-secondary-link">이메일로 로그인</a>
+                            <div id="user-menu" class="user-menu-stack">
+                                <div class="user-summary-row">
+                                    <div class="user-summary-main">
+                                        <img id="user-avatar" src="" alt="Profile" class="user-avatar-sm" />
                                         <div class="min-w-0">
-                                            <p class="text-sm font-bold text-slate-800 truncate" id="user-name"></p>
-                                            <p class="text-xs text-slate-500 truncate">로그인됨</p>
+                                            <p class="user-summary-name" id="user-name"></p>
+                                            <p class="user-summary-status">로그인됨</p>
                                         </div>
                                     </div>
-                                    <a href="admin.html" id="admin-link" class="hidden text-xs font-bold text-slate-500 hover:text-brand-600">관리자</a>
+                                    <a href="/pages/admin.html" id="admin-link" class="is-hidden user-admin-link">관리자</a>
                                 </div>
-                                <button id="logout-btn" type="button" class="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-50 hover:text-red-500 transition-colors">로그아웃</button>
+                                <button id="logout-btn" type="button" class="logout-btn">로그아웃</button>
                             </div>
                         </div>
-                        <p class="mt-3 text-xs text-slate-500">로그인하면 내가 만든 러브트리를 계정에 저장하고, 다른 기기에서도 이어서 볼 수 있어요.</p>
+                        <p class="auth-panel-copy">로그인하면 내가 만든 러브트리를 계정에 저장하고, 다른 기기에서도 이어서 볼 수 있어요.</p>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">메뉴</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <a href="index.html#search" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left sm:col-span-2">검색</a>
-                        <a href="index.html#recent-section" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">최근 방문한 트리</a>
-                        <a href="index.html#discovery-section" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">지금 뜨는 러브트리</a>
-                        <a href="index.html#my-created-trees-section" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">내 러브트리</a>
-                        <a href="owner.html" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">내 트리 관리</a>
-                        <a href="community.html" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">커뮤니티</a>
-                        <a href="index.html#my-theme-anchor" class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left sm:col-span-2">테마 설정</a>
+                    <label class="menu-section-label">메뉴</label>
+                    <div class="menu-grid">
+                        <a href="/index.html#search" class="menu-link-card menu-link-card-wide">검색</a>
+                        <a href="/index.html#recent-section" class="menu-link-card">최근 방문한 트리</a>
+                        <a href="/index.html#discovery-section" class="menu-link-card">지금 뜨는 러브트리</a>
+                        <a href="/index.html#my-created-trees-section" class="menu-link-card">내 러브트리</a>
+                        <a href="/pages/owner.html" class="menu-link-card">내 트리 관리</a>
+                        <a href="/pages/community.html" class="menu-link-card">커뮤니티</a>
+                        <a href="/index.html#my-theme-anchor" class="menu-link-card menu-link-card-wide">테마 설정</a>
                     </div>
                 </div>
             </div>

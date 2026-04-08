@@ -159,7 +159,7 @@
                 count: count,
                 summary: treeName
             });
-            const url = 'editor.html?id=' + encodeURIComponent(treeId);
+            const url = '/pages/editor.html?id=' + encodeURIComponent(treeId);
             alert('AI 트리가 생성되었습니다. 에디터에서 확인해 보세요.\n' + url);
             if (window.confirm('지금 바로 에디터에서 열어볼까요?')) {
                 window.open(url, '_blank');

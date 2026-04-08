@@ -116,7 +116,7 @@ function renderHomeTreeCard(tree, options) {
     const opts = options || {};
     const name = card.name || card.id || '?';
     const initial = name.charAt(0).toUpperCase();
-    const href = opts.href || `editor.html?id=${encodeURIComponent(card.id || '')}`;
+    const href = opts.href || `/pages/editor.html?id=${encodeURIComponent(card.id || '')}`;
     const subtitle = opts.subtitle || '';
     const title = opts.title || name;
     const likeCount = typeof card.likeCount === 'number' ? card.likeCount : 0;
@@ -204,7 +204,7 @@ function renderSearchResults(items, page, total) {
     container.innerHTML = items.map((tree) => {
         const name = tree.name || tree.id || '?';
         const sub = tree.updated ? String(tree.updated).slice(0, 10) : (tree.lastUpdated ? String(tree.lastUpdated).slice(0, 10) : '');
-        const href = `editor.html?id=${encodeURIComponent(tree.id || '')}`;
+        const href = `/pages/editor.html?id=${encodeURIComponent(tree.id || '')}`;
         return `
             <a href="${href}" class="search-result-card">
                 <div class="search-result-row">
@@ -230,13 +230,13 @@ function updateSearchPagination(page, total) {
     if (!wrap || !info) return;
 
     if (!total || total <= SEARCH_PAGE_SIZE) {
-        wrap.classList.add('hidden');
+        wrap.classList.add('is-hidden');
         info.textContent = '';
         return;
     }
 
     const totalPages = Math.max(1, Math.ceil(total / SEARCH_PAGE_SIZE));
-    wrap.classList.remove('hidden');
+    wrap.classList.remove('is-hidden');
     info.textContent = `${page} / ${totalPages} · ${total}개`;
 }
 
@@ -436,7 +436,7 @@ function ensureLoggedIn() {
 }
 
 
-// Global exports for index.js
+// Global exports for /src/entries/index.js
 window.openSearchModal = openSearchModal;
 window.closeSearchModal = closeSearchModal;
 window.openSearchModalFromMy = openSearchModalFromMy;

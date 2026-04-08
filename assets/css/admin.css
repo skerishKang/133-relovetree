@@ -1,0 +1,27 @@
+/* Admin CSS - Role-based split */
+/* This file imports all admin CSS modules. Use this in admin.html instead of admin.css */
+
+@import url('admin-login.css');
+@import url('admin-layout.css');
+@import url('admin-dashboard.css');
+@import url('admin-tables.css');
+@import url('admin-modals.css');
+@import url('admin-buttons.css');
+
+/* Custom Scrollbar (global for admin) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

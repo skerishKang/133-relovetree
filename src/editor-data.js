@@ -149,16 +149,16 @@
     function updateUIForReadOnly(runtime) {
         if (runtime.isReadOnly) {
             const fab = document.querySelector('button[onclick="createNewNode()"]');
-            if (fab) fab.classList.add('hidden');
+            if (fab) fab.classList.add('is-hidden');
 
             const resetBtn = document.getElementById('btn-reset');
-            if (resetBtn) resetBtn.classList.add('hidden');
+            if (resetBtn) resetBtn.classList.add('is-hidden');
 
             const autoBtn = document.getElementById('btn-auto-connect');
-            if (autoBtn) autoBtn.classList.add('hidden');
+            if (autoBtn) autoBtn.classList.add('is-hidden');
 
             const clearBtn = document.getElementById('btn-clear-connections');
-            if (clearBtn) clearBtn.classList.add('hidden');
+            if (clearBtn) clearBtn.classList.add('is-hidden');
         }
 
         if (window.EditorHeaderHelpers && typeof window.EditorHeaderHelpers.syncReadOnlyState === 'function') {
@@ -175,9 +175,9 @@
                 !!runtime.currentTreeDocData.ownerId &&
                 runtime.currentTreeDocData.ownerId !== runtime.currentUser.uid;
             if (canFork) {
-                forkBtn.classList.remove('hidden');
+                forkBtn.classList.remove('is-hidden');
             } else {
-                forkBtn.classList.add('hidden');
+                forkBtn.classList.add('is-hidden');
             }
         }
     }
@@ -248,7 +248,7 @@
                 }
             }, { merge: true });
 
-            window.location.href = 'editor.html?id=' + encodeURIComponent(newTreeId);
+            window.location.href = '/pages/editor.html?id=' + encodeURIComponent(newTreeId);
         } catch (e) {
             console.error('forkTreeToMyAccount failed:', e);
             runtime.showToast('가져오기 실패');

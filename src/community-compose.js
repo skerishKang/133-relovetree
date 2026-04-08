@@ -90,7 +90,7 @@
         const normalized = normalizeCommunityMediaUrl(url);
         if (!normalized) {
             preview.innerHTML = '';
-            preview.classList.add('hidden');
+            preview.classList.add('is-hidden');
             return;
         }
 
@@ -99,30 +99,30 @@
         if (ytId) {
             const embedUrl = 'https://www.youtube.com/embed/' + encodeURIComponent(ytId);
             preview.innerHTML = '\
-                <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 aspect-video">\
-                    <iframe class="w-full h-full" src="' + embedUrl + '" title="유튜브 미리보기" allowfullscreen loading="lazy"></iframe>\
+                <div class="community-media-frame community-media-frame-video">\
+                    <iframe class="community-media-image" src="' + embedUrl + '" title="유튜브 미리보기" allowfullscreen loading="lazy"></iframe>\
                 </div>\
             ';
-            preview.classList.remove('hidden');
+            preview.classList.remove('is-hidden');
             return;
         }
 
         if (isLikelyImageUrl(normalized)) {
             preview.innerHTML = '\
-                <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">\
-                    <img src="' + safeUrl + '" alt="미리보기 이미지" class="w-full max-h-72 object-cover" loading="lazy" />\
+                <div class="community-media-frame community-media-frame-image">\
+                    <img src="' + safeUrl + '" alt="미리보기 이미지" class="community-media-image community-media-image-tall" loading="lazy" />\
                 </div>\
             ';
-            preview.classList.remove('hidden');
+            preview.classList.remove('is-hidden');
             return;
         }
 
         preview.innerHTML = '\
-            <a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-brand-600 hover:bg-slate-100">\
+            <a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" class="community-preview-link">\
                 링크 미리보기 열기\
             </a>\
         ';
-        preview.classList.remove('hidden');
+        preview.classList.remove('is-hidden');
     }
 
     function resetCommunityMediaPicker() {

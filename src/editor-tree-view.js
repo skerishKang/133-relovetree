@@ -14,41 +14,41 @@
             : '';
 
         el.innerHTML = `
-            <div class="h-40 bg-black relative group overflow-hidden">
+            <div class="editor-node-media">
                 ${hasVideo
-                ? `<div class="w-full h-full relative overflow-hidden">
-                            <img src="${thumbUrl}" alt="YouTube thumbnail" class="w-full h-full object-cover" />
-                            <div class="absolute inset-0 bg-black/25"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                                    <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                ? `<div class="editor-node-media-fill">
+                            <img src="${thumbUrl}" alt="YouTube thumbnail" class="editor-node-media-image" />
+                            <div class="editor-node-media-overlay"></div>
+                            <div class="editor-node-media-center">
+                                <div class="editor-node-play-badge">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M8 5v14l11-7z"></path>
                                     </svg>
                                 </div>
                             </div>
                        </div>`
                 : (node.imageUrl
-                    ? `<div class="w-full h-full relative overflow-hidden">
-                        <img src="${node.imageUrl}" alt="Node Image" class="w-full h-full object-cover" />
+                    ? `<div class="editor-node-media-fill">
+                        <img src="${node.imageUrl}" alt="Node Image" class="editor-node-media-image" />
                        </div>`
-                    : `<div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs">No Media</div>`
+                    : `<div class="editor-node-empty-media">No Media</div>`
                 )
             }
-                <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur">
+                <div class="editor-node-moment-chip">
                     ${node.moments.length} Moments
                 </div>
             </div>
-            <div class="p-4">
-                <h3 class="font-bold text-slate-800 text-lg leading-tight line-clamp-1 mb-1">${node.title}</h3>
-                <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
+            <div class="editor-node-copy">
+                <h3 class="editor-node-title">${node.title}</h3>
+                <p class="editor-node-date">${node.date || ''}</p>
             </div>
-            <div class="absolute top-1/2 -left-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30 connection-handle connection-handle-left" title="이전 노드와 연결">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="editor-connection-handle editor-connection-handle-left connection-handle connection-handle-left" title="이전 노드와 연결">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
             </div>
-            <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white border border-slate-200 rounded-full shadow-sm flex items-center justify-center cursor-crosshair hover:border-brand-500 text-slate-400 hover:text-brand-500 z-30 connection-handle connection-handle-right" title="다음 노드와 연결">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="editor-connection-handle editor-connection-handle-right connection-handle connection-handle-right" title="다음 노드와 연결">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                 </svg>
             </div>

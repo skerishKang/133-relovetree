@@ -93,7 +93,7 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Community Page: Load and list present', async ({ page }) => {
-    await page.goto('/community.html');
+    await page.goto('/pages/community.html');
     
     await page.waitForLoadState('domcontentloaded');
     
@@ -106,7 +106,7 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Owner Page: Management dashboard shell', async ({ page }) => {
-    await page.goto('/owner.html');
+    await page.goto('/pages/owner.html');
     
     await page.waitForLoadState('domcontentloaded');
     
@@ -119,7 +119,7 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Editor Page: Load without crash (TDZ check)', async ({ page }) => {
-    await page.goto('/editor.html?id=bts');
+    await page.goto('/pages/editor.html?id=bts');
     
     await page.waitForLoadState('networkidle');
     
@@ -136,7 +136,7 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Editor Page: Mode toggle interaction', async ({ page }) => {
-    await page.goto('/editor.html?id=test-tree');
+    await page.goto('/pages/editor.html?id=test-tree');
     
     await page.waitForLoadState('networkidle');
     
@@ -152,7 +152,7 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Admin Page: Login overlay present', async ({ page }) => {
-    await page.goto('/admin.html');
+    await page.goto('/pages/admin.html');
     
     await page.waitForLoadState('domcontentloaded');
     

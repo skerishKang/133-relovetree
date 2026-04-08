@@ -4,11 +4,9 @@
 const admin = require('firebase-admin');
 const path = require('path');
 
-const serviceAccountPath = path.join(
-  __dirname,
-  '..',
-  'relovetree-firebase-adminsdk-fbsvc-d8d4c96f15.json'
-);
+const serviceAccountPath =
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
+  path.join(__dirname, '..', '.secrets', 'firebase-admin.json');
 
 const serviceAccount = require(serviceAccountPath);
 

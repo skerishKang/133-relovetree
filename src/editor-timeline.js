@@ -57,63 +57,63 @@
         card.innerHTML = `
             <div class="bg-black h-40 relative overflow-hidden">
                 ${hasVideo
-                ? `<div class="w-full h-full relative overflow-hidden">
-                            <img src="${thumbUrl}" alt="YouTube thumbnail" class="w-full h-full object-cover" />
-                            <div class="absolute inset-0 bg-black/25"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                ? `<div class="editor-node-media-fill">
+                            <img src="${thumbUrl}" alt="YouTube thumbnail" class="editor-node-media-image" />
+                            <div class="editor-node-media-overlay"></div>
+                            <div class="editor-node-media-center">
+                                <div class="editor-node-play-badge">
+                                    <svg fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M8 5v14l11-7z"></path>
                                     </svg>
                                 </div>
                             </div>
                        </div>`
                 : (node.imageUrl
-                    ? `<div class="w-full h-full relative overflow-hidden">
-                        <img src="${node.imageUrl}" alt="Node Image" class="w-full h-full object-cover" />
+                    ? `<div class="editor-node-media-fill">
+                        <img src="${node.imageUrl}" alt="Node Image" class="editor-node-media-image" />
                        </div>`
-                    : `<div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-300 text-xs">No Media</div>`
+                    : `<div class="editor-node-empty-media">No Media</div>`
                 )
             }
             </div>
-            <div class="p-4 space-y-3">
-                <div class="flex items-start justify-between gap-3">
+            <div class="timeline-card-inner">
+                <div class="timeline-card-head">
                     <div>
-                        <h3 class="font-bold text-slate-800 text-base leading-snug mb-1 line-clamp-2">${node.title}</h3>
-                        <p class="text-xs text-slate-400 font-medium">${node.date || ''}</p>
-                        <p class="mt-1 text-[11px] text-slate-400">${feelingSummary}</p>
-                        <div class="mt-1 flex gap-1">
-                            <button type="button" class="w-7 h-7 rounded-full bg-pink-50 text-xs flex items-center justify-center"
+                        <h3 class="timeline-card-title">${node.title}</h3>
+                        <p class="timeline-card-date">${node.date || ''}</p>
+                        <p class="timeline-card-feeling">${feelingSummary}</p>
+                        <div class="timeline-feeling-row">
+                            <button type="button" class="timeline-feeling-btn is-love"
                                 onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'love')">😍</button>
-                            <button type="button" class="w-7 h-7 rounded-full bg-sky-50 text-xs flex items-center justify-center"
+                            <button type="button" class="timeline-feeling-btn is-tear"
                                 onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'tear')">😭</button>
-                            <button type="button" class="w-7 h-7 rounded-full bg-amber-50 text-xs flex items-center justify-center"
+                            <button type="button" class="timeline-feeling-btn is-funny"
                                 onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'funny')">🤣</button>
-                            <button type="button" class="w-7 h-7 rounded-full bg-violet-50 text-xs flex items-center justify-center"
+                            <button type="button" class="timeline-feeling-btn is-shock"
                                 onclick="event.stopPropagation(); addQuickFeeling(${node.id}, 'shock')">😲</button>
                         </div>
                     </div>
-                    <div class="flex flex-col items-end gap-1 shrink-0">
-                        <button type="button" class="px-3 py-1.5 rounded-full bg-brand-500 text-white text-xs font-bold"
+                    <div class="timeline-card-actions">
+                        <button type="button" class="timeline-open-btn"
                             onclick="event.stopPropagation(); openDetailFromTimeline(${node.id})">열기</button>
-                        <button type="button" class="px-2 py-1 rounded-full bg-slate-100 text-[11px] text-slate-600"
+                        <button type="button" class="timeline-ghost-btn"
                             onclick="event.stopPropagation(); toggleQuickEdit(${node.id})">빠른수정</button>
                     </div>
                 </div>
-                <form class="quick-edit-form hidden mt-2 space-y-2" onsubmit="saveQuickEdit(event, ${node.id})">
+                <form class="quick-edit-form timeline-quick-form is-hidden" onsubmit="saveQuickEdit(event, ${node.id})">
                     <div>
-                        <input type="text" class="quick-edit-title w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg"
+                        <input type="text" class="quick-edit-title timeline-quick-input"
                             placeholder="제목" />
                     </div>
-                    <div class="flex gap-2">
-                        <input type="date" class="quick-edit-date flex-1 px-2 py-1.5 text-xs border border-slate-200 rounded-lg" />
-                        <input type="text" class="quick-edit-video flex-1 px-2 py-1.5 text-xs border border-slate-200 rounded-lg"
+                    <div class="timeline-quick-grid">
+                        <input type="date" class="quick-edit-date timeline-quick-input" />
+                        <input type="text" class="quick-edit-video timeline-quick-input"
                             placeholder="유튜브 URL" />
                     </div>
-                    <div class="flex justify-end gap-2">
-                        <button type="button" class="px-2 py-1 text-[11px] text-slate-500"
+                    <div class="timeline-quick-actions">
+                        <button type="button" class="timeline-cancel-btn"
                             onclick="event.stopPropagation(); toggleQuickEdit(${node.id})">취소</button>
-                        <button type="submit" class="px-3 py-1 text-[11px] font-bold text-white bg-brand-500 rounded-full">
+                        <button type="submit" class="timeline-save-btn">
                             저장
                         </button>
                     </div>
@@ -168,7 +168,7 @@
         const form = card.querySelector('.quick-edit-form');
         if (!form) return;
 
-        if (form.classList.contains('hidden')) {
+        if (form.classList.contains('is-hidden')) {
             const node = runtime.state.nodes.find(function (item) {
                 return item.id === nodeId;
             });
@@ -183,7 +183,7 @@
             if (videoInput) videoInput.value = node.videoId ? 'https://youtu.be/' + node.videoId : '';
         }
 
-        form.classList.toggle('hidden');
+        form.classList.toggle('is-hidden');
     }
 
     function saveQuickEdit(runtime, e, nodeId) {

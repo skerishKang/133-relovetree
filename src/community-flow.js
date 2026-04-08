@@ -72,7 +72,7 @@
 
         try {
             if (!opts.canEditOrDelete && postActionsWrap) {
-                postActionsWrap.classList.add('hidden');
+                postActionsWrap.classList.add('is-hidden');
             }
 
             if (!postEditBtn || !postDeleteBtn || !opts.canEditOrDelete) return;
@@ -251,7 +251,7 @@
                 return;
             }
 
-            window.location.href = 'editor.html?id=' + encodeURIComponent(res.newTreeId);
+            window.location.href = '/pages/editor.html?id=' + encodeURIComponent(res.newTreeId);
         } catch (err) {
             console.error('커뮤니티 카드 포크 실패:', err);
             showError('가져오기 실패', 4000);

@@ -5,7 +5,9 @@ const admin = require('firebase-admin');
 const path = require('path');
 
 // 로컬 서비스 계정 키 파일 경로 (레포 루트 기준)
-const serviceAccountPath = path.join(__dirname, '..', 'relovetree-firebase-adminsdk-fbsvc-d8d4c96f15.json');
+const serviceAccountPath =
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
+  path.join(__dirname, '..', '.secrets', 'firebase-admin.json');
 
 const serviceAccount = require(serviceAccountPath);
 

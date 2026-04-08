@@ -7,6 +7,61 @@
   directory = "netlify/functions"
 
 [[redirects]]
+  from = "/admin.html"
+  to = "/pages/admin.html"
+  status = 301
+
+[[redirects]]
+  from = "/community.html"
+  to = "/pages/community.html"
+  status = 301
+
+[[redirects]]
+  from = "/owner.html"
+  to = "/pages/owner.html"
+  status = 301
+
+[[redirects]]
+  from = "/editor.html"
+  to = "/pages/editor.html"
+  status = 301
+
+[[redirects]]
+  from = "/login.html"
+  to = "/pages/login.html"
+  status = 301
+
+[[redirects]]
+  from = "/index.js"
+  to = "/src/entries/index.js"
+  status = 301
+
+[[redirects]]
+  from = "/admin.js"
+  to = "/src/entries/admin.js"
+  status = 301
+
+[[redirects]]
+  from = "/community.js"
+  to = "/src/entries/community.js"
+  status = 301
+
+[[redirects]]
+  from = "/owner.js"
+  to = "/src/entries/owner.js"
+  status = 301
+
+[[redirects]]
+  from = "/editor_ai.js"
+  to = "/src/entries/editor_ai.js"
+  status = 301
+
+[[redirects]]
+  from = "/admin.css"
+  to = "/assets/css/admin.css"
+  status = 301
+
+[[redirects]]
   from = "/api/admin/trees"
   to = "/.netlify/functions/tree-admin"
   status = 200
@@ -24,4 +79,9 @@
 [[redirects]]
   from = "/api/firestore"
   to = "/.netlify/functions/firestore-api"
+  status = 200
+
+[[redirects]]
+  from = "/api/payment/verify"
+  to = "/.netlify/functions/payment-verify"
   status = 200
