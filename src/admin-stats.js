@@ -1,6 +1,10 @@
 (function () {
+    const Format = window.AdminStatsFormat;
+    const Display = window.AdminStatsDisplay;
+
     async function loadStats() {
         const db = window.getAdminDb();
+        
         try {
             const snapshot = await db.collection('users').get();
             const total = snapshot.size;
@@ -22,9 +26,9 @@
                 recentUsers.push({ id: doc.id, ...data });
             });
 
-            document.getElementById('totalUsers').textContent = total;
-            document.getElementById('activeUsers').textContent = active;
-            document.getElementById('proUsers').textContent = pro;
+            Display.renderStatCard('totalUsers', total, Format.formatNumber);
+            Display.renderStatCard('activeUsers', active, Format.formatNumber);
+            Display.renderStatCard('proUsers', pro, Format.formatNumber);
 
             recentUsers.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
             if (typeof window.renderRecentUsers === 'function') {

@@ -113,13 +113,59 @@
         });
     }
 
+    async function copyTextToClipboard(text) {
+        const value = String(text || '');
+        if (!value) return false;
+
+        try {
+            if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                await navigator.clipboard.writeText(value);
+                return true;
+            }
+        } catch (e) {
+        }
+
+        try {
+            const el = document.createElement('textarea');
+            el.value = value;
+            el.setAttribute('readonly', '');
+            el.style.position = 'fixed';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            const ok = document.execCommand('copy');
+            el.remove();
+            return !!ok;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function showToast(message) {
+        try {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-sm opacity-0 transition-opacity duration-300 z-50';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            requestAnimationFrame(function () { toast.classList.add('opacity-100'); });
+            setTimeout(function () {
+                toast.classList.remove('opacity-100');
+                setTimeout(function () { toast.remove(); }, 300);
+            }, 2000);
+        } catch (e) {
+            alert(message);
+        }
+    }
+
     const api = {
         createElement: createElement,
         showError: showError,
         hideError: hideError,
         closeModal: closeModal,
         clearValidationErrors: clearValidationErrors,
-        setupModalKeyboardHandlers: setupModalKeyboardHandlers
+        setupModalKeyboardHandlers: setupModalKeyboardHandlers,
+        copyTextToClipboard: copyTextToClipboard,
+        showToast: showToast
     };
 
     window.ReloveSharedDom = api;
@@ -129,4 +175,6 @@
     window.closeModal = closeModal;
     window.clearValidationErrors = clearValidationErrors;
     window.setupModalKeyboardHandlers = setupModalKeyboardHandlers;
+    window.copyTextToClipboard = copyTextToClipboard;
+    window.showToast = showToast;
 })();

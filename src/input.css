@@ -77,8 +77,32 @@
     @apply rounded-full px-6;
   }
 
+  .ui-btn-icon {
+    @apply flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-600 shadow-sm transition-all hover:bg-slate-100 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
   .ui-btn-sm {
     @apply px-3 py-1.5 text-xs sm:text-sm;
+  }
+
+  .ui-link-nav {
+    @apply inline-flex items-center text-sm font-medium text-slate-600 transition-colors hover:text-brand-600;
+  }
+
+  .ui-link-nav-active {
+    @apply text-brand-600 font-semibold;
+  }
+
+  .ui-icon-sm {
+    @apply w-5 h-5;
+  }
+
+  .ui-icon-md {
+    @apply w-6 h-6;
+  }
+
+  .ui-icon-lg {
+    @apply w-8 h-8;
   }
 
   .section-shell {
@@ -699,6 +723,10 @@
     @apply flex h-8 w-8 items-center justify-center rounded-2xl bg-brand-500 text-sm font-bold text-white shadow-sm;
   }
 
+  .brand-mark-lg {
+    @apply w-10 h-10;
+  }
+
   .mobile-menu-sheet {
     @apply w-72 max-w-[90vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl;
   }
@@ -1013,5 +1041,94 @@
     height: 100%;
     pointer-events: none;
     overflow: visible;
+  }
+}
+
+/* Compatibility fallbacks for older Chromium-class browsers such as Comet.
+   Keep these rules raw and explicit so layout survives even if some modern
+   Tailwind-generated declarations are only partially supported. */
+
+.brand-mark {
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.nav-user-btn,
+.nav-icon-btn {
+  min-height: 2.5rem;
+}
+
+.section-card-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.artist-card {
+  display: block;
+  min-width: 0;
+}
+
+.artist-card-thumb-image,
+.settings-swatch-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-modal-panel,
+.settings-modal-panel,
+.glass-panel,
+.section-shell {
+  background-color: rgba(255, 255, 255, 0.88);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .search-modal-panel,
+  .settings-modal-panel,
+  .glass-panel,
+  .section-shell {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.96) !important;
+  }
+
+  .mobile-menu-panel {
+    background: rgba(15, 23, 42, 0.2);
+  }
+}
+
+@supports not (aspect-ratio: 16 / 9) {
+  .artist-card-thumb,
+  .settings-swatch,
+  .settings-preset-btn,
+  .aspect-video {
+    position: relative;
+    height: 0;
+    padding-top: 56.25%;
+    overflow: hidden;
+  }
+
+  .artist-card-thumb-image,
+  .settings-swatch-media,
+  .artist-card-thumb > img,
+  .artist-card-thumb > div,
+  .settings-swatch > img,
+  .settings-swatch > div,
+  .aspect-video > img,
+  .aspect-video > iframe,
+  .aspect-video > div {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 }

@@ -4,6 +4,7 @@ const PRECACHE_URLS = [
   '/index.html',
   '/output.css',
   '/index.js',
+  '/src/shared-utils.js',
   '/src/shared.js',
   '/src/auth.js',
   '/src/payment.js',

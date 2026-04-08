@@ -124,50 +124,6 @@
         options.setTimer(nextTimer);
     }
 
-    async function copyTextToClipboard(text) {
-        const value = String(text || '');
-        if (!value) return false;
-
-        try {
-            if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-                await navigator.clipboard.writeText(value);
-                return true;
-            }
-        } catch (e) {
-        }
-
-        try {
-            const el = document.createElement('textarea');
-            el.value = value;
-            el.setAttribute('readonly', '');
-            el.style.position = 'fixed';
-            el.style.left = '-9999px';
-            document.body.appendChild(el);
-            el.select();
-            const ok = document.execCommand('copy');
-            el.remove();
-            return !!ok;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    function ownerShowToast(message) {
-        try {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-sm opacity-0 transition-opacity duration-300 z-50';
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            requestAnimationFrame(function () { toast.classList.add('opacity-100'); });
-            setTimeout(function () {
-                toast.classList.remove('opacity-100');
-                setTimeout(function () { toast.remove(); }, 300);
-            }, 2000);
-        } catch (e) {
-            alert(message);
-        }
-    }
-
     function setOwnerAuthUi(user) {
         const loginBtn = document.getElementById('owner-login-btn');
         const logoutBtn = document.getElementById('owner-logout-btn');
@@ -193,8 +149,6 @@
         loadOwnerUiStateFromStorage: loadOwnerUiStateFromStorage,
         applyOwnerUiStateToControls: applyOwnerUiStateToControls,
         scheduleSaveOwnerUiState: scheduleSaveOwnerUiState,
-        copyTextToClipboard: copyTextToClipboard,
-        ownerShowToast: ownerShowToast,
         setOwnerAuthUi: setOwnerAuthUi
     };
 })();

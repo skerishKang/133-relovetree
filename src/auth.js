@@ -5,7 +5,7 @@
 
 // Configuration
 const AUTH_CONFIG = {
-    adminEmails: ['padiemipu@gmail.com', 'limone@example.com'] // Replace with actual admin emails
+    // Admin emails removed - use Firestore 'role:admin' in users collection
 };
 
 let EMAIL_AUTH_MODE = 'login';
@@ -175,8 +175,6 @@ function updateLoginUI(user) {
  * Check if user is admin
  */
 async function checkAdminRole(user) {
-    if (AUTH_CONFIG.adminEmails.includes(user.email)) return true;
-
     try {
         const doc = await firebase.firestore().collection('users').doc(user.uid).get();
         return doc.exists && doc.data().role === 'admin';

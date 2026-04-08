@@ -73,10 +73,6 @@ function updateOwnerUrlFromState() {
     window.OwnerUiStateHelpers.updateOwnerUrlFromState(ownerUiState, OWNER_URL_KEYS);
 }
 
-function parseTimeMs(value) {
-    return window.OwnerForkCacheHelpers.parseTimeMs(value);
-}
-
 function getOwnerForkStatusCacheStorageKey() {
     return window.OwnerForkCacheHelpers.getOwnerForkStatusCacheStorageKey({
         ownerUser: ownerUser,
@@ -182,30 +178,27 @@ function scheduleSaveOwnerUiState() {
 }
 
 async function copyTextToClipboard(text) {
-    return window.OwnerUiStateHelpers.copyTextToClipboard(text);
+    if (typeof window.copyTextToClipboard === 'function') {
+        return window.copyTextToClipboard(text);
+    }
+    return false;
 }
 
 function ownerShowToast(message) {
-    return window.OwnerUiStateHelpers.ownerShowToast(message);
+    if (typeof window.showToast === 'function') {
+        return window.showToast(message);
+    }
 }
 
 function setOwnerAuthUi(user) {
     return window.OwnerUiStateHelpers.setOwnerAuthUi(user);
 }
 
-function normalizeTreeItem(doc) {
-    return window.OwnerApiClient.normalizeTreeItem(doc);
-}
-
 function normalizeToIsoString(value) {
     return window.OwnerApiClient.normalizeToIsoString(value);
 }
 
-async function fetchTreeDoc(treeId) {
-    return window.OwnerApiClient.fetchTreeDoc(treeId);
-}
-
-async function checkForkUpdateStatus(myTreeId) {
+async async function checkForkUpdateStatus(myTreeId) {
     return window.OwnerApiClient.checkForkUpdateStatus(myTreeId, ownerTreesCache);
 }
 
@@ -325,18 +318,6 @@ function renderOwnerTrees() {
     });
 }
 
-function applyOwnerSort(items, sortKey) {
-    return window.OwnerRenderHelpers.applyOwnerSort(items, sortKey);
-}
-
-function formatDateTimeFull(value) {
-    return window.OwnerRenderHelpers.formatDateTimeFull(value);
-}
-
-function formatRelativeTime(value) {
-    return window.OwnerRenderHelpers.formatRelativeTime(value);
-}
-
 function updateResultsSummary(totalCount, filteredCount) {
     return window.OwnerListUi.updateResultsSummary({
         ownerUser: ownerUser,
@@ -352,10 +333,6 @@ function updatePagination(filteredCount) {
         ownerUiState: ownerUiState,
         filteredCount: filteredCount
     });
-}
-
-function escapeHtml(text) {
-    return window.OwnerRenderHelpers.escapeHtml(text);
 }
 
 function openRenameDialog(treeId) {

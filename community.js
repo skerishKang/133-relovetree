@@ -80,10 +80,6 @@ function getCurrentUserForCommunity() {
     }
 }
 
-function openDeleteReasonModal(options) {
-    return window.CommunityModerationHelpers.openDeleteReasonModal(options);
-}
-
 async function logCommunityModerationEvent(eventType, payload) {
     try {
         const db = getFirestoreForCommunity();
@@ -157,26 +153,6 @@ function isOwnerOfPost(user, postData) {
     } catch (e) {
         return false;
     }
-}
-
-function setCommunityPostActionUiVisible(canEditOrDelete) {
-    return window.CommunityRenderHelpers.setCommunityPostActionUiVisible(canEditOrDelete);
-}
-
-function setCommunityPostEditMode(isEditMode, postData) {
-    return window.CommunityRenderHelpers.setCommunityPostEditMode(isEditMode, postData);
-}
-
-async function updateCommunityPostById(postId, patch) {
-    return window.CommunityWriteHelpers.updateCommunityPostById({
-        db: getFirestoreForCommunity(),
-        postId: postId,
-        patch: patch
-    });
-}
-
-async function fetchTreeSummaryForCommunity(treeIdRaw) {
-    return window.CommunityComposeHelpers.fetchTreeSummaryForCommunity(treeIdRaw);
 }
 
 function normalizeCommunityTreeItem(doc) {
@@ -418,17 +394,21 @@ async function openCommunityPostDetail(postId) {
             getCurrentUser: getCurrentUserForCommunity,
             isOwner: isOwnerOfPost,
             isAdminCheck: isAdminUserForCommunity,
-            setEditMode: setCommunityPostEditMode,
-            setActionUiVisible: setCommunityPostActionUiVisible,
+            setEditMode: window.CommunityRenderHelpers.setCommunityPostEditMode,
+            setActionUiVisible: window.CommunityRenderHelpers.setCommunityPostActionUiVisible,
             getCurrentPostData: () => communityCurrentPostData,
             setCurrentPostData: (next) => {
                 communityCurrentPostData = next;
             },
-            updatePostById: updateCommunityPostById,
+            updatePostById: (id, patch) => window.CommunityWriteHelpers.updateCommunityPostById({
+                db: getFirestoreForCommunity(),
+                postId: id,
+                patch: patch
+            }),
             reloadPosts: loadCommunityPosts,
-            openDeleteReasonModal: openDeleteReasonModal,
+            openDeleteReasonModal: window.CommunityModerationHelpers.openDeleteReasonModal,
             logModeration: logCommunityModerationEvent,
-            fetchTreeSummary: fetchTreeSummaryForCommunity
+            fetchTreeSummary: window.CommunityComposeHelpers.fetchTreeSummaryForCommunity
         });
         if (!detailPrepared || detailPrepared.hidden) return;
 

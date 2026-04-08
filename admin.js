@@ -3,7 +3,7 @@
  */
 
 // Configuration
-const ADMIN_EMAILS = ['padiemipu@gmail.com', 'limone@example.com'];
+const ADMIN_EMAILS = []; // Use Firestore 'role:admin' in users collection
 const AI_HELPER_ENDPOINT = 'https://lovetree.limone.dev/.netlify/functions/ai-helper';
 window.AI_HELPER_ENDPOINT = AI_HELPER_ENDPOINT;
 

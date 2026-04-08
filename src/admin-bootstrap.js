@@ -237,7 +237,7 @@
 
                 setStatus('권한 확인 중...');
 
-                const isAdmin = adminEmails.includes(user.email) || await checkAdminRole(user.uid);
+                const isAdmin = await checkAdminRole(user.uid);
 
                 if (!isAdmin) {
                     setStatus('관리자 권한이 없습니다. (' + user.email + ')');

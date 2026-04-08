@@ -282,6 +282,63 @@
         }
     }
 
+    function openCreateModal() {
+        if (typeof hideError === 'function') hideError();
+
+        const user = typeof ensureLoggedIn === 'function' ? ensureLoggedIn() : null;
+        if (!user) return;
+
+        const nameInput = document.getElementById('artist-name');
+        if (nameInput) {
+            nameInput.value = '';
+            nameInput.focus();
+        }
+
+        const modal = document.getElementById('create-modal');
+        if (modal) {
+            modal.showModal();
+        }
+    }
+
+    function handleCreate(e) {
+        e.preventDefault();
+        if (typeof hideError === 'function') hideError();
+
+        const user = typeof ensureLoggedIn === 'function' ? ensureLoggedIn() : null;
+        if (!user) return;
+
+        const nameInput = document.getElementById('artist-name');
+        const name = nameInput?.value?.trim();
+
+        if (!name) {
+            const error = typeof validateArtistName === 'function' ? validateArtistName('', true) : '아티스트 이름을 입력해주세요.';
+            if (error) {
+                nameInput?.classList.add('border-red-500');
+                if (typeof showError === 'function') showError(error);
+                nameInput?.focus();
+                return;
+            }
+        }
+
+        const validationError = typeof validateArtistName === 'function' ? validateArtistName(name, true) : null;
+        if (validationError) {
+            nameInput?.classList.add('border-red-500');
+            if (typeof showError === 'function') showError(validationError);
+            nameInput?.focus();
+            return;
+        }
+
+        try {
+            if (name) {
+                const encodedName = encodeURIComponent(name);
+                window.location.href = `editor.html?id=${encodedName}`;
+            }
+        } catch (error) {
+            console.error('Navigation error:', error);
+            if (typeof showError === 'function') showError('페이지 이동 중 오류가 발생했습니다.');
+        }
+    }
+
     const api = {
         myMenuCloseAndScrollTo: myMenuCloseAndScrollTo,
         myMenuGoCommunity: myMenuGoCommunity,
@@ -298,7 +355,9 @@
         loadBackgroundPreference: loadBackgroundPreference,
         triggerBackgroundFileInput: triggerBackgroundFileInput,
         initBackgroundFileControls: initBackgroundFileControls,
-        openSettingsModal: openSettingsModal
+        openSettingsModal: openSettingsModal,
+        openCreateModal: openCreateModal,
+        handleCreate: handleCreate
     };
 
     window.ReloveIndexSettings = api;
@@ -315,4 +374,6 @@
     window.triggerBackgroundFileInput = triggerBackgroundFileInput;
     window.initBackgroundFileControls = initBackgroundFileControls;
     window.openSettingsModal = openSettingsModal;
+    window.openCreateModal = openCreateModal;
+    window.handleCreate = handleCreate;
 })();

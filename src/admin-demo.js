@@ -1,7 +1,4 @@
 (function () {
-    let currentDemoSeedMode = null;
-    window.currentDemoSeedMode = currentDemoSeedMode;
-
     function getDb() {
         return window.getAdminDb();
     }
@@ -11,99 +8,36 @@
     }
 
     function openDemoSeedModal(mode) {
-        currentDemoSeedMode = mode;
-        window.currentDemoSeedMode = currentDemoSeedMode;
-        const modal = document.getElementById('demoSeedModal');
-        const titleEl = document.getElementById('demoSeedTitle');
-        const descEl = document.getElementById('demoSeedDescription');
-        const inputEl = document.getElementById('demoSeedCount');
-
-        if (!modal || !titleEl || !descEl || !inputEl) return;
-
-        let title = '데모 데이터 생성';
-        let desc = '생성할 개수를 입력하세요. 비워두면 기본 개수로 생성됩니다.';
-
-        if (mode === 'users') {
-            title = '데모 사용자 생성';
-            desc = '대시보드와 사용자 관리 화면에 표시할 데모 사용자를 몇 명까지 생성할지 입력하세요. 비워두면 기본 개수로 생성됩니다.';
-        } else if (mode === 'trees') {
-            title = '데모 러브트리 생성';
-            desc = '홈과 에디터에서 사용할 데모 러브트리를 몇 개까지 생성할지 입력하세요. 비워두면 기본 개수로 생성됩니다.';
-        } else if (mode === 'community') {
-            title = '커뮤니티 데모 글 생성';
-            desc = '커뮤니티 목록에 표시할 데모 글을 몇 개까지 생성할지 입력하세요. 비워두면 기본 개수로 생성됩니다.';
+        if (typeof window.AdminDemoModal !== 'undefined') {
+            window.AdminDemoModal.openDemoSeedModal(mode);
         }
-
-        titleEl.textContent = title;
-        descEl.textContent = desc;
-        inputEl.value = '';
-        modal.classList.remove('hidden');
     }
 
     function closeDemoSeedModal() {
-        const modal = document.getElementById('demoSeedModal');
-        if (!modal) return;
-        modal.classList.add('hidden');
-        currentDemoSeedMode = null;
-        window.currentDemoSeedMode = currentDemoSeedMode;
+        if (typeof window.AdminDemoModal !== 'undefined') {
+            window.AdminDemoModal.closeDemoSeedModal();
+        }
     }
 
     async function seedDemoUsers(requestCount) {
         const currentUser = getCurrentAdminUser();
-
         if (!currentUser) {
             alert('로그인이 필요합니다.');
             return;
         }
 
-        const templates = [
-            {
-                uid: 'demo-user-01',
-                email: 'demo-army@demo.local',
-                displayName: '데모 아미',
-                userId: 'demo_army',
-                role: 'free',
-                isDemo: true
-            },
-            {
-                uid: 'demo-user-02',
-                email: 'demo-carat@demo.local',
-                displayName: '데모 캐럿',
-                userId: 'demo_carat',
-                role: 'pro',
-                isDemo: true
-            },
-            {
-                uid: 'demo-user-03',
-                email: 'demo-stay@demo.local',
-                displayName: '데모 스테이',
-                userId: 'demo_stay',
-                role: 'free',
-                isDemo: true
-            },
-            {
-                uid: 'demo-user-04',
-                email: 'demo-diver@demo.local',
-                displayName: '데모 다이브',
-                userId: 'demo_diver',
-                role: 'free',
-                isDemo: true
-            },
-            {
-                uid: 'ai-user-01',
-                email: 'ai-bot@demo.local',
-                displayName: 'Relovetree AI',
-                userId: 'relovetree_ai',
-                role: 'free',
-                isDemo: false,
-                isAiBot: true
-            }
-        ];
+        const templates = window.AdminDemoTemplates
+            ? window.AdminDemoTemplates.getDemoUserTemplates()
+            : null;
+        
+        if (!templates) {
+            alert('데모 템플릿 로드 실패');
+            return;
+        }
 
-        const defaultCount = templates.length;
-        const maxCount = typeof requestCount === 'number' && requestCount > 0
-            ? Math.min(requestCount, templates.length)
-            : defaultCount;
+        const maxCount = window.AdminDemoTemplates
+            ? window.AdminDemoTemplates.getMaxSeedCount(requestCount, templates)
+            : templates.length;
 
         let createdCount = 0;
 
@@ -132,8 +66,8 @@
 
             if (createdCount > 0) {
                 alert(`데모 사용자 ${createdCount}명을 생성했습니다.`);
-                await window.loadStats();
-                await window.loadUsers();
+                if (typeof window.loadStats === 'function') await window.loadStats();
+                if (typeof window.loadUsers === 'function') await window.loadUsers();
             } else {
                 alert('새로 생성된 데모 사용자가 없습니다. (이미 같은 ID의 데모 사용자가 있습니다)');
             }
@@ -145,14 +79,12 @@
 
     async function seedDemoTrees(requestCount) {
         const currentUser = getCurrentAdminUser();
-
         if (!currentUser) {
             alert('로그인이 필요합니다.');
             return;
         }
 
         const owners = [];
-
         try {
             const demoSnap = await getDb().collection('users').where('isDemo', '==', true).limit(10).get();
             demoSnap.forEach((doc) => {
@@ -166,23 +98,18 @@
             owners.push({ uid: currentUser.uid, name: currentUser.displayName || currentUser.email || '관리자' });
         }
 
-        const templates = [
-            { id: 'demo-tree-bts', name: '방탄소년단 타임라인 데모', baseTitle: 'BTS 활동 정리' },
-            { id: 'demo-tree-svt', name: '세븐틴 투어 히스토리 데모', baseTitle: '세븐틴 투어 기록' },
-            { id: 'demo-tree-skz', name: '스트레이 키즈 컴백 타임라인 데모', baseTitle: '스트레이 키즈 컴백 정리' },
-            { id: 'demo-tree-newjeans', name: '뉴진스 활동 모먼트 데모', baseTitle: '뉴진스 활동 정리' },
-            { id: 'demo-tree-illit', name: '아일릿 성장기 데모', baseTitle: '아일릿 활동 타임라인' },
-            { id: 'demo-tree-ive', name: '아이브 모먼트 데모', baseTitle: '아이브 활동 기록' },
-            { id: 'demo-tree-leserafim', name: '르세라핌 모먼트 데모', baseTitle: '르세라핌 활동 기록' },
-            { id: 'demo-tree-aespa', name: '에스파 모먼트 데모', baseTitle: '에스파 컴백 기록' },
-            { id: 'demo-tree-riize', name: '라이즈 모먼트 데모', baseTitle: '라이즈 활동 기록' },
-            { id: 'demo-tree-iu', name: '아이유 모먼트 데모', baseTitle: '아이유 활동 기록' }
-        ];
+        const templates = window.AdminDemoTemplates
+            ? window.AdminDemoTemplates.getDemoTreeTemplates()
+            : null;
+        
+        if (!templates) {
+            alert('데모 트리 템플릿 로드 실패');
+            return;
+        }
 
-        const defaultCount = templates.length;
-        const maxCount = typeof requestCount === 'number' && requestCount > 0
-            ? Math.min(requestCount, templates.length)
-            : defaultCount;
+        const maxCount = window.AdminDemoTemplates
+            ? window.AdminDemoTemplates.getMaxSeedCount(requestCount, templates)
+            : templates.length;
 
         let createdCount = 0;
 
@@ -279,7 +206,6 @@
 
     async function seedDemoCommunityPosts(requestCount) {
         const currentUser = getCurrentAdminUser();
-
         if (!currentUser) {
             alert('로그인이 필요합니다.');
             return;
@@ -287,28 +213,15 @@
 
         const authorId = currentUser.uid;
         const authorName = currentUser.displayName || currentUser.email || '관리자';
-        const templates = [
-            {
-                title: 'Relovetree로 덕질 기록하는 법',
-                content: '처음 오신 분들을 위해 Relovetree를 어떻게 쓰면 좋은지 간단히 정리해봤어요.\n1) 아티스트 러브트리를 만들고\n2) 입덕부터 최신 활동까지 순간들을 노드로 추가해 보세요.'
-            },
-            {
-                title: '내 최애 무대 추천 스레드',
-                content: '각자 최애 무대 하나씩만 링크와 함께 추천해 주세요!\n왜 이 무대를 좋아하는지도 한 줄로 적어주면 더 좋아요 :)'
-            },
-            {
-                title: '덕질 루틴 공유해요',
-                content: '출근길/등굣길, 퇴근 후, 주말에 어떻게 덕질하는지 루틴을 공유해 봅시다.\n러브트리를 어떻게 활용하고 있는지도 같이 써 주세요.'
-            },
-            {
-                title: '입덕 계기 썰 풀어보기',
-                content: '어떤 계기로 지금 최애를 좋아하게 되었나요? 음악, 무대, 예능, 혹은 친구의 추천 등 각자의 입덕 스토리를 자유롭게 공유해 주세요.'
-            },
-            {
-                title: '최애 짤/움짤 자랑방',
-                content: '요즘 계속 돌려보는 최애 짤이나 움짤이 있다면 여기에 공유해 주세요. 왜 좋아하는지도 한 줄 코멘트로 남겨주면 더 재밌어요.'
-            }
-        ];
+
+        const templates = window.AdminDemoTemplates
+            ? window.AdminDemoTemplates.getDemoCommunityTemplates()
+            : null;
+        
+        if (!templates) {
+            alert('커뮤니티 템플릿 로드 실패');
+            return;
+        }
 
         try {
             const existingSnap = await getDb().collection('community_posts')
@@ -321,10 +234,9 @@
                 if (data.title) existingTitles.add(String(data.title));
             });
 
-            const defaultCount = templates.length;
-            const maxCount = typeof requestCount === 'number' && requestCount > 0
-                ? Math.min(requestCount, templates.length)
-                : defaultCount;
+            const maxCount = window.AdminDemoTemplates
+                ? window.AdminDemoTemplates.getMaxSeedCount(requestCount, templates)
+                : templates.length;
 
             let createdCount = 0;
 
