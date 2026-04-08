@@ -685,7 +685,7 @@
     <script src="src/editor-render-main.js"></script>
     <script src="src/editor-runtime.js"></script>
     <script>
-        let isKorean = true;
+
 
         const urlParams = new URLSearchParams(window.location.search);
         const treeId = urlParams.get('id') || 'bts';
@@ -817,14 +817,16 @@
         let db;
         let auth;
         let storage;
-        let currentUser = null;
-        let isReadOnly = false;
-        let currentTreeDocData = null;
-
-        let originalNodes = [];
-        let orientationMode = 'portrait';
 
         const state = {
+            isKorean: true,
+            currentUser: null,
+            isReadOnly: false,
+            currentTreeDocData: null,
+            originalNodes: [],
+            orientationMode: 'portrait',
+            editorMode: 'tree',
+            commentsUnsubscribe: null,
             nodes: [],
             edges: [],
             transform: { x: 0, y: 0, k: 1 },
@@ -848,22 +850,22 @@
             setAuth: (value) => { auth = value; },
             getStorage: () => storage,
             setStorage: (value) => { storage = value; },
-            getCurrentUser: () => currentUser,
-            setCurrentUser: (value) => { currentUser = value; },
-            getIsReadOnly: () => isReadOnly,
-            setIsReadOnly: (value) => { isReadOnly = value; },
-            getCurrentTreeDocData: () => currentTreeDocData,
-            setCurrentTreeDocData: (value) => { currentTreeDocData = value; },
-            getOriginalNodes: () => originalNodes,
-            setOriginalNodes: (value) => { originalNodes = value; },
-            getEditorMode: () => editorMode,
-            setEditorMode: (value) => { editorMode = value; },
-            getIsKorean: () => isKorean,
-            setIsKorean: (value) => { isKorean = !!value; },
-            getOrientationMode: () => orientationMode,
-            setOrientationMode: (value) => { orientationMode = value; },
-            getCommentsUnsubscribe: () => commentsUnsubscribe,
-            setCommentsUnsubscribe: (value) => { commentsUnsubscribe = value; },
+            getCurrentUser: () => state.currentUser,
+            setCurrentUser: (value) => { state.currentUser = value; },
+            getIsReadOnly: () => state.isReadOnly,
+            setIsReadOnly: (value) => { state.isReadOnly = value; },
+            getCurrentTreeDocData: () => state.currentTreeDocData,
+            setCurrentTreeDocData: (value) => { state.currentTreeDocData = value; },
+            getOriginalNodes: () => state.originalNodes,
+            setOriginalNodes: (value) => { state.originalNodes = value; },
+            getEditorMode: () => state.editorMode,
+            setEditorMode: (value) => { state.editorMode = value; },
+            getIsKorean: () => state.isKorean,
+            setIsKorean: (value) => { state.isKorean = !!value; },
+            getOrientationMode: () => state.orientationMode,
+            setOrientationMode: (value) => { state.orientationMode = value; },
+            getCommentsUnsubscribe: () => state.commentsUnsubscribe,
+            setCommentsUnsubscribe: (value) => { state.commentsUnsubscribe = value; },
             getState: () => state,
             getFirebase: () => firebase,
             getShowToast: () => window.showToast,
@@ -874,7 +876,7 @@
             getSaveDataImmediate: () => window.saveDataImmediate
         });
 
-        window.isKorean = isKorean;
+        window.isKorean = state.isKorean;
         if (window.EditorHeaderHelpers && typeof window.EditorHeaderHelpers.syncHeaderState === 'function') {
             window.EditorHeaderHelpers.syncHeaderState(window.__editorRuntime);
         }
@@ -883,20 +885,18 @@
             await window.EditorBootstrapHelpers.initApp(window.__editorRuntime);
         });
 
-        let editorMode = 'tree';
-
         const BG_STORAGE_KEY = 'relovetree_background';
 
         const saveData = window.debounce(() => {
             window.saveDataImmediate(true);
         }, 1000);
 
-        let commentsUnsubscribe = null;
+
 
         function render() {
             const refs = window.EditorRenderUiHelpers.getRenderRefs();
 
-            if (editorMode === 'timeline') {
+            if (state.editorMode === 'timeline') {
                 window.EditorRenderMainHelpers.renderTimelineBranch(window.__editorRuntime, refs);
                 return;
             }
