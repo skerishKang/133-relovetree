@@ -1435,7 +1435,9 @@ function initPage() {
         isKorean = savedLang === 'ko';
 
         // Initial render
-        // Firestore 기준 인기 트리 섹션을 우선 시도하고, 실패 시 정적 카드로 대체
+        // 인기 섹션은 정적 썸네일 카드를 먼저 보여주고, 비동기 조회 결과로 교체한다.
+        renderArtistCards();
+        // Firestore 기준 인기 트리 섹션을 우선 시도하고, 실패 시 정적 카드로 유지
         loadPopularTrees();
         // 최근 만들어진 러브트리(전역 최신 트리) 섹션 로드
         loadRecentCreatedTrees();
