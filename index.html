@@ -734,18 +734,18 @@
                     <p class="modal-desc" id="modal-desc">아티스트의 이름을 입력하여 새로운 여정을 시작하세요.</p>
                 </div>
 
-                <form method="dialog" onsubmit="handleCreate(event)" novalidate>
+                <form method="dialog" onsubmit="handleCreate(event)" novalidate class="modal-form-stack">
                     <div class="modal-field">
                         <label for="artist-name"
                             class="modal-label"
                             id="label-name">아티스트 이름</label>
                         <input type="text" id="artist-name" name="artistName"
-                            class="modal-input py-3"
+                            class="modal-input create-modal-input"
                             placeholder="예: 뉴진스, 임영웅..." required maxlength="50" aria-describedby="artist-name-help">
                         <p id="artist-name-help" class="modal-help">최대 50자까지 입력 가능합니다
                         </p>
                     </div>
-                    <div class="modal-actions modal-actions-spacious">
+                    <div class="modal-actions modal-actions-spacious modal-actions-wrap">
                         <button type="button" onclick="closeModal('create-modal')"
                             class="ui-btn ui-btn-soft modal-action-btn font-medium"
                             id="btn-cancel">취소</button>
@@ -759,7 +759,7 @@
     </dialog>
 
     <dialog id="search-modal" class="modal-shell modal-shell-lg">
-        <div class="modal-panel">
+        <div class="modal-panel search-modal-panel">
             <div class="search-modal-stack">
                 <div class="modal-header modal-header-spaced">
                     <h3 class="modal-title">검색</h3>
@@ -784,7 +784,7 @@
                         class="search-tab-btn">내 트리</button>
                 </div>
 
-                <div id="search-result" class="search-results-list">
+                <div id="search-result" class="search-results-list search-modal-results">
                     <div class="empty-state-inline">검색어를 입력해 주세요.</div>
                 </div>
 
@@ -801,11 +801,11 @@
 
     <!-- Settings Modal -->
     <dialog id="settings-modal" class="modal-shell modal-shell-sm">
-        <div class="modal-panel">
+        <div class="modal-panel settings-modal-panel">
             <div class="modal-header modal-header-roomy">
                 <h3 class="modal-title">마이</h3>
                 <button onclick="closeModal('settings-modal')"
-                    class="modal-close">
+                    class="settings-modal-close">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
@@ -818,14 +818,16 @@
                     <label class="settings-section-label">계정</label>
                     <div class="settings-card">
                         <div class="settings-auth-stack">
-                            <button id="login-btn" type="button"
-                                class="ui-btn ui-btn-primary settings-auth-btn">
-                                구글로 로그인
-                            </button>
-                            <a id="email-login-link" href="login.html"
-                                class="ui-btn ui-btn-secondary settings-auth-btn">
-                                이메일로 로그인
-                            </a>
+                            <div class="settings-auth-buttons">
+                                <button id="login-btn" type="button"
+                                    class="ui-btn ui-btn-primary settings-auth-btn">
+                                    구글로 로그인
+                                </button>
+                                <a id="email-login-link" href="login.html"
+                                    class="ui-btn ui-btn-secondary settings-auth-btn">
+                                    이메일로 로그인
+                                </a>
+                            </div>
 
                             <div id="user-menu" class="hidden flex flex-col gap-3">
                                 <div class="settings-profile-row">

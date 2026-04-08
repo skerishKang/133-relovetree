@@ -145,7 +145,19 @@
     @apply px-5 py-2.5;
   }
 
+  .modal-form-stack {
+    @apply space-y-6;
+  }
+
+  .modal-actions-wrap {
+    @apply flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
+  }
+
   .settings-auth-stack {
+    @apply flex flex-col gap-2;
+  }
+
+  .settings-auth-buttons {
     @apply flex flex-col gap-2;
   }
 
@@ -167,6 +179,10 @@
 
   .settings-logout-btn {
     @apply text-slate-600 hover:text-red-500;
+  }
+
+  .create-modal-input {
+    @apply py-3;
   }
 
   .action-row {
@@ -293,8 +309,20 @@
     @apply p-6 max-h-[80vh] overflow-y-auto;
   }
 
+  .search-modal-panel {
+    @apply p-5 sm:p-6;
+  }
+
+  .settings-modal-panel {
+    @apply p-5 sm:p-6;
+  }
+
   .modal-stack {
     @apply space-y-6;
+  }
+
+  .modal-stack-tight {
+    @apply space-y-4;
   }
 
   .modal-intro {
@@ -329,12 +357,20 @@
     @apply flex justify-end gap-3;
   }
 
+  .settings-modal-close {
+    @apply modal-close -mr-1;
+  }
+
   .search-result-card {
     @apply block rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:bg-slate-50;
   }
 
   .search-modal-stack {
     @apply space-y-4;
+  }
+
+  .search-modal-results {
+    @apply min-h-[12rem];
   }
 
   .search-results-list {
