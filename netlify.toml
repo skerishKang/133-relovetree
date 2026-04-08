@@ -19,3 +19,8 @@
   from = "/api/admin/tree-ai"
   to = "/.netlify/functions/tree-ai"
   status = 200
+
+[[redirects]]
+  from = "/api/firestore"
+  to = "/.netlify/functions/firestore-api"
+  status = 200

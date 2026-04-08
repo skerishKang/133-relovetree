@@ -18,9 +18,9 @@
 
     <!-- Firebase SDK (Compat for easier integration with existing code) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="src/firebase-firestore-compat.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
@@ -182,7 +182,7 @@
     </style>
 </head>
 
-<body>
+<body data-page="editor">
 
     <!-- Top Bar -->
     <div
@@ -658,6 +658,10 @@
         </div>
     </dialog>
 
+    <script src="src/shared-storage.js"></script>
+    <script src="src/shared-dom.js"></script>
+    <script src="src/shared-theme.js"></script>
+    <script src="src/shared-layout.js"></script>
     <script src="src/shared.js"></script>
     <script src="src/auth.js"></script>
     <script src="editor_ai.js"></script>
@@ -865,9 +869,6 @@
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', async () => {
-            initApp(); // from shared.js
-            initAuth(); // from auth.js
-
             // Wait for Auth
             currentUser = await waitForAuth();
             console.log("Current User:", currentUser ? currentUser.email : "Guest");

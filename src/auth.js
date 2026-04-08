@@ -9,14 +9,21 @@ const AUTH_CONFIG = {
 };
 
 let EMAIL_AUTH_MODE = 'login';
+const AUTH_INIT_FLAG = '__relovetreeAuthInitialized';
 
 /**
  * Initialize Authentication
  */
 function initAuth() {
+    if (typeof window !== 'undefined' && window[AUTH_INIT_FLAG]) {
+        return;
+    }
     if (!firebase.auth()) {
         console.error('Firebase Auth not initialized');
         return;
+    }
+    if (typeof window !== 'undefined') {
+        window[AUTH_INIT_FLAG] = true;
     }
 
     // Auth State Observer

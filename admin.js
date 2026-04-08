@@ -548,6 +548,13 @@ function formatServerTimestamp(value) {
         return d.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
     }
 
+    if (typeof value === 'string' || value instanceof Date) {
+        const d = new Date(value);
+        if (!Number.isNaN(d.getTime())) {
+            return d.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+        }
+    }
+
     const seconds = value._seconds || value.seconds;
     if (typeof seconds === 'number') {
         const d = new Date(seconds * 1000);

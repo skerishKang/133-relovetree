@@ -1,6 +1,7 @@
 /**
  * Relovetree - Payment Module
  * Integrates Toss Payments
+ * Note: role/pro 권한 변경은 서버 검증 후에만 처리되어야 한다.
  */
 
 // Configuration
@@ -11,6 +12,10 @@ const PAYMENT_CONFIG = {
 };
 
 let tossPayments = null;
+
+function clearPaymentStatusFromUrl() {
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
 
 /**
  * Initialize Payment System
@@ -61,54 +66,15 @@ async function checkPaymentResult() {
     const paymentStatus = urlParams.get('payment');
 
     if (paymentStatus === 'success') {
-        const paymentKey = urlParams.get('paymentKey');
-        const orderId = urlParams.get('orderId');
-        const amount = urlParams.get('amount');
+        clearPaymentStatusFromUrl();
 
-        // Clear URL params
-        window.history.replaceState({}, document.title, window.location.pathname);
-
-        // In a real app, verify payment with backend here.
-        // For this MVP/Client-side demo, we'll assume success and upgrade the user.
-
-        alert('결제가 완료되었습니다! Pro 등급으로 업그레이드 중...');
-        await upgradeUserToPro();
+        // TODO(payment-server): 결제 성공 후 paymentKey/orderId/amount를 서버 검증 API로 전송하고,
+        // 서버에서만 users/{uid}의 Pro 상태를 반영해야 한다.
+        alert('결제 요청이 접수되었습니다. 서버 확인 후 Pro 혜택이 반영됩니다.');
 
     } else if (paymentStatus === 'fail') {
+        clearPaymentStatusFromUrl();
         alert('결제가 실패했습니다. 다시 시도해주세요.');
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-}
-
-/**
- * Upgrade User to Pro (Client-side Logic)
- */
-async function upgradeUserToPro() {
-    const user = firebase.auth().currentUser;
-    if (!user) {
-        // If auth not ready, wait a bit or show error
-        // Since this runs on page load, auth might take a moment
-        firebase.auth().onAuthStateChanged(async (u) => {
-            if (u) {
-                await performUpgrade(u.uid);
-            }
-        });
-        return;
-    }
-    await performUpgrade(user.uid);
-}
-
-async function performUpgrade(uid) {
-    try {
-        await firebase.firestore().collection('users').doc(uid).update({
-            role: 'pro',
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert('축하합니다! Pro 등급으로 업그레이드되었습니다.');
-        window.location.reload();
-    } catch (error) {
-        console.error('Error upgrading user:', error);
-        alert('등급 변경 중 오류가 발생했습니다. 관리자에게 문의해주세요.');
     }
 }
 

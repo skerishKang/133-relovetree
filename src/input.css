@@ -40,6 +40,150 @@
   .node.selected {
     @apply border-brand-500 shadow-lg;
   }
+
+  .ui-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-colors;
+  }
+
+  .ui-btn-primary {
+    @apply bg-brand-500 text-white hover:bg-brand-600 shadow-lg shadow-brand-500/20;
+  }
+
+  .ui-btn-secondary {
+    @apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50;
+  }
+
+  .ui-btn-dark {
+    @apply bg-slate-800 text-white hover:bg-slate-700;
+  }
+
+  .ui-btn-soft {
+    @apply text-slate-600 hover:bg-slate-100;
+  }
+
+  .ui-btn-pill {
+    @apply rounded-full px-6;
+  }
+
+  .ui-btn-sm {
+    @apply px-3 py-1.5 text-xs sm:text-sm;
+  }
+
+  .section-shell {
+    @apply rounded-2xl border border-white/80 bg-transparent px-4 py-5 shadow-lg backdrop-blur-sm sm:px-6 sm:py-6;
+  }
+
+  .empty-state {
+    @apply rounded-2xl border border-white/60 bg-white/80 p-8 text-center shadow-md backdrop-blur-sm;
+  }
+
+  .empty-state-inline {
+    @apply px-2 py-4 text-sm text-slate-400;
+  }
+
+  .empty-state-icon {
+    @apply mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent;
+  }
+
+  .empty-state-title {
+    @apply mb-2 text-lg font-bold text-slate-900;
+  }
+
+  .empty-state-desc {
+    @apply mb-6 text-sm text-slate-500;
+  }
+
+  .empty-state-actions {
+    @apply flex flex-col items-center justify-center gap-2 sm:flex-row;
+  }
+
+  .settings-section {
+    @apply border-t border-slate-100 pt-4;
+  }
+
+  .settings-section-label {
+    @apply mb-3 block text-xs font-bold uppercase tracking-wider text-slate-500;
+  }
+
+  .settings-card {
+    @apply rounded-2xl border border-slate-200 bg-slate-50/70 p-4;
+  }
+
+  .settings-input-row {
+    @apply flex gap-2;
+  }
+
+  .action-row {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-2;
+  }
+
+  .action-row-single {
+    @apply sm:col-span-2;
+  }
+
+  .action-tile {
+    @apply rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50;
+  }
+
+  .action-chip {
+    @apply rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50;
+  }
+
+  .action-chip-active {
+    @apply border-brand-500 bg-brand-50 text-brand-600;
+  }
+
+  .notice-banner {
+    @apply rounded-2xl border px-4 py-3 text-sm;
+  }
+
+  .notice-banner-warn {
+    @apply border-amber-200 bg-amber-50 text-amber-800;
+  }
+
+  .notice-banner-actions {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .settings-swatch-grid {
+    @apply grid grid-cols-3 gap-3;
+  }
+
+  .settings-swatch {
+    @apply relative aspect-video overflow-hidden rounded-lg border-2 border-transparent transition-all hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .settings-swatch-overlay {
+    @apply absolute inset-0 bg-black/20 transition-colors group-hover:bg-transparent;
+  }
+
+  .settings-color-row {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .settings-color-chip {
+    @apply h-10 w-10 rounded-full border transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .settings-dropzone {
+    @apply flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-5 text-xs text-slate-500 transition-colors hover:bg-slate-100;
+  }
+
+  .settings-upgrade-card {
+    @apply rounded-xl bg-gradient-to-r from-brand-500 to-pink-500 p-4 text-white shadow-lg;
+  }
+
+  .settings-upgrade-badge {
+    @apply rounded bg-white/20 px-2 py-0.5 text-xs font-bold;
+  }
+
+  .settings-upgrade-action {
+    @apply w-full rounded-lg bg-white py-2 font-bold text-brand-600 shadow-sm transition-colors hover:bg-slate-50;
+  }
+
+  .settings-reset-btn {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-600 transition-colors hover:bg-slate-50;
+  }
 }
 
 @layer utilities {

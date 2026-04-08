@@ -34,6 +34,10 @@
 node_modules/
 .next/
 .netlify/
+.firebase/
+.codex
+*.fossil
+_FOSSIL_
 .env
 .DS_Store
 Thumbs.db

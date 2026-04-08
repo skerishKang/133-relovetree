@@ -1,96 +1,7 @@
-// Netlify Function: 관리자용 트리 AI 어시스트 (노드 설명 생성)
-// - Firebase Admin SDK로 트리/노드 데이터를 읽고,
-// - Gemini API를 호출해 노드 설명을 생성/리라이팅한다.
-
-const admin = require('firebase-admin');
-
-let adminInitialized = false;
-
-function getAdmin() {
-  if (adminInitialized) return admin;
-
-  if (!admin.apps || !admin.apps.length) {
-    const raw =
-      process.env.FIREBASE_SERVICE_ACCOUNT_JSON || process.env.FIREBASE_SERVICE_ACCOUNT;
-
-    if (!raw) {
-      console.error(
-        'Firebase 서비스 계정 환경 변수가 설정되지 않았습니다. FIREBASE_SERVICE_ACCOUNT_JSON 또는 FIREBASE_SERVICE_ACCOUNT 를 설정하세요.'
-      );
-      throw new Error('Missing Firebase service account config');
-    }
-
-    let serviceAccount;
-    try {
-      serviceAccount = JSON.parse(raw);
-    } catch (e) {
-      console.error('Firebase 서비스 계정 JSON 파싱 오류:', e);
-      throw e;
-    }
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-  }
-
-  adminInitialized = true;
-  return admin;
-}
-
-function buildResponse(statusCode, bodyObj, extraHeaders) {
-  return {
-    statusCode,
-    headers: Object.assign(
-      {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      },
-      extraHeaders || {}
-    ),
-    body: bodyObj ? JSON.stringify(bodyObj) : '',
-  };
-}
-
-function buildHttpError(status, message) {
-  const err = new Error(message);
-  err.status = status;
-  return err;
-}
-
-async function requireAdminUser(event, adminInstance) {
-  const headers = event.headers || {};
-  const authHeader = headers.authorization || headers.Authorization || '';
-
-  if (!authHeader.startsWith('Bearer ')) {
-    throw buildHttpError(401, 'Missing or invalid Authorization header');
-  }
-
-  const idToken = authHeader.substring(7);
-
-  let decoded;
-  try {
-    decoded = await adminInstance.auth().verifyIdToken(idToken);
-  } catch (e) {
-    console.error('ID 토큰 검증 실패:', e);
-    throw buildHttpError(401, 'Invalid ID token');
-  }
-
-  const uid = decoded.uid;
-  const db = adminInstance.firestore();
-  const userSnap = await db.collection('users').doc(uid).get();
-
-  if (!userSnap.exists) {
-    throw buildHttpError(403, 'User not found');
-  }
-
-  const userData = userSnap.data() || {};
-  if (userData.role !== 'admin') {
-    throw buildHttpError(403, 'Forbidden');
-  }
-
-  return { uid, user: userData };
-}
+const { buildResponse, handleError, httpError, noContent } = require('./_lib/http');
+const { requireUser } = require('./_lib/firebase-auth');
+const { isAdminUser } = require('./_lib/firestore-api');
+const treeRepository = require('./_lib/repositories/tree-repository');
 
 function getApiKeys(env) {
   const raw = env.GEMINI_API_KEYS || env.GEMINI_API_KEY || '';
@@ -226,7 +137,7 @@ async function callGeminiForDescription(promptText, env) {
 
 exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') {
-    return buildResponse(204, null);
+    return noContent();
   }
 
   if (event.httpMethod !== 'POST') {
@@ -234,10 +145,10 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const adminInstance = getAdmin();
-    const db = adminInstance.firestore();
-
-    await requireAdminUser(event, adminInstance);
+    const user = await requireUser(event);
+    if (!(await isAdminUser(user))) {
+      throw httpError(403, 'Forbidden');
+    }
 
     let body;
     try {
@@ -262,12 +173,12 @@ exports.handler = async (event, context) => {
       return buildResponse(400, { error: 'nodeIndex must be a non-negative integer' });
     }
 
-    const snap = await db.collection('trees').doc(treeId).get();
-    if (!snap.exists) {
+    const doc = await treeRepository.getTree(treeId);
+    if (!doc) {
       return buildResponse(404, { error: 'Tree not found' });
     }
 
-    const tree = snap.data() || {};
+    const tree = doc.data || {};
     const nodes = Array.isArray(tree.nodes) ? tree.nodes : [];
 
     if (!nodes.length || nodeIndex >= nodes.length) {
@@ -288,10 +199,6 @@ exports.handler = async (event, context) => {
       },
     });
   } catch (err) {
-    console.error('tree-ai error:', err);
-    if (err && typeof err.status === 'number') {
-      return buildResponse(err.status, { error: err.message || 'Error' });
-    }
-    return buildResponse(500, { error: 'Internal error' });
+    return handleError('tree-ai', err);
   }
 };

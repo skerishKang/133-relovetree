@@ -29,6 +29,7 @@ const SEARCH_PAGE_SIZE = 8;
 let myTreesCache = [];
 let recentCreatedTreesCache = [];
 let searchAllCache = [];
+const homeSettings = (typeof window !== 'undefined' && window.ReloveIndexSettings) ? window.ReloveIndexSettings : {};
 
 function openSearchModal() {
     const modal = document.getElementById('search-modal');
@@ -88,13 +89,13 @@ function setSearchMode(mode) {
     const tabMy = document.getElementById('search-tab-my');
     if (tabAll) {
         tabAll.className = SEARCH_MODE === 'all'
-            ? 'px-3 py-2 rounded-xl border border-brand-500 bg-brand-50 text-brand-700 text-sm font-bold'
-            : 'px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50';
+            ? 'action-chip action-chip-active'
+            : 'action-chip';
     }
     if (tabMy) {
         tabMy.className = SEARCH_MODE === 'my'
-            ? 'px-3 py-2 rounded-xl border border-brand-500 bg-brand-50 text-brand-700 text-sm font-bold'
-            : 'px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50';
+            ? 'action-chip action-chip-active'
+            : 'action-chip';
     }
 
     runSearch(SEARCH_QUERY, SEARCH_MODE, SEARCH_PAGE);
@@ -128,13 +129,32 @@ function renderSearchResults(items, page, total) {
     if (!container) return;
 
     if (!SEARCH_QUERY) {
-        container.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">검색어를 입력해 주세요.</div>';
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <p class="text-sm font-medium text-slate-500">궁금한 아티스트나 트리를 검색해 보세요</p>
+            </div>
+        `;
         updateSearchPagination(0, 0);
         return;
     }
 
     if (!items.length) {
-        container.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">검색 결과가 없습니다.</div>';
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p class="text-sm font-bold text-slate-800 mb-1">'${SEARCH_QUERY}'에 대한 결과가 없습니다</p>
+                <p class="text-xs text-slate-500">다른 검색어를 입력하거나 오타를 확인해 보세요</p>
+            </div>
+        `;
         updateSearchPagination(0, 0);
         return;
     }
@@ -595,27 +615,28 @@ function createArtistCard(artist) {
             </div>
 
             <!-- Thumbnail (Large) -->
-            <div class="aspect-video bg-slate-100 relative">
-                <img src="${thumbnailSrc}" alt="${artist.name}"
-                    class="w-full h-full object-cover"
+            <div class="aspect-video bg-slate-100 relative group/thumb">
+                <img src="${thumbnailSrc}" alt="${artist.name}의 러브트리 썸네일"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-105"
                     loading="lazy"
                     onerror="this.onerror=null; this.src='${DEFAULT_THUMBNAIL}';">
-                <div class="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
-                    <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                        <svg class="w-5 h-5 text-slate-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover/thumb:bg-black/25 transition-colors">
+                    <div class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform group-hover/thumb:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-slate-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                        <span class="sr-only">러브트리 열기</span>
                     </div>
                 </div>
             </div>
 
             <!-- Action Bar -->
-            <div class="px-4 py-3 flex items-center gap-4">
-                <button class="flex items-center gap-1 text-slate-600 hover:text-red-500 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <div class="px-4 py-3 flex items-center gap-4 border-b border-slate-50">
+                <button type="button" class="flex items-center gap-1.5 text-slate-600 hover:text-rose-500 transition-colors group/btn" title="좋아요" aria-label="좋아요">
+                    <svg class="w-6 h-6 group-hover/btn:fill-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                 </button>
-                <button class="flex items-center gap-1 text-slate-600 hover:text-blue-500 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                <button type="button" class="flex items-center gap-1.5 text-slate-600 hover:text-blue-500 transition-colors group/btn" title="댓글" aria-label="댓글">
+                    <svg class="w-6 h-6 group-hover/btn:fill-blue-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                 </button>
-                <button class="flex items-center gap-1 text-slate-600 hover:text-green-500 transition-colors ml-auto">
+                <button type="button" class="flex items-center gap-1.5 text-slate-600 hover:text-emerald-500 transition-colors group/btn ml-auto" title="공유하기" aria-label="공유하기">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                 </button>
             </div>
@@ -866,7 +887,8 @@ async function loadRecentCreatedTrees() {
 
             return `
                 <a href="editor.html?id=${encodeURIComponent(tree.id)}"
-                   class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-colors transition-shadow">
+                   class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-all"
+                   title="${name} 러브트리 보기">
                     <div class="flex items-center gap-3 w-full">
                         <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
                             ${initial}
@@ -985,10 +1007,18 @@ function renderRecentTreesFromList(myTrees) {
     if (!elements.recentTreesScroll || !elements.recentSection) return;
 
     if (!myTrees || myTrees.length === 0) {
-        elements.recentSection.classList.add('hidden');
-        if (elements.recentTreesScroll.children.length === 0) {
-            elements.recentTreesScroll.innerHTML = '<div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>';
-        }
+        // 최근 방문이 없어도 섹션 자체는 보여주되, 시각화된 빈 상태 표시
+        elements.recentSection.classList.remove('hidden');
+        elements.recentTreesScroll.innerHTML = `
+            <div class="flex flex-col items-center justify-start py-2 px-2 min-w-[200px]">
+                <div class="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-2">
+                    <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <span class="text-[11px] font-medium text-slate-400">방문 기록 없음</span>
+            </div>
+        `;
         return;
     }
 
@@ -1041,7 +1071,8 @@ function renderMyTreesGrid(myTrees) {
 
         return `
             <a href="editor.html?id=${encodeURIComponent(tree.id)}"
-               class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-colors transition-shadow">
+               class="flex flex-col items-start gap-2 bg-white/90 rounded-2xl px-4 py-3 shadow-md border border-slate-200/80 ring-1 ring-white/60 backdrop-blur-sm hover:border-brand-400 hover:shadow-lg transition-all"
+               title="${tree.name} 러브트리 계속 편집하기">
                 <div class="flex items-center gap-3 w-full">
                     <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
                         ${initial}
@@ -1074,27 +1105,33 @@ function updateMyCreatedTreesPlaceholder() {
     const loggedIn = !!user;
 
     if (loggedIn) {
-        if (titleEl) titleEl.textContent = isKorean ? '아직 만든 러브트리가 없어요' : 'No LoveTrees yet';
+        if (titleEl) titleEl.textContent = isKorean ? '나만의 러브트리를 시작해 보세요' : 'Start your first LoveTree';
         if (descEl) {
             descEl.textContent = isKorean
-                ? '지금 첫 트리를 만들고, 어디서든 로그인해서 이어서 기록해 보세요.'
-                : 'Create your first tree and keep it synced across devices.';
+                ? '아직 만들어진 트리가 없습니다. 좋아하는 아티스트의 첫 번째 순간을 지금 기록해 보세요!'
+                : 'No trees created yet. Capture the first moment of your favorite artist now!';
         }
 
         if (loginBtn) loginBtn.classList.add('hidden');
-        if (createBtn) createBtn.classList.remove('hidden');
+        if (createBtn) {
+            createBtn.classList.remove('hidden');
+            createBtn.textContent = isKorean ? '+ 첫 트리 만들기' : '+ Create First Tree';
+        }
         if (iconBtn) iconBtn.onclick = openCreateModal;
         return;
     }
 
-    if (titleEl) titleEl.textContent = isKorean ? '로그인하면 나의 러브트리를 볼 수 있어요' : 'Login to see your LoveTrees';
+    if (titleEl) titleEl.textContent = isKorean ? '내 러브트리를 안전하게 보관하세요' : 'Keep your LoveTrees safe';
     if (descEl) {
         descEl.textContent = isKorean
-            ? '내가 만든 트리는 계정에 저장됩니다. 로그인 후 나의 트리를 확인해 보세요.'
-            : 'Your trees are saved to your account. Sign in to view them.';
+            ? '로그인하면 내가 만든 트리를 모든 기기에서 확인하고 관리할 수 있습니다.'
+            : 'Sign in to sync and manage your trees across all your devices.';
     }
 
-    if (loginBtn) loginBtn.classList.remove('hidden');
+    if (loginBtn) {
+        loginBtn.classList.remove('hidden');
+        loginBtn.textContent = isKorean ? '지금 로그인하기' : 'Sign In Now';
+    }
     if (createBtn) createBtn.classList.add('hidden');
     if (iconBtn) {
         iconBtn.onclick = function () {
@@ -1336,9 +1373,6 @@ let elements = {};
 
 // ================== MOBILE SHELL / MENU HELPERS ==================
 
-/**
- * 모바일 햄버거 메뉴 열기/닫기
- */
 function setMobileMenuVisible(visible) {
     const panel = document.getElementById('mobile-menu-panel');
     if (!panel) return;
@@ -1365,54 +1399,6 @@ function scrollToTop() {
     navigateToHome();
 }
 
-function myMenuCloseAndScrollTo(sectionId) {
-    try {
-        if (typeof closeModal === 'function') {
-            closeModal('settings-modal');
-        }
-    } catch (e) {
-    }
-
-    window.setTimeout(function () {
-        const section = document.getElementById(sectionId);
-        if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, 50);
-}
-
-function myMenuGoCommunity() {
-    try {
-        if (typeof closeModal === 'function') {
-            closeModal('settings-modal');
-        }
-    } catch (e) {
-    }
-    window.location.href = 'community.html';
-}
-
-function myMenuGoOwnerConsole() {
-    try {
-        if (typeof closeModal === 'function') {
-            closeModal('settings-modal');
-        }
-    } catch (e) {
-    }
-    window.location.href = 'owner.html';
-}
-
-function myMenuGoTheme() {
-    const modal = document.getElementById('settings-modal');
-    if (!modal) return;
-
-    window.setTimeout(function () {
-        const anchor = document.getElementById('my-theme-anchor');
-        if (anchor && typeof anchor.scrollIntoView === 'function') {
-            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, 50);
-}
-
 function scrollToMyTrees() {
     setMobileMenuVisible(false);
     const section = document.getElementById('my-created-trees-section');
@@ -1426,253 +1412,6 @@ function scrollToAllTrees() {
     const section = document.getElementById('discovery-section');
     if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-}
-
-function collectLocalBackupData() {
-    const data = {
-        meta: {
-            version: '1',
-            createdAt: new Date().toISOString(),
-            prefix: 'relovetree_'
-        },
-        items: {}
-    };
-
-    try {
-        if (typeof localStorage === 'undefined') return data;
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (!key) continue;
-            if (!key.startsWith('relovetree_')) continue;
-            data.items[key] = localStorage.getItem(key);
-        }
-    } catch (e) {
-        console.error('로컬 백업 데이터 수집 실패:', e);
-    }
-
-    return data;
-}
-
-function exportLocalBackup() {
-    try {
-        const backup = collectLocalBackupData();
-        const json = JSON.stringify(backup, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `relovetree-backup-${Date.now()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        window.setTimeout(function () {
-            URL.revokeObjectURL(url);
-        }, 500);
-    } catch (e) {
-        console.error('백업 파일 저장 실패:', e);
-        try {
-            showError('백업 파일 저장에 실패했습니다.', 5000);
-        } catch (err) {
-        }
-    }
-}
-
-function triggerImportLocalBackup() {
-    const input = document.getElementById('local-backup-file');
-    if (!input) return;
-    input.value = '';
-
-    try {
-        input.onchange = function () {
-            const file = input.files && input.files[0];
-            if (!file) return;
-            importLocalBackupFromFile(file);
-        };
-    } catch (e) {
-    }
-
-    input.click();
-}
-
-function importLocalBackupFromFile(file) {
-    try {
-        if (!file) return;
-
-        const ok = window.confirm('백업 파일을 불러오면, 현재 기기의 relovetree_* 데이터가 모두 삭제되고 백업으로 덮어씌워집니다. 계속할까요?');
-        if (!ok) return;
-
-        const reader = new FileReader();
-        reader.onload = function () {
-            try {
-                const text = String(reader.result || '');
-                const parsed = JSON.parse(text);
-
-                if (!parsed || typeof parsed !== 'object' || !parsed.items || typeof parsed.items !== 'object') {
-                    showError('백업 파일 형식이 올바르지 않습니다.', 5000);
-                    return;
-                }
-
-                const keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && key.startsWith('relovetree_')) keysToRemove.push(key);
-                }
-                keysToRemove.forEach((k) => localStorage.removeItem(k));
-
-                Object.keys(parsed.items).forEach((k) => {
-                    if (!k || !k.startsWith('relovetree_')) return;
-                    const v = parsed.items[k];
-                    if (typeof v !== 'string') return;
-                    localStorage.setItem(k, v);
-                });
-
-                window.location.reload();
-            } catch (e) {
-                console.error('백업 파일 불러오기 실패:', e);
-                try {
-                    showError('백업 파일 불러오기에 실패했습니다.', 5000);
-                } catch (err) {
-                }
-            }
-        };
-        reader.readAsText(file);
-    } catch (e) {
-        console.error('백업 파일 불러오기 실패:', e);
-    }
-}
-
-// ================== BACKGROUND PREFERENCES ==================
-
-const BG_STORAGE_KEY = 'relovetree_background';
-
-function applyBackgroundConfig(config) {
-    const body = document.body;
-    if (!body || !config) return;
-
-    if (config.type === 'image' && config.value) {
-        body.style.backgroundImage = `url('${config.value}')`;
-        body.style.backgroundSize = 'cover';
-        body.style.backgroundPosition = 'center';
-        body.style.backgroundRepeat = 'no-repeat';
-        // 이미지 배경을 사용할 때는 단색 배경 색상은 초기화
-        body.style.backgroundColor = '';
-    } else if (config.type === 'color' && config.value) {
-        // CSS에서 설정된 기본 배경 이미지를 완전히 끄기 위해 none으로 지정
-        body.style.backgroundImage = 'none';
-        body.style.backgroundColor = config.value;
-    }
-}
-
-function setBackground(type, value) {
-    const config = { type, value };
-    applyBackgroundConfig(config);
-    safeLocalStorageSet(BG_STORAGE_KEY, config);
-}
-
-function resetBackground() {
-    const defaultConfig = { type: 'color', value: '#f8fafc' };
-    applyBackgroundConfig(defaultConfig);
-    safeLocalStorageRemove(BG_STORAGE_KEY);
-}
-
-function applyCustomBackground() {
-    const input = document.getElementById('custom-bg-url');
-    if (!input) return;
-    const url = input.value.trim();
-    if (!url) return;
-    setBackground('image', url);
-}
-
-function loadBackgroundPreference() {
-    const saved = safeLocalStorageGet(BG_STORAGE_KEY, null);
-    if (saved && (saved.type === 'image' || saved.type === 'color')) {
-        applyBackgroundConfig(saved);
-    }
-}
-
-// === Local file background helpers ===
-
-function processBackgroundFile(file) {
-    if (!file) return;
-    if (!file.type || !file.type.startsWith('image/')) {
-        alert('이미지 파일만 업로드할 수 있습니다.');
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const result = e.target && e.target.result;
-        if (typeof result === 'string') {
-            // data URL을 그대로 background 이미지로 사용
-            setBackground('image', result);
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-function triggerBackgroundFileInput() {
-    const input = document.getElementById('custom-bg-file');
-    if (input) {
-        input.click();
-    }
-}
-
-function handleBackgroundFileChange(event) {
-    const input = event.target;
-    if (!input || !input.files || input.files.length === 0) return;
-    const file = input.files[0];
-    processBackgroundFile(file);
-}
-
-function initBackgroundFileControls() {
-    const dropzone = document.getElementById('custom-bg-dropzone');
-    const fileInput = document.getElementById('custom-bg-file');
-
-    if (fileInput) {
-        fileInput.addEventListener('change', handleBackgroundFileChange);
-    }
-
-    if (!dropzone) return;
-
-    const highlight = () => dropzone.classList.add('bg-slate-100');
-    const unhighlight = () => dropzone.classList.remove('bg-slate-100');
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            highlight();
-        });
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            unhighlight();
-        });
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        if (!dt || !dt.files || dt.files.length === 0) return;
-        const file = dt.files[0];
-        processBackgroundFile(file);
-    });
-}
-
-function openSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    if (!modal) return;
-
-    if (typeof modal.showModal === 'function') {
-        modal.showModal();
-    } else {
-        // showModal을 지원하지 않는 경우 fallback
-        modal.setAttribute('open', 'open');
     }
 }
 
@@ -1728,12 +1467,12 @@ function initPage() {
         const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
         const searchBtn = document.getElementById('search-btn');
 
-        if (settingsBtn) {
-            settingsBtn.addEventListener('click', openSettingsModal);
+        if (settingsBtn && typeof homeSettings.openSettingsModal === 'function') {
+            settingsBtn.addEventListener('click', homeSettings.openSettingsModal);
         }
 
-        if (mobileSettingsBtn) {
-            mobileSettingsBtn.addEventListener('click', openSettingsModal);
+        if (mobileSettingsBtn && typeof homeSettings.openSettingsModal === 'function') {
+            mobileSettingsBtn.addEventListener('click', homeSettings.openSettingsModal);
         }
 
         if (searchBtn) {
@@ -1751,7 +1490,9 @@ function initPage() {
         }
 
         // 배경 파일 업로드/드래그앤드롭 컨트롤 초기화
-        initBackgroundFileControls();
+        if (typeof homeSettings.initBackgroundFileControls === 'function') {
+            homeSettings.initBackgroundFileControls();
+        }
 
     } catch (error) {
         console.error('Page initialization error:', error);
@@ -1767,11 +1508,15 @@ function initPage() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initPage();
-        loadBackgroundPreference();
+        if (typeof homeSettings.loadBackgroundPreference === 'function') {
+            homeSettings.loadBackgroundPreference();
+        }
     });
 } else {
     initPage();
-    loadBackgroundPreference();
+    if (typeof homeSettings.loadBackgroundPreference === 'function') {
+        homeSettings.loadBackgroundPreference();
+    }
 }
 
 // Handle page visibility change for performance
@@ -1814,7 +1559,6 @@ window.toggleMobileMenu = toggleMobileMenu;
 window.navigateToHome = navigateToHome;
 window.scrollToMyTrees = scrollToMyTrees;
 window.scrollToAllTrees = scrollToAllTrees;
-window.openSettingsModal = openSettingsModal;
 window.openSearchModal = openSearchModal;
 window.closeSearchModal = closeSearchModal;
 window.openSearchModalFromMy = openSearchModalFromMy;
@@ -1822,9 +1566,6 @@ window.setSearchMode = setSearchMode;
 window.runSearchFromUI = runSearchFromUI;
 window.searchPrevPage = searchPrevPage;
 window.searchNextPage = searchNextPage;
-window.loadBackgroundPreference = loadBackgroundPreference;
-window.triggerBackgroundFileInput = triggerBackgroundFileInput;
-window.initBackgroundFileControls = initBackgroundFileControls;
 window.migrateLocalTreesToAccount = migrateLocalTreesToAccount;
 // Auth 모듈에서 호출하는 전역 콜백: 로그인/로그아웃 시점에 최근 트리 목록을 갱신
 window.onAuthReady = function (user) {

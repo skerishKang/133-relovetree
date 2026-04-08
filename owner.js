@@ -1205,13 +1205,6 @@ function bindOwnerEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    if (typeof initApp === 'function') {
-        initApp();
-    }
-    if (typeof initAuth === 'function') {
-        initAuth();
-    }
-
     const urlState = parseOwnerUiStateFromUrl();
     if (urlState && urlState.hasAny) {
         loadOwnerUiStateFromStorage();

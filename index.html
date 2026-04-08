@@ -49,8 +49,8 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="src/firebase-firestore-compat.js"></script>
 
     <!-- Critical CSS for performance -->
     <style>
@@ -72,13 +72,29 @@
         body {
             background-color: #f8fafc;
             /* 배경 이미지 공통 적용 */
-            background-image: var(--main-bg-image);
+            background-image: linear-gradient(rgba(248, 250, 252, 0.8), rgba(248, 250, 252, 0.4)), var(--main-bg-image);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
 
             font-display: swap;
+        }
+
+        /* Nav enhancement */
+        nav.sticky {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(12px) !important;
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Hero enhancement */
+        .hero-gradient {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(248, 250, 252, 0.5) 100%);
+        }
+
+        .text-shadow-sm {
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
 
         /* 전체 페이지에서 가로 스크롤 방지 */
@@ -442,11 +458,11 @@
     </div>
 
     <!-- Nav -->
-    <nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40" role="navigation"
+    <nav id="main-nav" class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40 transition-all duration-300" role="navigation"
         aria-label="메인 네비게이션">
         <div id="nav-inner" class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <a href="index.html" class="flex items-center gap-3 hover:opacity-95 transition">
+                <a href="index.html" class="flex items-center gap-3 hover:opacity-95 transition" title="홈으로 이동">
                     <div
                         class="w-8 h-8 rounded-2xl bg-brand-500 text-white text-sm font-bold flex items-center justify-center shadow-sm"
                         aria-hidden="true">
@@ -458,33 +474,33 @@
                     </div>
                 </a>
                 <a href="community.html"
-                    class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600">
+                    class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">
                     커뮤니티
                 </a>
                 <a href="owner.html"
-                    class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600">
+                    class="inline-flex items-center text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">
                     내 트리 관리
                 </a>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
                 <button id="search-btn" type="button"
-                    class="flex items-center justify-center w-9 h-9 rounded-full bg-white/80 border border-slate-200 shadow-sm hover:bg-slate-100 text-slate-600 hover:text-brand-600 transition-colors"
-                    title="검색" aria-label="검색">
+                    class="flex items-center justify-center w-11 h-11 rounded-full bg-white/80 border border-slate-200 shadow-sm hover:bg-slate-100 text-slate-600 hover:text-brand-600 transition-all focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    title="러브트리 검색" aria-label="러브트리 검색">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </button>
                 <button id="mobile-menu-btn" type="button"
-                    class="hidden w-9 h-9 rounded-full bg-white/80 border border-slate-200 items-center justify-center shadow-sm hover:bg-slate-100"
+                    class="hidden w-11 h-11 rounded-full bg-white/80 border border-slate-200 items-center justify-center shadow-sm hover:bg-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     onclick="toggleMobileMenu()" aria-label="메뉴 열기">
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full mb-1"></span>
                     <span class="block w-4 h-[1.5px] bg-slate-700 rounded-full"></span>
                 </button>
                 <button id="settings-btn" type="button"
-                    class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-colors"
-                    title="마이" aria-label="마이">
+                    class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-all focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    title="마이페이지 및 설정" aria-label="마이페이지 및 설정">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -532,39 +548,37 @@
             <!-- Main Content Area -->
             <main class="flex-1 max-w-7xl mx-auto w-full pb-10" id="main-content">
 
-                <header class="px-4 pt-6 mb-6 sm:pt-8 sm:mb-10">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 border border-white/80 shadow-sm animate-slide-up">
-                        <span class="w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] flex items-center justify-center font-bold">
+                <header class="px-4 pt-8 mb-8 sm:pt-12 sm:mb-12 text-center sm:text-left relative z-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-white shadow-md animate-slide-up">
+                        <span class="w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
                             ♥
                         </span>
-                        <span class="text-[11px] font-semibold tracking-wide text-slate-600">나의 덕질 타임라인</span>
+                        <span class="text-[11px] font-bold tracking-wider text-brand-600 uppercase">My Lovetree Timeline</span>
                     </div>
-                    <h1 class="mt-3 text-responsive-xl font-extrabold tracking-tight text-slate-900 animate-slide-up" id="page-title">
-                        사랑에 빠진 모든 순간을 기록해 보세요
+                    <h1 class="mt-5 text-responsive-xl font-extrabold tracking-tight text-slate-900 animate-slide-up text-shadow-sm" id="page-title">
+                        사랑에 빠진 모든 순간을<br class="sm:hidden"> 기록해 보세요
                     </h1>
-                    <p class="mt-2 max-w-2xl text-sm sm:text-base text-slate-600 animate-slide-up" id="page-subtitle">
-                        나의 러브트리로 좋아하는 아티스트의 모든 순간을 한 곳에 차곡차곡 모아 보세요.
+                    <p class="mt-3 max-w-2xl text-sm sm:text-lg text-slate-700 font-medium animate-slide-up leading-relaxed text-shadow-sm" id="page-subtitle">
+                        나의 러브트리로 좋아하는 아티스트의 모든 순간을<br class="hidden sm:block"> 한 곳에 차곡차곡 모아 보세요.
                     </p>
                 </header>
 
                 <!-- 3. Recent Visits (최근 방문한 트리) - Renamed from Hero -->
                 <section id="recent-section" class="px-4 mb-12">
-                    <div
-                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                    <div class="section-shell">
                         <h2 class="text-xl font-bold text-slate-900 mb-4">최근 방문한 트리</h2>
 
                         <!-- Horizontal Scroll Container -->
                         <div id="recent-trees-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x custom-scrollbar">
                             <!-- Items injected by JS -->
-                            <div class="text-sm text-slate-400 py-4 px-2">최근 방문 기록이 없습니다.</div>
+                            <div class="empty-state-inline">최근 방문 기록이 없습니다.</div>
                         </div>
                     </div>
                 </section>
 
                 <!-- 1. Trending Section (지금 뜨는 러브트리) - Moved to Top -->
                 <section id="discovery-section" class="px-4 mb-12">
-                    <div
-                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                    <div class="section-shell">
                         <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
                             <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -581,34 +595,32 @@
 
                 <!-- 2. My Created Trees (나의 러브트리) - New Section -->
                 <section id="my-created-trees-section" class="px-4 mb-12">
-                    <div
-                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                    <div class="section-shell">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-xl font-bold text-slate-900">나의 러브트리</h2>
                             <button onclick="openCreateModal()"
-                                class="px-3 py-1.5 rounded-full border border-brand-400 bg-white/80 text-brand-500 text-xs sm:text-sm font-bold shadow-sm hover:bg-brand-50 hover:border-brand-500 transition-colors">+ 만들기</button>
+                                class="ui-btn ui-btn-secondary ui-btn-pill ui-btn-sm border-brand-400 bg-white/80 text-brand-500 hover:border-brand-500 hover:bg-brand-50">+ 만들기</button>
                         </div>
 
                         <!-- Placeholder for Logged In/Out State -->
-                        <div id="my-created-list"
-                            class="bg-white/80 rounded-2xl p-8 text-center border border-white/60 shadow-md backdrop-blur-sm">
+                        <div id="my-created-list" class="empty-state">
                             <button id="my-created-placeholder-icon" type="button" onclick="openCreateModal()"
-                                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-transparent">
+                                class="empty-state-icon">
                                 <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
                                 </svg>
                             </button>
-                            <h3 id="my-created-placeholder-title" class="text-lg font-bold text-slate-900 mb-2">첫 러브트리를 만들어보세요</h3>
-                            <p id="my-created-placeholder-desc" class="text-slate-500 mb-6 text-sm">좋아하는 아티스트와의 추억을
+                            <h3 id="my-created-placeholder-title" class="empty-state-title">첫 러브트리를 만들어보세요</h3>
+                            <p id="my-created-placeholder-desc" class="empty-state-desc">좋아하는 아티스트와의 추억을
                                 나만의 트리로 정리해 보세요.</p>
-                            <div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                            <div class="empty-state-actions">
                                 <button id="my-created-login-btn" type="button" onclick="openSettingsModal()"
-                                    class="bg-brand-500 text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-brand-600 transition-colors hidden">
+                                    class="ui-btn ui-btn-primary ui-btn-pill hidden">
                                     로그인
                                 </button>
                                 <button id="my-created-create-btn" type="button" onclick="openCreateModal()"
-                                    class="bg-white border border-slate-300 text-slate-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">
+                                    class="ui-btn ui-btn-secondary ui-btn-pill border-slate-300">
                                     새로 만들기
                                 </button>
                             </div>
@@ -621,7 +633,7 @@
                         </div>
 
                         <div id="local-migration-banner"
-                            class="mt-4 hidden bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            class="notice-banner notice-banner-warn notice-banner-actions mt-4 hidden">
                             <div>
                                 <p class="font-semibold">이 기기에만 저장된 러브트리가 있습니다.</p>
                                 <p id="local-migration-text" class="text-xs text-amber-700">
@@ -629,7 +641,7 @@
                                 </p>
                             </div>
                             <button onclick="migrateLocalTreesToAccount()"
-                                class="px-3 py-1.5 rounded-full bg-amber-600 text-white text-xs font-bold hover:bg-amber-700">
+                                class="ui-btn ui-btn-sm ui-btn-pill bg-amber-600 text-white hover:bg-amber-700">
                                 계정으로 가져오기
                             </button>
                         </div>
@@ -637,11 +649,10 @@
                 </section>
 
                 <section id="recent-created-section" class="px-4 mb-8">
-                    <div
-                        class="rounded-2xl border border-white/80 bg-transparent backdrop-blur-sm shadow-lg px-4 py-5 sm:px-6 sm:py-6">
+                    <div class="section-shell">
                         <h2 class="text-xl font-bold text-slate-900 mb-4">최근 만들어진 러브트리</h2>
                         <div id="recent-created-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                            <div class="text-sm text-slate-400 py-4 px-2">아직 만들어진 러브트리가 없습니다.</div>
+                            <div class="empty-state-inline">아직 만들어진 러브트리가 없습니다.</div>
                         </div>
                     </div>
                 </section>
@@ -738,11 +749,11 @@
                     </p>
                 </div>
                 <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeModal('create-modal')"
-                        class="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
+                <button type="button" onclick="closeModal('create-modal')"
+                        class="ui-btn ui-btn-soft px-5 py-2.5 font-medium"
                         id="btn-cancel">취소</button>
-                    <button type="submit"
-                        class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:scale-105"
+                <button type="submit"
+                        class="ui-btn ui-btn-primary px-5 py-2.5 shadow-lg shadow-brand-500/30 hover:scale-105 transition-all transform"
                         id="btn-start">시작하기</button>
                 </div>
             </form>
@@ -764,26 +775,26 @@
                 <input id="search-input" type="text" placeholder="아티스트/트리 이름 검색..."
                     class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm" />
                 <button type="button" onclick="runSearchFromUI()"
-                    class="px-4 py-2 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-700 transition-colors">검색</button>
+                    class="ui-btn ui-btn-dark">검색</button>
             </div>
 
             <div class="flex gap-2 mb-4">
                 <button id="search-tab-all" type="button" onclick="setSearchMode('all')"
-                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">전체</button>
+                    class="action-chip">전체</button>
                 <button id="search-tab-my" type="button" onclick="setSearchMode('my')"
-                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">내 트리</button>
+                    class="action-chip">내 트리</button>
             </div>
 
             <div id="search-result" class="space-y-2">
-                <div class="text-sm text-slate-400 py-4 px-2">검색어를 입력해 주세요.</div>
+                <div class="empty-state-inline">검색어를 입력해 주세요.</div>
             </div>
 
             <div id="search-pagination" class="mt-4 flex items-center justify-between gap-2 hidden">
                 <button type="button" onclick="searchPrevPage()"
-                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">이전</button>
+                    class="action-chip">이전</button>
                 <div id="search-page-info" class="text-xs text-slate-500"></div>
                 <button type="button" onclick="searchNextPage()"
-                    class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-bold hover:bg-slate-50">다음</button>
+                    class="action-chip">다음</button>
             </div>
         </div>
     </dialog>
@@ -804,15 +815,15 @@
 
             <div class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">계정</label>
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <label class="settings-section-label">계정</label>
+                    <div class="settings-card">
                         <div class="flex flex-col gap-2">
                             <button id="login-btn" type="button"
-                                class="w-full px-4 py-3 bg-brand-500 text-white text-sm font-bold rounded-xl hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/20">
+                                class="ui-btn ui-btn-primary w-full">
                                 구글로 로그인
                             </button>
                             <a id="email-login-link" href="login.html"
-                                class="w-full px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-center">
+                                class="ui-btn ui-btn-secondary w-full">
                                 이메일로 로그인
                             </a>
 
@@ -831,7 +842,7 @@
                                     </a>
                                 </div>
                                 <button id="logout-btn" type="button"
-                                    class="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-50 hover:text-red-500 transition-colors">
+                                    class="ui-btn ui-btn-secondary w-full text-slate-600 hover:text-red-500">
                                     로그아웃
                                 </button>
                             </div>
@@ -843,34 +854,34 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">메뉴</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <label class="settings-section-label">메뉴</label>
+                    <div class="action-row">
                         <button type="button" onclick="openSearchModalFromMy()"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left sm:col-span-2">
+                            class="action-tile action-row-single">
                             검색
                         </button>
                         <button type="button" onclick="myMenuCloseAndScrollTo('recent-section')"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             최근 방문한 트리
                         </button>
                         <button type="button" onclick="myMenuCloseAndScrollTo('discovery-section')"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             지금 뜨는 러브트리
                         </button>
                         <button type="button" onclick="myMenuCloseAndScrollTo('my-created-trees-section')"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             내 러브트리
                         </button>
                         <button type="button" onclick="myMenuGoOwnerConsole()"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             내 트리 관리
                         </button>
                         <button type="button" onclick="myMenuGoCommunity()"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             커뮤니티
                         </button>
                         <button type="button" onclick="myMenuGoTheme()"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left sm:col-span-2">
+                            class="action-tile action-row-single">
                             테마 설정
                         </button>
                     </div>
@@ -879,54 +890,54 @@
                 <!-- Presets -->
                 <div>
                     <div id="my-theme-anchor"></div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">추천 배경</label>
-                    <div class="grid grid-cols-3 gap-3">
+                    <label class="settings-section-label">추천 배경</label>
+                    <div class="settings-swatch-grid">
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop')"
-                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            class="settings-swatch group">
                             <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=200&auto=format&fit=crop"
                                 class="w-full h-full object-cover" alt="Beach">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')"
-                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            class="settings-swatch group">
                             <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200&auto=format&fit=crop"
                                 class="w-full h-full object-cover" alt="Space">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=2592&auto=format&fit=crop')"
-                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            class="settings-swatch group">
                             <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=200&auto=format&fit=crop"
                                 class="w-full h-full object-cover" alt="Nature">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop')"
-                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            class="settings-swatch group">
                             <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=200&auto=format&fit=crop"
                                 class="w-full h-full object-cover" alt="City">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2072&auto=format&fit=crop')"
-                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            class="settings-swatch group">
                             <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=200&auto=format&fit=crop"
                                 class="w-full h-full object-cover" alt="Sunset">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            <div class="settings-swatch-overlay">
                             </div>
                         </button>
                         <button
                             onclick="setBackground('image', 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop')"
-                            class="aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all relative group">
+                            class="settings-swatch group">
                             <img src="https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=200&auto=format&fit=crop"
                                 class="w-full h-full object-cover" alt="Abstract">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors">
+                            <div class="settings-swatch-overlay">
                             </div>
                         </button>
                     </div>
@@ -934,25 +945,25 @@
 
                 <!-- Solid Colors -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">단색 배경</label>
-                    <div class="flex gap-3 flex-wrap">
+                    <label class="settings-section-label">단색 배경</label>
+                    <div class="settings-color-row">
                         <button onclick="setBackground('color', '#f8fafc')"
-                            class="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            class="settings-color-chip bg-slate-50 border-slate-200"
                             title="기본 (Slate 50)"></button>
                         <button onclick="setBackground('color', '#ffffff')"
-                            class="w-10 h-10 rounded-full bg-white border border-slate-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            class="settings-color-chip bg-white border-slate-200"
                             title="화이트"></button>
                         <button onclick="setBackground('color', '#1e293b')"
-                            class="w-10 h-10 rounded-full bg-slate-800 border border-slate-600 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            class="settings-color-chip bg-slate-800 border-slate-600"
                             title="다크"></button>
                         <button onclick="setBackground('color', '#fdf2f8')"
-                            class="w-10 h-10 rounded-full bg-pink-50 border border-pink-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            class="settings-color-chip bg-pink-50 border-pink-200"
                             title="핑크"></button>
                         <button onclick="setBackground('color', '#f0f9ff')"
-                            class="w-10 h-10 rounded-full bg-sky-50 border border-sky-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            class="settings-color-chip bg-sky-50 border-sky-200"
                             title="스카이"></button>
                         <button onclick="setBackground('color', '#f0fdf4')"
-                            class="w-10 h-10 rounded-full bg-green-50 border border-green-200 hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            class="settings-color-chip bg-green-50 border-green-200"
                             title="그린"></button>
                     </div>
                 </div>
@@ -960,19 +971,19 @@
                 <!-- Custom URL -->
                 <div>
                     <label for="custom-bg-url"
-                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">이미지 주소 직접
+                        class="settings-section-label mb-2">이미지 주소 직접
                         입력</label>
-                    <div class="flex gap-2">
+                    <div class="settings-input-row">
                         <input type="url" id="custom-bg-url" placeholder="https://..."
-                            class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+                            class="input-field flex-1 text-sm">
                         <button onclick="applyCustomBackground()"
-                            class="px-4 py-2 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-700 transition-colors">적용</button>
+                            class="ui-btn ui-btn-dark">적용</button>
                     </div>
                     <!-- Local file upload / drag & drop -->
                     <div class="mt-3 space-y-2">
                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">또는 내 컴퓨터에서 선택</p>
                         <div id="custom-bg-dropzone" onclick="triggerBackgroundFileInput()"
-                            class="flex flex-col items-center justify-center px-4 py-5 border border-dashed border-slate-300 rounded-xl bg-slate-50/70 hover:bg-slate-100 cursor-pointer text-xs text-slate-500 transition-colors">
+                            class="settings-dropzone">
                             <span class="mb-1 font-medium">이미지 파일을 끌어다 놓거나 클릭해서 선택하세요</span>
                             <span class="text-[11px] text-slate-400">JPG, PNG 등 이미지 파일 지원</span>
                         </div>
@@ -981,29 +992,28 @@
                 </div>
 
                 <!-- Pro Upgrade -->
-                <div class="pt-4 border-t border-slate-100 mb-4">
-                    <div class="bg-gradient-to-r from-brand-500 to-pink-500 rounded-xl p-4 text-white shadow-lg">
+                <div class="settings-section mb-4">
+                    <div class="settings-upgrade-card">
                         <div class="flex justify-between items-center mb-2">
                             <h4 class="font-bold text-lg">Pro 멤버십</h4>
-                            <span class="bg-white/20 px-2 py-0.5 rounded text-xs font-bold">Best</span>
+                            <span class="settings-upgrade-badge">Best</span>
                         </div>
-                        <p class="text-white/90 text-sm mb-3">무제한 트리 생성과 프리미엄 테마를 이용해보세요.</p>
-                        <button onclick="handleProUpgrade()"
-                            class="w-full py-2 bg-white text-brand-600 font-bold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
-                            지금 업그레이드 (₩9,900)
+                        <p class="text-white/90 text-sm mb-3">무제한 트리 생성과 프리미엄 테마를 신청하고, 서버 확인 후 혜택을 반영합니다.</p>
+                        <button onclick="handleProUpgrade()" class="settings-upgrade-action">
+                            Pro 신청하기 (₩9,900)
                         </button>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">백업</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="settings-section">
+                    <label class="settings-section-label">백업</label>
+                    <div class="action-row">
                         <button type="button" onclick="exportLocalBackup()"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             백업 파일 저장
                         </button>
                         <button type="button" onclick="triggerImportLocalBackup()"
-                            class="px-4 py-3 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors text-left">
+                            class="action-tile">
                             백업 파일 불러오기
                         </button>
                     </div>
@@ -1012,9 +1022,8 @@
                 </div>
 
                 <!-- Reset -->
-                <div class="pt-4 border-t border-slate-100">
-                    <button onclick="resetBackground()"
-                        class="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors">
+                <div class="settings-section">
+                    <button onclick="resetBackground()" class="settings-reset-btn">
                         기본 배경으로 초기화
                     </button>
                 </div>
@@ -1023,10 +1032,30 @@
     </dialog>
 
     <!-- JavaScript Modules -->
-    <script src="index.js"></script>
+    <script src="src/shared-storage.js"></script>
+    <script src="src/shared-dom.js"></script>
+    <script src="src/shared-theme.js"></script>
+    <script src="src/shared-layout.js"></script>
     <script src="src/shared.js"></script>
+    <script src="src/index-settings.js"></script>
+    <script src="index.js"></script>
     <script src="src/auth.js"></script>
     <script src="src/payment.js"></script>
+    <!-- Scroll Script -->
+    <script>
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            if (window.scrollY > 20) {
+                nav.classList.add('sticky');
+                nav.classList.remove('bg-white/80');
+                nav.classList.add('bg-white/95');
+            } else {
+                nav.classList.remove('sticky');
+                nav.classList.add('bg-white/80');
+                nav.classList.remove('bg-white/95');
+            }
+        });
+    </script>
 </body>
 
 </html>
