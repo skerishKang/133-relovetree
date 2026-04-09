@@ -1,6 +1,39 @@
 (function () {
     const STORAGE_PREFIX = 'relovetree_data_';
 
+    function normalizeTreeDisplayName(treeId, name) {
+        if (!name || typeof name !== 'string') {
+            name = '';
+        }
+        
+        const trimmedName = name.trim();
+        
+        if (!trimmedName) {
+            if (treeId && treeId.startsWith('fork-source-')) {
+                return '가져온 러브트리';
+            }
+            if (treeId && treeId.length > 20) {
+                return '나의 러브트리';
+            }
+            return decodeURIComponent(treeId || '나의 트리');
+        }
+        
+        if (trimmedName === treeId) {
+            if (treeId && treeId.startsWith('fork-source-')) {
+                return '가져온 러브트리';
+            }
+            if (treeId && treeId.length > 20) {
+                return '나의 러브트리';
+            }
+        }
+        
+        if (treeId && treeId.startsWith('fork-source-') && trimmedName.startsWith('fork-source-')) {
+            return '가져온 러브트리';
+        }
+        
+        return trimmedName;
+    }
+
     function loadRecentTreesFromLocalStorage() {
         const myTrees = [];
 
@@ -12,9 +45,18 @@
                     const data = JSON.parse(localStorage.getItem(key));
 
                     if (data && (data.nodes || data.edges)) {
+                        const normalizedName = normalizeTreeDisplayName(treeId, data.name);
+                        
+                        if (data.name && data.name !== normalizedName) {
+                            data.name = normalizedName;
+                            try {
+                                localStorage.setItem(key, JSON.stringify(data));
+                            } catch (e) {}
+                        }
+                        
                         myTrees.push({
                             id: treeId,
-                            name: data.name || decodeURIComponent(treeId),
+                            name: normalizedName,
                             lastUpdated: data.lastUpdated || new Date().toISOString(),
                             nodeCount: (data.nodes || []).length
                         });
@@ -43,9 +85,12 @@
         const viewCount = typeof data.viewCount === 'number' ? data.viewCount : 0;
         const shareCount = typeof data.shareCount === 'number' ? data.shareCount : 0;
 
+        const rawName = data.name || decodeURIComponent(doc.id);
+        const normalizedName = normalizeTreeDisplayName(doc.id, rawName);
+
         return {
             id: doc.id,
-            name: data.name || decodeURIComponent(doc.id),
+            name: normalizedName,
             lastUpdated,
             nodeCount,
             likeCount,
@@ -195,6 +240,7 @@
         loadRecentCreatedTreesFromFirestore,
         countLocalOnlyTrees,
         migrateLocalTrees,
-        buildTreeFromFirestoreDoc
+        buildTreeFromFirestoreDoc,
+        normalizeTreeDisplayName
     };
 })();

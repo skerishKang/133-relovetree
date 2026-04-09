@@ -83,8 +83,15 @@
 
         if (!loadedData) {
             console.log('New tree created for ID:', runtime.treeId);
+            let defaultTreeName = '나의 러브트리';
+            if (currentTreeId) {
+                const decoded = decodeURIComponent(currentTreeId);
+                if (decoded && decoded.length <= 20 && !decoded.match(/^[a-zA-Z0-9_-]+$/)) {
+                    defaultTreeName = decoded;
+                }
+            }
             loadedData = {
-                name: currentTreeId ? decodeURIComponent(currentTreeId) : 'My Tree',
+                name: defaultTreeName,
                 nodes: [
                     {
                         id: 1,
