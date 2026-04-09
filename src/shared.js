@@ -240,7 +240,11 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // Auto-initialize when DOM is ready
-if (typeof document !== 'undefined') {
+if (typeof window !== 'undefined') {
+    // Initialize primary services immediately to avoid race conditions with other scripts
+    initFirebase();
+    initFirebaseAppCheck();
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initApp);
     } else {

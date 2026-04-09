@@ -171,7 +171,7 @@ async function signOut() {
  * @param {number} maxRetries - Maximum retry attempts
  */
 async function syncUserToDatabase(user, retryCount = 0, maxRetries = 2) {
-  const db = firebase.firestore();
+  const db = window.postgresDB;
   const userRef = db.collection('users').doc(user.uid);
   const fallbackDisplayName = user.displayName || user.email || '사용자';
 
@@ -254,7 +254,8 @@ function updateLoginUI(user) {
  */
 async function checkAdminRole(user) {
     try {
-        const doc = await firebase.firestore().collection('users').doc(user.uid).get();
+        const db = window.postgresDB;
+        const doc = await db.collection('users').doc(user.uid).get();
         return doc.exists && doc.data().role === 'admin';
     } catch (e) {
         return false;

@@ -408,8 +408,9 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
         return 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
     }
 
+    const firestoreInstance = new FirestoreCompat();
     const firestoreFactory = function () {
-        return new FirestoreCompat();
+        return firestoreInstance;
     };
 
     firestoreFactory.FieldValue = {
@@ -432,4 +433,8 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
     };
 
     firebase.firestore = firestoreFactory;
+
+    if (typeof window !== 'undefined') {
+        window.postgresDB = firestoreInstance;
+    }
 })();
