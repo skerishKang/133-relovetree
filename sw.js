@@ -3,6 +3,12 @@ const CACHE_NAME = 'relovetree-pwa-v5';
 const PRECACHE_URLS = [
   '/index.html',
   '/assets/css/app.css',
+  '/assets/css/app-base.css',
+  '/assets/css/app-nav.css',
+  '/assets/css/app-buttons.css',
+  '/assets/css/app-modal.css',
+  '/assets/css/app-feedback.css',
+  '/assets/css/app-utils.css',
   '/assets/css/index.css',
   '/pages/editor.html',
   '/assets/css/editor-core.css',

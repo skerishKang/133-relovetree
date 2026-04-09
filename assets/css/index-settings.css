@@ -1,0 +1,260 @@
+/* Settings Modal Styles */
+
+.settings-close-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.settings-section-pane-spaced {
+  margin-bottom: 1rem;
+}
+
+.settings-section-stack {
+  gap: 1rem;
+}
+
+.settings-section-block,
+.settings-section-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.settings-section-label,
+.settings-upload-label {
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.settings-label-tight {
+  margin-bottom: -0.2rem;
+}
+
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  border-radius: 1.15rem;
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.settings-auth-buttons,
+.settings-profile-row,
+.settings-input-row,
+.settings-upgrade-head,
+.settings-upgrade-footer,
+.action-row,
+.modal-actions-spacious {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settings-auth-buttons {
+  flex-wrap: wrap;
+}
+
+.settings-auth-btn {
+  flex: 1 1 11rem;
+}
+
+.settings-profile-row {
+  justify-content: space-between;
+}
+
+.settings-profile-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.settings-profile-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  object-fit: cover;
+  background: rgba(226, 232, 240, 0.85);
+}
+
+.settings-profile-text {
+  min-width: 0;
+}
+
+.settings-profile-name {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.settings-profile-meta,
+.settings-card-note,
+.settings-note,
+.settings-upload-help {
+  color: #64748b;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.settings-inline-link {
+  color: #e11d48;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.settings-action-grid,
+.settings-backup-grid {
+  flex-wrap: wrap;
+}
+
+.action-row-single,
+.settings-action-wide {
+  width: 100%;
+}
+
+.action-tile {
+  flex: 1 1 10rem;
+  min-height: 3.25rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.action-tile:hover {
+  transform: translateY(-1px);
+  border-color: rgba(244, 63, 94, 0.2);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+.settings-preset-grid,
+.settings-color-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.settings-preset-btn,
+.settings-color-btn {
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.settings-swatch-overlay {
+  position: absolute;
+  inset: auto 0 0;
+  min-height: 22%;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.35) 100%);
+}
+
+.settings-color-btn {
+  min-height: 3rem;
+}
+
+.settings-color-default { background: #f8fafc; }
+.settings-color-white { background: #ffffff; }
+.settings-color-dark { background: #1e293b; }
+.settings-color-pink { background: #fdf2f8; }
+.settings-color-sky { background: #f0f9ff; }
+.settings-color-green { background: #f0fdf4; }
+
+.btn-brand,
+.settings-upgrade-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.settings-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 8rem;
+  padding: 1rem;
+  border: 1px dashed rgba(244, 63, 94, 0.3);
+  border-radius: 1.1rem;
+  background: rgba(255, 241, 242, 0.65);
+  text-align: center;
+}
+
+.settings-upload-prompt {
+  color: #be123c;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.settings-upgrade-card {
+  padding: 1rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(135deg, rgba(255, 241, 242, 0.98) 0%, rgba(255, 247, 237, 0.98) 100%);
+  border: 1px solid rgba(251, 113, 133, 0.2);
+}
+
+.settings-upgrade-head {
+  justify-content: space-between;
+}
+
+.settings-upgrade-title {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.settings-upgrade-badge {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(244, 63, 94, 0.12);
+  color: #be123c;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.settings-upgrade-desc {
+  margin-top: 0.65rem;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.settings-upgrade-footer {
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.settings-upgrade-price {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.settings-reset-btn {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.94);
+  color: #334155;
+  font-weight: 700;
+}

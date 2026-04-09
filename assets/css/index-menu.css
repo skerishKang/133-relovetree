@@ -1,0 +1,70 @@
+/* Mobile Menu Styles */
+
+.mobile-menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.24);
+}
+
+.mobile-menu-panel.active {
+  display: flex;
+}
+
+.mobile-menu-shell {
+  width: min(20rem, 100%);
+  border-radius: 1.4rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.18);
+  padding: 1rem;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.mobile-menu-title {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.mobile-menu-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+}
+
+.mobile-menu-close-label {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.mobile-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.95rem;
+  color: #0f172a;
+  font-weight: 700;
+  background: rgba(248, 250, 252, 0.96);
+}

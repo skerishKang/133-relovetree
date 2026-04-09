@@ -1,0 +1,92 @@
+/* Section Layout & Discovery Styles */
+
+.page-section,
+.page-section-compact {
+  padding-bottom: 1.5rem;
+}
+
+.section-shell {
+  padding: 1.35rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 1.65rem;
+  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.section-heading,
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  color: #0f172a;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.section-title-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.section-title-svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.section-title-svg-hot {
+  color: #f97316;
+}
+
+.section-title-svg-brand {
+  color: #f43f5e;
+}
+
+.desktop-my-trees {
+  width: min(100%, 1120px);
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.desktop-my-trees-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  color: #0f172a;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.desktop-my-trees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.recent-scroll-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+}
+
+.popular-feed-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.section-card-grid-hidden {
+  margin-top: 1rem;
+  display: none;
+}

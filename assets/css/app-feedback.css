@@ -1,0 +1,141 @@
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.ui-icon-md {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.page-shell {
+  min-height: 100vh;
+}
+
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.top-nav-inner {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.modal-actions-wrap {
+  flex-wrap: wrap;
+}
+
+.modal-actions-spacious {
+  padding-top: 0.25rem;
+}
+
+.modal-action-btn {
+  min-width: 7rem;
+}
+
+.modal-submit-btn {
+  flex: 1 1 10rem;
+}
+
+.modal-close,
+.settings-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  color: #64748b;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.modal-close:hover,
+.settings-modal-close:hover {
+  background: rgba(241, 245, 249, 0.95);
+  color: #0f172a;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem 1.25rem;
+  border: 1px dashed rgba(244, 63, 94, 0.22);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 241, 242, 0.92) 100%);
+}
+
+.empty-state-inline {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.88);
+  color: #64748b;
+  font-size: 0.92rem;
+}
+.empty-state-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, rgba(251, 113, 133, 0.14), rgba(251, 191, 36, 0.18));
+  color: #e11d48;
+}
+
+.empty-state-svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.empty-state-title {
+  color: #0f172a;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.empty-state-desc {
+  max-width: 34rem;
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.empty-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.notice-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.1rem;
+
+/* Responsive Notice */
+@media (max-width: 767px) {
+}
+
+.menu-toggle-bar + .menu-toggle-bar {
+}

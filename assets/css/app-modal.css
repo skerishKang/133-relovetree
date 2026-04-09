@@ -1,0 +1,157 @@
+  border-color: rgba(226, 232, 240, 0.9);
+  color: #334155;
+}
+
+.ui-btn-dark {
+  background: #0f172a;
+  color: #fff;
+}
+
+.ui-btn-dark:hover {
+  background: #1e293b;
+}
+
+.ui-btn-brand-outline {
+  border-color: rgba(244, 63, 94, 0.24);
+  color: #e11d48;
+}
+
+.ui-btn-subtle-outline {
+  border-color: rgba(148, 163, 184, 0.34);
+  color: #334155;
+}
+
+.ui-btn-pill {
+  border-radius: 999px;
+}
+
+.ui-btn-sm {
+  min-height: 2.35rem;
+  padding: 0.6rem 0.95rem;
+  font-size: 0.825rem;
+}
+
+.modal-shell {
+  width: min(100vw - 1.5rem, 44rem);
+  max-width: 44rem;
+  margin: auto;
+  border: none;
+  background: transparent;
+}
+
+.modal-shell-sm {
+  width: min(100vw - 1.5rem, 34rem);
+}
+
+.modal-shell-lg {
+  width: min(100vw - 1.5rem, 52rem);
+}
+
+.modal-panel {
+  width: 100%;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 1.5rem;
+  padding: 1.35rem;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.modal-stack,
+.modal-form-stack,
+.modal-intro {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-stack,
+.modal-form-stack {
+  gap: 1rem;
+}
+
+.modal-intro {
+  gap: 0.5rem;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal-header-spaced,
+.modal-header-roomy {
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  color: #0f172a;
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.modal-desc,
+.modal-help,
+.settings-note,
+.settings-card-note {
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.modal-label {
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.modal-input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.85);
+  color: #0f172a;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: rgba(244, 63, 94, 0.4);
+  box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
+  background: #fff;
+}
+
+.modal-actions {
+  background: rgba(255, 251, 235, 0.94);
+}
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+}
+
+.notice-banner-warn {
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(255, 251, 235, 0.96);
+
+/* Responsive Modal */
+@media (max-width: 767px) {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.6);
+}
+
+.menu-toggle-bar {
+  display: block;
+  width: 1rem;
+  height: 2px;
+  border-radius: 999px;
+}

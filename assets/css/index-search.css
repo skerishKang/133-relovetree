@@ -1,0 +1,109 @@
+/* Search Modal Styles */
+
+body[data-page="home"] dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+body[data-page="home"] dialog {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.search-modal-stack,
+.settings-section-stack,
+.settings-auth-stack,
+.settings-upload-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-modal-stack {
+  gap: 1rem;
+}
+
+.search-toolbar {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.search-input {
+  flex: 1 1 auto;
+  min-height: 3rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.88);
+}
+
+.search-tabs {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.search-tab-btn,
+.search-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.search-tab-btn.is-active,
+.search-tab-btn:hover,
+.search-page-btn:hover {
+  border-color: rgba(244, 63, 94, 0.24);
+  color: #e11d48;
+  background: rgba(255, 241, 242, 0.92);
+}
+
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.search-modal-results {
+  max-height: min(50vh, 34rem);
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.search-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.search-page-info {
+  color: #64748b;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
