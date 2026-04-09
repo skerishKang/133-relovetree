@@ -12,7 +12,7 @@
             if (treeId && treeId.startsWith('fork-source-')) {
                 return '가져온 러브트리';
             }
-            if (treeId && treeId.length > 20) {
+            if (treeId && treeId.length >= 20) {
                 return '나의 러브트리';
             }
             return decodeURIComponent(treeId || '나의 트리');
@@ -22,9 +22,10 @@
             if (treeId && treeId.startsWith('fork-source-')) {
                 return '가져온 러브트리';
             }
-            if (treeId && treeId.length > 20) {
+            if (treeId && treeId.length >= 20) {
                 return '나의 러브트리';
             }
+            return '나의 러브트리';
         }
         
         if (treeId && treeId.startsWith('fork-source-') && trimmedName.startsWith('fork-source-')) {
