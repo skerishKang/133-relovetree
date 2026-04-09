@@ -16,6 +16,37 @@ function isInvalidAuthSessionError(error) {
     return /USER_NOT_FOUND|user-not-found|invalid-user-token|token.*expired|user token/i.test(message);
 }
 
+function clearStaleFirebaseAuthState() {
+    const prefixes = ['firebase:authUser:', 'firebase:pendingRedirect:', 'firebase:redirectUser:'];
+
+    function clearStorage(storage) {
+        if (!storage) return;
+        const keys = [];
+        for (let i = 0; i < storage.length; i++) {
+            const key = storage.key(i);
+            if (key && prefixes.some(function (prefix) { return key.indexOf(prefix) === 0; })) {
+                keys.push(key);
+            }
+        }
+        keys.forEach(function (key) {
+            try {
+                storage.removeItem(key);
+            } catch (e) {
+            }
+        });
+    }
+
+    try {
+        clearStorage(window.localStorage);
+    } catch (e) {
+    }
+
+    try {
+        clearStorage(window.sessionStorage);
+    } catch (e) {
+    }
+}
+
 /**
  * Initialize Authentication
  */
@@ -43,6 +74,7 @@ function initAuth() {
                 if (isInvalidAuthSessionError(error)) {
                     console.warn('Invalid Firebase session detected. Signing out stale user.');
                     await firebase.auth().signOut().catch(function () {});
+                    clearStaleFirebaseAuthState();
                     return;
                 }
                 console.warn('User reload skipped:', error);
@@ -101,6 +133,7 @@ async function signInWithGoogle() {
 async function signOut() {
     try {
         await firebase.auth().signOut();
+        clearStaleFirebaseAuthState();
         window.location.reload();
     } catch (error) {
         console.error('Logout failed:', error);
@@ -167,7 +200,9 @@ function updateLoginUI(user) {
         if (loginBtn) loginBtn.classList.add('is-hidden');
         if (emailLoginLink) emailLoginLink.classList.add('is-hidden');
         if (userMenu) userMenu.classList.remove('is-hidden');
-        if (userAvatar) userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
+        if (userAvatar) {
+            userAvatar.src = user.photoURL || ((typeof APP_CONFIG !== 'undefined' && APP_CONFIG.defaultAvatar) ? APP_CONFIG.defaultAvatar : '');
+        }
         if (userName) userName.textContent = user.displayName || user.email || '사용자';
         updateSettingsButton(settingsBtn, true);
         updateSettingsButton(globalSettingsBtn, true);
@@ -204,6 +239,7 @@ window.initAuth = initAuth;
 window.signInWithGoogle = signInWithGoogle;
 window.signOut = signOut;
 window.waitForAuth = waitForAuth;
+window.clearStaleFirebaseAuthState = clearStaleFirebaseAuthState;
 
 /**
  * Wait for Auth State
@@ -289,6 +325,7 @@ function setupEmailAuthForm() {
             console.error('Email auth error:', error);
             if (isInvalidAuthSessionError(error)) {
                 await firebase.auth().signOut().catch(function () {});
+                clearStaleFirebaseAuthState();
             }
             alert('이메일 인증 중 오류가 발생했습니다: ' + error.message);
         } finally {

@@ -1,5 +1,7 @@
 (function () {
-    const DEFAULT_THUMBNAIL = 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
+    const DEFAULT_THUMBNAIL = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.defaultThumbnail)
+        ? APP_CONFIG.defaultThumbnail
+        : '';
 
     const BASE_POPULAR_ARTISTS = [
         {

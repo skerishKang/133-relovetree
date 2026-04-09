@@ -94,6 +94,9 @@
                 const invalidAuth = /USER_NOT_FOUND|user-not-found|invalid-user-token|token.*expired|user token/i.test(message);
                 if (invalidAuth && firebase.auth && firebase.auth()) {
                     firebase.auth().signOut().catch(function () {});
+                    if (typeof window !== 'undefined' && typeof window.clearStaleFirebaseAuthState === 'function') {
+                        window.clearStaleFirebaseAuthState();
+                    }
                 }
             } catch (ignored) {
             }

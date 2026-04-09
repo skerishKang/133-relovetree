@@ -18,12 +18,16 @@
             const videoThumb = getYouTubeThumb(artist.videoId);
             if (videoThumb) return videoThumb;
         }
-        return 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
+        return (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.defaultThumbnail)
+            ? APP_CONFIG.defaultThumbnail
+            : '';
     }
 
     function createArtistCard(artist) {
         const thumbnailSrc = resolveArtistThumbnail(artist);
-        const defaultThumb = 'https://placehold.co/640x360/f8fafc/94a3b8?text=Relovetree';
+        const defaultThumb = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.defaultThumbnail)
+            ? APP_CONFIG.defaultThumbnail
+            : '';
 
         return `
         <a href="/pages/editor.html?id=${artist.id}"
