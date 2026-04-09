@@ -9,6 +9,7 @@
 - **Database**: Neon (PostgreSQL)
 - **Auth**: Firebase Auth
 - **Backend**: Netlify Functions (Node.js)
+- **Runbook**: [docs/ops/RUNBOOK.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/RUNBOOK.md)
 
 ---
 
@@ -201,6 +202,15 @@ netlify functions:log firestore-api
 # 함수 직접 호출
 netlify functions:invoke firestore-api --payload '{"op":"getDoc","path":"trees/test"}'
 ```
+
+---
+
+## Version Control Notes
+
+- **Git** is the deployment source of truth.
+- **Fossil** is maintained separately for local/history workflows.
+- `_FOSSIL_`, `relovetree.local.fossil` are Fossil metadata and should not normally be included in Git commits.
+- Git/Netlify/Fossil step-by-step workflow is documented in [docs/ops/RUNBOOK.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/RUNBOOK.md).
 
 ---
 

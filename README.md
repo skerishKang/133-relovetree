@@ -1,222 +1,105 @@
-# Relovetree - 나의 덕질 기록 📚❤️
+# Relovetree - 나의 덕질 기록
 
-> K-pop 팬을 위한 타임라인 앱으로 사랑하는 아티스트의 모든 순간을 기록하세요!
+> K-pop 팬을 위한 타임라인 기록 앱
 
-## 🌟 개선된 기능
+## 프로젝트 개요
 
-### ✨ 주요 개선사항 (v1.0.0 → v1.1.0)
+- **운영 URL**: https://lovetree.limone.dev
+- **정적 프론트엔드**: plain HTML + plain CSS + 브라우저 JS
+- **백엔드**: Netlify Functions
+- **데이터**: Firebase Auth + Firestore 호환 레이어 + PostgreSQL
+- **테스트**: Playwright smoke / production QA
 
-#### 🎯 사용자 경험 개선
-
-- **접근성 강화**: 스크린 리더 지원, 키보드 네비게이션, ARIA 라벨 추가
-- **반응형 디자인**: 모바일, 태블릿, 데스크톱 모든 기기에서 최적화된 경험
-- **성능 최적화**: 이미지 지연 로딩, 애니메이션 최적화, 코드 분할
-- **SEO 개선**: 메타 태그, Open Graph, Twitter Card 완전 지원
-
-#### 🛠 기술적 개선
-
-- **에러 처리 강화**: 전역 에러 핸들러, 사용자 친화적 오류 메시지
-- **코드 구조화**: 모듈화된 JavaScript, 재사용 가능한 유틸리티
-- **성능 최적화**: debounce/throttle, 이미지 최적화, CSS 애니메이션
-- **검증 시스템**: 입력값 검증, YouTube URL 파싱, 시간 포맷 검증
-
-#### 📱 반응형 디자인
-
-- **모바일 퍼스트**: 태블릿(640px+), 데스크톱(1024px+) 대응
-- **접근성**: `prefers-reduced-motion` 지원, 키보드 포커스 관리
-- **사용자 친화적**: 터치 최적화, 읽기 전용 텍스트 크기 조정
-
-#### 🚀 성능 최적화
-
-- **이미지 최적화**: `loading="lazy"`, 에러 처리, Fallback 이미지
-- **애니메이션**: CSS transforms 활용, `will-change` 최적화
-- **코드 분할**: 공유 모듈 분리, 재사용 가능한 함수들
-
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```text
 133-relovetree/
-├── 📄 index.html          # 메인 페이지
-├── 📄 package.json        # 프로젝트 설정
-├── 📄 sw.js               # 사이트 전체 범위 서비스워커
-├── 📁 assets/
-│   └── 📁 css/            # 빌드된 CSS 및 페이지별 CSS
-├── 📁 config/             # Tailwind / PostCSS / Playwright 설정
-├── 📁 pages/              # 서브 페이지 엔트리
-├── 📁 scripts/
-│   ├── 📁 dev/            # 로컬 실행/브라우저 확인 스크립트
-│   └── 📁 ops/            # 배포/운영 스크립트
-├── 📁 src/
-│   ├── 📄 app.css         # 공통 plain CSS 파일
-│   ├── 📄 shared.js       # 공유 유틸리티 모듈
-│   └── 📁 entries/        # 페이지 엔트리 JS
-├── 📁 docs/               # 운영/분석/계획 문서
-└── 📄 README.md           # 이 문서
+├── index.html
+├── sw.js
+├── netlify.toml
+├── package.json
+├── assets/
+│   └── css/
+├── pages/
+├── src/
+│   ├── entries/
+│   └── ...
+├── netlify/
+│   └── functions/
+├── scripts/
+├── docs/
+│   ├── ops/
+│   ├── plans/
+│   ├── analysis/
+│   └── migration/
+└── README.md
 ```
 
-## 🛠 개발 환경 설정
+## 로컬 실행
 
-### 📋 요구사항
+### 요구사항
 
-- Node.js 16+ (패키지 관리용)
-- Python 3.7+ (로컬 서버용, 선택사항)
+- Node.js 18+
+- Python 3.7+ 또는 동등한 정적 서버
 
-### 🚀 빠른 시작
+### 빠른 시작
 
-1. **의존성 설치**
+1. 의존성 설치
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-2. **개발 모드 (CSS 워치 모드)**
+2. 로컬 정적 서버 실행
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run dev
+# 또는
+python -m http.server 3133
+```
 
-3. **프로덕션 빌드**
+3. 브라우저 열기
 
-   ```bash
-   npm run build
-   ```
+```text
+http://localhost:3133/index.html
+```
 
-4. **로컬 서버 실행**
+### 현재 스크립트
 
-   ```bash
-   npm run serve
-   # 또는
-   python -m http.server 3133
-   ```
-
-5. **웹 브라우저에서 열기**
-
-   ```text
-   http://localhost:3133/index.html
-   ```
-
-### 📜 사용 가능한 스크립트
-
-```json
-{
-  "dev": "python -m http.server 3133",
-  "build": "정적 CSS 스냅샷 모드: 별도 빌드 불필요",
-  "serve": "python -m http.server 3133",
-  "clean": "정리할 생성물 없음"
-}
+```bash
+npm run dev
+npm run serve
+npm run build
+npm run test
 ```
 
 ### CSS 운영 방식
 
-- 앱은 이제 `assets/css/app.css` 를 직접 사용합니다.
-- 즉, **평소 실행/개발에는 `npm run build`가 필요 없습니다.**
-- CSS는 `assets/css/app.css` 하나만 직접 수정하면 됩니다.
+- 앱은 `assets/css/*.css`를 직접 사용합니다.
+- Tailwind/PostCSS 빌드 체인은 제거됐습니다.
+- `npm run build`는 실질적인 CSS 컴파일을 하지 않습니다.
 
-## 🎨 디자인 시스템
+## 테스트
 
-### 🎨 색상 팔레트
-
-```css
---brand-50: #fff1f2   /* 가장 연한 핑크 */
---brand-100: #ffe4e6  /* 연한 핑크 */
---brand-500: #f43f5e  /* 메인 브랜드 색상 */
---brand-600: #e11d48  /* 진한 핑크 */
+```bash
+npm run test
+npx playwright test --config ./config/playwright.config.js
 ```
 
-### 📏 타이포그래피
+- Playwright smoke는 핵심 페이지 회귀 확인용입니다.
+- 최종 QA는 실도메인 `https://lovetree.limone.dev` 기준 수동 확인도 병행합니다.
 
-- **한글**: Noto Sans KR (300, 400, 500, 700)
-- **영문**: Outfit (300, 400, 600, 800)
+## 운영 문서
 
-### 📐 스페이싱
+- 운영 가이드: [docs/ops/OPERATIONS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/OPERATIONS.md)
+- 연결/배포/버전관리 런북: [docs/ops/RUNBOOK.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/RUNBOOK.md)
+- 마이그레이션/분석 문서: `docs/migration`, `docs/analysis`
 
-- 기본 단위: `0.25rem (4px)`
-- 컨테이너 최대 폭: `80rem (1280px)`
+## 주의
 
-## 🔧 기술 스택
-
-### 🎯 프론트엔드
-
-- **HTML5**: 시맨틱 마크업, 접근성 지원
-- **CSS3**: Tailwind CSS, 커스텀 애니메이션
-- **JavaScript ES6+**: 모듈 시스템, async/await
-
-### 📚 라이브러리
-
-- **Tailwind CSS**: 유틸리티 우선 CSS 프레임워크
-- **PostCSS**: CSS 처리 도구
-- **Autoprefixer**: 자동 접두사 추가
-
-### 🌐 외부 API
-
-- **YouTube API**: 비디오 검색/정보 조회 및 자막 기반 순간(moments) 생성
-- **Google Fonts**: 웹 폰트 로딩
-
-## 🤖 AI 실제 콘텐츠 생성
-
-이 프로젝트의 AI 도우미는 단순한 더미 텍스트가 아니라, 실제 YouTube 영상을 검색하고(YouTube Data API), 가능한 경우 자막(YouTube timedtext)을 기반으로 타임스탬프가 포함된 순간(moments)을 생성합니다. 최종 요약/구성은 Gemini를 사용합니다.
-
-### ✅ 필요한 환경변수
-
-- **`GEMINI_API_KEYS`**
-  - 쉼표로 구분된 Gemini API Key 목록
-  - 예: `GEMINI_API_KEYS=key1,key2`
-- **`YOUTUBE_API_KEY`**
-  - YouTube Data API v3 키
-
-### 🧪 로컬 실행 방법 (권장: Netlify Functions 포함)
-
-`netlify/functions/ai-helper.js`를 사용하려면 정적 서버가 아니라 Netlify 로컬 개발 서버로 실행하는 것이 가장 간단합니다.
-
-1. 환경변수 설정
-   - Windows PowerShell 예시
-     - `setx GEMINI_API_KEYS "key1,key2"`
-     - `setx YOUTUBE_API_KEY "YOUR_YOUTUBE_API_KEY"`
-
-2. Netlify 로컬 서버 실행
-   - `npx netlify dev --port 8888`
-
-3. 접속
-   - `http://localhost:8888/pages/editor.html`
-
-### 🧪 로컬 실행 방법 (정적 서버만 실행)
-
-정적 서버(`python -m http.server` 등)로 `pages/editor.html`만 띄우면 `/.netlify/functions/*`가 없기 때문에, 프론트의 AI 호출은 기본적으로 프로덕션 엔드포인트로 폴백합니다.
-
-## 📊 성능 지표
-
-### ⚡ 개선된 성능
-
-- **이미지 지연 로딩**: 초기 로드 시간 단축
-- **코드 분할**: JavaScript 번들 크기 최적화
-- **CSS 최적화**: 사용하지 않는 스타일 제거
-
-### 📱 반응형 지원
-
-| 기기 | 화면 크기 | 특징 |
-|------|-----------|------|
-| 모바일 | < 640px | 1열 레이아웃, 터치 최적화 |
-| 태블릿 | 640px - 1024px | 2열 레이아웃, 사이드바 숨김 |
-| 데스크톱 | > 1024px | 3열 레이아웃, 사이드바 표시 |
-
-## ♿ 접근성 기능
-
-### 🎯 WCAG 2.1 AA 준수
-
-- **키보드 네비게이션**: 모든 기능 키보드 접근 가능
-- **스크린 리더**: ARIA 라벨, 의미론적 HTML
-- **색상 대비**: 최소 4.5:1 비율 충족
-- **포커스 관리**: 시각적 포커스 표시기
-
-### 🔊 보조 기술 지원
-
-- **NVDA/JAWS**: Windows 스크린 리더 완전 지원
-- **VoiceOver**: macOS 스크린 리더 지원
-- **Switch Control**: 스위치 디바이스 지원
-
-## 🔍 SEO 최적화
-
-### 📝 메타 태그
+- 결제는 `window.RELOVETREE_PAYMENT_CONFIG`가 실제로 주입될 때만 활성화됩니다.
+- App Check는 `window.RELOVETREE_APP_CHECK_CONFIG.siteKey`가 실제로 주입될 때만 활성화됩니다.
+- 서버 환경변수는 Netlify Dashboard의 Environment variables가 source of truth입니다.
 
 ```html
 <title>Relovetree - 나의 덕질 기록 | K-pop 팬을 위한 타임라인</title>
