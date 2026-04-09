@@ -225,7 +225,10 @@
             const loginOverlay = document.getElementById('loginOverlay');
 
             firebase.auth().onAuthStateChanged(async (user) => {
+                const adminShell = document.getElementById('adminShell');
+
                 if (!user) {
+                    if (adminShell) adminShell.classList.add('is-hidden');
                     if (loginOverlay) loginOverlay.classList.remove('is-hidden');
                     setStatus('로그인이 필요합니다.');
                     return;
@@ -237,11 +240,13 @@
 
                 if (!isAdmin) {
                     setStatus('관리자 권한이 없습니다. (' + user.email + ')');
+                    if (adminShell) adminShell.classList.add('is-hidden');
                     if (loginOverlay) loginOverlay.classList.remove('is-hidden');
                     return;
                 }
 
                 if (loginOverlay) loginOverlay.classList.add('is-hidden');
+                if (adminShell) adminShell.classList.remove('is-hidden');
                 initDashboard(user);
             });
         });
