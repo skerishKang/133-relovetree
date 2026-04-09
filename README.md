@@ -15,7 +15,6 @@
 ```text
 133-relovetree/
 ├── index.html
-├── sw.js
 ├── netlify.toml
 ├── package.json
 ├── assets/

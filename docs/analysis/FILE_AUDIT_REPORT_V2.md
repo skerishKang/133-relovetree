@@ -16,7 +16,7 @@
 | `netlify/` | 폴더 | 백엔드 함수 (ai-helper.js, tree-ai.js, tree-admin.js, firestore-api.js) 및 SQL 스키마 |
 | `scripts/` | 폴더 | 유지보수용 스크립트 (create-test-accounts.js, list-trees.js, show-tree.js, migration/) |
 | `pages/*.html`, `index.html` | 파일 | 메인 웹 애플리케이션 엔트리 |
-| `src/entries/*.js`, `sw.js` | 파일 | 클라이언트 엔트리 및 서비스워커 |
+| `src/entries/*.js` | 파일 | 클라이언트 엔트리 |
 | `assets/css/*.css` | 파일 | 현재 plain CSS 자산 |
 | `firebase.json`, `.firebaserc` | 파일 | Firebase 설정 |
 | `firestore.rules`, `storage.rules` | 파일 | Firebase 보안 규칙 |

@@ -29,26 +29,6 @@ const SHARED_APP_INIT_FLAG = '__relovetreeSharedAppInitialized';
  */
 // ================== LOCAL STORAGE ==================
 
-/**
- * Safe localStorage set with error handling
- * @param {string} key - Storage key
- * @param {*} value - Value to store
- * @returns {boolean} - Success status
- */
-function registerPwaServiceWorker() {
-    try {
-        if (typeof window === 'undefined' || typeof navigator === 'undefined') return;
-        if (!('serviceWorker' in navigator)) return;
-
-        const isSecure = window.isSecureContext || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        if (!isSecure) return;
-
-        navigator.serviceWorker.register('/sw.js').catch(function () {
-        });
-    } catch (e) {
-    }
-}
-
 // ================== EVENT HANDLERS ==================
 
 /**
@@ -147,8 +127,6 @@ function initApp() {
     if (typeof sharedTheme.bindGlobalBackgroundPreferenceSync === 'function') {
         sharedTheme.bindGlobalBackgroundPreferenceSync();
     }
-    registerPwaServiceWorker();
-
     // Add loaded class to body for CSS
     document.body.classList.add('app-loaded');
 

@@ -32,7 +32,6 @@
 ├── firebase.json
 ├── firestore.rules
 ├── storage.rules
-├── manifest.webmanifest
 ├── pages/
 │   ├── admin.html
 │   ├── community.html
@@ -223,7 +222,7 @@
 
 주의:
 
-- `manifest.webmanifest`, `pwa-icon.svg`, favicon 계열은 경로 변경 시 PWA 영향 확인 필요
+- favicon 계열은 경로 변경 시 참조 영향만 확인
 
 권장 커밋 메시지:
 
