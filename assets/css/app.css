@@ -94,3 +94,34 @@
 .ui-error-close:hover {
   color: #fecaca;
 }
+
+
+.ui-btn-icon {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  color: #475569;
+  transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.ui-btn-icon:hover {
+  background: rgba(241, 245, 249, .9);
+  color: #0f172a;
+}
+
+.ui-btn-icon:focus-visible {
+  outline: 2px solid rgba(244, 63, 94, .35);
+  outline-offset: 2px;
+}
+
+.ui-icon-sm {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
