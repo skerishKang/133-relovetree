@@ -96,27 +96,18 @@ async function signOut() {
 async function saveUserToFirestore(user) {
     const db = firebase.firestore();
     const userRef = db.collection('users').doc(user.uid);
+    const fallbackDisplayName = user.displayName || user.email || '사용자';
 
     try {
-        const doc = await userRef.get();
-        if (!doc.exists) {
-            // New User
-            await userRef.set({
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                role: 'free', // Default role
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        } else {
-            // Existing User - Update last login
-            await userRef.update({
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                photoURL: user.photoURL, // Update photo if changed
-                displayName: user.displayName
-            });
-        }
+        await userRef.set({
+            email: user.email || '',
+            displayName: fallbackDisplayName,
+            photoURL: user.photoURL || '',
+            role: 'free',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
     } catch (error) {
         console.error('Error saving user:', error);
     }
@@ -152,7 +143,7 @@ function updateLoginUI(user) {
         if (emailLoginLink) emailLoginLink.classList.add('is-hidden');
         if (userMenu) userMenu.classList.remove('is-hidden');
         if (userAvatar) userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
-        if (userName) userName.textContent = user.displayName;
+        if (userName) userName.textContent = user.displayName || user.email || '사용자';
         updateSettingsButton(settingsBtn, true);
         updateSettingsButton(globalSettingsBtn, true);
 
@@ -268,7 +259,7 @@ function setupEmailAuthForm() {
                 await firebase.auth().createUserWithEmailAndPassword(email, password);
             }
 
-            window.location.href = 'index.html';
+            window.location.href = '/index.html';
         } catch (error) {
             console.error('Email auth error:', error);
             alert('이메일 인증 중 오류가 발생했습니다: ' + error.message);

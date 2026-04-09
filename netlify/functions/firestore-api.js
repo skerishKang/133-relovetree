@@ -2,6 +2,10 @@ const { buildResponse, handleError, noContent, httpError } = require('./_lib/htt
 const { executeFirestoreApi } = require('./_lib/firestore-api');
 
 exports.handler = async (event) => {
+  const requestOrigin = event && event.headers
+    ? (event.headers.origin || event.headers.Origin || '')
+    : '';
+
   if (event.httpMethod === 'OPTIONS') {
     return noContent();
   }
