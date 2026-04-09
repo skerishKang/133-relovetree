@@ -208,11 +208,11 @@ function renderCommunityPostList() {
  * Firestore 인스턴스를 안전하게 가져오는 헬퍼
  */
 function getFirestoreForCommunity() {
-    if (typeof firebase === 'undefined' || !firebase.firestore) {
-        console.error('Firebase Firestore 미초기화 상태입니다.');
+    if (!window.postgresDB) {
+        console.error('PostgreSQL Compat Layer 미초기화 상태입니다.');
         return null;
     }
-    return firebase.firestore();
+    return window.postgresDB;
 }
 
 /**

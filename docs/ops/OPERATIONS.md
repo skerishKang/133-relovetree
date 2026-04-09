@@ -73,6 +73,15 @@
 - 프론트엔드 코드 변경을 최소화하기 위해 Firestore API 호환 레이어 유지
 - 새 기여자는 `firebase-firestore-compat.js`를 보면서 "아, 이건 어댑터구나"로 이해
 
+**신규 코드 작성 규칙 (필수)**
+
+신규 코드에서는 alias 경로를 우선 사용합니다:
+- **클라이언트**: `import { db } from './postgres-client.js'` (기존 `firebase-firestore-compat.js` 직접 import 금지)
+- **서버**: `const { queryPostgresCollection, getPostgresDoc } = require('./db-api')` (기존 `firestore-api` 직접 require 금지)
+- 기존 코드는 변경하지 않으며, Phase C에서 단계 전환 예정
+
+상세 규칙: [docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md §4](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md)
+
 **상세 분석**: [docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md)
 
 ---
@@ -154,6 +163,13 @@ netlify deploy --prod
 - **Primary admin**: `skerish@naver.com`
 - **Role source of truth**: DB `users.role = 'admin'`
 
+### 테스트 유지 계정
+
+- `qa.relovetree.20260409@gmail.com`
+- `qa-playwright-2@example.com`
+
+위 두 계정은 운영 중 반복 QA를 위해 **삭제하지 않고 유지**합니다.
+
 ### Admin 판정 로직
 
 **서버 (firestore-api.js)**:
@@ -174,6 +190,23 @@ netlify deploy --prod
 - `free`: 일반 사용자
 - `pro`: Pro 사용자 (결제 완료)
 - `admin`: 관리자
+
+### 테스트 계정 공개 참여 원칙
+
+- 테스트 계정이 커뮤니티/댓글/트리 작성에 참여할 때는 **실이메일을 직접 노출하지 않고 가상 아이디(`displayName`)를 사용**합니다.
+- 기본 원칙:
+  - 로그인 이메일 = 내부 QA 식별자
+  - 화면 표시 이름 = 공개용 가상 아이디
+- 권장 예시:
+  - `테스트 러버 A`
+  - `테스트 러버 B`
+  - `QA Fan 1`
+
+### 운영 메모
+
+- 현재 UI는 `displayName`이 비어 있으면 `email`을 fallback으로 표시할 수 있습니다.
+- 따라서 테스트 계정을 실제 사이트에서 활동시키려면, **반드시 `displayName`을 먼저 지정한 뒤** 글/댓글/트리를 생성하는 것을 권장합니다.
+- 테스트 계정 정리 대상은 "삭제"보다 **공개 표시 이름 관리**를 우선합니다.
 
 ---
 

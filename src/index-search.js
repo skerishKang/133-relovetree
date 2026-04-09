@@ -256,7 +256,7 @@ async function ensureAllSearchCacheLoaded() {
     if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
 
     try {
-        const db = firebase.firestore();
+        const db = window.postgresDB;
         const snapshot = await db.collection('trees')
             .orderBy('lastUpdated', 'desc')
             .limit(50)
@@ -341,7 +341,7 @@ async function loadPopularTrees() {
     }
 
     try {
-        const db = firebase.firestore();
+        const db = window.postgresDB;
         const snapshot = await db.collection('trees')
             .orderBy('likeCount', 'desc')
             .limit(8)

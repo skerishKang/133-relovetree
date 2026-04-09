@@ -62,7 +62,12 @@ function initFirebase() {
     if (!firebase.apps.length) {
         try {
             // APP_CONFIG is now from shared-utils.js
-            firebase.initializeApp(APP_CONFIG.firebase);
+            const config = (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.firebase : null) || (window.APP_CONFIG ? window.APP_CONFIG.firebase : null);
+            if (!config || !config.apiKey) {
+                console.error('Firebase config missing or invalid');
+                return false;
+            }
+            firebase.initializeApp(config);
             console.log('Firebase initialized via shared.js');
             return true;
         } catch (error) {
@@ -144,7 +149,7 @@ async function forkTreeToMyAccountBySourceTreeId(sourceTreeId) {
             return { ok: false, error: '로그인이 필요합니다.' };
         }
 
-        const db = firebase.firestore();
+        const db = window.postgresDB;
         // extractTreeIdFromMaybeUrl is from shared-utils.js
         const normalizedSourceId = extractTreeIdFromMaybeUrl(sourceTreeId);
         if (!normalizedSourceId) {

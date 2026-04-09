@@ -25,25 +25,42 @@ function getRuntimeFirebaseConfig() {
 const DEFAULT_THUMBNAIL_SVG = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 640 360%22%3E%3Cdefs%3E%3ClinearGradient id=%22bg%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%221%22%3E%3Cstop stop-color=%22%23f8fafc%22/%3E%3Cstop offset=%221%22 stop-color=%22%23e2e8f0%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22640%22 height=%22360%22 fill=%22url(%23bg)%22/%3E%3Ccircle cx=%22152%22 cy=%22180%22 r=%2272%22 fill=%22%23ffffff%22 fill-opacity=%220.92%22/%3E%3Cpath d=%22M147 138c16-12 44-8 58 11 13 18 8 42-5 57-13 15-34 22-52 19-25-4-42-24-44-49-2-18 5-35 18-47 8-8 18-14 25-23z%22 fill=%22%230f172a%22/%3E%3Ctext x=%22240%22 y=%22170%22 fill=%22%230f172a%22 font-family=%22Noto Sans KR,Arial,sans-serif%22 font-size=%2230%22 font-weight=%22700%22%3ERelovetree%3C/text%3E%3Ctext x=%22240%22 y=%22208%22 fill=%22%2364758b%22 font-family=%22Noto Sans KR,Arial,sans-serif%22 font-size=%2218%22%3ETwitter%20moment%20placeholder%3C/text%3E%3C/svg%3E';
 const DEFAULT_AVATAR_SVG = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 96 96%22%3E%3Cdefs%3E%3ClinearGradient id=%22bg%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%221%22%3E%3Cstop stop-color=%22%23f8fafc%22/%3E%3Cstop offset=%221%22 stop-color=%22%23e2e8f0%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2296%22 height=%2296%22 rx=%2248%22 fill=%22url(%23bg)%22/%3E%3Ccircle cx=%2248%22 cy=%2236%22 r=%2218%22 fill=%22%230f172a%22 fill-opacity=%220.92%22/%3E%3Cpath d=%22M22 78c4-14 16-22 26-22s22 8 26 22%22 fill=%22none%22 stroke=%22%230f172a%22 stroke-width=%2210%22 stroke-linecap=%22round%22/%3E%3C/svg%3E';
 
-const APP_CONFIG = {
-    // App metadata
-    appName: 'Relovetree',
-    version: '1.0.0',
-    author: 'skerishKang',
+// Export for global browser scope
+if (typeof window !== 'undefined') {
+    window.APP_CONFIG = {
+        // App metadata
+        appName: 'Relovetree',
+        version: '1.0.0',
+        author: 'skerishKang',
 
-    // Firebase Configuration
-    firebase: getRuntimeFirebaseConfig(),
+        // Firebase Configuration
+        firebase: getRuntimeFirebaseConfig(),
 
-    // Validation limits
-    validation: {
-        artistNameMax: 50
-    },
+        // Validation limits
+        validation: {
+            artistNameMax: 50
+        },
 
-    // YouTube
-    defaultThumbnail: DEFAULT_THUMBNAIL_SVG,
-    defaultAvatar: DEFAULT_AVATAR_SVG,
-    youtubeEmbed: 'https://www.youtube.com/embed/'
-};
+        // YouTube
+        defaultThumbnail: DEFAULT_THUMBNAIL_SVG,
+        defaultAvatar: DEFAULT_AVATAR_SVG,
+        youtubeEmbed: 'https://www.youtube.com/embed/'
+    };
+    // For older code that might still look for APP_CONFIG as a local-like global
+    var APP_CONFIG = window.APP_CONFIG;
+} else {
+    // Node.js or other environments
+    var APP_CONFIG = {
+        appName: 'Relovetree',
+        version: '1.0.0',
+        author: 'skerishKang',
+        firebase: getRuntimeFirebaseConfig(),
+        validation: { artistNameMax: 50 },
+        defaultThumbnail: DEFAULT_THUMBNAIL_SVG,
+        defaultAvatar: DEFAULT_AVATAR_SVG,
+        youtubeEmbed: 'https://www.youtube.com/embed/'
+    };
+}
 
 /**
  * Debounce function to limit function execution frequency
@@ -328,9 +345,29 @@ function extractTreeIdFromMaybeUrl(value) {
 
 // ================== EXPORTS ==================
 
+if (typeof window !== 'undefined') {
+    Object.assign(window, {
+        debounce,
+        throttle,
+        safeJsonParse,
+        deepClone,
+        formatFileSize,
+        validateArtistName,
+        validateYouTubeUrl,
+        validateTimeFormat,
+        parseYouTubeId,
+        getYouTubeThumb,
+        getYouTubeEmbed,
+        timeToSeconds,
+        secondsToTime,
+        normalizeToIsoStringForFork,
+        extractTreeIdFromMaybeUrl
+    });
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        APP_CONFIG,
+        APP_CONFIG: typeof window !== 'undefined' ? window.APP_CONFIG : APP_CONFIG,
         debounce,
         throttle,
         safeJsonParse,

@@ -7,7 +7,7 @@ const AI_HELPER_ENDPOINT = 'https://lovetree.limone.dev/.netlify/functions/ai-he
 window.AI_HELPER_ENDPOINT = AI_HELPER_ENDPOINT;
 
 function getAdminDb() {
-    return firebase.firestore();
+    return window.postgresDB;
 }
 
 function getCurrentAdminUser() {

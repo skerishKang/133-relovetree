@@ -39,6 +39,8 @@
 - `firebase.firestore()` 호출 → 실제로는 compat 레이어가 중재
 - 데이터 조회/저장 문제 → Postgres 테이블/쿼리 확인
 - 인증 문제 → Firebase Auth 확인
+- **신규 코드는 alias 경로 우선**: 클라이언트 → `postgres-client.js`, 서버 → `db-api.js`
+- 기존 `firebase-firestore-compat.js` / `firestore-api.js` 직접 import는 신규 코드에서 금지
 
 **자세한 분석**: [docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md)
 
@@ -209,3 +211,26 @@ npm run test
 4. 아직 안 넣은 운영값
    - payment client key
    - app check site key
+
+## 11. 테스트 계정 운영 원칙
+
+유지 중인 QA 계정:
+
+- `qa.relovetree.20260409@gmail.com`
+- `qa-playwright-2@example.com`
+
+이 계정들은 반복 검증용으로 유지합니다. 삭제보다 재사용을 우선합니다.
+
+### 공개 참여 규칙
+
+- 커뮤니티 글/댓글/트리 생성 등 실제 사이트 참여 시에는 **실이메일을 직접 노출하지 않습니다.**
+- 테스트 계정은 항상 **가상 아이디(`displayName`)를 먼저 지정한 뒤** 사용합니다.
+- 권장 형식:
+  - `테스트 러버 A`
+  - `테스트 러버 B`
+  - `QA Fan 1`
+
+### 이유
+
+- 현재 일부 화면은 `displayName`이 없으면 `email`을 fallback으로 표시할 수 있습니다.
+- 따라서 QA 계정으로 실제 사용자 흐름을 검증할 때도, 공개 표시는 가상 아이디 기준으로 맞춰 두는 것이 안전합니다.

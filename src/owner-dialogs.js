@@ -38,7 +38,7 @@
         if (!nextName) return;
 
         try {
-            const db = firebase.firestore();
+            const db = window.postgresDB;
             await db.collection('trees').doc(treeId).set({
                 name: nextName,
                 lastUpdated: new Date().toISOString()
@@ -116,7 +116,7 @@
         if (typed !== treeId) return;
 
         try {
-            const db = firebase.firestore();
+            const db = window.postgresDB;
             await db.collection('trees').doc(treeId).delete();
             try {
                 delete options.ownerForkStatusCache[treeId];

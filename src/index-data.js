@@ -103,14 +103,14 @@
     async function loadUserTreesFromFirestore(user) {
         if (!user) return null;
 
-        if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
-            return null;
-        }
+if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+  return null;
+}
 
-        try {
-            const db = firebase.firestore();
-            const snapshot = await db.collection('trees')
-                .where('ownerId', '==', user.uid)
+try {
+  const db = window.postgresDB;
+  const snapshot = await db.collection('trees')
+    .where('ownerId', '==', user.uid)
                 .limit(100)
                 .get();
 
@@ -131,15 +131,15 @@
         }
     }
 
-    async function loadRecentCreatedTreesFromFirestore() {
-        if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
-            return [];
-        }
+async function loadRecentCreatedTreesFromFirestore() {
+  if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+    return [];
+  }
 
-        try {
-            const db = firebase.firestore();
-            const snapshot = await db.collection('trees')
-                .orderBy('lastUpdated', 'desc')
+  try {
+    const db = window.postgresDB;
+    const snapshot = await db.collection('trees')
+      .orderBy('lastUpdated', 'desc')
                 .limit(12)
                 .get();
 
@@ -172,13 +172,13 @@
         return localOnlyCount;
     }
 
-    async function migrateLocalTrees(user) {
-        if (!user || typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
-            return [];
-        }
+async function migrateLocalTrees(user) {
+  if (!user || typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
+    return [];
+  }
 
-        const db = firebase.firestore();
-        const migratedNames = [];
+  const db = window.postgresDB;
+  const migratedNames = [];
 
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);

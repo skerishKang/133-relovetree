@@ -57,6 +57,14 @@ function clearStaleFirebaseAuthState() {
  * Initialize Authentication
  */
 function initAuth() {
+    if (typeof firebase === 'undefined') return;
+    
+    // Safety check: ensure Firebase is initialized before calling services
+    if (!firebase.apps || !firebase.apps.length) {
+        console.warn('Auth waiting for Firebase initialization...');
+        return;
+    }
+
     if (typeof window !== 'undefined' && window[AUTH_INIT_FLAG]) {
         return;
     }
