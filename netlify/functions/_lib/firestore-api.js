@@ -236,6 +236,14 @@ async function executeFirestoreApi(event, body) {
   const user = await getUserFromEvent(event);
   const op = String(body && body.op ? body.op : '');
   const path = String(body && body.path ? body.path : '');
+  
+  const pathRoot = path.split('/')[1] || '';
+  console.log('[FIRESTORE-API]', JSON.stringify({
+    op,
+    pathRoot,
+    hasUser: !!user,
+    userUid: user?.uid?.substring(0, 8) + '...'
+  }));
 
   if (!op) throw httpError(400, 'op is required');
   if (!path && op !== 'runTransaction') throw httpError(400, 'path is required');

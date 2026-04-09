@@ -93,7 +93,7 @@ async function signOut() {
 /**
  * Save or Update User in Firestore
  */
-async function saveUserToFirestore(user) {
+async function saveUserToFirestore(user, retryCount = 0, maxRetries = 2) {
     const db = firebase.firestore();
     const userRef = db.collection('users').doc(user.uid);
     const fallbackDisplayName = user.displayName || user.email || '사용자';
@@ -109,7 +109,15 @@ async function saveUserToFirestore(user) {
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
     } catch (error) {
-        console.error('Error saving user:', error);
+        console.error('Error saving user (attempt ' + (retryCount + 1) + '):', error.message);
+        
+        if (retryCount < maxRetries && (error.message.includes('Failed to fetch') || error.message.includes('network') || error.message.includes('500'))) {
+            console.log('Retrying user save... (' + (retryCount + 1) + '/' + maxRetries + ')');
+            await new Promise(r => setTimeout(r, 500 * (retryCount + 1)));
+            return saveUserToFirestore(user, retryCount + 1, maxRetries);
+        }
+        
+        console.warn('User save failed after ' + (retryCount + 1) + ' attempt(s). User may exist or service temporarily unavailable.');
     }
 }
 

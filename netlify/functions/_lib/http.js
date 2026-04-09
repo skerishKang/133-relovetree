@@ -61,7 +61,16 @@ function httpError(status, message, details) {
 }
 
 function handleError(scope, error, requestOrigin) {
-  console.error(`${scope} error:`, error);
+  const errorInfo = {
+    scope,
+    timestamp: new Date().toISOString(),
+    message: error?.message || 'Unknown error',
+    status: error?.status || 500,
+  };
+  
+  if (error.details) errorInfo.details = error.details;
+  
+  console.error(`${scope} error:`, errorInfo);
   const headers = getCorsHeaders(requestOrigin, {
     'Content-Type': 'application/json; charset=utf-8',
   });
