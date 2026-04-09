@@ -11,6 +11,11 @@ const AUTH_CONFIG = {
 let EMAIL_AUTH_MODE = 'login';
 const AUTH_INIT_FLAG = '__relovetreeAuthInitialized';
 
+function isInvalidAuthSessionError(error) {
+    const message = String((error && (error.code || error.message)) || '');
+    return /USER_NOT_FOUND|user-not-found|invalid-user-token|token.*expired|user token/i.test(message);
+}
+
 /**
  * Initialize Authentication
  */
@@ -30,6 +35,18 @@ function initAuth() {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
             console.log('User signed in:', user.email);
+            try {
+                if (typeof user.reload === 'function') {
+                    await user.reload();
+                }
+            } catch (error) {
+                if (isInvalidAuthSessionError(error)) {
+                    console.warn('Invalid Firebase session detected. Signing out stale user.');
+                    await firebase.auth().signOut().catch(function () {});
+                    return;
+                }
+                console.warn('User reload skipped:', error);
+            }
             updateLoginUI(user);
             await saveUserToFirestore(user);
         } else {
@@ -270,6 +287,9 @@ function setupEmailAuthForm() {
             window.location.href = '/index.html';
         } catch (error) {
             console.error('Email auth error:', error);
+            if (isInvalidAuthSessionError(error)) {
+                await firebase.auth().signOut().catch(function () {});
+            }
             alert('이메일 인증 중 오류가 발생했습니다: ' + error.message);
         } finally {
             submitBtn.disabled = false;

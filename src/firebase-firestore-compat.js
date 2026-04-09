@@ -89,6 +89,14 @@
             if (!user || typeof user.getIdToken !== 'function') return '';
             return await user.getIdToken();
         } catch (e) {
+            try {
+                const message = String((e && (e.message || e.code)) || '');
+                const invalidAuth = /USER_NOT_FOUND|user-not-found|invalid-user-token|token.*expired|user token/i.test(message);
+                if (invalidAuth && firebase.auth && firebase.auth()) {
+                    firebase.auth().signOut().catch(function () {});
+                }
+            } catch (ignored) {
+            }
             return '';
         }
     }
