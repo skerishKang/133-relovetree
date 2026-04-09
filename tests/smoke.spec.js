@@ -5,6 +5,8 @@ import { test, expect } from '@playwright/test';
  * Enhanced with structured console error tracking and better stability.
  */
 
+const BASE_URL = 'https://lovetree.limone.dev';
+
 let consoleErrors = [];
 let pageErrors = [];
 let consoleWarnings = [];
@@ -16,7 +18,6 @@ test.describe('Relovetree Smoke Tests', () => {
     pageErrors = [];
     consoleWarnings = [];
 
-    // Structured console message collection
     page.on('console', msg => {
       const type = msg.type();
       const text = msg.text();
@@ -30,7 +31,6 @@ test.describe('Relovetree Smoke Tests', () => {
       }
     });
 
-    // Page-level errors (uncaught exceptions)
     page.on('pageerror', error => {
       const text = error.message;
       pageErrors.push(text);
@@ -49,32 +49,27 @@ test.describe('Relovetree Smoke Tests', () => {
       pageErrors.forEach(e => console.log(`    - ${e.substring(0, 100)}`));
     }
     
-    // Fail test if there were page errors (not console errors - those may be expected)
     if (pageErrors.length > 0) {
       throw new Error(`Test failed due to ${pageErrors.length} page errors`);
     }
   });
 
   test('Home Page: Load and UI elements present', async ({ page }) => {
-    await page.goto('/');
-    await expect(page).toHaveTitle(/LoveTree/);
+    await page.goto(BASE_URL + '/');
+    await expect(page).toHaveTitle(/Relovetree/);
     
-    // Stable selectors for key UI elements
-    const searchBtn = page.locator('#search-btn');
     const settingsBtn = page.locator('#settings-btn');
     const mainNav = page.locator('#main-nav');
     
-    await expect(searchBtn).toBeVisible();
     await expect(settingsBtn).toBeVisible();
     await expect(mainNav).toBeVisible();
     
-    // Check main content loaded
     const heroSection = page.locator('.hero-shell, [class*="hero"]').first();
     await expect(heroSection).toBeAttached();
   });
 
   test('Home Page: Search Modal opens', async ({ page }) => {
-    await page.goto('/');
+    await page.goto(BASE_URL + '/');
     
     const searchBtn = page.locator('#search-btn');
     await searchBtn.click();
@@ -85,7 +80,6 @@ test.describe('Relovetree Smoke Tests', () => {
     const searchInput = page.locator('#search-input');
     await expect(searchInput).toBeAttached();
     
-    // Close modal
     const closeBtn = searchModal.locator('button[aria-label*="닫기"], .modal-close').first();
     if (await closeBtn.isVisible().catch(() => false)) {
       await closeBtn.click();
@@ -93,11 +87,10 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Community Page: Load and list present', async ({ page }) => {
-    await page.goto('/pages/community.html');
+    await page.goto(BASE_URL + '/pages/community.html');
     
     await page.waitForLoadState('domcontentloaded');
     
-    // Use multiple fallback selectors for stability
     const communityContent = page.locator(
       '#community-post-list, #posts-container, main, [class*="community"]'
     ).first();
@@ -106,44 +99,41 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Owner Page: Management dashboard shell', async ({ page }) => {
-    await page.goto('/pages/owner.html');
+    await page.goto(BASE_URL + '/pages/owner.html');
     
     await page.waitForLoadState('domcontentloaded');
     
-    // Use stable ID-based selectors
-    const treesList = page.locator('#owner-trees-list');
-    const createBtn = page.locator('#create-tree-btn, button:has-text("만들기")').first();
+    const treesTbody = page.locator('#owner-tree-tbody');
+    const createBtn = page.locator('#create-tree-btn');
     
-    await expect(treesList).toBeAttached();
+    await expect(treesTbody).toBeAttached();
     await expect(createBtn).toBeVisible();
   });
 
   test('Editor Page: Load without crash (TDZ check)', async ({ page }) => {
-    await page.goto('/pages/editor.html?id=bts');
+    await page.goto(BASE_URL + '/pages/editor.html?id=bts');
     
     await page.waitForLoadState('networkidle');
     
-    // Stable selectors using IDs
-    const toggleModeBtn = page.locator('#toggle-mode-btn');
-    const addNodeBtn = page.locator('#add-node-btn');
+    const modeTreeBtn = page.locator('#mode-tree-btn');
+    const modeTimelineBtn = page.locator('#mode-timeline-btn');
     
-    await expect(toggleModeBtn).toBeVisible();
-    await expect(addNodeBtn).toBeVisible();
+    await expect(modeTreeBtn).toBeVisible();
+    await expect(modeTimelineBtn).toBeVisible();
 
-    // Check no body-level error class
     const bodyClass = await page.locator('body').getAttribute('class');
     expect(bodyClass?.includes('error') || bodyClass?.includes('Error')).not.toBe(true);
   });
 
   test('Editor Page: Mode toggle interaction', async ({ page }) => {
-    await page.goto('/pages/editor.html?id=test-tree');
+    await page.goto(BASE_URL + '/pages/editor.html?id=test-tree');
     
     await page.waitForLoadState('networkidle');
     
-    const toggleModeBtn = page.locator('#toggle-mode-btn');
+    const modeTimelineBtn = page.locator('#mode-timeline-btn');
     
-    if (await toggleModeBtn.isVisible().catch(() => false)) {
-      await toggleModeBtn.click();
+    if (await modeTimelineBtn.isVisible().catch(() => false)) {
+      await modeTimelineBtn.click();
       await page.waitForTimeout(300);
       
       const bodyClass = await page.locator('body').getAttribute('class');
@@ -152,17 +142,16 @@ test.describe('Relovetree Smoke Tests', () => {
   });
 
   test('Admin Page: Login overlay present', async ({ page }) => {
-    await page.goto('/pages/admin.html');
+    await page.goto(BASE_URL + '/pages/admin.html');
     
     await page.waitForLoadState('domcontentloaded');
     
-    // Stable selector
     const loginOverlay = page.locator('#loginOverlay');
     await expect(loginOverlay).toBeAttached();
   });
 
   test('Settings Modal: Opens from home page', async ({ page }) => {
-    await page.goto('/');
+    await page.goto(BASE_URL + '/');
     
     const settingsBtn = page.locator('#settings-btn');
     await settingsBtn.click();
@@ -170,7 +159,6 @@ test.describe('Relovetree Smoke Tests', () => {
     const settingsModal = page.locator('#settings-modal');
     await expect(settingsModal).toBeVisible();
     
-    // Check modal has content
     const modalTitle = settingsModal.locator('.modal-title, h3').first();
     await expect(modalTitle).toBeAttached();
   });

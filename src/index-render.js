@@ -188,6 +188,7 @@
         // Called by language toggle - just re-render current state
     }
 
+    window.renderArtistCards = renderArtistCards;
     window.IndexRender = {
         getFallbackColor,
         resolveArtistThumbnail,

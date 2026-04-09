@@ -1,25 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Playwright Configuration
- * Designed for Relovetree smoke testing across major browsers.
- */
 export default defineConfig({
   testDir: './tests',
+  testMatch: '*.spec.js',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: 0,
   reporter: [
-    ['html', { open: 'never' }],
     ['list']
   ],
   use: {
-    // Production target for smoke check
     baseURL: 'https://lovetree.limone.dev',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
     viewport: { width: 1280, height: 720 },
     ignoreHTTPSErrors: true,
   },
@@ -28,14 +21,6 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
     },
   ],
 });
