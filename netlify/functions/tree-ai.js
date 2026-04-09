@@ -2,6 +2,12 @@ const { buildResponse, handleError, httpError, noContent } = require('./_lib/htt
 const { requireUser } = require('./_lib/firebase-auth');
 const { isAdminUser } = require('./_lib/firestore-api');
 const treeRepository = require('./_lib/repositories/tree-repository');
+const {
+  getAiProvider,
+  getApiKey: getGroqApiKey,
+  callGroqText: clientCallGroqText,
+} = require('./_lib/groq-client');
+const { callGeminiText: clientCallGeminiText } = require('./_lib/gemini-client');
 
 function getApiKeys(env) {
   const raw = env.GEMINI_API_KEYS || env.GEMINI_API_KEY || '';
@@ -66,73 +72,30 @@ function buildNodeDescriptionPrompt(tree, node, nodeIndex, nodes) {
   return `${contextLines.join('\n')}\n\n${instructions}`;
 }
 
-async function callGeminiForDescription(promptText, env) {
-  const keys = getApiKeys(env);
-  if (!keys.length) {
-    throw new Error('GEMINI_API_KEYS not configured');
-  }
-
-  const endpoint =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
-
-  const requestBody = {
-    contents: [
-      {
-        role: 'user',
-        parts: [{ text: promptText }],
-      },
-    ],
-  };
-
-  let lastError = null;
-  let data = null;
-
-  for (const apiKey of keys) {
+/**
+ * Universal AI text call with provider fallback for tree-ai
+ */
+async function callAiForDescription(promptText, env) {
+  const provider = getAiProvider(env);
+  
+  if (provider === 'groq') {
     try {
-      const response = await fetch(
-        `${endpoint}?key=${encodeURIComponent(apiKey)}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Gemini API error:', response.status, text);
-        if (response.status === 429 || response.status === 403) {
-          lastError = new Error('Quota or permission error for one key');
-          continue;
-        }
-        lastError = new Error('Gemini error ' + response.status);
-        break;
+      const groqApiKey = getGroqApiKey(env);
+      if (groqApiKey) {
+        return await clientCallGroqText(promptText, env, { model: 'llama-3.1-70b-versatile' });
       }
-
-      data = await response.json();
-      lastError = null;
-      break;
     } catch (e) {
-      console.error('Gemini fetch failed for one key:', e);
-      lastError = e;
-      continue;
+      console.warn('Groq failed, trying Gemini fallback:', e.message);
     }
   }
+  
+  // Fallback to Gemini
+  return clientCallGeminiText(promptText, env);
+}
 
-  if (!data) {
-    throw lastError || new Error('Gemini 호출 실패');
-  }
-
-  const candidates = data.candidates || [];
-  const first = candidates[0];
-  const part = first && first.content && first.content.parts && first.content.parts[0];
-  const rawText = part && (part.text || part);
-
-  if (!rawText || typeof rawText !== 'string') {
-    throw new Error('잘못된 Gemini 응답 형식');
-  }
-
-  return rawText.trim();
+async function callGeminiForDescription(promptText, env) {
+  // Use unified callAiForDescription which handles fallback
+  return callAiForDescription(promptText, env);
 }
 
 exports.handler = async (event, context) => {

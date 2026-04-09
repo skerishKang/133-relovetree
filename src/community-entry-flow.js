@@ -120,7 +120,7 @@
                 mediaUrl: validation.mediaUrl || '',
                 mediaType: ytId ? 'youtube' : (validation.mediaUrl ? 'link' : ''),
                 authorId: user.uid,
-                authorDisplayName: user.displayName || user.email || '익명',
+                authorDisplayName: (user.displayName && user.displayName.trim()) || '러브트리 사용자',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 likeCount: 0,
@@ -314,7 +314,7 @@
                 .add({
                     content,
                     authorId: user.uid,
-                    authorDisplayName: user.displayName || user.email || '익명',
+                    authorDisplayName: (user.displayName && user.displayName.trim()) || '러브트리 사용자',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     isDeleted: false
                 });

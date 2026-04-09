@@ -15,7 +15,7 @@
         }
 
         if (typeof firebase !== 'undefined' && firebase.apps.length) {
-            runtime.db = firebase.firestore();
+            runtime.db = window.postgresDB; // alias 전환
             runtime.auth = firebase.auth();
             runtime.storage = firebase.storage();
         }

@@ -94,7 +94,9 @@
 |----------|----------|-------------|
 | `DATABASE_URL` | ✅ | Neon PostgreSQL connection string |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | ✅ | Firebase service account for admin SDK |
-| `GEMINI_API_KEYS` | ✅ | Google Gemini API keys (comma-separated) |
+| `GEMINI_API_KEYS` | Fallback | Google Gemini API keys (comma-separated) |
+| `AI_PROVIDER` | Optional | AI provider: `groq` (default) or `gemini` |
+| `GROQ_API_KEY` | Optional | Groq API key (primary when AI_PROVIDER=groq) |
 | `YOUTUBE_API_KEY` | ✅ | YouTube Data API v3 key |
 | `YOUTUBE_API_REFERER` | Recommended | Referer header for YouTube API |
 | `TOSS_SECRET_KEY` | For payment | Toss Payments secret key (production) |
@@ -165,10 +167,22 @@ netlify deploy --prod
 
 ### 테스트 유지 계정
 
-- `qa.relovetree.20260409@gmail.com`
-- `qa-playwright-2@example.com`
+| 계정 | 가상 아이디 | 용도 |
+|------|-------------|------|
+| `qa.relovetree.20260409@gmail.com` | 테스트 러버 A | 반복 QA |
+| `qa-playwright-2@example.com` | 테스트 러버 B | 반복 QA |
+| `qa-subagent-test@limone.dev` | 테스트 러버 C | 에이전트 테스트 |
 
-위 두 계정은 운영 중 반복 QA를 위해 **삭제하지 않고 유지**합니다.
+**가상 아이디 규칙**:
+- 실제 사이트에서 이메일 대신 표시
+- PostgreSQL `users.display_name`에 저장
+- Firebase Auth `displayName`도 동일하게 설정
+- 패턴: `테스트 러버 {A,B,C,...}`
+
+**운영 원칙**:
+- 삭제보다 재사용 우선
+- 테스트 시 displayName 먼저 확인
+- 계정 생성 시 displayName 필수 지정
 
 ### Admin 판정 로직
 
@@ -311,20 +325,33 @@ netlify functions:invoke firestore-api --payload '{"op":"getDoc","path":"trees/t
 
 ---
 
-## AI Helper (Gemini + YouTube)
+## AI Helper (Groq + Gemini)
 
 ### 사용처
 
 - **트리 AI 생성**: tree-ai.js (admin만 사용)
 - **노드 설명 생성**: admin-tree.js의 "AI로 설명 채우기"
-- **ai-helper.js**: Gemini 2.5 Flash + YouTube Data API v3
+- **ai-helper.js**: Groq + Gemini fallback + YouTube Data API v3
+
+### Provider 우선순위
+
+1. **기본**: Groq (`llama-3.1-70b-versatile`)
+2. **Fallback**: Gemini 2.5 Flash (Groq 실패 시 자동 전환)
 
 ### 필요한 Env
 
 | Variable | Required | 설명 |
 |----------|----------|------|
-| `GEMINI_API_KEYS` | ✅ | Comma-separated keys (여러 개면 순차 사용) |
-| `GEMINI_API_KEY` | Alternative | 단일 키 |
+| `AI_PROVIDER` | Optional | `groq` (기본) 또는 `gemini` |
+| `GROQ_API_KEY` | Optional | Groq API key (primary) |
+| `GEMINI_API_KEYS` | Fallback | Comma-separated keys (fallback용) |
+| `YOUTUBE_API_KEY` | ✅ | YouTube Data API v3 |
+
+### 운영자 참고
+
+- **Gemini는 제거된 것이 아니라 fallback입니다** - Groq 실패 시 자동 사용
+- 키는 코드에 넣지 않고 Netlify env로 관리합니다
+- 확인 절차: `netlify env:list` 후 AI 기능 smoke test
 
 ---
 

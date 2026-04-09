@@ -93,7 +93,9 @@ netlify env:list
 필수 서버 env:
 - `DATABASE_URL`
 - `FIREBASE_SERVICE_ACCOUNT_JSON`
-- `GEMINI_API_KEYS`
+- `GEMINI_API_KEYS` (fallback)
+- `GROQ_API_KEY` (primary)
+- `AI_PROVIDER` (기본: groq)
 - `ADMIN_EMAILS`
 
 선택/기능별 env:
@@ -216,8 +218,11 @@ npm run test
 
 유지 중인 QA 계정:
 
-- `qa.relovetree.20260409@gmail.com`
-- `qa-playwright-2@example.com`
+| 계정 | 가상 아이디 | 용도 |
+|------|-------------|------|
+| `qa.relovetree.20260409@gmail.com` | 테스트 러버 A | 반복 QA |
+| `qa-playwright-2@example.com` | 테스트 러버 B | 반복 QA |
+| `qa-subagent-test@limone.dev` | 테스트 러버 C | 에이전트 테스트 |
 
 이 계정들은 반복 검증용으로 유지합니다. 삭제보다 재사용을 우선합니다.
 
@@ -228,7 +233,7 @@ npm run test
 - 권장 형식:
   - `테스트 러버 A`
   - `테스트 러버 B`
-  - `QA Fan 1`
+  - `테스트 러버 C`
 
 ### 이유
 
