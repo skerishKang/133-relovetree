@@ -44,10 +44,10 @@
         }
     }
 
-    async function fetchTreeDoc(treeId) {
-        if (!treeId) return null;
-        if (!firebase || !firebase.firestore) return null;
-        const db = firebase.firestore();
+async function fetchTreeDoc(treeId) {
+  if (!treeId) return null;
+  if (!window.postgresDB) return null;
+  const db = window.postgresDB;
         const snap = await db.collection('trees').doc(treeId).get();
         if (!snap.exists) return null;
         return snap.data() || null;
@@ -128,8 +128,8 @@
             const edges = Array.isArray(source.edges) ? source.edges : [];
             const nowIso = new Date().toISOString();
 
-            const db = firebase.firestore();
-            await db.collection('trees').doc(options.treeId).set({
+const db = window.postgresDB;
+  await db.collection('trees').doc(options.treeId).set({
                 nodes: nodes,
                 edges: edges,
                 nodeCount: nodes.length,
@@ -173,9 +173,9 @@
             return;
         }
 
-        try {
-            const db = firebase.firestore();
-            const snapshot = await db.collection('trees')
+try {
+    const db = window.postgresDB;
+    const snapshot = await db.collection('trees')
                 .where('ownerId', '==', options.ownerUser.uid)
                 .limit(100)
                 .get();

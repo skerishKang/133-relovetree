@@ -1,3 +1,24 @@
+/**
+ * Relovetree - Firestore API Endpoint (Netlify Function)
+ * 
+ * ⚠️ IMPORTANT: Despite the name, this routes to PostgreSQL, NOT Firestore!
+ * 
+ * Endpoint: POST /.netlify/functions/firestore-api
+ * 
+ * Architecture:
+ *   Client (via firebase-firestore-compat.js) → This Endpoint → _lib/firestore-api.js → PostgreSQL
+ * 
+ * What this does:
+ *   - Accepts Firestore-style operations (getDoc, setDoc, queryCollection, etc.)
+ *   - Validates request (JSON parse, method check)
+ *   - Delegates to _lib/firestore-api.js for processing
+ * 
+ * Data goes to:
+ *   - Neon PostgreSQL (via document-store.js)
+ *   - NOT to Firebase Firestore
+ * 
+ * This endpoint exists for backward compatibility with the Firestore-style API.
+ */
 const { buildResponse, handleError, noContent, httpError } = require('./_lib/http');
 const { executeFirestoreApi } = require('./_lib/firestore-api');
 

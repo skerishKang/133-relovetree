@@ -31,8 +31,6 @@
             recentTreesScroll: document.getElementById('recent-trees-scroll'),
             recentSection: document.getElementById('recent-section'),
             myCreatedTreesSection: document.getElementById('my-created-trees-section'),
-            myTreesTitle: document.getElementById('my-trees-title'),
-            allTreesTitle: document.getElementById('all-trees-title'),
             localMigrationBanner: document.getElementById('local-migration-banner'),
             recentCreatedSection: document.getElementById('recent-created-section'),
             recentCreatedGrid: document.getElementById('recent-created-grid')

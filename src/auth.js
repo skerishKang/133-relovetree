@@ -1,6 +1,12 @@
 /**
  * Relovetree - Authentication Module
- * Handles Google Login/Logout and User Session
+ * 
+ * Handles Google Login/Logout and User Session via Firebase Auth.
+ * 
+ * Architecture note:
+ *   - Firebase Auth = login/session ONLY (ID token provider)
+ *   - App CRUD (trees, moments, etc.) → firestore-compat layer → Netlify Functions → Neon/Postgres
+ *   - This module does NOT interact with Firestore directly for data storage
  */
 
 // Configuration
@@ -80,7 +86,7 @@ function initAuth() {
                 console.warn('User reload skipped:', error);
             }
 updateLoginUI(user);
-    await syncUserToDatabase(user);
+await syncUserToDatabase(user); // Saves to Neon PostgreSQL via compat layer, NOT Firestore
         } else {
             console.log('User signed out');
             updateLoginUI(null);
@@ -141,9 +147,18 @@ async function signOut() {
 }
 
 /**
- * Sync user to database via Firestore compat layer
- * Note: This syncs to Neon/PostgreSQL via the compat layer, not actual Firestore
- * @param {firebase.User} user - Firebase user object
+ * Sync user profile to database
+ * 
+ * ⚠️ IMPORTANT: Despite the Firestore-style API, this saves to Neon PostgreSQL!
+ * 
+ * Flow: firebase.firestore() → firebase-firestore-compat.js → /api/firestore → PostgreSQL
+ * 
+ * What happens:
+ *   - Gets called on Auth state change (login)
+ *   - Creates/updates user document in 'users' collection
+ *   - Data goes to Neon PostgreSQL 'users' table, NOT Firestore
+ * 
+ * @param {firebase.User} user - Firebase Auth user object (real Firebase)
  * @param {number} retryCount - Current retry attempt
  * @param {number} maxRetries - Maximum retry attempts
  */

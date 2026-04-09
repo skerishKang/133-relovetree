@@ -1,3 +1,26 @@
+/**
+ * Relovetree - Firestore API Handler
+ * 
+ * ⚠️ IMPORTANT: This handles Firestore-style API but stores data in PostgreSQL!
+ * 
+ * Architecture:
+ *   Client (via firebase-firestore-compat.js) → POST /api/firestore → This Handler → PostgreSQL
+ * 
+ * What this does:
+ *   - Receives Firestore-style operations (getDoc, setDoc, updateDoc, deleteDoc, queryCollection)
+ *   - Validates Firebase ID Token (Auth only, via firebase-auth.js)
+ *   - Checks permissions (assertAuthorized)
+ *   - Delegates to document-store.js for actual PostgreSQL operations
+ * 
+ * What this does NOT do:
+ *   - No Firestore database operations
+ *   - All data goes to Neon PostgreSQL
+ * 
+ * Key concept:
+ *   - Firebase Auth = Real (login/session)
+ *   - Firestore API = Compatibility layer (API shape only)
+ *   - PostgreSQL = Real data storage
+ */
 const { getUserFromEvent } = require('./firebase-auth');
 const { httpError } = require('./http');
 const documentStore = require('./document-store');

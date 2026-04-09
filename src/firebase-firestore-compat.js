@@ -1,7 +1,31 @@
+/**
+ * Relovetree - Firestore Compatibility Layer
+ * 
+ * ⚠️ IMPORTANT: This is NOT real Firestore!
+ * 
+ * This module intercepts firebase.firestore() calls and redirects them to
+ * Neon/PostgreSQL via Netlify Functions.
+ * 
+ * Architecture:
+ *   Client Code → firebase.firestore() → [This Compat Layer] → /api/firestore → Neon/Postgres
+ * 
+ * What happens here:
+ *   - Firestore-style API (collection, doc, get, set, update, delete, where, orderBy, onSnapshot)
+ *   - Converts to HTTP POST requests to Netlify Functions
+ *   - Returns Firestore-style snapshots
+ * 
+ * What does NOT happen:
+ *   - No actual Firestore database
+ *   - No Firebase SDK for database operations
+ *   - Data is stored in Neon PostgreSQL, not Firestore
+ * 
+ * Auth note: Firebase Auth IS used for login/session (real Firebase).
+ * But database operations go through this layer to PostgreSQL.
+ */
 (function () {
-    if (typeof window === 'undefined' || typeof firebase === 'undefined') {
-        return;
-    }
+if (typeof window === 'undefined' || typeof firebase === 'undefined') {
+  return;
+}
 
     const API_ENDPOINT = '/api/firestore';
     const TIMESTAMP_KEYS = new Set([
