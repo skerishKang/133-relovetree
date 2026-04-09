@@ -331,14 +331,12 @@ function getCurrentUser() {
 async function loadPopularTrees() {
     const container = document.getElementById('popular-feed');
     if (!container) {
-        // 컨테이너가 없으면 기존 정적 카드 렌더로 대체
-        renderArtistCards();
+        doFallbackRender();
         return;
     }
 
     if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
-        // Firebase를 사용할 수 없을 때는 정적 인기 아티스트 카드 사용
-        renderArtistCards();
+        doFallbackRender();
         return;
     }
 
@@ -372,7 +370,6 @@ async function loadPopularTrees() {
             const viewCount = typeof data.viewCount === 'number' ? data.viewCount : 0;
             const shareCount = typeof data.shareCount === 'number' ? data.shareCount : 0;
 
-            // likeCount를 가장 강하게 반영하되, 조회/공유도 약하게 반영하는 인기 점수
             const popularityScore = (rawLikeCount || 0) * 1000 + viewCount * 3 + shareCount * 5;
 
             trees.push({
@@ -387,13 +384,11 @@ async function loadPopularTrees() {
             });
         });
 
-        if (trees.length === 0) {
-            // 아직 인기 데이터가 없으면 기존 정적 카드 사용
-            renderArtistCards();
+        if (!trees || trees.length === 0) {
+            doFallbackRender();
             return;
         }
 
-        // likeCount를 우선하면서 조회/공유를 보조 지표로 사용하는 정렬
         trees.sort((a, b) => (b.popularityScore || 0) - (a.popularityScore || 0));
 
         const cardsHTML = trees.map((tree) => {
@@ -407,8 +402,23 @@ async function loadPopularTrees() {
         container.innerHTML = cardsHTML;
     } catch (error) {
         console.error('Failed to load popular trees:', error);
-        // 오류 시에도 기존 정적 카드로 fallback
-        renderArtistCards();
+        doFallbackRender();
+    }
+}
+
+function doFallbackRender() {
+    const container = document.getElementById('popular-feed');
+    if (!container) {
+        console.warn('Fallback: popular-feed container not found');
+        return;
+    }
+    
+    if (typeof window.renderArtistCards === 'function') {
+        window.renderArtistCards(window.IndexArtists.POPULAR_ARTISTS);
+    } else if (typeof window.IndexRender !== 'undefined' && typeof window.IndexRender.renderArtistCards === 'function') {
+        window.IndexRender.renderArtistCards(window.IndexArtists.POPULAR_ARTISTS);
+    } else {
+        console.error('Fallback renderArtistCards function not found');
     }
 }
 // 특정 액션 전에 로그인을 보장하는 헬퍼

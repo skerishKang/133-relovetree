@@ -11,6 +11,70 @@
 - **Backend**: Netlify Functions (Node.js)
 - **Runbook**: [docs/ops/RUNBOOK.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/RUNBOOK.md)
 
+### 데이터 흐름 이해 (중요)
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                        클라이언트 (브라우저)                          │
+│                                                                      │
+│  ┌─────────────┐    ┌──────────────────────────────────────┐         │
+│  │ Firebase    │    │ Firestore 호환 레이어                │         │
+│  │ Auth SDK    │    │ (firebase-firestore-compat.js)       │         │
+│  │             │    │ - Firestore API와 동일한 인터페이스    │         │
+│  │ 로그인/세션  │    │ - 실제로는 Netlify Functions 호출    │         │
+│  └──────┬──────┘    └──────────────┬───────────────────────┘         │
+│         │                        │                                  │
+│         │ ID Token               │ POST /.netlify/functions/...    │
+│         │                        ▼                                  │
+└─────────┼──────────────────────────────────────────────────────────┘
+          │                        │
+          ▼                        ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                      Netlify Functions                              │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────┐     │
+│  │ firestore-api.js                                            │     │
+│  │ - Firebase ID Token 검증 (Auth 확인)                       │     │
+│  │ - 권한 판정 (admin/free/pro role)                           │     │
+│  │ - document-store.js 호출                                    │     │
+│  └─────────────────────┬───────────────────────────────────────┘     │
+│                        │                                             │
+│                        ▼ SQL 쿼리                                   │
+│  ┌────────────────────────────────────────────────────────────┐     │
+│  │ document-store.js                                           │     │
+│  │ - Postgres CRUD 구현                                        │     │
+│  │ - Firestore FieldValue 변환 (serverTimestamp, increment 등) │     │
+│  └─────────────────────┬───────────────────────────────────────┘     │
+└──────────────────────┬───────────────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                      Neon (PostgreSQL)                              │
+│                                                                      │
+│  Tables: users, trees, tree_comments, community_posts,              │
+│          community_comments, ai_logs, ...                             │
+│                                                                      │
+│  - 실제 데이터는 payload (jsonb) 컬럼에 저장                          │
+│  - 인덱싱 필드는 dedicated columns (id, role, name 등)               │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### 중요: "Firestore처럼 보이지만 Neon으로 간다"
+
+| 단계 | 뭐가 보이나 | 실제로 무엇 |
+|------|------------|------------|
+| **1. 클라이언트 코드** | `firebase.firestore().collection('trees').get()` | Firestore 호환 레이어가 fetch로 변환 |
+| **2. API 호출** | POST `/.netlify/functions/firestore-api` | Netlify Function 실행 |
+| **3. 인증** | Firebase ID Token 검증 | Firebase Auth만 사용 |
+| **4. 데이터** | Firestore 문서처럼 보임 | **Neon Postgres의 row** |
+
+**왜 이렇게 했나요?**
+- 원래 Firestore를 사용했으나 Neon/Postgres로 마이그레이션함
+- 프론트엔드 코드 변경을 최소화하기 위해 Firestore API 호환 레이어 유지
+- 새 기여자는 `firebase-firestore-compat.js`를 보면서 "아, 이건 어댑터구나"로 이해
+
+**상세 분석**: [docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md)
+
 ---
 
 ## Netlify Required Environment Variables

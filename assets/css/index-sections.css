@@ -50,28 +50,6 @@
   color: #f43f5e;
 }
 
-.desktop-my-trees {
-  width: min(100%, 1120px);
-  margin: 0 auto 3rem;
-  padding: 0 1rem;
-}
-
-.desktop-my-trees-heading {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
-  color: #0f172a;
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-.desktop-my-trees-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-}
-
 .recent-scroll-row {
   display: flex;
   gap: 1rem;

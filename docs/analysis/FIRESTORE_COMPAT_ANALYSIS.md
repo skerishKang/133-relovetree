@@ -302,5 +302,32 @@ curl -s -X POST https://lovetree.limone.dev/.netlify/functions/firestore-api \
 
 ## 8. 참고 문서
 
-- `docs/ops/OPERATIONS.md` - 환경 변수/배포 검증
+- [README.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/README.md) - 프로젝트 전체 개요, 아키텍처 다이어그램
+- [docs/ops/OPERATIONS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/OPERATIONS.md) - 환경 변수/배포 검증, 데이터 흐름 상세 설명
+- [docs/ops/RUNBOOK.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/RUNBOOK.md) - 배포 런북, 아키텍처 주의사항
 - `scripts/smoke-firestore-api.js` - 함수 smoke 테스트
+
+---
+
+### ⚠️ 신규 기여자 필독 요약
+
+**"Firestore처럼 보이지만 실제론 Neon이다"**
+
+이 프로젝트의 가장 큰 특징은 **클라이언트 코드는 Firestore API를 사용하는 것처럼 보이지만, 실제 데이터는 Neon PostgreSQL에 저장**된다는 점입니다.
+
+| 컴포넌트 | 실제 역할 | 저장소 |
+|----------|----------|--------|
+| Firebase Auth | 로그인/세션 | Firebase (Auth만) |
+| Firestore 호환 레이어 | API 어댑터 | - (중간 변환만) |
+| Netlify Functions | API 게이트웨이, 권한 검증 | - |
+| **Neon/PostgreSQL** | **실제 앱 데이터 저장** | **users, trees, posts 등** |
+
+**왜 이런 구조?**
+- 원래 Firestore 사용 → Neon으로 마이그레이션
+- 프론트 코드 변경 최소화를 위해 호환 레이어 유지
+- 새로운 기능 개발 시 Firestore API로 작성 → compat 레이어가 중재
+
+**이 문서를 읽고 나면**
+- 클라이언트의 `.collection().get()`이 실제로 어떻게 Postgres SQL로 변환되는지 이해
+- 어떤 코드를 수정하면 compat 레이어가 깨지는지 파악
+- 왜 `document-store.js`에서 SQL 쿼리를 봐야 하는지 인지

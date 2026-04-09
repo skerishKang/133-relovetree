@@ -79,8 +79,8 @@ function initAuth() {
                 }
                 console.warn('User reload skipped:', error);
             }
-            updateLoginUI(user);
-            await saveUserToFirestore(user);
+updateLoginUI(user);
+    await syncUserToDatabase(user);
         } else {
             console.log('User signed out');
             updateLoginUI(null);
@@ -141,34 +141,38 @@ async function signOut() {
 }
 
 /**
- * Save or Update User in Firestore
+ * Sync user to database via Firestore compat layer
+ * Note: This syncs to Neon/PostgreSQL via the compat layer, not actual Firestore
+ * @param {firebase.User} user - Firebase user object
+ * @param {number} retryCount - Current retry attempt
+ * @param {number} maxRetries - Maximum retry attempts
  */
-async function saveUserToFirestore(user, retryCount = 0, maxRetries = 2) {
-    const db = firebase.firestore();
-    const userRef = db.collection('users').doc(user.uid);
-    const fallbackDisplayName = user.displayName || user.email || '사용자';
+async function syncUserToDatabase(user, retryCount = 0, maxRetries = 2) {
+  const db = firebase.firestore();
+  const userRef = db.collection('users').doc(user.uid);
+  const fallbackDisplayName = user.displayName || user.email || '사용자';
 
-    try {
-        await userRef.set({
-            email: user.email || '',
-            displayName: fallbackDisplayName,
-            photoURL: user.photoURL || '',
-            role: 'free',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-    } catch (error) {
-        console.error('Error saving user (attempt ' + (retryCount + 1) + '):', error.message);
-        
-        if (retryCount < maxRetries && (error.message.includes('Failed to fetch') || error.message.includes('network') || error.message.includes('500'))) {
-            console.log('Retrying user save... (' + (retryCount + 1) + '/' + maxRetries + ')');
-            await new Promise(r => setTimeout(r, 500 * (retryCount + 1)));
-            return saveUserToFirestore(user, retryCount + 1, maxRetries);
-        }
-        
-        console.warn('User save failed after ' + (retryCount + 1) + ' attempt(s). User may exist or service temporarily unavailable.');
+  try {
+    await userRef.set({
+      email: user.email || '',
+      displayName: fallbackDisplayName,
+      photoURL: user.photoURL || '',
+      role: 'free',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  } catch (error) {
+    console.error('Error saving user (attempt ' + (retryCount + 1) + '):', error.message);
+
+    if (retryCount < maxRetries && (error.message.includes('Failed to fetch') || error.message.includes('network') || error.message.includes('500'))) {
+      console.log('Retrying user save... (' + (retryCount + 1) + '/' + maxRetries + ')');
+      await new Promise(r => setTimeout(r, 500 * (retryCount + 1)));
+      return syncUserToDatabase(user, retryCount + 1, maxRetries);
     }
+
+    console.warn('User save failed after ' + (retryCount + 1) + ' attempt(s). User may exist or service temporarily unavailable.');
+  }
 }
 
 /**

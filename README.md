@@ -7,8 +7,33 @@
 - **운영 URL**: https://lovetree.limone.dev
 - **정적 프론트엔드**: plain HTML + plain CSS + 브라우저 JS
 - **백엔드**: Netlify Functions
-- **데이터**: Firebase Auth + Firestore 호환 레이어 + PostgreSQL
 - **테스트**: Playwright smoke / production QA
+
+### 아키텍처 개요 (중요)
+
+```
+클라이언트                    Netlify Functions              저장소
+┌──────────────┐             ┌──────────────────┐          ┌──────────────┐
+│ Firebase Auth│ ─────────── │ firestore-api.js │ ──────── │ Neon/Postgres│
+│ (로그인/세션)│   ID Token  │                  │   SQL    │ (실제 데이터)│
+└──────────────┘             └──────────────────┘          └──────────────┘
+       │                              │
+       ▼                              ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Firestore 호환 레이어 (firebase-firestore-compat.js)                      │
+│ - 클라이언트 코드는 Firestore API처럼 보이지만                            │
+│   실제로는 Netlify Functions → Postgres 로 전환됨                        │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+| 구성 요소 | 용도 | 실제 저장소 |
+|-----------|------|-------------|
+| **Firebase Auth** | 로그인/세션 관리 | Firebase (Auth만) |
+| **Firestore 호환 레이어** | 프론트엔드 코드 호환성 | ❌ 실제 데이터 없음 |
+| **Netlify Functions** | API 엔드포인트, 권한 검증 | - |
+| **Neon/PostgreSQL** | 실제 앱 데이터 저장 | ✅ `trees`, `users`, `posts` 등 |
+
+**핵심**: 클라이언트는 Firestore API를 호출하는 것처럼 보이지만, 모든 데이터는 **Neon PostgreSQL**에 저장됩니다.
 
 ## 프로젝트 구조
 

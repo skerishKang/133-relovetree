@@ -9,6 +9,39 @@
 - **Netlify Site ID**: `5aaf0176-4c32-43f3-8e10-fc209e5c17fa`
 - **Fossil**: 로컬 병행 사용, Git 배포와는 별도
 
+### ⚠️ 데이터 아키텍처 주의사항
+
+**신규 기여자가 가장 많이 혼란스러워하는 부분입니다.**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 클라이언트는 Firestore 코드를 쓰지만, 데이터는 Neon Postgres에 저장됨 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   클라이언트 코드          │  실제 저장소                        │
+│   ─────────────────────────────────────────────────────────    │
+│   db.collection('trees')   │  Neon/PostgreSQL                    │
+│   .where(...)            │  tables: users, trees, ...          │
+│   .get()                 │                                     │
+│                          │  Firestore에는 실제 데이터가 없음    │
+│                          │  - Auth만 Firebase                  │
+│                          │  - 모든 앱 데이터는 Neon            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**왜 이런 구조인가?**
+1. 원래 Firebase (Auth + Firestore)로 시작
+2. 이후 Neon/Postgres로 마이그레이션
+3. 프론트 코드 변경 최소화를 위해 Firestore 호환 레이어(`firebase-firestore-compat.js`) 유지
+
+**기여 시 기억할 것**
+- `firestore-api.js` → Neon Postgres로 연결됨
+- `firebase.firestore()` 호출 → 실제로는 compat 레이어가 중재
+- 데이터 조회/저장 문제 → Postgres 테이블/쿼리 확인
+- 인증 문제 → Firebase Auth 확인
+
+**자세한 분석**: [docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md)
+
 ## 2. Git 작업
 
 ### 상태 확인
