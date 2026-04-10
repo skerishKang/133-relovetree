@@ -59,6 +59,12 @@ body[data-page="home"] dialog {
   font-weight: 700;
 }
 
+.search-tab-btn:focus-visible,
+.search-page-btn:focus-visible {
+  outline: 2px solid rgba(244, 63, 94, 0.35);
+  outline-offset: 2px;
+}
+
 .search-tab-btn.is-active,
 .search-tab-btn:hover,
 .search-page-btn:hover {

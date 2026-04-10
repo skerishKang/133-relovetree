@@ -1,36 +1,4 @@
-  border-color: rgba(226, 232, 240, 0.9);
-  color: #334155;
-}
-
-.ui-btn-dark {
-  background: #0f172a;
-  color: #fff;
-}
-
-.ui-btn-dark:hover {
-  background: #1e293b;
-}
-
-.ui-btn-brand-outline {
-  border-color: rgba(244, 63, 94, 0.24);
-  color: #e11d48;
-}
-
-.ui-btn-subtle-outline {
-  border-color: rgba(148, 163, 184, 0.34);
-  color: #334155;
-}
-
-.ui-btn-pill {
-  border-radius: 999px;
-}
-
-.ui-btn-sm {
-  min-height: 2.35rem;
-  padding: 0.6rem 0.95rem;
-  font-size: 0.825rem;
-}
-
+/* Shared modal shell, forms, and modal actions */
 .modal-shell {
   width: min(100vw - 1.5rem, 44rem);
   max-width: 44rem;
@@ -130,28 +98,59 @@
 }
 
 .modal-actions {
-  background: rgba(255, 251, 235, 0.94);
-}
-
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
-.notice-banner-warn {
-  border-color: rgba(251, 191, 36, 0.3);
-  background: rgba(255, 251, 235, 0.96);
+.modal-actions-wrap {
+  flex-wrap: wrap;
+}
 
-/* Responsive Modal */
+.modal-actions-spacious {
+  padding-top: 0.25rem;
+}
+
+.modal-action-btn {
+  min-width: 7rem;
+}
+
+.modal-submit-btn {
+  flex: 1 1 10rem;
+}
+
+.modal-close,
+.settings-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  color: #64748b;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.modal-close:focus-visible,
+.settings-modal-close:focus-visible {
+  outline: 2px solid rgba(244, 63, 94, 0.35);
+  outline-offset: 2px;
+}
+
+.modal-close:hover,
+.settings-modal-close:hover {
+  background: rgba(241, 245, 249, 0.95);
+  color: #0f172a;
+}
+
 @media (max-width: 767px) {
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.6);
-}
+  .modal-panel {
+    padding: 1.1rem;
+    border-radius: 1.25rem;
+  }
 
-.menu-toggle-bar {
-  display: block;
-  width: 1rem;
-  height: 2px;
-  border-radius: 999px;
+  .modal-actions {
+    justify-content: stretch;
+  }
 }

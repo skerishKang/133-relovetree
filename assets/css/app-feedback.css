@@ -1,75 +1,4 @@
-  height: 1.25rem;
-  flex-shrink: 0;
-}
-
-.ui-icon-md {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-}
-
-.page-shell {
-  min-height: 100vh;
-}
-
-.top-nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-.top-nav-inner {
-  width: min(100%, 1200px);
-  margin: 0 auto;
-  padding: 0.875rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.modal-actions-wrap {
-  flex-wrap: wrap;
-}
-
-.modal-actions-spacious {
-  padding-top: 0.25rem;
-}
-
-.modal-action-btn {
-  min-width: 7rem;
-}
-
-.modal-submit-btn {
-  flex: 1 1 10rem;
-}
-
-.modal-close,
-.settings-modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 999px;
-  color: #64748b;
-  transition: background-color 0.18s ease, color 0.18s ease;
-}
-
-.modal-close:hover,
-.settings-modal-close:hover {
-  background: rgba(241, 245, 249, 0.95);
-  color: #0f172a;
-}
-
+/* Shared feedback, empty states, and notice banners */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -89,6 +18,7 @@
   color: #64748b;
   font-size: 0.92rem;
 }
+
 .empty-state-icon {
   display: inline-flex;
   align-items: center;
@@ -131,11 +61,53 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.1rem;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   border-radius: 1.1rem;
-
-/* Responsive Notice */
-@media (max-width: 767px) {
+  background: rgba(248, 250, 252, 0.94);
 }
 
-.menu-toggle-bar + .menu-toggle-bar {
+.notice-banner-warn {
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(255, 251, 235, 0.96);
+}
+
+.notice-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.notice-banner-title {
+  color: #78350f;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.notice-banner-desc,
+.notice-banner-desc-warn {
+  color: #92400e;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.notice-banner-actions {
+  flex-wrap: wrap;
+}
+
+.notice-banner-action {
+  white-space: nowrap;
+}
+
+.notice-banner-action-warn {
+  border-color: rgba(251, 191, 36, 0.24);
+  background: rgba(255, 255, 255, 0.96);
+  color: #92400e;
+}
+
+@media (max-width: 767px) {
+  .notice-banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

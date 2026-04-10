@@ -1,21 +1,9 @@
-}
-
-.editor-ai-moment-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .editor-comments-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
   background: #fff;
-}
-
-  color: #64748b;
-  font-size: 0.6875rem;
 }
 
 .editor-ai-context {
@@ -30,8 +18,6 @@
 
 .editor-ai-time-input {
   max-width: 5rem;
-}
-  }
 }
 
 .editor-ai-actions {
@@ -207,3 +193,4 @@
   border-radius: 9999px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.16);
+}

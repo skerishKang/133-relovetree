@@ -155,9 +155,6 @@
   background: #fff;
 }
 
-  font-weight: 700;
-}
-
 .editor-close-btn-round {
   width: 1.75rem;
   height: 1.75rem;
@@ -182,6 +179,7 @@
   font-weight: 700;
 }
 
+.editor-ai-body {
   overflow-y: auto;
   padding: 0 1rem 0.75rem;
   display: flex;
@@ -252,3 +250,5 @@
 @keyframes editor-spin {
   to {
     transform: rotate(360deg);
+  }
+}
