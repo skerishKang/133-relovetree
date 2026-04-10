@@ -66,7 +66,7 @@
 | **1. 클라이언트 코드** | `firebase.firestore().collection('trees').get()` | Firestore 호환 레이어가 fetch로 변환 |
 | **2. API 호출** | POST `/.netlify/functions/firestore-api` | Netlify Function 실행 |
 | **3. 인증** | Firebase ID Token 검증 | Firebase Auth만 사용 |
-| **4. 데이터** | Firestore 문서처럼 보임 | **Neon Postgres의 row** |
+| **4. 데이터** | Firestore 문서처럼 보임 | **Neon Postgres의 row** (compat API 경유) |
 
 **왜 이렇게 했나요?**
 - 원래 Firestore를 사용했으나 Neon/Postgres로 마이그레이션함

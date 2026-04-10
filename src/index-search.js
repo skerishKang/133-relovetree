@@ -327,7 +327,8 @@ function getCurrentUser() {
     }
 }
 
-// Firestore에서 좋아요 수 기준으로 인기 트리를 불러와 상단 디스커버리 섹션에 렌더링
+// Neon/Postgres trees 테이블에서 좋아요 수 기준으로 인기 트리를 조회해 상단 디스커버리 섹션에 렌더링.
+// 결과가 비거나 오류 시 doFallbackRender()로 정적 아티스트 카드를 표시한다.
 async function loadPopularTrees() {
     const container = document.getElementById('popular-feed');
     if (!container) {

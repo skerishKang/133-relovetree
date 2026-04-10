@@ -72,6 +72,7 @@
         return myTrees;
     }
 
+    // compat API 응답(doc)을 내부 트리 객체로 변환. 실제 데이터는 Neon/Postgres에서 옴.
     function buildTreeFromFirestoreDoc(doc, data) {
         let lastUpdated = data.lastUpdated;
         if (lastUpdated && typeof lastUpdated.toDate === 'function') {
@@ -100,6 +101,7 @@
         };
     }
 
+    // compat API를 통해 Neon/Postgres trees 테이블에서 현재 사용자 소유 트리 조회
     async function loadUserTreesFromFirestore(user) {
         if (!user) return null;
 
@@ -126,12 +128,13 @@ try {
 
             return myTrees;
         } catch (error) {
-            console.error('Failed to load trees from Firestore:', error);
+            console.error('Failed to load trees from Neon/Postgres:', error);
             return null;
         }
     }
 
-async function loadRecentCreatedTreesFromFirestore() {
+    // compat API를 통해 Neon/Postgres trees 테이블에서 최근 생성 트리 조회
+    async function loadRecentCreatedTreesFromFirestore() {
   if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
     return [];
   }

@@ -240,7 +240,7 @@ npx firebase-tools deploy --only hosting --project relovetree
   - Google OAuth (홈 상단 버튼)
   - 이메일/비밀번호 (`login.html`)
 - 관리자 권한
-  - Firestore `users` 컬렉션 문서에 `role: 'admin'` 이면 관리자
+  - Neon/Postgres `users` 테이블(compat API 경유)에서 `role: 'admin'` 이면 관리자
   - `admin.html`에서 트리/사용자/AI 로그 관리
 
 ### A.6. 주요 파일 구조

@@ -28,7 +28,7 @@ src/api/
 ```
 
 **추출 대상**:
-- Firestore 쿼리 (`db.collection('trees').where(...)`)
+- Neon/Postgres 쿼리 (compat API: `db.collection('trees').where(...)`)
 - 데이터 정규화 로직 (`normalizeTreeItem`, `normalizeCommunityTreeItem`)
 - 페이지네이션 로직
 
