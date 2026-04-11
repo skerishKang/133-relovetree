@@ -46,12 +46,15 @@ button {
     border: none;
     outline: none;
     background: none;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+button:active { transform: scale(0.96); }
 
 a {
     text-decoration: none;
     color: inherit;
+    transition: 0.2s;
 }
 
 .shell {

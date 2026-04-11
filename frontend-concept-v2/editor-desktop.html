@@ -9,12 +9,20 @@
 </head>
 <body class="ed-page">
     <aside class="ed-sidebar">
-        <div class="logo">🌱 Relovetree</div>
+        <div class="logo">🌿 Relovetree</div>
         <nav class="ed-nav">
-            <a href="home.html" class="ed-nav-item">🏠 홈</a>
-            <a href="my-trees.html" class="ed-nav-item active">🌳 내 러브트리</a>
-            <a href="community.html" class="ed-nav-item">✨ 모아보기</a>
-            <a href="settings.html" class="ed-nav-item">⚙️ 설정</a>
+            <a href="home.html" class="ed-nav-item">
+                <span class="nav-ico">🏠</span> 홈
+            </a>
+            <a href="my-trees.html" class="ed-nav-item active">
+                <span class="nav-ico">🌱</span> 내 러브트리
+            </a>
+            <a href="community.html" class="ed-nav-item">
+                <span class="nav-ico">✨</span> 모아보기
+            </a>
+            <a href="settings.html" class="ed-nav-item">
+                <span class="nav-ico">⚙️</span> 설정
+            </a>
         </nav>
         <button class="side-btn">새 러브트리 만들기</button>
     </aside>
@@ -29,18 +37,21 @@
 
         <section class="canvas">
             <svg class="canvas-svg" width="100%" height="100%" viewBox="0 0 1200 800">
-                <!-- Main trunk -->
-                <path d="M50,400 Q150,400 300,400" stroke="#d3c4bb" fill="none" stroke-width="6" stroke-linecap="round" />
+                <!-- Main trunk (Organic with tapering feel) -->
+                <path class="branch-path main" d="M50,400 C150,400 200,400 350,400" />
                 
                 <!-- Major branches -->
-                <path d="M300,400 Q400,400 500,250" stroke="#d3c4bb" fill="none" stroke-width="4" stroke-linecap="round" />
-                <path d="M300,400 Q400,400 550,550" stroke="#d3c4bb" fill="none" stroke-width="4" stroke-linecap="round" />
+                <path class="branch-path sub" d="M350,400 C450,400 480,350 550,280" />
+                <path class="branch-path sub" d="M350,400 C450,400 480,450 630,550" />
                 
                 <!-- Minor sub-branches -->
-                <path d="M500,250 Q600,150 750,150" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
-                <path d="M500,250 Q580,250 650,320" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
-                <path d="M550,550 Q650,550 780,600" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
-                <path d="M550,550 Q600,650 680,720" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
+                <path class="branch-path leaf" d="M550,280 C620,210 650,180 750,150" />
+                <path class="branch-path leaf" d="M550,280 C600,280 640,300 680,340" />
+                <path class="branch-path leaf" d="M630,550 C700,550 750,580 820,620" />
+                <path class="branch-path leaf" d="M630,550 C680,620 720,680 780,720" />
+                
+                <!-- Secondary level branches -->
+                 <path class="branch-path leaf" d="M150,400 C150,300 180,250 250,200" />
             </svg>
 
             <!-- Active Node (mirrors editor-desktop-active.png) -->
@@ -113,13 +124,15 @@
         </div>
 
         <div class="pan-meta">
-            <div class="pm-row"><b>날짜:</b> 2023.10.15</div>
-            <div class="pm-row"><b>태그:</b> 
-                <span class="pm-tag">#기억</span>
-                <span class="pm-tag">#감동</span>
-                <span class="pm-tag">#설렘</span>
+            <div class="pm-row"><b>날짜</b> <div class="pm-val">2023.10.15</div></div>
+            <div class="pm-row"><b>태그</b> 
+                <div class="pm-val">
+                    <span class="pm-tag">#기억</span>
+                    <span class="pm-tag">#감동</span>
+                    <span class="pm-tag">#설렘</span>
+                </div>
             </div>
-            <div class="pm-row"><b>메모:</b> 팬들과 함께 감동받았던 날, 평생 잊지 못할 추억이 생겼어요!</div>
+            <div class="pm-row"><b>메모</b> <div class="pm-val">팬들과 함께 감동받았던 날, 평생 잊지 못할 추억이 생겼어요!</div></div>
         </div>
 
         <div class="pan-setting">
