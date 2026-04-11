@@ -1,6 +1,6 @@
-# Relovetree Image Generation Prompts
+# Lovetree Image Generation Prompts
 
-이 문서는 Relovetree 설문/프론트 리디자인용 화면 이미지를 생성하기 위한 프롬프트 모음입니다.
+이 문서는 Lovetree 설문/프론트 리디자인용 화면 이미지를 생성하기 위한 프롬프트 모음입니다.
 
 공통 규칙:
 - 실제 아이돌 사진, 실제 플랫폼 로고, 저작권 이미지 사용 금지
@@ -14,10 +14,10 @@
 ## 1. `home-landing.png`
 
 ```text
-Create a warm, premium landing page mockup for Relovetree, a K-pop fan memory app.
+Create a warm, premium landing page mockup for Lovetree, a K-pop fan memory app.
 
 Concept:
-Relovetree helps fans save meaningful moments as video cards and connect them into a growing LoveTree.
+Lovetree helps fans save meaningful moments as video cards and connect them into a growing LoveTree.
 
 Screen:
 - Desktop web landing page
@@ -38,7 +38,7 @@ Screen:
 ## 2. `community-discovery.png`
 
 ```text
-Create a community discovery page mockup for Relovetree.
+Create a community discovery page mockup for Lovetree.
 
 Concept:
 Users can browse LoveTrees made by other fans and discover emotional fan memory flows.
@@ -61,7 +61,7 @@ Screen:
 ## 3. `my-trees-dashboard.png`
 
 ```text
-Create a “My Trees” dashboard mockup for Relovetree.
+Create a “My Trees” dashboard mockup for Lovetree.
 
 Concept:
 A user manages their own LoveTrees, sees recent edits, and creates a new tree.
@@ -84,7 +84,7 @@ Screen:
 ## 4. `login-my-page.png`
 
 ```text
-Create a login and profile page mockup for Relovetree.
+Create a login and profile page mockup for Lovetree.
 
 Concept:
 Logging in protects and continues the user's fan memories.
@@ -106,7 +106,7 @@ Screen:
 ## 5. `memory-detail-view.png`
 
 ```text
-Create a memory detail screen mockup for Relovetree.
+Create a memory detail screen mockup for Lovetree.
 
 Concept:
 A user opens one saved fan moment and sees the video, memo, emotion, and connected moments.
@@ -154,7 +154,7 @@ Screen:
 ## 7. `search-save-video.png`
 
 ```text
-Create a video search and save screen mockup for Relovetree.
+Create a video search and save screen mockup for Lovetree.
 
 Concept:
 A user searches YouTube-style video results and saves one directly into a LoveTree.
@@ -175,7 +175,7 @@ Screen:
 ## 8. `empty-first-tree.png`
 
 ```text
-Create an empty-state screen mockup for a first-time Relovetree user.
+Create an empty-state screen mockup for a first-time Lovetree user.
 
 Concept:
 The user has no LoveTrees yet, so the app gently invites them to create the first fan memory tree.
@@ -197,7 +197,7 @@ Screen:
 ## 9. `editor-desktop-empty.png`
 
 ```text
-Create an empty desktop editor canvas for Relovetree.
+Create an empty desktop editor canvas for Lovetree.
 
 Concept:
 A user is starting a new LoveTree on desktop.
@@ -219,7 +219,7 @@ Screen:
 ## 10. `editor-desktop-active.png`
 
 ```text
-Create an active desktop editor canvas for Relovetree.
+Create an active desktop editor canvas for Lovetree.
 
 Concept:
 A user is editing a LoveTree with connected video memory cards.
@@ -241,7 +241,7 @@ Screen:
 ## 11. `community-tree-detail.png`
 
 ```text
-Create a shared community LoveTree detail page mockup for Relovetree.
+Create a shared community LoveTree detail page mockup for Lovetree.
 
 Concept:
 A visitor opens a shared LoveTree made by another fan.
@@ -263,7 +263,7 @@ Screen:
 ## 12. `settings-privacy.png`
 
 ```text
-Create a settings and privacy screen mockup for Relovetree.
+Create a settings and privacy screen mockup for Lovetree.
 
 Concept:
 A user controls whether their LoveTree is private, link-shared, or public.

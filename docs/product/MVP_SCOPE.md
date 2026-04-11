@@ -1,4 +1,4 @@
-# Relovetree MVP Scope
+# Lovetree MVP Scope
 
 ## Goal
 
@@ -10,7 +10,7 @@
 
 ## MVP Definition
 
-Relovetree MVP는 아래 경험이 한 흐름으로 이어지면 성립한다.
+Lovetree MVP는 아래 경험이 한 흐름으로 이어지면 성립한다.
 
 1. 영상 링크를 가져온다
 2. 특정 순간을 기록한다

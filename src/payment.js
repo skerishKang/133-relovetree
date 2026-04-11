@@ -1,5 +1,5 @@
 /**
- * Relovetree - Payment Module
+ * Lovetree - Payment Module
  * Integrates Toss Payments
  * Note: role/pro 권한 변경은 서버 검증 후에만 처리되어야 한다.
  */
@@ -12,7 +12,7 @@ function getPaymentConfig() {
     return {
         clientKey: clientKey,
         amount: amount,
-        orderName: runtimeConfig.orderName || 'Relovetree Pro (무제한 이용권)',
+        orderName: runtimeConfig.orderName || 'Lovetree Pro (무제한 이용권)',
         verifyEndpoint: runtimeConfig.verifyEndpoint || '/api/payment/verify'
     };
 }
@@ -65,7 +65,7 @@ function requestPayment(userEmail, userName) {
         amount: paymentConfig.amount,
         orderId: orderId,
         orderName: paymentConfig.orderName,
-        customerName: userName || 'Relovetree User',
+        customerName: userName || 'Lovetree User',
         customerEmail: userEmail,
         successUrl: window.location.origin + '/index.html?payment=success&orderId=' + orderId,
         failUrl: window.location.origin + '/index.html?payment=fail',

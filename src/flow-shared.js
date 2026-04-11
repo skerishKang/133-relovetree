@@ -1,6 +1,6 @@
 /**
  * ⚠️ OFFICIAL CLIENT ENTRY - Auth: Firebase / Data: Neon Postgres via compat layer
- * Relovetree Flow A Shared Utilities
+ * Lovetree Flow A Shared Utilities
  * 
  * Uses: window.postgresDB (official browser entry point)
  * 

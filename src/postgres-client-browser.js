@@ -43,7 +43,7 @@
     window.postgresDB = window.firebase.firestore();
   }
 
-  window.RelovetreeDataLayer = Object.assign({}, window.RelovetreeDataLayer, {
+  window.LovetreeDataLayer = Object.assign({}, window.LovetreeDataLayer, {
     auth: 'firebase',
     data: 'neon-postgres',
     transport: 'compat-layer',

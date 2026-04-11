@@ -6,7 +6,7 @@
     window.RELOVETREE_PAYMENT_CONFIG = Object.assign({
         clientKey: paymentMeta ? String(paymentMeta.getAttribute('content') || '').trim() : '',
         amount: 9900,
-        orderName: 'Relovetree Pro (무제한 이용권)',
+        orderName: 'Lovetree Pro (무제한 이용권)',
         verifyEndpoint: '/api/payment/verify'
     }, window.RELOVETREE_PAYMENT_CONFIG || {});
     window.RELOVETREE_APP_CHECK_CONFIG = Object.assign({

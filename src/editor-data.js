@@ -141,10 +141,10 @@
         if (loadedData) {
             runtime.initState(loadedData);
             if (window.EditorHeaderHelpers && typeof window.EditorHeaderHelpers.setTreeTitle === 'function') {
-                window.EditorHeaderHelpers.setTreeTitle(runtime, loadedData.name || 'My Tree');
+                window.EditorHeaderHelpers.setTreeTitle(runtime, loadedData.name || '내 트리');
                 window.EditorHeaderHelpers.syncReadOnlyState(runtime);
             } else {
-                document.getElementById('tree-title').innerText = loadedData.name || 'My Tree';
+                document.getElementById('tree-title').innerText = loadedData.name || '내 트리';
             }
             runtime.render();
             runtime.updateTreeStatsBanner();

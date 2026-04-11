@@ -1,5 +1,5 @@
 /**
- * Relovetree - Index Page Runtime & Orchestration
+ * Lovetree - Index Page Runtime & Orchestration
  * Handles mobile shell, menu interactions, and main data loading flows.
  */
 

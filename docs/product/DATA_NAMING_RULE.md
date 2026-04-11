@@ -1,8 +1,8 @@
-# Relovetree Data Naming Rule
+# Lovetree Data Naming Rule
 
 ## Purpose
 
-이 문서는 Relovetree에서 왜 `Firestore`라는 이름이 남아 있는데 실제 저장소는 `Neon/Postgres`인지, 그리고 앞으로 신규 작업에서 어떤 이름을 써야 하는지를 고정하기 위한 규칙 문서다.
+이 문서는 Lovetree에서 왜 `Firestore`라는 이름이 남아 있는데 실제 저장소는 `Neon/Postgres`인지, 그리고 앞으로 신규 작업에서 어떤 이름을 써야 하는지를 고정하기 위한 규칙 문서다.
 
 지금 단계의 목표는 실제 파일명을 한 번에 다 바꾸는 것이 아니라, 신규 작업이 더 이상 잘못된 이름을 기준으로 자라지 않게 막는 것이다.
 

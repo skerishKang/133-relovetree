@@ -1,6 +1,6 @@
 /**
  * Auth: Firebase / Data: Neon Postgres via compat layer
- * Relovetree Memory Detail View
+ * Lovetree Memory Detail View
  */
 (function () {
     var F = window.FlowShared;

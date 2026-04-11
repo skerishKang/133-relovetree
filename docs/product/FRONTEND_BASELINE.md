@@ -1,8 +1,8 @@
-# Relovetree Frontend Baseline
+# Lovetree Frontend Baseline
 
 ## 1. 개요 (Baseline Context)
 
-`frontend-concept-v2` 시안은 Relovetree 제품의 시각적 목표이자 UX 가이드라인입니다. 이 문서는 단순한 시안 목록을 넘어, 실제 프로덕션 코드(`src/`, `pages/`)로 통합될 때의 기준을 정의합니다.
+`frontend-concept-v2` 시안은 Lovetree 제품의 시각적 목표이자 UX 가이드라인입니다. 이 문서는 단순한 시안 목록을 넘어, 실제 프로덕션 코드(`src/`, `pages/`)로 통합될 때의 기준을 정의합니다.
 
 **중요 지침:**
 - **시안은 가이드다**: 시안을 HTML로 복제하는 작업과 실제 기능을 연결하는 작업은 별개로 관리합니다.

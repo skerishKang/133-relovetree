@@ -1,5 +1,5 @@
 /**
- * Relovetree - Admin Dashboard Logic
+ * Lovetree - Admin Dashboard Logic
  */
 
 // Configuration

@@ -1,5 +1,5 @@
 /**
- * Relovetree - Authentication Module
+ * Lovetree - Authentication Module
  * 
  * Handles Google Login/Logout and User Session via Firebase Auth.
  * 

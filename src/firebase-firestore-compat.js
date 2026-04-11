@@ -1,5 +1,5 @@
 /**
- * ⚠️ LEGACY SHIM - Relovetree Firestore Compatibility Layer
+ * ⚠️ LEGACY SHIM - Lovetree Firestore Compatibility Layer
  * 
  * DO NOT USE as primary entry point for new code.
  * 

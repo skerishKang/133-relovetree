@@ -1,5 +1,5 @@
 /**
- * Relovetree - Shared JavaScript utilities and configurations
+ * Lovetree - Shared JavaScript utilities and configurations
  * Maintains code quality and reduces duplication across files
  */
 

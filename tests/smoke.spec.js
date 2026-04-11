@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Relovetree Smoke E2E Tests
+ * Lovetree Smoke E2E Tests
  * Enhanced with structured console error tracking and better stability.
  */
 
@@ -11,7 +11,7 @@ let consoleErrors = [];
 let pageErrors = [];
 let consoleWarnings = [];
 
-test.describe('Relovetree Smoke Tests', () => {
+test.describe('Lovetree Smoke Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     consoleErrors = [];
@@ -56,7 +56,7 @@ test.describe('Relovetree Smoke Tests', () => {
 
   test('Home Page: Load and UI elements present', async ({ page }) => {
     await page.goto(BASE_URL + '/');
-    await expect(page).toHaveTitle(/Relovetree/);
+    await expect(page).toHaveTitle(/Lovetree/);
     
     const settingsBtn = page.locator('#settings-btn');
     const mainNav = page.locator('#main-nav');

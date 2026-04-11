@@ -1,5 +1,5 @@
 /**
- * Relovetree - Groq Client
+ * Lovetree - Groq Client
  * 
  * Groq API client for text generation (OpenAI-compatible API)
  */

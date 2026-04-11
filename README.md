@@ -1,4 +1,4 @@
-# Relovetree - 나의 덕질 기록
+# Lovetree - 나의 덕질 기록
 
 > K-pop 팬을 위한 타임라인 기록 앱
 
@@ -14,7 +14,7 @@
 
 핵심 문장:
 
-> Relovetree는 처음 사랑에 빠진 순간부터 팬이 되어가는 경로를 영상과 메모로 연결해 남기는 팬 감정 러브트리다.
+> Lovetree는 처음 사랑에 빠진 순간부터 팬이 되어가는 경로를 영상과 메모로 연결해 남기는 팬 감정 러브트리다.
 
 ## 프로젝트 개요
 
@@ -140,7 +140,7 @@ npx playwright test --config ./config/playwright.config.js
 - 서버 환경변수는 Netlify Dashboard의 Environment variables가 source of truth입니다.
 
 ```html
-<title>Relovetree - 나의 덕질 기록 | K-pop 팬을 위한 타임라인</title>
+<title>Lovetree - 나의 덕질 기록 | K-pop 팬을 위한 타임라인</title>
 <meta name="description" content="...">
 <meta name="keywords" content="러브트리, 덕질, K-pop, 타임라인">
 ```

@@ -35,7 +35,7 @@
         {
             uid: 'ai-user-01',
             email: 'ai-bot@demo.local',
-            displayName: 'Relovetree AI',
+            displayName: 'Lovetree AI',
             userId: 'relovetree_ai',
             role: 'free',
             isDemo: false,
@@ -58,8 +58,8 @@
 
     const DEMO_COMMUNITY_TEMPLATES = [
         {
-            title: 'Relovetree로 덕질 기록하는 법',
-            content: '처음 오신 분들을 위해 Relovetree를 어떻게 쓰면 좋은지 간단히 정리해봤어요.\n1) 아티스트 러브트리를 만들고\n2) 입덕부터 최신 활동까지 순간들을 노드로 추가해 보세요.'
+            title: 'Lovetree로 덕질 기록하는 법',
+            content: '처음 오신 분들을 위해 Lovetree를 어떻게 쓰면 좋은지 간단히 정리해봤어요.\n1) 아티스트 러브트리를 만들고\n2) 입덕부터 최신 활동까지 순간들을 노드로 추가해 보세요.'
         },
         {
             title: '내 최애 무대 추천 스레드',

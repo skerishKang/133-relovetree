@@ -1,6 +1,6 @@
 /**
  * Auth: Firebase / Data: Neon Postgres via compat layer
- * Relovetree My Trees Dashboard
+ * Lovetree My Trees Dashboard
  */
 (function () {
     var F = window.FlowShared;

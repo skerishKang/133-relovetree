@@ -1,5 +1,5 @@
 /**
- * Relovetree - Main Index Page Logic
+ * Lovetree - Main Index Page Logic
  * 모듈: index-i18n.js, index-artists.js, index-utils.js, index-data.js, index-render.js, index-settings.js, index-search.js, index-runtime.js
  * 중복 함수는 index-runtime.js를 사용
  */

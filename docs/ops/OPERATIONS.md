@@ -1,4 +1,4 @@
-# Relovetree Operations Guide
+# Lovetree Operations Guide
 
 > 최종 업데이트: 2026-04-09
 
