@@ -70,9 +70,21 @@ img, video {
 }
 
 #wrapper {
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+/* Editor canvas positioning - ensure relative for absolute node positioning */
+body[data-page="editor"] #canvas {
+  position: relative !important;
+}
+
+/* Editor connections SVG positioning */
+body[data-page="editor"] #connections {
+  position: absolute !important;
+  pointer-events: none;
 }
 
 .glass-panel, .search-modal-panel, .section-shell, .settings-modal-panel {

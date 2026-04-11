@@ -19,9 +19,27 @@ body[data-page="editor"] {
   height: 100%;
 }
 
-body[data-page="editor"] #wrapper {
-  height: 100vh;
-  height: 100dvh;
+/* Critical positioning fix - ensure relative positioning for node coordinate system */
+html body[data-page="editor"] #wrapper,
+html body[data-page="editor"] .editor-canvas-shell {
+  position: relative !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+html body[data-page="editor"] #canvas {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+html body[data-page="editor"] #connections {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
 }
 
 body.editor-mobile.editor-timeline #timeline {
@@ -38,6 +56,7 @@ body.editor-mobile.editor-timeline .timeline-card {
 }
 
 body[data-page="editor"] #canvas {
+  position: relative;
   width: 100%;
   height: 100%;
   background-image: radial-gradient(#94a3b8 1px, transparent 1px);
