@@ -15,6 +15,7 @@
 *.svg
 *.ico
 !assets/favicon.svg
+!설문지/image/
 
 # Fossil 공통 제외 - 영상/오디오
 *.mp4

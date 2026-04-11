@@ -249,18 +249,18 @@
 }
 
 /*
-  Tree layout (left → right flow):
-  - nc-1: Root (far left, mid height)
-  - nc-2: Upper branch (center-left, top)
-  - nc-3: Mid right (trunk end)
-  - nc-4: Lower branch (center, bottom)
-  - nc-5: Far right tip (bottom-right)
+  Tree layout (rooted, branching left→right):
+  - nc-1: Root (far left, mid height) — the entry point
+  - nc-2: Upper branch (center, top) — grows upward from the split
+  - nc-3: Main line (center-right, mid) — continues the trunk forward
+  - nc-4: Lower branch (center, bottom) — grows downward from the split
+  - nc-5: Tip (far right, upper-mid) — extends from the lower branch
 */
-.nc-1 { top: 38%; left: 0%;   width: 214px; }
-.nc-2 { top: 4%;  left: 33%;  width: 196px; }
-.nc-3 { top: 33%; left: 60%;  width: 196px; }
-.nc-4 { top: 68%; left: 26%;  width: 190px; }
-.nc-5 { top: 60%; left: 60%;  width: 184px; }
+.nc-1 { top: 42%; left: 0%;   width: 214px; }
+.nc-2 { top: 2%;  left: 46%;  width: 196px; }
+.nc-3 { top: 28%; left: 56%;  width: 196px; }
+.nc-4 { top: 68%; left: 42%;  width: 196px; }
+.nc-5 { top: 46%; left: 72%;  width: 184px; }
 
 /* ─── Thumbnail ──────────────────────────────────── */
 .thumb {

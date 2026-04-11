@@ -45,93 +45,76 @@
                 <div class="viz-canvas">
 
                     <!--
-                        Tree Layout (left → right flow):
-                        
-                        [nc-2: upper branch]
-                        
-                        [nc-1: root] ─── trunk ─── [nc-3: mid right]
-                        
-                        [nc-4: lower branch]    [nc-5: far right]
-                        
-                        SVG trunk runs ~horizontally at 45% height
-                        Branches arc up/down from trunk midpoint
+                        Tree Layout (rooted, branching left→right):
+
+                        [nc-1: root] ─┬─ [nc-2: upper branch]
+                                      ├─ [nc-3: main line]
+                                      └─ [nc-4: lower branch] ── [nc-5: tip]
+
+                        Root at far left, branches spread right
+                        Main trunk curves gently, branches arc naturally
                     -->
 
                     <svg class="svg-lines" viewBox="0 0 760 560" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Shadow trunk (thicker, lighter) for depth -->
-                        <path class="trunk-shadow" d="M 60,252 C 160,252 280,252 480,252" />
-                        <!-- Main trunk: root → mid right -->
-                        <path class="trunk" d="M 60,252 C 160,252 280,252 480,252" />
+                        <!-- Shadow trunk for depth -->
+                        <path class="trunk-shadow" d="M 90,278 C 200,278 300,278 410,210" />
+                        <!-- Main trunk: root → split point -->
+                        <path class="trunk" d="M 90,278 C 200,278 300,278 380,230" />
 
-                        <!-- Upper branch: trunk midpoint → nc-2 (top) -->
-                        <path class="branch" d="M 260,252 C 280,200 320,110 420,90" />
-                        <!-- Lower branch: trunk midpoint → nc-4 (bottom) -->
-                        <path class="branch" d="M 260,252 C 280,310 320,400 400,430" />
-                        <!-- Far right branch: nc-3 → nc-5 -->
-                        <path class="branch branch-sm" d="M 520,252 C 560,252 580,310 600,390" />
+                        <!-- Upper branch: split → nc-2 -->
+                        <path class="branch" d="M 380,230 C 400,180 430,110 470,72" />
+                        <!-- Main line continues: split → nc-3 -->
+                        <path class="branch" d="M 380,230 C 420,230 460,210 490,195" />
+                        <!-- Lower branch: split → nc-4 -->
+                        <path class="branch" d="M 380,230 C 390,290 410,370 440,418" />
+                        <!-- Lower branch continues: nc-4 → nc-5 tip -->
+                        <path class="branch branch-sm" d="M 550,418 C 580,418 610,380 650,330" />
 
-                        <!-- Node connector dots at branch splits -->
-                        <circle class="node-dot" cx="260" cy="252" r="5" />
-                        <circle class="node-dot" cx="480" cy="252" r="5" />
+                        <!-- Branch-split dot -->
+                        <circle class="node-dot" cx="380" cy="230" r="5" />
                     </svg>
 
-                    <!-- Node 1 (Root): 처음 본 무대 - BTS Permission to Dance On Stage -->
+                    <!-- Node 1 (Root): 데뷔 무대 - BTS No More Dream -->
                     <div class="node-card nc-1">
                         <div class="thumb">
-                            <img src="https://img.youtube.com/vi/gdZLi9oWNZg/hqdefault.jpg"
-                                 alt="BTS Permission to Dance On Stage" loading="lazy">
+                            <img src="https://img.youtube.com/vi/rBG5L7UsUxA/hqdefault.jpg"
+                                 alt="BTS No More Dream" loading="lazy">
                             <div class="play-btn"></div>
                         </div>
                         <div class="card-body">
-                            <h4>방탄 온라인 콘서트, 처음 보고 입덕</h4>
+                            <h4>데뷔 무대, 처음 보고 뭔가 느꼈다</h4>
                             <div class="node-meta">
                                 <span class="node-tag">#입덕순간</span>
-                                <span class="node-date">2021.09.24</span>
+                                <span class="node-date">2013.06.13</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Node 2 (Upper Branch): 뮤비 공개 - BTS Butter MV -->
+                    <!-- Node 2 (Upper Branch): BTS I NEED U -->
                     <div class="node-card nc-2">
                         <div class="thumb">
-                            <img src="https://img.youtube.com/vi/WMweEpGlu_U/hqdefault.jpg"
-                                 alt="BTS Butter MV" loading="lazy">
+                            <img src="https://img.youtube.com/vi/NMdTd9e-LEI/hqdefault.jpg"
+                                 alt="BTS I NEED U" loading="lazy">
                             <div class="play-btn"></div>
                         </div>
                         <div class="card-body">
-                            <h4>Butter 뮤비 공개 첫날, 밤새워 봤다</h4>
-                            <div class="node-meta">
-                                <span class="node-tag">#설렘폭발</span>
-                                <span class="node-date">2021.05.21</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Node 3 (Mid Right): 직캠 발견 - Jimin focus cam -->
-                    <div class="node-card nc-3">
-                        <div class="thumb">
-                            <img src="https://img.youtube.com/vi/eBBEDdaQcds/hqdefault.jpg"
-                                 alt="BTS Yet To Come MV" loading="lazy">
-                            <div class="play-btn"></div>
-                        </div>
-                        <div class="card-body">
-                            <h4>Yet To Come 뮤비 - 이 장면에서 또 울었어</h4>
+                            <h4>I NEED U, 이 노래에 완전히 빠져들다</h4>
                             <div class="node-meta">
                                 <span class="node-tag">#감동</span>
-                                <span class="node-date">2022.06.10</span>
+                                <span class="node-date">2015.05.05</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Node 4 (Lower Branch): 콘서트 - BTS Permission to Dance LA -->
-                    <div class="node-card nc-4">
+                    <!-- Node 3 (Main Line): BTS Dynamite -->
+                    <div class="node-card nc-3">
                         <div class="thumb">
-                            <img src="https://img.youtube.com/vi/6m4B8mD3-24/hqdefault.jpg"
-                                 alt="BTS Dynamite MV" loading="lazy">
+                            <img src="https://img.youtube.com/vi/gdZLi9oWNZg/hqdefault.jpg"
+                                 alt="BTS Dynamite" loading="lazy">
                             <div class="play-btn"></div>
                         </div>
                         <div class="card-body">
-                            <h4>Dynamite 처음 들었을 때 그 설레는 기분</h4>
+                            <h4>Dynamite, 온 세상이 밝아진 것 같았다</h4>
                             <div class="node-meta">
                                 <span class="node-tag">#행복해</span>
                                 <span class="node-date">2020.08.21</span>
@@ -139,18 +122,34 @@
                         </div>
                     </div>
 
-                    <!-- Node 5 (Far Right): 최근 - BTS Run BTS -->
-                    <div class="node-card nc-5">
+                    <!-- Node 4 (Lower Branch): BTS ON Kinetic Manifesto -->
+                    <div class="node-card nc-4">
                         <div class="thumb">
-                            <img src="https://img.youtube.com/vi/GFBVCq7D3qs/hqdefault.jpg"
-                                 alt="BTS Run BTS" loading="lazy">
+                            <img src="https://img.youtube.com/vi/gwMa6gpoE9I/hqdefault.jpg"
+                                 alt="BTS ON Kinetic Manifesto" loading="lazy">
                             <div class="play-btn"></div>
                         </div>
                         <div class="card-body">
-                            <h4>달려라 방탄 보면서 오늘도 웃었다</h4>
+                            <h4>ON 퍼포먼스, 소름이 끼쳤다</h4>
+                            <div class="node-meta">
+                                <span class="node-tag">#소름</span>
+                                <span class="node-date">2020.02.28</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node 5 (Tip): BTS Butter -->
+                    <div class="node-card nc-5">
+                        <div class="thumb">
+                            <img src="https://img.youtube.com/vi/WMweEpGlu_U/hqdefault.jpg"
+                                 alt="BTS Butter" loading="lazy">
+                            <div class="play-btn"></div>
+                        </div>
+                        <div class="card-body">
+                            <h4>Butter, 지금도 이 설렘은 계속된다</h4>
                             <div class="node-meta">
                                 <span class="node-tag">#여전히좋아</span>
-                                <span class="node-date">2023.11.15</span>
+                                <span class="node-date">2021.05.21</span>
                             </div>
                         </div>
                     </div>
