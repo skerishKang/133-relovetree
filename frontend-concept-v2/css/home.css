@@ -54,10 +54,15 @@
 .hero-content p { font-size: 1.1rem; color: #776a60; line-height: 1.65; margin-bottom: 32px; }
 .hero-btns { display: flex; gap: 12px; }
 .btn-brick {
-    background: #b56e6e; color: white; padding: 18px 32px; border-radius: 14px;
+    background: #b56e6e; color: white; padding: 18px 28px; border-radius: 14px;
     font-weight: 800; transition: 0.3s; box-shadow: 0 8px 20px rgba(181,110,110,0.15);
+    white-space: nowrap; display: inline-flex; align-items: center; justify-content: center;
 }
-.btn-outline { border: 2px solid #e0d0c8; background: white; padding: 18px 32px; border-radius: 14px; font-weight: 800; color: #776a60; }
+.btn-outline { 
+    border: 2px solid #e0d0c8; background: white; padding: 18px 28px; border-radius: 14px; 
+    font-weight: 800; color: #776a60; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center;
+}
 
 /* ─── Love Tree Visual (Pixel Perfect) ─── */
 .hero-visual { flex: 1; position: relative; height: 500px; display: flex; justify-content: flex-end; }
