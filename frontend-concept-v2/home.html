@@ -7,12 +7,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lovetree - 사랑을 기록하고 잇는 공간</title>
-    <link rel="stylesheet" href="css/app.css?v=20260412-1">
-    <link rel="stylesheet" href="css/home.css?v=20260412-1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css?v=20260412-2">
+    <link rel="stylesheet" href="css/home.css?v=20260412-2">
 </head>
 <body class="home-page">
     <div class="page-container">
-        <!-- Korean GNB -->
+
+        <!-- GNB -->
         <nav class="gnb">
             <div class="gnb-brand">Lovetree</div>
             <div class="nav-links">
@@ -36,93 +40,157 @@
                 </div>
             </div>
 
-            <!-- 5-Node Love Path Visualization (BTS Example) -->
+            <!-- 5-Node Love Tree Visualization -->
             <div class="hero-visual">
                 <div class="viz-canvas">
-                    <svg class="svg-lines" viewBox="0 0 800 600" preserveAspectRatio="none">
-                        <!-- Connecting path through 5 nodes -->
-                        <path class="line-path" d="M100,240 C200,240 250,60 400,60" />
-                        <path class="line-path" d="M400,60 C550,60 600,240 750,240" />
-                        <path class="line-path" d="M100,240 C150,450 200,450 300,450" />
-                        <path class="line-path" d="M300,450 C450,450 500,390 650,390" />
+
+                    <!--
+                        Tree Layout (left → right flow):
+                        
+                        [nc-2: upper branch]
+                        
+                        [nc-1: root] ─── trunk ─── [nc-3: mid right]
+                        
+                        [nc-4: lower branch]    [nc-5: far right]
+                        
+                        SVG trunk runs ~horizontally at 45% height
+                        Branches arc up/down from trunk midpoint
+                    -->
+
+                    <svg class="svg-lines" viewBox="0 0 760 560" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Shadow trunk (thicker, lighter) for depth -->
+                        <path class="trunk-shadow" d="M 60,252 C 160,252 280,252 480,252" />
+                        <!-- Main trunk: root → mid right -->
+                        <path class="trunk" d="M 60,252 C 160,252 280,252 480,252" />
+
+                        <!-- Upper branch: trunk midpoint → nc-2 (top) -->
+                        <path class="branch" d="M 260,252 C 280,200 320,110 420,90" />
+                        <!-- Lower branch: trunk midpoint → nc-4 (bottom) -->
+                        <path class="branch" d="M 260,252 C 280,310 320,400 400,430" />
+                        <!-- Far right branch: nc-3 → nc-5 -->
+                        <path class="branch branch-sm" d="M 520,252 C 560,252 580,310 600,390" />
+
+                        <!-- Node connector dots at branch splits -->
+                        <circle class="node-dot" cx="260" cy="252" r="5" />
+                        <circle class="node-dot" cx="480" cy="252" r="5" />
                     </svg>
-                    
-                    <!-- Node 1: Entry -->
+
+                    <!-- Node 1 (Root): 처음 본 무대 - BTS Permission to Dance On Stage -->
                     <div class="node-card nc-1">
-                        <div class="thumb"></div>
-                        <h4>우연히 보게 된 방탄 소년단 첫 무대</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#입덕</span>
-                            <span>2021.05.21</span>
+                        <div class="thumb">
+                            <img src="https://img.youtube.com/vi/gdZLi9oWNZg/hqdefault.jpg"
+                                 alt="BTS Permission to Dance On Stage" loading="lazy">
+                            <div class="play-btn"></div>
+                        </div>
+                        <div class="card-body">
+                            <h4>방탄 온라인 콘서트, 처음 보고 입덕</h4>
+                            <div class="node-meta">
+                                <span class="node-tag">#입덕순간</span>
+                                <span class="node-date">2021.09.24</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Node 2: Peak Moment -->
+                    <!-- Node 2 (Upper Branch): 뮤비 공개 - BTS Butter MV -->
                     <div class="node-card nc-2">
-                        <div class="thumb"></div>
-                        <h4>Butter 뮤비 공개! 이 날을 잊지 못해</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#설렘</span>
-                            <span>2021.06.12</span>
+                        <div class="thumb">
+                            <img src="https://img.youtube.com/vi/WMweEpGlu_U/hqdefault.jpg"
+                                 alt="BTS Butter MV" loading="lazy">
+                            <div class="play-btn"></div>
+                        </div>
+                        <div class="card-body">
+                            <h4>Butter 뮤비 공개 첫날, 밤새워 봤다</h4>
+                            <div class="node-meta">
+                                <span class="node-tag">#설렘폭발</span>
+                                <span class="node-date">2021.05.21</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Node 3: Deep Connection -->
+                    <!-- Node 3 (Mid Right): 직캠 발견 - Jimin focus cam -->
                     <div class="node-card nc-3">
-                        <div class="thumb"></div>
-                        <h4>콘서트 티켓팅 성공하고 울었던 날</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#감동</span>
-                            <span>2021.10.15</span>
+                        <div class="thumb">
+                            <img src="https://img.youtube.com/vi/eBBEDdaQcds/hqdefault.jpg"
+                                 alt="BTS Yet To Come MV" loading="lazy">
+                            <div class="play-btn"></div>
+                        </div>
+                        <div class="card-body">
+                            <h4>Yet To Come 뮤비 - 이 장면에서 또 울었어</h4>
+                            <div class="node-meta">
+                                <span class="node-tag">#감동</span>
+                                <span class="node-date">2022.06.10</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Node 4: Continuous Support -->
+                    <!-- Node 4 (Lower Branch): 콘서트 - BTS Permission to Dance LA -->
                     <div class="node-card nc-4">
-                        <div class="thumb"></div>
-                        <h4>멤버들의 진심 어린 메세지에 한 번 더</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#행복</span>
-                            <span>2022.03.10</span>
+                        <div class="thumb">
+                            <img src="https://img.youtube.com/vi/6m4B8mD3-24/hqdefault.jpg"
+                                 alt="BTS Dynamite MV" loading="lazy">
+                            <div class="play-btn"></div>
+                        </div>
+                        <div class="card-body">
+                            <h4>Dynamite 처음 들었을 때 그 설레는 기분</h4>
+                            <div class="node-meta">
+                                <span class="node-tag">#행복해</span>
+                                <span class="node-date">2020.08.21</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Node 5: Now -->
+                    <!-- Node 5 (Far Right): 최근 - BTS Run BTS -->
                     <div class="node-card nc-5">
-                        <div class="thumb"></div>
-                        <h4>오늘도 달리는 우리들의 여정</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#자랑</span>
-                            <span>2023.12.01</span>
+                        <div class="thumb">
+                            <img src="https://img.youtube.com/vi/GFBVCq7D3qs/hqdefault.jpg"
+                                 alt="BTS Run BTS" loading="lazy">
+                            <div class="play-btn"></div>
+                        </div>
+                        <div class="card-body">
+                            <h4>달려라 방탄 보면서 오늘도 웃었다</h4>
+                            <div class="node-meta">
+                                <span class="node-tag">#여전히좋아</span>
+                                <span class="node-date">2023.11.15</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+
+                </div><!-- /viz-canvas -->
+            </div><!-- /hero-visual -->
         </section>
 
-        <!-- Refined Feature Cards -->
-        <section class="features">
+        <!-- Feature Cards -->
+        <section class="features" id="features">
             <div class="feature-card">
-                <div class="f-ico f-video"></div>
+                <div class="f-ico f-video">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                </div>
                 <h3>순간 포착</h3>
                 <p>영상의 특정 시점과 함께<br>당신의 솔직한 감정을 남깁니다.</p>
             </div>
             <div class="feature-card">
-                <div class="f-ico f-branch"></div>
+                <div class="f-ico f-branch">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
                 <h3>경로 연결</h3>
                 <p>단편적인 기록이 아닌,<br>사랑이 커지는 경로를 잇습니다.</p>
             </div>
             <div class="feature-card">
-                <div class="f-ico f-tree"></div>
+                <div class="f-ico f-tree">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12M12 12L7 7M12 12l5-5M12 12L4 16M12 12l8 4"/></svg>
+                </div>
                 <h3>트리 완성</h3>
                 <p>나만의 소중한 기록들이 모여<br>거대한 러브트리가 됩니다.</p>
             </div>
             <div class="feature-card">
-                <div class="f-ico f-sparkle"></div>
+                <div class="f-ico f-sparkle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                </div>
                 <h3>영감 공유</h3>
                 <p>완성된 경로를 공유하고<br>서로의 입덕기에 공감합니다.</p>
             </div>
         </section>
-    </div>
+
+    </div><!-- /page-container -->
 </body>
 </html>
