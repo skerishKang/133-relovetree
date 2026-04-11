@@ -7,6 +7,11 @@
   directory = "netlify/functions"
 
 [[redirects]]
+  from = "/"
+  to = "/frontend-concept-v2/home.html"
+  status = 302
+
+[[redirects]]
   from = "/admin.html"
   to = "/pages/admin.html"
   status = 301
