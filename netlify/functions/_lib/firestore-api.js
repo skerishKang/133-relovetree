@@ -1,7 +1,10 @@
 /**
- * Relovetree - Firestore API Handler
+ * ⚠️ LEGACY INTERNAL SHIM - Firestore API Handler
  * 
- * ⚠️ IMPORTANT: This handles Firestore-style API but stores data in PostgreSQL!
+ * DO NOT USE as primary entry point for new server code.
+ * Use: /netlify/functions/_lib/db-api.js instead
+ * 
+ * This handles Firestore-style API but stores data in PostgreSQL!
  * 
  * Architecture:
  *   Client (via firebase-firestore-compat.js) → POST /api/firestore → This Handler → PostgreSQL

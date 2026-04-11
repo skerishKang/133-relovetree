@@ -1,31 +1,33 @@
 /**
- * PostgreSQL Database Client (Alias for Firestore Compat Layer)
- *
- * IMPORTANT: This is an alias/wrapper file for gradual migration.
- *
+ * ⚠️ OFFICIAL CLIENT ENTRY - PostgreSQL Database Client (Alias for Firestore Compat Layer)
+ * 
+ * IMPORTANT: This is the PRIMARY entry point for new client code.
+ * 
  * Background:
  * - This project originally used Firebase Firestore for all data
  * - Migrated to Neon PostgreSQL for actual data storage
- * - firebase-firestore-compat.js provides API compatibility
+ * - firebase-firestore-compat.js provides API compatibility (legacy shim)
  * - Actual data flows: compat layer → Netlify Functions → PostgreSQL
- *
+ * 
  * Migration Status:
- * - Phase A (Current): Alias files created, documentation updated
- * - Phase B: New code uses postgres-client.js
- * - Phase C: Gradual adoption in existing modules
+ * - Phase A (Current): Alias files created, documentation updated ✅
+ * - Phase B (Current): New code uses postgres-client.js ✅
+ * - Phase C: Gradual adoption in existing modules (in progress)
  * - Phase D: Original file deprecation (future)
- *
- * For new code, prefer:
+ * 
+ * For new code, use:
  *   import { db } from './postgres-client.js';
  *   // or
  *   const db = window.postgresDB;
- *
- * Existing code continues to work:
- *   import { db } from './firebase-firestore-compat.js';
- *   // or
- *   const db = firebase.firestore();
- *
- * @see docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md
+ * 
+ * For browser (non-module) code:
+ *   <script src="/src/postgres-client-browser.js"></script>
+ * 
+ * ⚠️ DO NOT USE for new code:
+ *   import { db } from './firebase-firestore-compat.js'; // LEGACY
+ *   const db = firebase.firestore(); // LEGACY
+ * 
+ * @see docs/product/DATA_NAMING_RULE.md
  * @see docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md
  */
 

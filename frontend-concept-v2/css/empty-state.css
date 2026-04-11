@@ -1,0 +1,45 @@
+/* frontend-concept-v2/css/empty-state.css */
+.es-page { background: #e6ded8; min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px; }
+
+.es-frame {
+    width: 100%; max-width: 420px; background: #fdfbf7; border-radius: 48px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.15); border: 12px solid #ffffff;
+    height: 840px; display: flex; flex-direction: column; overflow: hidden; padding: 40px 32px;
+    align-items: center; justify-content: center; text-align: center;
+}
+
+.es-header { margin-bottom: 40px; }
+.es-header .logo-ico { font-size: 2rem; margin-bottom: 20px; display: block; }
+.es-header h2 { font-size: 2rem; margin-bottom: 12px; letter-spacing: -1px; }
+.es-header p { font-size: 1.15rem; color: var(--color-text-sub); line-height: 1.4; }
+
+.es-visual {
+    width: 280px; height: 320px; position: relative; margin: 20px 0 60px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+}
+
+.es-plant { width: 140px; height: 60px; background: #d0d9c4; border-radius: 60px 60px 0 0; position: relative; }
+.es-sprout {
+    position: absolute; bottom: 50px; left: 50%; width: 4px; height: 60px; background: #90a58a;
+    transform-origin: bottom center; transform: translateX(-50%) rotate(-10deg);
+}
+.es-sprout::before {
+    content:'🌱'; position: absolute; top: -15px; left: -10px; font-size: 1.5rem;
+}
+
+.float-cards { position: absolute; inset: 0; }
+.f-node {
+    position: absolute; width: 64px; aspect-ratio: 3/4; background: white; border: 1.5px solid #ebdcd0;
+    border-radius: 6px; box-shadow: var(--shadow-soft);
+}
+.f1 { top: 40px; left: 20px; transform: rotate(-15deg); }
+.f2 { top: 10px; left: 110px; transform: rotate(10deg); }
+.f3 { top: 50px; right: 20px; transform: rotate(20deg); }
+
+.btn-start {
+    background: #b56e6e; color: white; width: 100%; padding: 18px;
+    border-radius: 24px; font-weight: 800; font-size: 1.15rem; margin-bottom: 40px;
+}
+
+.es-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.es-tag { border: 1.5px solid #ebdcd0; padding: 8px 16px; border-radius: 20px; color: #a18e8e; font-size: 0.9rem; font-weight: 700; }

@@ -1,0 +1,41 @@
+/* frontend-concept-v2/css/editor-desktop-empty.css */
+.ede-page { background: #fdfbf7; height: 100vh; overflow: hidden; display: flex; }
+
+/* Reuse sidebar/workspace structure from editor-desktop for consistency but separate file */
+.ede-sidebar {
+    width: 260px; background: #f4efdf; border-right: 1px solid var(--color-border);
+    display: flex; flex-direction: column; padding: 32px 24px;
+}
+.ede-sidebar .logo { font-size: 1.4rem; color: var(--color-primary-brick); font-weight: 800; margin-bottom: 40px; text-align: center; }
+
+.ede-nav { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.ede-nav-item { padding: 14px 20px; border-radius: var(--radius-sm); font-weight: 700; color: var(--color-text-sub); display: flex; align-items: center; gap: 12px; }
+.ede-nav-item.active { background: #dfd6c4; color: var(--color-text-main); }
+
+.ede-workspace { flex: 1; display: flex; flex-direction: column; position: relative; }
+
+.canvas-empty {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background-image: radial-gradient(#d3c4bb 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.empty-prompt {
+    text-align: center; max-width: 480px;
+}
+.empty-prompt h2 { font-size: 2.2rem; margin-bottom: 24px; letter-spacing: -1px; }
+.empty-prompt p { font-size: 1.15rem; color: var(--color-text-sub); margin-bottom: 48px; line-height: 1.6; }
+
+.btn-big-add {
+    background: var(--color-primary-brick); color: white; padding: 20px 48px;
+    border-radius: var(--radius-pill); font-weight: 800; font-size: 1.25rem;
+    box-shadow: 0 12px 32px rgba(181, 110, 110, 0.3);
+}
+
+.empty-deco {
+    margin-top: 60px; display: flex; gap: 12px; justify-content: center;
+}
+.tag-guide {
+    background: #fdfbf7; border: 1px solid #ebdcd0; padding: 8px 16px; border-radius: 20px;
+    font-size: 0.9rem; font-weight: 700; color: #a18e8e;
+}

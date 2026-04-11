@@ -1,6 +1,6 @@
 const { buildResponse, handleError, httpError, noContent } = require('./_lib/http');
 const { requireUser } = require('./_lib/firebase-auth');
-const { isAdminUser } = require('./_lib/firestore-api');
+const { isPostgresAdmin } = require('./_lib/db-api');
 const treeRepository = require('./_lib/repositories/tree-repository');
 const {
   getAiProvider,
@@ -109,7 +109,7 @@ exports.handler = async (event, context) => {
 
   try {
     const user = await requireUser(event);
-    if (!(await isAdminUser(user))) {
+    if (!(await isPostgresAdmin(user))) {
       throw httpError(403, 'Forbidden');
     }
 

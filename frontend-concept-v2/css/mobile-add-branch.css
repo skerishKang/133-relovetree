@@ -1,0 +1,52 @@
+/* frontend-concept-v2/css/mobile-add-branch.css */
+.mab-page { background: #e6ded8; min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px; }
+
+.mab-frame {
+    width: 100%; max-width: 420px; background: var(--color-bg-ivory); border-radius: 48px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.15); border: 12px solid #3d2b2b;
+    height: 840px; display: flex; flex-direction: column; overflow: hidden; position: relative;
+    padding: 32px 24px;
+}
+
+.mab-header { margin-bottom: 40px; position: relative; }
+.btn-back { font-size: 1.4rem; color: var(--color-text-muted); position: absolute; left: 0; top: 0; }
+.mab-header h2 { text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--color-text-main); margin-top: 10px; }
+
+.mab-scroll { flex: 1; overflow-y: auto; padding-top: 20px; position: relative; display: flex; flex-direction: column; align-items: center; }
+
+/* Tree in selection mode */
+.branch-tree { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 40px; }
+
+.bt-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; border-left: 2px dashed #d3c4bb; transform: translateX(-50%); z-index: 1; }
+
+.bt-node {
+    width: 140px; background: white; border-radius: 16px; padding: 12px;
+    box-shadow: var(--shadow-soft); border: 1.5px solid var(--color-border);
+    position: relative; z-index: 10;
+}
+/* Connection dots */
+.bt-node::after {
+    content:''; position: absolute; bottom: -10px; left: 50%; width: 20px; height: 20px;
+    background: white; border: 2.5px solid #d3c4bb; border-radius: 50%; transform: translateX(-50%);
+}
+
+.bt-node.active { border-color: var(--color-primary-brick); border-width: 3px; }
+.bt-node.active::after { border-color: var(--color-primary-brick); background: var(--color-primary-brick); box-shadow: 0 0 10px rgba(181, 110, 110, 0.4); }
+
+.bt-node .thumb { width: 100%; aspect-ratio: 1; background: #90a58a; border-radius: 12px; margin-bottom: 12px; }
+.bt-node:nth-child(2) .thumb { background: #b56e6e; }
+.bt-node:nth-child(3) .thumb { background: #90a58a; }
+
+.add-placeholder {
+    width: 140px; padding: 20px; border: 2.5px dashed var(--color-primary-brick);
+    background: rgba(255,255,255,0.8); border-radius: 16px; text-align: center;
+    position: relative; z-index: 10; margin-top: 20px;
+}
+.add-placeholder span { font-size: 1.5rem; color: var(--color-primary-brick); display: block; margin-bottom: 4px; }
+.add-placeholder p { font-size: 0.8rem; color: var(--color-primary-brick); font-weight: 700; }
+
+.mab-footer { padding-top: 32px; }
+.btn-connect {
+    background: #5d4a4a; color: white; width: 100%; padding: 18px;
+    border-radius: 16px; font-weight: 800; font-size: 1.1rem;
+}

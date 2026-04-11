@@ -1,0 +1,39 @@
+<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>순간 연결 - Relovetree</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="/assets/css/flow-shared.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/flow-shared.js"></script>
+</head>
+<body>
+    <div class="flow-container">
+        <header class="flow-header">
+            <button id="btn-back" class="flow-back">←</button>
+            <h1>어느 순간과 연결할까요?</h1>
+            <div style="width:36px;"></div>
+        </header>
+
+        <div id="loading-area" class="loading-spinner" style="padding-top:60px;"></div>
+
+        <div id="branch-list" style="display:none;padding:20px;position:relative;">
+            <div style="position:absolute;left:50%;top:20px;bottom:20px;width:2px;background:var(--color-border);transform:translateX(-50%);z-index:1;"></div>
+            <div id="node-cards"></div>
+        </div>
+
+        <div id="branch-footer" style="display:none;padding:20px;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--color-border);max-width:480px;margin:0 auto;">
+            <button id="btn-connect" class="btn-primary" disabled>이 순간 뒤에 연결하기</button>
+        </div>
+    </div>
+
+    <script src="/src/mobile-add-branch.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /**
- * Relovetree - Firestore Compatibility Layer
+ * ⚠️ LEGACY SHIM - Relovetree Firestore Compatibility Layer
  * 
- * ⚠️ IMPORTANT: This is NOT real Firestore!
+ * DO NOT USE as primary entry point for new code.
  * 
  * This module intercepts firebase.firestore() calls and redirects them to
  * Neon/PostgreSQL via Netlify Functions.
@@ -21,6 +21,8 @@
  * 
  * Auth note: Firebase Auth IS used for login/session (real Firebase).
  * But database operations go through this layer to PostgreSQL.
+ * 
+ * For new code, use: /src/postgres-client-browser.js (browser) or /src/postgres-client.js (ES modules)
  */
 (function () {
 if (typeof window === 'undefined' || typeof firebase === 'undefined') {

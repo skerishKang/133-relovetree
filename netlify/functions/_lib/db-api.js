@@ -1,27 +1,29 @@
 /**
- * PostgreSQL Database API (Server-side Alias for Firestore Compat Layer)
- *
- * IMPORTANT: This is an alias/wrapper file for gradual migration.
- *
+ * ⚠️ OFFICIAL SERVER ENTRY - PostgreSQL Database API (Server-side Alias for Firestore Compat Layer)
+ * 
+ * IMPORTANT: This is the PRIMARY entry point for new server code.
+ * 
  * Background:
  * - This project originally used Firebase Firestore for all data
  * - Migrated to Neon PostgreSQL for actual data storage
  * - The actual data operations happen in document-store.js (PostgreSQL)
- * - firestore-api.js provides the Netlify Function endpoint handling
- *
+ * - firestore-api.js is the legacy internal shim (do not use directly)
+ * 
  * Migration Status:
- * - Phase A (Current): Alias files created, documentation updated
- * - Phase B: New server code uses db-api.js
- * - Phase C: Gradual adoption in existing functions
+ * - Phase A (Current): Alias files created, documentation updated ✅
+ * - Phase B (Current): New server code uses db-api.js ✅
+ * - Phase C: Gradual adoption in existing functions (in progress)
  * - Phase D: Original file deprecation (future)
- *
- * For new server code, prefer:
+ * 
+ * For new server code, use:
  *   const { queryCollection, getDoc, setDoc } = require('./db-api');
- *
- * Existing code continues to work:
- *   const { queryCollection, getDoc, setDoc } = require('./firestore-api');
- *
- * @see docs/analysis/FIRESTORE_COMPAT_ANALYSIS.md
+ *   // or use the clearer postgres-oriented names:
+ *   const { queryPostgresCollection, getPostgresDoc, setPostgresDoc } = require('./db-api');
+ * 
+ * ⚠️ DO NOT USE for new code:
+ *   const { queryCollection, getDoc, setDoc } = require('./firestore-api'); // LEGACY INTERNAL SHIM
+ * 
+ * @see docs/product/DATA_NAMING_RULE.md
  * @see docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md
  */
 

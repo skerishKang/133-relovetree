@@ -1,7 +1,10 @@
 /**
- * Relovetree - Firestore API Endpoint (Netlify Function)
+ * ⚠️ LEGACY ENDPOINT NAME - Firestore API Endpoint (Netlify Function)
  * 
- * ⚠️ IMPORTANT: Despite the name, this routes to PostgreSQL, NOT Firestore!
+ * DO NOT USE for new server code reference.
+ * Use: /netlify/functions/_lib/db-api.js for server-side code
+ * 
+ * Despite the name, this routes to PostgreSQL, NOT Firestore!
  * 
  * Endpoint: POST /.netlify/functions/firestore-api
  * 

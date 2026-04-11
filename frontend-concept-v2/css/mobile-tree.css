@@ -1,0 +1,49 @@
+/* frontend-concept-v2/css/mobile-tree.css */
+.mob-page {
+    background: #e6ded8; min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px;
+}
+
+.mob-frame {
+    width: 100%; max-width: 420px; background: var(--color-bg-ivory); border-radius: 48px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.15); border: 12px solid #3d2b2b;
+    height: 840px; display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+
+.mob-top { padding: 32px 24px 16px; text-align: center; }
+.mob-top h2 { font-size: 1.4rem; margin-bottom: 4px; }
+.mob-top p { font-size: 0.85rem; color: var(--color-text-muted); }
+
+.mob-scroll { flex: 1; overflow-y: auto; padding: 16px 20px 100px; position: relative; }
+
+/* Central Vertical Line (as in mobile-love-tree.png) */
+.mob-scroll::before {
+    content:''; position: absolute; left: 50%; top: 20px; bottom: 100px; width: 2px; background: #ebdcd0; transform: translateX(-50%); z-index: 1;
+}
+
+.m-node-row { display: flex; justify-content: space-between; position: relative; z-index: 2; margin-bottom: 32px; }
+.m-node-row:nth-child(even) { flex-direction: row-reverse; }
+
+.m-node {
+    width: calc(50% - 20px); background: white; border-radius: 16px; padding: 8px; box-shadow: var(--shadow-soft); border: 1px solid var(--color-border);
+}
+.m-node .thumb { width: 100%; aspect-ratio: 1; border-radius: 12px; background: #f0ebe2; margin-bottom: 12px; display: flex; align-items:center; justify-content:center; }
+.m-node h4 { font-size: 0.85rem; margin-bottom: 4px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-node .date { font-size: 0.75rem; color: var(--color-text-muted); font-family: var(--font-head); margin-bottom: 6px; block-size: 1.2em; }
+.m-tag { font-size: 0.7rem; background: rgba(181, 110, 110, 0.1); color: var(--color-primary-brick); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+
+.m-stats { display: flex; gap: 8px; margin-top: 10px; font-size: 0.7rem; color: var(--color-text-muted); }
+
+/* Bottom Action */
+.mob-bottom-btn {
+    position: absolute; bottom: 30px; left: 24px; right: 24px;
+    background: var(--color-primary-brick); color: white; border-radius: 16px;
+    padding: 16px; font-weight: 800; font-size: 1rem; text-align: center; box-shadow: 0 8px 24px rgba(181, 110, 110, 0.2);
+}
+
+/* Tab Bar */
+.mob-tabs {
+    position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--color-border);
+    display: flex; justify-content: space-around; padding: 12px 0 24px;
+}
+.tab-ico { font-size: 1.4rem; opacity: 0.4; }
+.tab-ico.active { opacity: 1; color: var(--color-primary-brick); }

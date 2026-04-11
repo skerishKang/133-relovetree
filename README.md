@@ -2,6 +2,20 @@
 
 > K-pop 팬을 위한 타임라인 기록 앱
 
+## 제품 정체성 먼저 보기
+
+이 저장소에서 기능/화면/디자인 작업을 시작하기 전에 아래 문서를 먼저 보는 것을 권장합니다.
+
+- 제품 기준 문서: [docs/product/PRODUCT_IDENTITY.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/PRODUCT_IDENTITY.md)
+- MVP 범위: [docs/product/MVP_SCOPE.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/MVP_SCOPE.md)
+- 핵심 사용자 흐름: [docs/product/USER_FLOW.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/USER_FLOW.md)
+- 데이터 명칭 규칙: [docs/product/DATA_NAMING_RULE.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/DATA_NAMING_RULE.md)
+- 작업자 규칙: [AGENTS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/AGENTS.md)
+
+핵심 문장:
+
+> Relovetree는 처음 사랑에 빠진 순간부터 팬이 되어가는 경로를 영상과 메모로 연결해 남기는 팬 감정 러브트리다.
+
 ## 프로젝트 개요
 
 - **운영 URL**: https://lovetree.limone.dev

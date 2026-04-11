@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>트리 에디터 - Relovetree</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/editor-desktop.css">
+</head>
+<body class="ed-page">
+    <aside class="ed-sidebar">
+        <div class="logo">🌱 Relovetree</div>
+        <nav class="ed-nav">
+            <a href="home.html" class="ed-nav-item">🏠 홈</a>
+            <a href="my-trees.html" class="ed-nav-item active">🌳 내 러브트리</a>
+            <a href="community.html" class="ed-nav-item">✨ 모아보기</a>
+            <a href="settings.html" class="ed-nav-item">⚙️ 설정</a>
+        </nav>
+        <button class="side-btn">새 러브트리 만들기</button>
+    </aside>
+
+    <main class="ed-workspace">
+        <header class="ws-top">
+            <div class="ws-search">
+                <span>🔍 검색 순간 추가</span>
+            </div>
+            <button class="add-mem-top">+ 순간 추가</button>
+        </header>
+
+        <section class="canvas">
+            <svg class="canvas-svg" width="100%" height="100%" viewBox="0 0 1200 800">
+                <!-- Main trunk -->
+                <path d="M50,400 Q150,400 300,400" stroke="#d3c4bb" fill="none" stroke-width="6" stroke-linecap="round" />
+                
+                <!-- Major branches -->
+                <path d="M300,400 Q400,400 500,250" stroke="#d3c4bb" fill="none" stroke-width="4" stroke-linecap="round" />
+                <path d="M300,400 Q400,400 550,550" stroke="#d3c4bb" fill="none" stroke-width="4" stroke-linecap="round" />
+                
+                <!-- Minor sub-branches -->
+                <path d="M500,250 Q600,150 750,150" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
+                <path d="M500,250 Q580,250 650,320" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
+                <path d="M550,550 Q650,550 780,600" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
+                <path d="M550,550 Q600,650 680,720" stroke="#d3c4bb" fill="none" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+
+            <!-- Active Node (mirrors editor-desktop-active.png) -->
+            <!-- High-fidelity Active Node centered -->
+            <div class="ed-node active" style="top: 250px; left: 450px;">
+                <div class="node-img">
+                    <div class="play-btn-mini"><span></span></div>
+                </div>
+                <div class="node-info">
+                    <h5>첫 만남의 떨림</h5>
+                    <p class="node-meta">2023.10.15</p>
+                    <p class="node-memo-preview">팬들과 함께 감동받았던 날...</p>
+                </div>
+            </div>
+
+            <!-- Target Nodes -->
+            <!-- Surrounding context nodes -->
+            <div class="ed-node" style="top: 100px; left: 700px;">
+                <div class="node-img" style="background: #eaddd3;"></div>
+                <div class="node-info">
+                    <h5>콘서트 앵콜 무대</h5>
+                    <p class="node-meta">2023.10.16</p>
+                </div>
+            </div>
+
+            <div class="ed-node" style="top: 280px; left: 630px;">
+                <div class="node-img" style="background: #dfd6c4;"></div>
+                <div class="node-info">
+                    <h5>대기실 비하인드</h5>
+                    <p class="node-meta">2023.10.17</p>
+                </div>
+            </div>
+
+            <div class="ed-node" style="top: 550px; left: 730px;">
+                <div class="node-img"></div>
+                <div class="node-info">
+                    <h5>팬들의 슬로건 이벤트</h5>
+                    <p class="node-meta">2023.10.17</p>
+                </div>
+            </div>
+            
+            <div class="ed-node" style="top: 180px; left: 160px;">
+                <div class="node-img"></div>
+                <div class="node-info">
+                    <h5>무대로 향하는 길</h5>
+                    <p class="node-meta">2023.10.14</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Detail Panel (strictly mirror editor-desktop-active.png) -->
+    <aside class="ed-panel">
+        <header class="pan-top">
+            <div class="pan-title">
+                <span class="ico-back">←</span>
+                <span>첫 만남의 떨림</span>
+            </div>
+            <button class="pan-close">✕</button>
+        </header>
+
+        <div class="pan-video">
+            <div class="vid-ctrls">
+                <span>▶</span>
+                <div class="vid-bar"><div class="vid-fill"></div></div>
+                <span>🔊</span>
+                <span>⚙️</span>
+                <span>◽</span>
+            </div>
+        </div>
+
+        <div class="pan-meta">
+            <div class="pm-row"><b>날짜:</b> 2023.10.15</div>
+            <div class="pm-row"><b>태그:</b> 
+                <span class="pm-tag">#기억</span>
+                <span class="pm-tag">#감동</span>
+                <span class="pm-tag">#설렘</span>
+            </div>
+            <div class="pm-row"><b>메모:</b> 팬들과 함께 감동받았던 날, 평생 잊지 못할 추억이 생겼어요!</div>
+        </div>
+
+        <div class="pan-setting">
+            <div class="ps-row">
+                <div class="row-left">
+                    <p>연결 설정</p>
+                    <p class="sub">등록한 미디어가 현재 트리에 자동으로 이어집니다.</p>
+                </div>
+            </div>
+            <div class="ps-row" style="margin-top: 20px;">
+                <p>🔗 다음 메모리 자동 연결</p>
+                <div class="switch on"></div>
+            </div>
+        </div>
+
+        <button class="btn-add-connect">+ 메모리 추가</button>
+    </aside>
+</body>
+</html>

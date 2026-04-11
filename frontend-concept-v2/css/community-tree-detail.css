@@ -1,0 +1,90 @@
+/* frontend-concept-v2/css/community-tree-detail.css */
+.ctd-page { background: #fdfaf4; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+.ctd-top {
+    height: 80px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; border-bottom: 1px solid var(--color-border); background: white;
+}
+
+.ctd-top .back-link { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--color-text-sub); }
+.ctd-top .back-ico { font-size: 1.5rem; }
+
+.tree-info { flex: 1; text-align: center; }
+.tree-info h1 { font-size: 1.8rem; letter-spacing: -0.5px; }
+.tree-info p { font-size: 0.9rem; color: var(--color-text-muted); }
+
+.user-sec { display: flex; align-items: center; gap: 12px; }
+.user-text { text-align: right; }
+.user-text b { display: block; font-size: 1rem; }
+.user-text span { font-size: 0.8rem; color: var(--color-text-muted); }
+
+/* Main Layout */
+.ctd-main { flex: 1; display: grid; grid-template-columns: 1fr 380px; overflow: hidden; }
+
+/* Canvas Area */
+.canvas-area {
+    position: relative; background: #ebdcd011; overflow: auto;
+    background-image: linear-gradient(135deg, #fceeea 0%, #f3efe6 100%);
+}
+
+.tree-container {
+    padding: 100px; min-width: 1200px; position: relative;
+    display: flex; align-items: center;
+}
+
+.timeline-line {
+    position: absolute; top: 50%; left: 0; width: 100%; height: 4px; 
+    background: rgba(255,255,255,0.7); transform: translateY(-50%);
+}
+
+.ctd-node {
+    position: absolute; width: 160px; transform: translateY(-50%);
+}
+.ctd-node::after {
+    content:''; position: absolute; left: 50%; width: 2px; height: 30px; background: rgba(255,255,255,0.7);
+}
+
+.n-up { bottom: 50%; margin-bottom: 30px; }
+.n-up::after { bottom: -30px; }
+.n-down { top: 50%; margin-top: 30px; }
+.n-down::after { top: -30px; }
+
+.node-box { background: white; border-radius: 12px; padding: 12px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); }
+.node-box .thumb { width: 100%; aspect-ratio: 1; background: #eaddd3; border-radius: 4px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; position: relative; }
+.node-box .thumb.vid::after { content: '▶'; color: var(--color-primary-brick); }
+.node-box h4 { font-size: 0.95rem; margin-bottom: 4px; }
+.node-box .date { font-size: 0.8rem; color: var(--color-text-muted); font-family: var(--font-head); }
+
+/* Side Panel */
+.side-panel {
+    background: white; border-left: 1px solid var(--color-border);
+    display: flex; flex-direction: column; padding: 32px;
+}
+
+.stats-actions { display: flex; gap: 12px; margin-bottom: 32px; }
+.st-btn {
+    flex: 1; padding: 14px; border-radius: 12px; border: 1.5px solid var(--color-border);
+    font-weight: 700; color: var(--color-text-sub); display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.save-tree-btn {
+    background: var(--color-primary-brick); color: white; border-radius: var(--radius-md);
+    padding: 18px; font-weight: 800; font-size: 1.1rem; width: 100%; margin-bottom: 48px;
+    box-shadow: 0 4px 12px rgba(181, 110, 110, 0.2);
+}
+
+.comment-sec { flex: 1; overflow-y: auto; }
+.comment-sec h3 { font-size: 1.25rem; margin-bottom: 24px; }
+
+.comment-list { display: flex; flex-direction: column; gap: 24px; }
+.comm-item { display: flex; gap: 16px; }
+.ci-avatar { width: 40px; height: 40px; border-radius: 50%; background: #eaddd3; flex-shrink: 0; }
+.ci-body { flex: 1; background: var(--color-bg-surface); padding: 16px; border-radius: 16px; border-top-left-radius: 0; position: relative; }
+.ci-body::before { content:''; position: absolute; left: -10px; top: 0; border-right: 10px solid var(--color-bg-surface); border-bottom: 10px solid transparent; }
+.ci-body b { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+.ci-body p { font-size: 0.95rem; color: var(--color-text-sub); }
+
+.comment-input { margin-top: 32px; position: relative; }
+.comment-input input {
+    width: 100%; background: var(--color-bg-surface); border: none; padding: 16px 24px; border-radius: var(--radius-pill); outline: none;
+}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relovetree - 나의 러브트리</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/my-trees.css">
+</head>
+<body>
+    <nav class="global-nav dashboard-nav shell">
+        <div class="nav-left">
+            <button class="burger-menu">☰</button>
+            <div class="logo">Relovetree</div>
+        </div>
+        <div class="user-actions">
+            <button class="icon-btn">🔔<span class="noti-dot"></span></button>
+            <div class="avatar-sm"></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout shell">
+        <main class="dash-main">
+            <header class="dash-header">
+                <h1>나의 러브트리</h1>
+                <button class="btn-primary">새 러브트리 만들기</button>
+            </header>
+
+            <h3 class="section-title">최근 활성 트리</h3>
+            <div class="tree-grid" style="margin-bottom: 60px;">
+                <!-- Card 1 -->
+                <div class="tree-card card">
+                    <div class="tc-body">
+                        <div class="tc-head">
+                            <h3>나의 러브트리</h3>
+                            <span class="badge-public">Public</span>
+                        </div>
+                        <p class="tc-date">마지막 업데이트 2023.05.20</p>
+                        <p class="tc-count">108 순간s</p>
+                        <div class="tc-thumbs">
+                            <div class="t-box filled"></div><div class="t-box"></div><div class="t-box"></div>
+                        </div>
+                    </div>
+                    <div class="tc-actions">
+                        <button class="tc-btn"><span>✏️</span>편집</button>
+                        <button class="tc-btn"><span>🔗</span>공유</button>
+                        <button class="tc-btn"><span>📄</span>등록</button>
+                        <button class="tc-btn"><span>🗑️</span>삭제</button>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="tree-card card">
+                    <div class="tc-body">
+                        <div class="tc-head">
+                            <h3>재암 할사</h3>
+                            <span class="badge-private">Private</span>
+                        </div>
+                        <p class="tc-date">마지막 업데이트 2023.05.20</p>
+                        <p class="tc-count">496 순간s</p>
+                        <div class="tc-thumbs">
+                            <div class="t-box filled"></div><div class="t-box filled"></div><div class="t-box filled"></div>
+                        </div>
+                    </div>
+                    <div class="tc-actions">
+                        <button class="tc-btn"><span>✏️</span>편집</button>
+                        <button class="tc-btn"><span>🔗</span>공유</button>
+                        <button class="tc-btn"><span>📄</span>등록</button>
+                        <button class="tc-btn"><span>🗑️</span>삭제</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State Demonstration -->
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 60px;">
+                <h3 class="section-title">빈 상태 시안 (empty-first-tree)</h3>
+                <div class="empty-state">
+                    <div class="empty-visual">
+                        <div class="float-card fc-1"></div>
+                        <div class="float-card fc-2"></div>
+                        <div class="float-card fc-3"></div>
+                        <div class="sprout"></div>
+                        <div class="plant-base"></div>
+                    </div>
+                    <h2>"아직 러브트리가 없어요"</h2>
+                    <p>처음 좋아하게 된 순간부터<br>하나씩 이어보세요</p>
+                    <button class="btn-primary" style="padding: 16px 40px; font-size: 1.1rem; border-radius: var(--radius-pill);">첫 순간 기록하기</button>
+                    <div class="empty-tips">
+                        <span class="tip-tag">🏷️ 입덕</span>
+                        <span class="tip-tag">🏷️ 첫 콘서트</span>
+                        <span class="tip-tag">🏷️ 최애 무대</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <aside class="dash-sidebar">
+            <div class="side-widget card">
+                <h3>최근 수정한 순간</h3>
+                <div class="recent-list">
+                    <div class="recent-item">
+                        <div class="r-thumb"></div>
+                        <div class="r-info">
+                            <h4>나의 러브트리</h4>
+                            <p>마지막 업데이트 2023.05.20</p>
+                        </div>
+                    </div>
+                    <div class="recent-item">
+                        <div class="r-thumb"></div>
+                        <div class="r-info">
+                            <h4>제인 할사</h4>
+                            <p>마지막 업데이트 2023.05</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>

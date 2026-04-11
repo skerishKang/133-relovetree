@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트 러버 A의 러브트리 - Relovetree</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/community-tree-detail.css">
+</head>
+<body class="ctd-page">
+    <header class="ctd-top">
+        <a href="community.html" class="back-link">
+            <span class="back-ico">←</span>
+        </a>
+        <div class="tree-info">
+            <h1>테스트 러버 A의 러브트리</h1>
+            <p>입덕의 시작부터 지금까지 이어진 사랑의 경로</p>
+        </div>
+        <div class="user-sec">
+            <div class="user-text">
+                <b>테스트 러버 A</b>
+                <span>@user.hanma</span>
+            </div>
+            <div class="avatar"></div>
+        </div>
+    </header>
+
+    <main class="ctd-main">
+        <!-- Canvas Section (strictly reflecting community-tree-detail / shared-love-tree-view) -->
+        <section class="canvas-area">
+            <div class="tree-container">
+                <div class="timeline-line"></div>
+                
+                <!-- Node 1 (Up) -->
+                <div class="ctd-node n-up" style="left: 100px;">
+                    <div class="node-box">
+                        <div class="thumb vid"></div>
+                        <h4>첫 만남 - 무대 영상</h4>
+                        <span class="date">2023-09-28</span>
+                    </div>
+                </div>
+
+                <!-- Node 2 (Down) -->
+                <div class="ctd-node n-down" style="left: 300px;">
+                    <div class="node-box">
+                        <div class="thumb"></div>
+                        <h4>첫 앨범 구매</h4>
+                        <span class="date">2023-09-21</span>
+                    </div>
+                </div>
+
+                <!-- Node 3 (Up) -->
+                <div class="ctd-node n-up" style="left: 500px;">
+                    <div class="node-box" style="background: #fff4f4;">
+                        <div class="thumb" style="background: #ead3d3;"></div>
+                        <h4>콘서트 직관</h4>
+                        <span class="date">2022-07-20</span>
+                    </div>
+                </div>
+
+                <!-- Node 4 (Down) -->
+                <div class="ctd-node n-down" style="left: 700px;">
+                    <div class="node-box">
+                        <div class="thumb"></div>
+                        <h4>최애 곡 발견</h4>
+                        <span class="date">2023-05-10</span>
+                    </div>
+                </div>
+
+                <!-- Node 5 (Up) -->
+                <div class="ctd-node n-up" style="left: 900px;">
+                    <div class="node-box">
+                        <div class="thumb"></div>
+                        <h4>입덕 1주년</h4>
+                        <span class="date">2023-12-17</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Side Panel -->
+        <aside class="side-panel">
+            <div class="stats-actions">
+                <button class="st-btn">❤️ 공감해요</button>
+                <button class="st-btn">💬 응원할게요</button>
+                <button class="st-btn">🔗 경로 공유</button>
+            </div>
+
+            <button class="save-tree-btn">이 사랑의 경로를 내 트리에 보관하기</button>
+
+            <section class="comment-sec">
+                <h3>댓글</h3>
+                <div class="comment-list">
+                    <div class="comm-item">
+                        <div class="ci-avatar"></div>
+                        <div class="ci-body">
+                            <b>마르타</b>
+                            <p>이 트리 너무 감동적이에요! ❤️</p>
+                        </div>
+                    </div>
+                    <div class="comm-item">
+                        <div class="ci-avatar" style="background:#d3e2ea;"></div>
+                        <div class="ci-body">
+                            <b>타이마</b>
+                            <p>최애 곡 부분 공감해요!!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-input">
+                    <input type="text" placeholder="댓글 달기...">
+                </div>
+            </section>
+        </aside>
+    </main>
+</body>
+</html>
