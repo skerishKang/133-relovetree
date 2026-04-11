@@ -9,7 +9,8 @@
 [[redirects]]
   from = "/"
   to = "/frontend-concept-v2/home.html"
-  status = 302
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/admin.html"
