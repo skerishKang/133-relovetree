@@ -10,7 +10,7 @@
 </head>
 <body class="home-page">
     <div class="page-container">
-        <!-- English GNB -->
+        <!-- Navigation -->
         <nav class="gnb">
             <div class="gnb-brand">Lovetree</div>
             <div class="nav-links">
@@ -33,100 +33,82 @@
                 </div>
             </div>
 
-            <!-- Love Tree Vine Visualization (Matching home-landing.png) -->
+            <!-- Love Tree Vine Visualization -->
             <div class="hero-visual">
                 <div class="viz-canvas">
-                    <svg class="svg-lines" viewBox="0 0 800 560" preserveAspectRatio="none">
-                        <!-- Connecting vines from node sides -->
-                        <!-- Start (nc-1) to nc-2 (Top Mid) -->
-                        <path class="vine" d="M190,260 C250,260 280,80 340,80" />
-                        <!-- Start (nc-1) to nc-3 (Bot Mid) -->
-                        <path class="vine" d="M190,260 C250,260 280,440 340,440" />
-                        <!-- nc-2 to nc-4 (Top Right) -->
-                        <path class="vine" d="M480,80 C550,80 600,120 650,150" />
-                        <!-- nc-3 to nc-5 (Bot Right) -->
-                        <path class="vine" d="M480,440 C550,440 600,400 650,380" />
-
-                        <!-- Dots at connection points -->
-                        <circle class="vine-node-dot" cx="190" cy="260" r="3" />
-                        <circle class="vine-node-dot" cx="340" cy="80" r="3" />
-                        <circle class="vine-node-dot" cx="340" cy="440" r="3" />
+                    <svg class="svg-lines" viewBox="0 0 840 500" xmlns="http://www.w3.org/2000/svg">
+                        <g fill="none" class="vine-group">
+                            <!-- Vine 1: Node 1 (right) -> Node 2 (left) -->
+                            <path class="vine" d="M210,245 C250,245 280,60 330,60" />
+                            <!-- Vine 2: Node 1 (right) -> Node 3 (left) -->
+                            <path class="vine" d="M210,245 C250,245 280,390 330,390" />
+                            <!-- Vine 3: Node 2 (right) -> Node 4 (left) -->
+                            <path class="vine" d="M480,60 C550,60 600,120 650,150" />
+                            <!-- Vine 4: Node 3 (right) -> Node 5 (left) -->
+                            <path class="vine" d="M480,390 C550,390 600,350 640,335" />
+                        </g>
+                        <!-- Connection dots -->
+                        <circle class="vine-node-dot" cx="210" cy="245" r="3" />
+                        <circle class="vine-node-dot" cx="330" cy="60" r="3" />
+                        <circle class="vine-node-dot" cx="330" cy="390" r="3" />
                     </svg>
                     
-                    <!-- Node 1: The Start (2023-03-06 in Mock) -->
+                    <!-- Node Cards matching the Staircase pattern -->
                     <div class="node-card nc-1">
                         <div class="thumb"><img src="https://img.youtube.com/vi/gdZLi9oWNZg/hqdefault.jpg" alt="BTS"></div>
+                        <p class="card-date">2023-03-06</p>
                         <h4>우연히 보게 된 첫 무대의 설렘</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#입덕</span>
-                            <span>2023.03.06</span>
-                        </div>
+                        <div class="node-meta"><span class="node-tag">#입덕</span><span>감정 메모</span></div>
                     </div>
 
-                    <!-- Node 2: Top Branch (2023-03-20 in Mock) -->
                     <div class="node-card nc-2">
                         <div class="thumb"><img src="https://img.youtube.com/vi/WMweEpGlu_U/hqdefault.jpg" alt="BTS"></div>
-                        <h4>뮤비 공개 전날의 긴장감속에서</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#설렘</span>
-                            <span>2023.03.20</span>
-                        </div>
+                        <p class="card-date">2023-03-20</p>
+                        <h4>뮤비 공개 전날의 설레는 기다림</h4>
+                        <div class="node-meta"><span class="node-tag">#설렘</span><span>감정 메모</span></div>
                     </div>
 
-                    <!-- Node 3: Bottom Branch (2023-05-17 in Mock) -->
                     <div class="node-card nc-3">
                         <div class="thumb"><img src="https://img.youtube.com/vi/eBBEDdaQcds/hqdefault.jpg" alt="BTS"></div>
-                        <h4>콘서트 티켓팅 드디어 성공하다</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#감동</span>
-                            <span>2023.05.17</span>
-                        </div>
+                        <p class="card-date">2023-05-17</p>
+                        <h4>콘서트 티켓팅, 드디어 성공하다</h4>
+                        <div class="node-meta"><span class="node-tag">#감동</span><span>감정 메모</span></div>
                     </div>
 
-                    <!-- Node 4: Top Right -->
                     <div class="node-card nc-4">
                         <div class="thumb"><img src="https://img.youtube.com/vi/6m4B8mD3-24/hqdefault.jpg" alt="BTS"></div>
-                        <h4>첫 직관, 꿈에 그리던 무대를 보다</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#행복</span>
-                            <span>2023.08.10</span>
-                        </div>
+                        <p class="card-date">2023-08-10</p>
+                        <h4>첫 직관 무대, 꿈만 같던 순간</h4>
+                        <div class="node-meta"><span class="node-tag">#행복</span><span>감정 메모</span></div>
                     </div>
 
-                    <!-- Node 5: Bottom Right -->
                     <div class="node-card nc-5">
                         <div class="thumb"><img src="https://img.youtube.com/vi/GFBVCq7D3qs/hqdefault.jpg" alt="BTS"></div>
-                        <h4>오늘도 여전히 달리는 우리들의 여정</h4>
-                        <div class="node-meta">
-                            <span class="node-tag">#여전히좋아</span>
-                            <span>2023.12.01</span>
-                        </div>
+                        <p class="card-date">2023-12-01</p>
+                        <h4>여전히 이어지는 우리들의 이야기</h4>
+                        <div class="node-meta"><span class="node-tag">#애모</span><span>감정 메모</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Compact Features Section -->
+        <!-- Features (Horizontal Layout) -->
         <section class="features">
             <div class="feature-card">
                 <div class="f-ico">📹</div>
-                <h3>기록하기</h3>
-                <p>러브트리 만들기 등<br>기록하기를 원하세요.</p>
+                <div class="feature-info"><h3>기록하기</h3><p>러브트리 만들기 등<br>기록하기를 원하세요.</p></div>
             </div>
             <div class="feature-card">
                 <div class="f-ico">🔗</div>
-                <h3>연결하기</h3>
-                <p>영상과 예짜가 이어져<br>연상과 연결하게 됩니다.</p>
+                <div class="feature-info"><h3>연결하기</h3><p>영상과 예짜가 이어져<br>연상과 연결하게 됩니다.</p></div>
             </div>
             <div class="feature-card">
                 <div class="f-ico">▶</div>
-                <h3>다시 보기</h3>
-                <p>다시 보기 몽에 제어져<br>다시 보기 왔습니다.</p>
+                <div class="feature-info"><h3>다시 보기</h3><p>다시 보기 몽에 제어져<br>다시 보기 왔습니다.</p></div>
             </div>
             <div class="feature-card">
-                <div class="f-ico">share</div>
-                <h3>공유하기</h3>
-                <p>러브트리 빠른 순간을<br>공유하게 망심세요.</p>
+                <div class="f-ico">🌟</div>
+                <div class="feature-info"><h3>공유하기</h3><p>러브트리 빠른 순간을<br>공유하게 망심세요.</p></div>
             </div>
         </section>
     </div>
