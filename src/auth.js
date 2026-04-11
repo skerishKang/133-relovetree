@@ -5,8 +5,8 @@
  * 
  * Architecture note:
  *   - Firebase Auth = login/session ONLY (ID token provider)
- *   - App CRUD (trees, moments, etc.) → firestore-compat layer → Netlify Functions → Neon/Postgres
- *   - This module does NOT interact with Firestore directly for data storage
+ *   - App data (trees, moments, etc.) → Postgres compat layer → Netlify Functions → Neon/Postgres
+ *   - This module does NOT interact with Firestore for data storage (Firebase is auth-only)
  */
 
 // Configuration
@@ -157,9 +157,9 @@ async function signOut() {
 /**
  * Sync user profile to database
  * 
- * ⚠️ IMPORTANT: Despite the Firestore-style API, this saves to Neon PostgreSQL!
+ * ⚠️ IMPORTANT: Data goes to Neon PostgreSQL, NOT Firestore!
  * 
- * Flow: firebase.firestore() → firebase-firestore-compat.js → /api/firestore → PostgreSQL
+ * Flow: window.postgresDB → Postgres compat layer → /api/firestore → Neon/PostgreSQL
  * 
  * What happens:
  *   - Gets called on Auth state change (login)

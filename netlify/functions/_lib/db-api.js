@@ -1,13 +1,16 @@
 /**
- * ⚠️ OFFICIAL SERVER ENTRY - PostgreSQL Database API (Server-side Alias for Firestore Compat Layer)
+ * ⚠️ OFFICIAL SERVER ENTRY - PostgreSQL Database API (Server-side Alias)
  * 
  * IMPORTANT: This is the PRIMARY entry point for new server code.
  * 
  * Background:
- * - This project originally used Firebase Firestore for all data
- * - Migrated to Neon PostgreSQL for actual data storage
+ * - App data is stored in Neon PostgreSQL
  * - The actual data operations happen in document-store.js (PostgreSQL)
- * - firestore-api.js is the legacy internal shim (do not use directly)
+ * - firestore-api.js is the legacy internal shim that handles the HTTP layer
+ * 
+ * This file re-exports from the legacy shim but provides Postgres-oriented naming
+ * for clarity. The actual data flow is:
+ *   db-api.js → firestore-api.js (shim) → document-store.js → Neon/PostgreSQL
  * 
  * Migration Status:
  * - Phase A (Current): Alias files created, documentation updated ✅
@@ -27,7 +30,7 @@
  * @see docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md
  */
 
-// Re-export all operations from firestore-api.js
+// Re-export all operations from firestore-api.js (legacy shim)
 // This provides clearer naming while maintaining compatibility
 module.exports = {
   // Core operations

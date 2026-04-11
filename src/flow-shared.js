@@ -1,6 +1,13 @@
 /**
- * Auth: Firebase / Data: Neon Postgres via compat layer
+ * ⚠️ OFFICIAL CLIENT ENTRY - Auth: Firebase / Data: Neon Postgres via compat layer
  * Relovetree Flow A Shared Utilities
+ * 
+ * Uses: window.postgresDB (official browser entry point)
+ * 
+ * For new code:
+ *   - Use window.postgresDB for all data operations
+ *   - Data goes to Neon PostgreSQL, NOT Firestore
+ *   - Firebase is only for Auth (login/session)
  */
 (function () {
     var EMOTION_TAGS = [
@@ -71,7 +78,8 @@
 
     /**
      * Returns the Postgres-backed database proxy
-     * Note: Uses Firestore-compatible API via firebase-firestore-compat.js
+     * Note: Uses official postgres-client-browser.js entry point
+     *       which provides Firestore-compatible API but routes to Neon PostgreSQL
      */
     function getDb() {
         return window.postgresDB;
