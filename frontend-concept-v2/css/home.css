@@ -3,13 +3,14 @@
 /* ─── Page Shell ─────────────────────────────────── */
 .home-page {
     background: #e9ece7;
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding-top: 0;
+    padding-bottom: 0;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     font-family: 'Noto Sans KR', sans-serif;
 }
 
@@ -96,8 +97,10 @@
 
 /* ─── Hero ───────────────────────────────────────── */
 .hero {
+    min-height: calc(100vh - 100px);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 32px 60px 80px;
     gap: 48px;
 }
@@ -256,11 +259,11 @@
   - nc-4: Lower branch (center, bottom) — grows downward from the split
   - nc-5: Tip (far right, upper-mid) — extends from the lower branch
 */
-.nc-1 { top: 42%; left: 0%;   width: 214px; }
-.nc-2 { top: 2%;  left: 46%;  width: 196px; }
-.nc-3 { top: 28%; left: 56%;  width: 196px; }
-.nc-4 { top: 68%; left: 42%;  width: 196px; }
-.nc-5 { top: 46%; left: 72%;  width: 184px; }
+.nc-1 { top: 40%; left: 0%;   width: 220px; }
+.nc-2 { top: 2%;  left: 42%;  width: 200px; }
+.nc-3 { top: 28%; left: 58%;  width: 200px; }
+.nc-4 { top: 72%; left: 38%;  width: 200px; }
+.nc-5 { top: 48%; left: 78%;  width: 190px; }
 
 /* ─── Thumbnail ──────────────────────────────────── */
 .thumb {
@@ -360,7 +363,7 @@
 .features {
     display: flex;
     gap: 20px;
-    padding: 0 60px 20px;
+    padding: 20px 60px 60px;
     justify-content: space-between;
 }
 
@@ -384,20 +387,21 @@
 
 /* Icon box with inline SVG */
 .f-ico {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
     border: 1px solid rgba(181,110,110,0.12);
     background: #fdf8f5;
+    box-shadow: 0 4px 20px rgba(61,43,43,0.04);
     color: #b56e6e;
 }
 .f-ico svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     stroke: #b56e6e;
 }
 

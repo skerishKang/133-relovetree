@@ -37,7 +37,6 @@ body {
     color: var(--color-text-main);
     font-family: var(--font-body);
     line-height: 1.6;
-    overflow-x: hidden;
 }
 
 button {
