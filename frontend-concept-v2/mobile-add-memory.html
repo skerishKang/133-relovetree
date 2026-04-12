@@ -1,65 +1,96 @@
+<!-- frontend-concept-v2/mobile-add-memory.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/frontend-concept-v2/">
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <title>순간 추가하기 - Lovetree</title>
-    <link rel="stylesheet" href="css/app.css">
-    <link rel="stylesheet" href="css/mobile-add-memory.css">
+    <base href="/frontend-concept-v2/">
+    <link rel="stylesheet" href="css/app.css?v=20260412-6">
+    <link rel="stylesheet" href="css/mobile-add-memory.css?v=20260412-6">
 </head>
-<body class="mam-page">
-    <div class="mam-outer">
-        <div class="mam-inner">
-            <header class="mam-header">
-                <h2>순간 추가하기</h2>
-            </header>
+<body class="add-memory-page">
+    <!-- Header -->
+    <nav class="add-header">
+        <button class="btn-back" onclick="window.history.back()">←</button>
+        <h1>순간 추가하기</h1>
+    </nav>
 
-            <div class="mam-bubble-wrap">
-                <div class="mam-bubble">
-                    <h3>영상 링크 붙여넣기</h3>
-                    <input type="text" placeholder="YouTube, TikTok, Instagram 링크">
-                </div>
-            </div>
-
-            <main class="mam-scroll">
-                <div class="preview-box">
-                    <span>🎞️▶️</span>
-                    <p>영상 미리보기</p>
-                </div>
-
-                <div class="form-row row-horizontal">
-                    <div class="form-label"><span>🗓️</span> 날짜</div>
-                    <div class="val-box">2023.10.26 <span>▼</span></div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">제목</div>
-                    <input type="text" class="form-input" placeholder="짧은 제목을 입력하세요 (예: 앵콜 무대!)">
-                </div>
-
-                <div class="tags-row">
-                    <div class="form-label"><span>🏷️</span> 기분 태그</div>
-                    <div class="tag-pill">설렘</div>
-                    <div class="tag-pill">감동</div>
-                    <div class="tag-pill">행복</div>
-                    <div class="tag-pill active">입덕</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">메모</div>
-                    <textarea class="form-textarea" placeholder="이 순간의 소중한 기억을 남겨주세요..."></textarea>
-                </div>
-
-                <div class="form-row row-horizontal" style="margin-top: 10px;">
-                    <div class="form-label"><span>🔗</span> 어느 순간과 연결할까요?</div>
-                    <div class="val-box"><span style="width:12px; height:8px; display:inline-block; border:1.5px solid #bbb; border-radius:2px;"></span> <span>▼</span></div>
-                </div>
-
-                <button class="btn-submit">러브트리에 추가</button>
-            </main>
+    <!-- Content -->
+    <main class="add-container">
+        <!-- Video Link -->
+        <div class="input-section">
+            <label for="video-url">영상 링크 붙여넣기</label>
+            <input type="text" id="video-url" class="input-field" placeholder="YouTube, TikTok, Instagram 링크">
         </div>
-    </div>
+
+        <!-- Preview -->
+        <div class="preview-area">
+            <div class="preview-icon">🎬</div>
+            <p>영상 미리보기</p>
+        </div>
+
+        <!-- Details -->
+        <div class="field-group">
+            <div class="field-header">📅 날짜</div>
+            <input type="date" class="small-input" value="2023-10-26">
+        </div>
+
+        <div class="field-group">
+            <div class="field-header">제목</div>
+            <input type="text" class="small-input" placeholder="짧은 제목을 입력하세요 (예: 앵콜 무대!)">
+        </div>
+
+        <div class="field-group">
+            <div class="field-header">🏷️ 기분 태그</div>
+            <div class="tag-list">
+                <button class="tag-item">설렘</button>
+                <button class="tag-item">감동</button>
+                <button class="tag-item">행복</button>
+                <button class="tag-item active">입덕</button>
+                <button class="tag-item">설렘</button>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="field-header">메모</div>
+            <textarea class="memo-area" placeholder="이 순간의 소중한 기억을 남겨주세요..."></textarea>
+        </div>
+
+        <div class="field-group" style="padding-bottom: 40px;">
+            <div class="field-header">🔗 어느 순간과 연결할까요?</div>
+            <select class="small-input">
+                <option>첫 기록으로 시작하기</option>
+                <option>콘서트 시작 지점 루프</option>
+                <option>나의 첫 러브트리 Root</option>
+            </select>
+        </div>
+    </main>
+
+    <!-- Fixed Footer -->
+    <footer class="fixed-footer">
+        <button class="btn-submit">러브트리에 추가</button>
+    </footer>
+
+    <!-- Simple Interaction Toggle -->
+    <script>
+        document.querySelectorAll('.tag-item').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Simulating the "Tree Node Insight"
+        const videoInput = document.getElementById('video-url');
+        const previewArea = document.querySelector('.preview-area');
+        
+        videoInput.addEventListener('input', function(e) {
+            if (e.target.value.includes('youtube.com') || e.target.value.includes('youtu.be')) {
+                previewArea.style.background = '#f1e4dc';
+                previewArea.style.borderColor = '#b56e6e';
+                previewArea.innerHTML = '<div style="text-align:center"><div style="font-size:2.5rem">🎥</div><p style="color:#b56e6e; font-weight:700">영상이 인식되었습니다.<br><span style="font-size:0.8rem; font-weight:400">트리에 연결될 준비가 끝났습니다.</span></p></div>';
+            }
+        });
+    </script>
 </body>
 </html>

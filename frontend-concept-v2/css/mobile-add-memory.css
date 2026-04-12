@@ -1,88 +1,96 @@
 /* frontend-concept-v2/css/mobile-add-memory.css */
-.mam-page { background: linear-gradient(135deg, #faebd7 0%, #f1d7d0 100%); height: 100vh; display: flex; justify-content: center; align-items: center; }
-
-.mam-outer {
-    width: 100%; max-width: 420px; height: 840px; display: flex; flex-direction: column; position: relative;
-    /* Optional phone bezel */
-    border-radius: 48px; box-shadow: 0 40px 100px rgba(0,0,0,0.15); border: 12px solid #3d2b2b;
-    background: transparent;
+:root {
+    --bg-cream: #fdfaf4;
+    --brick: #b56e6e;
+    --dusty-rose: #ebdcd0;
+    --text-dark: #333;
+    --text-muted: #888;
+    --border-color: #f1e4dc;
 }
 
-.mam-inner {
-    flex: 1; background: #fdfaf4; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; position: relative;
+body.add-memory-page {
+    margin: 0; padding: 0;
+    background-color: var(--bg-cream);
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text-dark);
+    display: flex; flex-direction: column; min-height: 100vh;
 }
 
-.mam-header {
-    text-align: center; padding: 24px 20px; margin-top: 20px;
+/* Mobile Header */
+.add-header {
+    height: 64px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; border-bottom: 1px solid var(--border-color);
+    background: white;
 }
-.mam-header h2 { font-size: 1.25rem; font-weight: 800; color: #111; }
+.btn-back {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; font-size: 1.5rem; color: var(--text-dark); cursor: pointer;
+}
+.add-header h1 { font-size: 1.1rem; font-weight: 700; margin: 0; }
 
-.mam-scroll {
-    flex: 1; overflow-y: auto; padding: 60px 24px 40px; display: flex; flex-direction: column; gap: 20px;
-}
-
-/* Floating Input Bubble */
-.mam-bubble-wrap {
-    position: absolute; top: 75px; left: 16px; right: 16px; z-index: 10;
-}
-.mam-bubble {
-    background: #fdfaf4; border: 2.5px solid #d4a9a9; border-radius: 20px; padding: 16px;
-    box-shadow: 0 10px 20px rgba(212, 169, 169, 0.2); position: relative;
-}
-/* Little arrow pointing down */
-.mam-bubble::after {
-    content:''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
-    border-top: 12px solid #d4a9a9; border-left: 12px solid transparent; border-right: 12px solid transparent;
-}
-.mam-bubble::before {
-    content:''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-    border-top: 10px solid #fdfaf4; border-left: 10px solid transparent; border-right: 10px solid transparent; z-index: 1;
+/* Main Content Area */
+.add-container {
+    flex: 1; padding: 24px 20px 100px; max-width: 500px; margin: 0 auto; width: 100%; box-sizing: border-box;
 }
 
-.mam-bubble h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 8px; color: #111; }
-.mam-bubble input {
-    width: 100%; border: 1.5px solid #bba0a0; border-radius: 20px; padding: 12px 16px;
-    font-size: 0.95rem; outline: none; color: #777;
+/* Link Section */
+.input-section { margin-bottom: 30px; }
+.input-section label { display: block; font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.input-field {
+    width: 100%; border: 2px solid var(--brick); border-radius: 16px;
+    padding: 16px; font-size: 0.95rem; box-sizing: border-box;
+    background: white; outline: none; transition: 0.3s;
+}
+.input-field::placeholder { color: #ccc; }
+
+/* Preview Box */
+.preview-area {
+    width: 100%; aspect-ratio: 16/9; background: #f8f8f8;
+    border: 2px dashed #ddd; border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin-bottom: 30px; color: #aaa; font-size: 0.9rem; gap: 10px;
+}
+.preview-icon { font-size: 2rem; color: #ddd; }
+
+/* Fields */
+.field-group { margin-bottom: 24px; }
+.field-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-weight: 700; }
+.field-header i { color: var(--brick); opacity: 0.7; }
+
+.small-input {
+    width: 100%; border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 12px 16px; font-size: 0.9rem; box-sizing: border-box; outline: none;
 }
 
-/* Form Styles */
-.form-row { display: flex; flex-direction: column; gap: 8px; }
-.row-horizontal { display: flex; align-items: center; justify-content: space-between; }
-.form-label { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.95rem; color: #333; }
-
-.preview-box {
-    width: 100%; aspect-ratio: 16/9; background: #9b9b9b; border-radius: 16px;
-    border: 2px dashed #b7a9a9; margin-top: 20px; margin-bottom: 10px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
+/* Tag Selector */
+.tag-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.tag-item {
+    padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border-color);
+    font-size: 0.85rem; color: var(--text-muted); cursor: pointer; background: white; transition: 0.2s;
 }
-.preview-box span { font-size: 2rem; margin-bottom: 8px; }
-.preview-box p { font-size: 0.9rem; font-weight: 700; opacity: 0.9; }
+.tag-item.active { background: var(--brick); color: white; border-color: var(--brick); }
 
-.form-input {
-    width: 100%; background: white; border: 1.5px solid #d1c1b1; border-radius: 12px;
-    padding: 12px 16px; font-size: 0.95rem; outline: none; color: #333;
-}
-.form-textarea {
-    width: 100%; background: white; border: 1.5px solid #d1c1b1; border-radius: 12px;
-    padding: 16px; font-size: 0.95rem; outline: none; min-height: 100px; resize: none; color: #777;
+/* Textarea */
+.memo-area {
+    width: 100%; height: 120px; border: 1px solid var(--border-color); border-radius: 16px;
+    padding: 16px; font-size: 0.9rem; box-sizing: border-box; resize: none; outline: none;
 }
 
-.tags-row { display: flex; align-items: center; gap: 8px; }
-.tag-pill {
-    background: transparent; border: 1px solid #d1c1b1; padding: 4px 12px; border-radius: 12px;
-    font-size: 0.85rem; color: #777; font-weight: 700;
+/* Floating Footer CTA */
+.fixed-footer {
+    position: fixed; bottom: 0; left: 0; right: 0; padding: 20px;
+    background: linear-gradient(to top, var(--bg-cream) 70%, transparent);
+    display: flex; justify-content: center; z-index: 100;
 }
-.tag-pill.active {
-    background: #cf8285; color: white; border-color: #cf8285;
-}
-
-.val-box {
-    background: white; border: 1.5px solid #d1c1b1; border-radius: 12px; padding: 6px 12px;
-    font-size: 0.9rem; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px;
-}
-
 .btn-submit {
-    background: #cf8285; color: white; width: 100%; padding: 18px; border-radius: 24px;
-    font-size: 1.1rem; font-weight: 800; text-align: center; margin-top: 20px;
-    box-shadow: 0 8px 24px rgba(207, 130, 133, 0.4);
+    width: 100%; max-width: 460px; background-color: var(--brick); color: white;
+    border: none; padding: 18px; border-radius: 100px; font-weight: 700; font-size: 1.1rem;
+    cursor: pointer; box-shadow: 0 8px 25px rgba(181, 110, 110, 0.3); transition: 0.3s;
+}
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(181, 110, 110, 0.4); }
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+    .add-container { padding: 20px 16px; }
 }
