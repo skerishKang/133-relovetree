@@ -65,16 +65,43 @@ body.my-trees-page { margin: 0; padding: 0; background-color: var(--bg-cream); f
 .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
 .card-actions {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-    padding-top: 15px; border-top: 1px solid #f1f1f1;
+  display: flex;
+  gap: 8px;
+  padding-top: 15px;
+  border-top: 1px solid #f1f1f1;
+  align-items: center;
 }
 .action-item {
-    text-align: center; text-decoration: none; color: var(--text-muted); font-size: 0.75rem;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    transition: 0.2s;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
-.action-item:hover { color: var(--brick); }
-.action-icon { font-size: 1.1rem; }
+.action-item:hover { color: var(--brick); background: rgba(181,110,110,0.06); }
+.action-item.action-primary {
+  color: var(--brick);
+  font-weight: 600;
+  background: rgba(181,110,110,0.08);
+}
+.action-item.action-primary:hover { background: rgba(181,110,110,0.15); }
+.action-item.action-more {
+  margin-left: auto;
+  color: #bbb;
+  font-size: 1rem;
+  padding: 8px;
+}
+.action-item.action-more:hover { color: var(--text-muted); background: rgba(0,0,0,0.03); }
+.action-icon { font-size: 1rem; }
 
 /* Empty State */
 .empty-state {
