@@ -351,24 +351,31 @@
     }
 
     function addMomentFromDetail(runtime, e) {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (runtime.isReadOnly) {
-            showToast(runtime, '읽기 전용 모드입니다.');
+            showToast(runtime, getIsKorean(runtime) ? '읽기 전용 모드입니다.' : 'Read-only mode.');
             return;
         }
 
-        const time = document.getElementById('new-moment-time').value;
-        const text = document.getElementById('new-moment-text').value;
+        const timeEl = document.getElementById('new-moment-time');
+        const textEl = document.getElementById('new-moment-text');
+        if (!timeEl || !textEl) return;
+
+        const time = timeEl.value.trim();
+        const text = textEl.value.trim();
         const selected = document.querySelector('input[name="new-moment-feeling"]:checked');
         const feeling = selected ? selected.value : 'love';
 
-        if (!time || !text) return;
+        if (!time || !text) {
+            showToast(runtime, getIsKorean(runtime) ? '시간과 내용을 모두 입력해주세요.' : 'Please enter both time and content.');
+            return;
+        }
 
         if (aiTreeDraftDetailActive && aiTreeDraftDetailNode) {
             aiTreeDraftDetailNode.moments.push({ time: time, text: text, feeling: feeling });
             renderMomentsList(runtime, aiTreeDraftDetailNode.moments);
-            document.getElementById('new-moment-text').value = '';
-            document.getElementById('new-moment-time').value = '';
+            textEl.value = '';
+            timeEl.value = '';
             showToast(runtime, getIsKorean(runtime) ? '순간이 등록되었습니다!' : 'Moment added!');
             return;
         }
@@ -376,14 +383,29 @@
         const node = runtime.state.nodes.find(function (item) {
             return item.id === runtime.state.activeNodeId;
         });
-        if (!node) return;
+        if (!node) {
+            showToast(runtime, getIsKorean(runtime) ? '선택된 노드가 없습니다.' : 'No node selected.');
+            return;
+        }
+
+        if (!Array.isArray(node.moments)) {
+            node.moments = [];
+        }
 
         node.moments.push({ time: time, text: text, feeling: feeling });
+        
+        // Optional: Sort moments by time string
+        node.moments.sort(function(a, b) {
+            return a.time.localeCompare(b.time);
+        });
+
         renderMomentsList(runtime, node.moments);
         render(runtime);
         saveDebounced(runtime);
-        document.getElementById('new-moment-text').value = '';
-        document.getElementById('new-moment-time').value = '';
+        
+        textEl.value = '';
+        timeEl.value = '';
+        
         updateStats(runtime);
         showToast(runtime, getIsKorean(runtime) ? '순간이 등록되었습니다!' : 'Moment added!');
     }
