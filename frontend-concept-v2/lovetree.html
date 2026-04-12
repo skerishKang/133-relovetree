@@ -23,7 +23,7 @@
                 <a href="lovetree.html" class="active">러브트리</a>
                 <a href="community.html">커뮤니티</a>
                 <div class="auth-box">
-                    <a href="/pages/login.html" id="nav-auth-item" class="nav-login">로그인</a>
+                    <a href="login.html" id="nav-auth-item" class="nav-login">로그인</a>
                     <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
                 </div>
             </div>
@@ -35,7 +35,7 @@
             <h1>러브트리는 사랑에 빠진<br>모든 순간들이 자라난 기록입니다.</h1>
             <p>우리가 좋아하는 아티스트와 함께한 시간들이 흩어지지 않도록,<br>영상과 감정의 실을 엮어 하나의 줄기로 만들어 보세요.</p>
             <div class="lt-hero-btns">
-                <a href="/pages/login.html" class="btn-brick">내 러브트리 시작하기</a>
+                <a href="login.html" class="btn-brick">내 러브트리 시작하기</a>
                 <a href="#examples" class="btn-outline">다른 트리 둘러보기</a>
             </div>
         </header>
@@ -168,7 +168,7 @@
         <section class="lt-footer-cta">
             <h2>이제 당신의 러브트리를<br>심어볼 차례입니다.</h2>
             <p>기록되지 않은 순간은 사라지지만, 연결된 추억은 나무가 됩니다.</p>
-            <a href="/pages/login.html" class="btn-brick" style="padding: 20px 48px; font-size: 1.2rem;">첫 시작하기</a>
+            <a href="login.html" class="btn-brick" style="padding: 20px 48px; font-size: 1.2rem;">첫 시작하기</a>
         </section>
 
         <!-- Footer -->
@@ -190,12 +190,12 @@
             const logoutBtn = document.getElementById('nav-logout-btn');
             if (user) {
                 authItem.textContent = '내 트리';
-                authItem.href = '/pages/owner.html';
+                authItem.href = 'my-trees.html';
                 authItem.classList.add('logged-in');
                 logoutBtn.classList.remove('is-hidden');
             } else {
                 authItem.textContent = '로그인';
-                authItem.href = '/pages/login.html';
+                authItem.href = 'login.html';
                 authItem.classList.remove('logged-in');
                 logoutBtn.classList.add('is-hidden');
             }

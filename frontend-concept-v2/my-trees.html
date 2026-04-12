@@ -23,7 +23,7 @@
       <a href="lovetree.html">러브트리</a>
       <a href="community.html">커뮤니티</a>
       <div class="auth-box">
-        <a href="/pages/owner.html" id="nav-auth-item" class="nav-login active">내 트리</a>
+        <a href="my-trees.html" id="nav-auth-item" class="nav-login active">내 트리</a>
         <button id="nav-logout-btn" class="logout-minimal">로그아웃</button>
       </div>
     </div>
@@ -88,7 +88,7 @@ function updateMyTreesAuthUI(user) {
   const authItem = document.getElementById('nav-auth-item');
   if (user) {
     authItem.textContent = '내 트리';
-    authItem.href = '/pages/owner.html';
+    authItem.href = 'my-trees.html';
     authItem.classList.add('active');
   } else {
   }

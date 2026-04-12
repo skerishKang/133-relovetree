@@ -25,7 +25,7 @@
                 <a href="lovetree.html">러브트리</a>
                 <a href="community.html">커뮤니티</a>
                 <div class="auth-box">
-                    <a href="/pages/login.html" id="nav-auth-item" class="nav-login">로그인</a>
+                    <a href="login.html" id="nav-auth-item" class="nav-login">로그인</a>
                     <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
                 </div>
             </div>
@@ -38,8 +38,8 @@
                 <h1>사랑에 빠진 모든 순간을<br>연결하세요.</h1>
                 <p>영상, 날짜, 감정, 메모가 아름답게 이어져<br>당신만의 러브트리가 자라납니다.</p>
                 <div class="hero-btns">
-                    <a href="/pages/login.html" id="hero-cta-main" class="btn-brick">러브트리 시작하기</a>
-                    <a href="/pages/community.html" class="btn-outline">다른 트리 보기</a>
+                    <a href="login.html" id="hero-cta-main" class="btn-brick">러브트리 시작하기</a>
+                    <a href="community.html" class="btn-outline">다른 트리 보기</a>
                 </div>
             </div>
 
@@ -131,24 +131,24 @@
             if (user) {
                 // Logged In
                 authItem.textContent = '내 트리';
-                authItem.href = '/pages/owner.html';
+                authItem.href = 'my-trees.html';
                 authItem.classList.add('logged-in');
                 logoutBtn.classList.remove('is-hidden');
                 
                 if (heroCTA) {
                     heroCTA.textContent = '내 트리 관리하기';
-                    heroCTA.href = '/pages/owner.html';
+                    heroCTA.href = 'my-trees.html';
                 }
             } else {
                 // Logged Out
                 authItem.textContent = '로그인';
-                authItem.href = '/pages/login.html';
+                authItem.href = 'login.html';
                 authItem.classList.remove('logged-in');
                 logoutBtn.classList.add('is-hidden');
                 
                 if (heroCTA) {
                     heroCTA.textContent = '러브트리 시작하기';
-                    heroCTA.href = '/pages/login.html';
+                    heroCTA.href = 'login.html';
                 }
             }
         }

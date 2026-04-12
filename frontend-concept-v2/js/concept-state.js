@@ -64,7 +64,7 @@
     var page = detectPage();
     if (page === 'home') {
       var a = q(SEL.home.authItem), b = q(SEL.home.logoutBtn);
-      if (a) { a.textContent = '로그인'; a.href = '/pages/login.html'; a.classList.remove('is-hidden'); }
+      if (a) { a.textContent = '로그인'; a.href = 'login.html'; a.classList.remove('is-hidden'); }
       if (b) b.classList.add('is-hidden');
     }
     var page2 = detectPage();
