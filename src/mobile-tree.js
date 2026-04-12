@@ -239,6 +239,14 @@
         window.location.href = getAddMemoryUrl();
       });
     }
+
+    // Add moment button (in bottom CTA)
+    var addMomentBtn = document.getElementById('btn-add-moment');
+    if (addMomentBtn) {
+      addMomentBtn.addEventListener('click', function() {
+        window.location.href = getAddMemoryUrl();
+      });
+    }
   }
 
   // Initialize
