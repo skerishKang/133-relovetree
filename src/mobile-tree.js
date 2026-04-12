@@ -223,37 +223,41 @@
     return '/pages/mobile-add-memory.html?treeId=' + encodeURIComponent(treeId);
   }
 
-  function bindEvents() {
-    // Retry button
-    var retryBtn = document.getElementById('btn-retry-tree');
-    if (retryBtn) {
-      retryBtn.addEventListener('click', function() {
-        loadTree();
-      });
-    }
+function bindEvents() {
+  // Retry button
+  var retryBtn = document.getElementById('btn-retry-tree');
+  if (retryBtn) {
+    retryBtn.addEventListener('click', function() {
+      loadTree();
+    });
+  }
 
-    // Add first button (in empty state)
-    var addFirstBtn = document.getElementById('btn-add-first');
-    if (addFirstBtn) {
-      addFirstBtn.addEventListener('click', function() {
-        window.location.href = getAddMemoryUrl();
-      });
-    }
+  // Add first button (in empty state)
+  var addFirstBtn = document.getElementById('btn-add-first');
+  if (addFirstBtn) {
+    addFirstBtn.addEventListener('click', function() {
+      window.location.href = getAddMemoryUrl();
+    });
+  }
 
-    // Add moment button (in bottom CTA)
-    var addMomentBtn = document.getElementById('btn-add-moment');
-    if (addMomentBtn) {
-      addMomentBtn.addEventListener('click', function() {
-        window.location.href = getAddMemoryUrl();
-      });
-    // Continue editing button (in bottom CTA)
-    var continueEditBtn = document.getElementById("btn-edit-tree");
-    if (continueEditBtn) {
-      continueEditBtn.addEventListener("click", function() {
-        window.location.href = "/pages/editor.html?id=" + encodeURIComponent(treeId);
-      });
-    }
-    }
+  // Add moment button (in bottom CTA)
+  var addMomentBtn = document.getElementById('btn-add-moment');
+  if (addMomentBtn) {
+    addMomentBtn.addEventListener('click', function() {
+      window.location.href = getAddMemoryUrl();
+    });
+  }
+
+  // Continue editing button (in bottom CTA) - navigates to editor
+  var continueEditBtn = document.getElementById('btn-edit-tree');
+  if (continueEditBtn) {
+    continueEditBtn.addEventListener('click', function() {
+      if (treeId) {
+        window.location.href = '/pages/editor.html?id=' + encodeURIComponent(treeId);
+      }
+    });
+  }
+}
   }
 
   // Initialize
