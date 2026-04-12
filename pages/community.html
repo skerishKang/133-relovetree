@@ -48,10 +48,10 @@
 
     <main class="shell comm-main">
         <!-- Spotlight Area: Featured Iconic Tree -->
-        <div id="featured-spotlight-demo" class="featured-spotlight-area">
+        <div id="featured-spotlight" class="featured-spotlight-area" style="display: none;">
              <div class="featured-card horizontal">
                 <div class="fc-visual">
-                    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천" onload="this.classList.add('loaded')">
+                    <img id="featured-img" src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천" onload="this.classList.add('loaded')">
                     <div class="fc-tree-visual">
                         <svg class="fc-tree-svg" viewBox="0 0 100 200">
                             <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />
@@ -64,16 +64,16 @@
                 <div class="fc-content">
                     <div class="fc-meta">
                         <span class="fc-badge">Weekly Spotlight</span>
-                        <span class="fc-author">@HappyARMY</span>
+                        <span class="fc-author" id="featured-author">@HappyARMY</span>
                     </div>
-                    <h3>BTS와 함께 걸어온 1000일의 시간</h3>
-                    <p>첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 찬란한 사랑의 경로를 함께 감상해보세요.</p>
+                    <h3 id="featured-title">방탄소년단과 함께 걸어온 1000일의 시간</h3>
+                    <p id="featured-desc">첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 찬란한 사랑의 경로를 함께 감상해보세요.</p>
                     <div class="fc-footer">
-                        <div class="fc-stats">
+                        <div class="fc-stats" id="featured-stats">
                             <span>❤️ 1,240 공감</span>
                             <span>💬 86 응원</span>
                         </div>
-                        <a href="/pages/community-tree-detail.html" class="fc-btn">경로 감상하기</a>
+                        <a href="/pages/community-tree-detail.html" id="featured-link" class="fc-btn">경로 감상하기</a>
                     </div>
                 </div>
             </div>

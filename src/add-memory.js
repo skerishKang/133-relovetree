@@ -104,17 +104,31 @@ async function handleMemorySubmit(event) {
       return;
     }
 
-    // 3. API 호출
-    const result = await createMoment(formData);
-
-    if (result && result.id) {
-      // 성공: 트리 페이지로 이동
-      alert('기억이 저장되었습니다!');
-      window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
-    } else {
-      // 실패
-      alert('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    // 3. FlowShared를 사용하여 트리에 순간 추가
+    const F = window.FlowShared;
+    
+    // 3a. 트리 데이터 로드
+    const treeData = await F.loadTree(treeId);
+    if (!treeData) {
+      throw new Error('트리를 찾을 수 없습니다.');
     }
+
+    // 3b. 메모리 데이터 포맷팅
+    const memoryData = {
+      title: formData.title,
+      date: formData.date,
+      videoId: F.parseYouTubeId(formData.videoUrl) || '',
+      sourceUrl: formData.videoUrl,
+      memo: formData.memo,
+      emotionTag: formData.emotion
+    };
+
+    // 3c. 트리에 순간 추가
+    await F.addMemoryToTree(treeId, treeData, null, memoryData);
+
+    // 4. 성공: 트리 페이지로 이동
+    alert('기억이 저장되었습니다!');
+    window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
 
   } catch (error) {
     console.error('Memory submit error:', error);
