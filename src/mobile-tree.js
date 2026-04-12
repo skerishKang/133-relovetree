@@ -246,6 +246,13 @@
       addMomentBtn.addEventListener('click', function() {
         window.location.href = getAddMemoryUrl();
       });
+    // Continue editing button (in bottom CTA)
+    var continueEditBtn = document.getElementById("btn-edit-tree");
+    if (continueEditBtn) {
+      continueEditBtn.addEventListener("click", function() {
+        window.location.href = "/pages/editor.html?id=" + encodeURIComponent(treeId);
+      });
+    }
     }
   }
 
