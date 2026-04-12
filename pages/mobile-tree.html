@@ -1,59 +1,121 @@
-<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>러브트리 - Lovetree</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="/assets/css/flow-shared.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/flow-shared.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<title>사랑의 흐름 - Lovetree</title>
+<link rel="stylesheet" href="/css/app.css?v=20260412b">
+<link rel="stylesheet" href="/css/mobile-tree.css?v=20260412b">
 </head>
-<body>
-    <div class="flow-container">
-        <header class="flow-header">
-            <a href="/pages/my-trees.html" class="flow-back">←</a>
-            <h1 id="tree-title">러브트리</h1>
-            <button id="btn-add" class="btn-secondary" style="font-size:0.85rem;padding:8px 14px;">+ 추가</button>
-        </header>
+<body class="mob-page">
+<div class="mob-frame">
 
-        <div id="loading-area" class="loading-spinner" style="padding-top:60px;"></div>
+<header class="mob-top">
+  <h2 class="mob-top-title">사랑의 흐름</h2>
+  <p class="mob-top-sub">2023.11.15부터 함께한 기록</p>
+</header>
 
-        <div id="tree-empty" class="empty-state" style="display:none;">
-            <div style="font-size:3rem;margin-bottom:16px;">🌱</div>
-            <h3>아직 기록된 순간이 없어요</h3>
-            <p>처음 사랑에 빠진 순간을 남겨보세요</p>
-            <button id="btn-first-memory" class="btn-primary" style="max-width:280px;">첫 순간 기록하기</button>
-        </div>
+<main class="mob-scroll">
 
-        <div id="tree-view" style="display:none;">
-            <div style="padding:16px 20px 8px;text-align:center;">
-                <p id="tree-subtitle" style="font-size:0.85rem;color:var(--color-text-muted);"></p>
-            </div>
+<div class="trunk">
+  <div class="trunk-line"></div>
 
-            <div id="node-list" style="padding:8px 20px 100px;position:relative;">
-                <div id="center-line" style="position:absolute;left:50%;top:16px;bottom:100px;width:2px;background:var(--color-border);transform:translateX(-50%);z-index:1;"></div>
-            </div>
-        </div>
-
-        <div style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--color-border);display:flex;justify-content:space-around;padding:10px 0 24px;max-width:480px;margin:0 auto;">
-            <a href="/pages/my-trees.html" style="text-align:center;font-size:0.7rem;color:var(--color-text-muted);text-decoration:none;">
-                <div style="font-size:1.4rem;">🏠</div>홈
-            </a>
-            <a id="nav-add" href="#" style="text-align:center;font-size:0.7rem;color:var(--color-primary-brick);text-decoration:none;">
-                <div style="font-size:1.4rem;">➕</div>추가
-            </a>
-            <a id="nav-profile" href="/pages/my-trees.html" style="text-align:center;font-size:0.7rem;color:var(--color-text-muted);text-decoration:none;">
-                <div style="font-size:1.4rem;">👤</div>내 트리
-            </a>
-        </div>
+  <article class="moment-card mc-root">
+    <div class="mc-branch">
+      <span class="mc-node-dot"></span>
+      <span class="mc-node-line"></span>
     </div>
+    <div class="mc-body">
+      <div class="mc-thumb">
+        <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="">
+        <div class="mc-thumb-veil"></div>
+      </div>
+      <span class="mc-date">2023.11.15</span>
+      <h3 class="mc-title">첫 단독 콘서트의 전율</h3>
+      <p class="mc-memo">처음 아미밤을 흔들며 들었던 그 목소리를 잊을 수 없어요. 바로 이 순간부터 제 세계가 바뀌었습니다.</p>
+      <span class="mc-tag">#첫만남</span>
+    </div>
+  </article>
 
-    <script src="/src/mobile-tree.js"></script>
+  <article class="moment-card mc-alt">
+    <div class="mc-branch">
+      <span class="mc-node-dot"></span>
+      <span class="mc-node-line"></span>
+    </div>
+    <div class="mc-body">
+      <div class="mc-thumb">
+        <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="">
+        <div class="mc-thumb-veil mc-thumb-veil--rose"></div>
+      </div>
+      <span class="mc-date">2023.12.01</span>
+      <h3 class="mc-title">직캠 무한 반복의 밤</h3>
+      <p class="mc-memo">밤새도록 찾아본 레전드 무대들. 이 작은 손짓 하나에도 마음이 움직이는 걸 보며 입덕을 확신했죠.</p>
+      <span class="mc-tag">#입덕부정기</span>
+    </div>
+  </article>
+
+  <article class="moment-card">
+    <div class="mc-branch">
+      <span class="mc-node-dot"></span>
+      <span class="mc-node-line"></span>
+    </div>
+    <div class="mc-body">
+      <div class="mc-thumb">
+        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=400&auto=format&fit=crop" alt="">
+        <div class="mc-thumb-veil mc-thumb-veil--sage"></div>
+      </div>
+      <span class="mc-date">2024.01.20</span>
+      <h3 class="mc-title">함께 자라는 1주년</h3>
+      <p class="mc-memo">일 년이 어떻게 흘러갔는지 모르겠네요. 함께 성장하고 있다는 느낌이 들어 행복합니다.</p>
+      <span class="mc-tag">#축하해</span>
+    </div>
+  </article>
+
+  <article class="moment-card mc-alt mc-bloom">
+    <div class="mc-branch">
+      <span class="mc-node-dot mc-node-dot--bloom"></span>
+      <span class="mc-node-line"></span>
+    </div>
+    <div class="mc-body">
+      <div class="mc-thumb">
+        <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="">
+        <div class="mc-thumb-veil mc-thumb-veil--amber"></div>
+      </div>
+      <span class="mc-date">2024.04.12</span>
+      <h3 class="mc-title">새 앨범 쇼케이스</h3>
+      <p class="mc-memo">항상 기대 이상의 감동을 주는 우리 아티스트 고마워요. 새로운 도전에 응원을 보냅니다.</p>
+      <span class="mc-tag">#열일포스</span>
+    </div>
+  </article>
+
+  <div class="trunk-end">
+    <span class="trunk-end-dot"></span>
+    <span class="trunk-end-text">우리의 기록은 계속 자라납니다</span>
+  </div>
+</div>
+
+</main>
+
+<div class="mob-bottom-cta">
+  <button class="btn-share-ghost">러브트리 성장 기록 공유하기</button>
+</div>
+
+<nav class="mob-tabs">
+  <span class="tab-sym active" aria-label="러브트리">
+    <i class="tab-ico-tree"></i>
+    <span class="tab-lbl">트리</span>
+  </span>
+  <span class="tab-sym" aria-label="탐색">
+    <i class="tab-ico-compass"></i>
+    <span class="tab-lbl">탐색</span>
+  </span>
+  <span class="tab-sym" aria-label="내 프로필">
+    <i class="tab-ico-user"></i>
+    <span class="tab-lbl">나</span>
+  </span>
+</nav>
+
+</div>
 </body>
 </html>

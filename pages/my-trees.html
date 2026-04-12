@@ -1,61 +1,101 @@
-<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!-- frontend-concept-v2/my-trees.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 러브트리 - Lovetree</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="/assets/css/flow-shared.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/flow-shared.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 러브트리 - Lovetree</title>
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/home.css">
+<link rel="stylesheet" href="/css/my-trees.css">
+<!-- Firebase SDK (External) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
-<body>
-    <div class="flow-container">
-        <header class="flow-header">
-            <a href="/index.html" class="flow-back">←</a>
-            <h1>나의 러브트리</h1>
-            <div id="user-avatar-wrap" style="width:36px;height:36px;border-radius:50%;background:#eee;overflow:hidden;">
-                <img id="user-avatar" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-            </div>
-        </header>
+<body class="home-page my-trees-page" data-concept-page="my-trees">
+<div class="page-container" id="concept-main">
+  <!-- Navigation -->
+  <nav class="gnb">
+    <div class="gnb-brand">Lovetree</div>
+    <div class="nav-links">
+      <a href="/">소개</a>
+      <a href="/pages/lovetree.html">러브트리</a>
+      <a href="/pages/community.html">커뮤니티</a>
+      <div class="auth-box">
+        <a href="/pages/my-trees.html" id="nav-auth-item" class="nav-login active">내 트리</a>
+        <button id="nav-logout-btn" class="logout-minimal">로그아웃</button>
+      </div>
+    </div>
+  </nav>
 
-        <div id="loading-area" class="loading-spinner" style="padding-top:80px;"></div>
+  <!-- Dashboard Header -->
+  <header class="dashboard-header">
+    <div>
+      <h1>나의 러브트리</h1>
+      <p class="dash-desc">당신이 심은 소중한 사랑의 기록들입니다.</p>
+    </div>
+    <a href="#" class="btn-create-tree">
+      <span class="dash-btn-ico">+</span> 새 러브트리 만들기
+    </a>
+  </header>
 
-        <div id="content-area" style="display:none;">
-            <div style="padding:20px 20px 12px;display:flex;justify-content:space-between;align-items:center;">
-                <h2 style="font-size:1.3rem;font-weight:800;">나의 러브트리</h2>
-                <button id="btn-new-tree" class="btn-secondary" style="font-size:0.85rem;">+ 새 트리</button>
-            </div>
-
-            <div id="empty-state" class="empty-state" style="display:none;">
-                <div style="font-size:3rem;margin-bottom:16px;">🌱</div>
-                <h3>아직 러브트리가 없어요</h3>
-                <p>처음 사랑에 빠진 순간을 기록해보세요</p>
-                <button id="btn-first-tree" class="btn-primary" style="max-width:280px;">첫 러브트리 만들기</button>
-            </div>
-
-            <div id="tree-list" class="flow-content" style="display:none;padding-top:0;">
+  <!-- Trees Grid: Empty State Mode -->
+  <section class="trees-grid" id="trees-container">
+    <!-- Empty State (Shown when no trees exist) -->
+    <div class="empty-state" id="empty-state">
+        <div class="empty-visual">
+            <div class="seed-sprout">
+                <div class="sprout-leaf left"></div>
+                <div class="sprout-leaf right"></div>
+                <div class="sprout-stem"></div>
             </div>
         </div>
+        <h2>당신의 이야기가 피어날 준비가 되었습니다</h2>
+        <p>아무것도 없던 정원에<br>첫 번째 사랑의 기억을 심어보세요.</p>
+        
+        <div class="empty-actions">
+            <a href="/pages/video-search.html" class="btn-empty-cta">첫 번째 순간 심기</a>
+            
+            <div class="es-tags-group">
+                <span class="es-tag">#첫콘서트</span>
+                <span class="es-tag">#입덕의순간</span>
+                <span class="es-tag">#최애무대</span>
+            </div>
 
-        <div id="new-tree-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center;">
-            <div style="background:white;border-radius:24px 24px 0 0;padding:32px 24px;width:100%;max-width:480px;">
-                <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:20px;">새 러브트리 만들기</h3>
-                <div class="form-group">
-                    <label class="form-label">트리 이름</label>
-                    <input id="new-tree-name" class="form-input" placeholder="예: BTS 입덕 여정" maxlength="50">
-                </div>
-                <button id="btn-create-tree" class="btn-primary" style="margin-top:8px;">만들기</button>
-                <button id="btn-cancel-tree" class="btn-secondary" style="margin-top:8px;width:100%;">취소</button>
+            <div class="empty-helper">
+                <a href="/pages/community.html">다른 팬들의 정원 둘러보기</a>
             </div>
         </div>
     </div>
+  </section>
 
-    <script src="/src/my-trees.js"></script>
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; 2026 Lovetree. 개인 아카이브 공간.
+  </footer>
+</div>
+
+<!-- Core App Modules -->
+<script src="/src/shared-utils.js"></script>
+<script src="/src/shared.js"></script>
+<script src="/src/auth.js"></script>
+<script src="/src/api.js"></script>
+
+<!-- Auth Integration -->
+<script>
+function updateMyTreesAuthUI(user) {
+  const authItem = document.getElementById('nav-auth-item');
+  if (user) {
+    authItem.textContent = '내 트리';
+    authItem.href = 'my-trees.html';
+    authItem.classList.add('active');
+  } else {
+  }
+}
+window.onAuthReady = function(user) { updateMyTreesAuthUI(user); };
+setTimeout(() => { if (window.firebase && firebase.auth().currentUser) updateMyTreesAuthUI(firebase.auth().currentUser); }, 1000);
+document.getElementById('nav-logout-btn').addEventListener('click', () => { if (window.signOut) window.signOut(); });
+</script>
+<script src="/src/concept-state.js"></script>
 </body>
 </html>

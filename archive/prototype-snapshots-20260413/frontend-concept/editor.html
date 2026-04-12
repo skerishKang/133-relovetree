@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovetree - 트리 생성기</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+    <div class="editor-layout">
+        <!-- Sidebar -->
+        <aside class="editor-sidebar">
+            <div class="sidebar-logo">🌱 Lovetree</div>
+            <div class="sidebar-search">
+                <span>🔍</span><input type="text" placeholder="검색">
+            </div>
+            <nav class="side-nav">
+                <a href="home.html" class="side-item"><span>🏠</span> 홈</a>
+                <a href="my-trees.html" class="side-item active"><span>📂</span> 내 러브트리</a>
+                <a href="settings.html" class="side-item"><span>⚙️</span> 설정</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button class="btn-create-tree">새 러브트리 만들기</button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="editor-workspace">
+            <div class="workspace-toolbar">
+                <div class="toolbar-search">
+                    <span>🔍</span><input type="text" placeholder="메모리 검색...">
+                </div>
+                <button class="add-memory-btn">+ 메모리 추가</button>
+            </div>
+
+            <div class="canvas">
+                <!-- Lines -->
+                <svg class="canvas-lines" width="100%" height="100%">
+                    <path d="M450,300 C500,300 500,150 580,150" stroke="#dcbba2" fill="none" stroke-width="3"/>
+                    <path d="M450,300 C500,300 500,450 580,450" stroke="#dcbba2" fill="none" stroke-width="3"/>
+                    <path d="M450,300 C380,300 380,220 320,220" stroke="#dcbba2" fill="none" stroke-width="3"/>
+                    <path d="M450,300 C450,400 450,550 450,600" stroke="#dcbba2" fill="none" stroke-width="2" stroke-dasharray="6,6"/>
+                </svg>
+
+                <!-- Active Center Node -->
+                <div class="node active" style="top: 220px; left: 360px;">
+                    <div class="n-media nm-vid"><div class="play-icon" style="transform: scale(0.6);"></div></div>
+                    <div class="n-info">
+                        <h4>비디오 프레젠테이션</h4>
+                        <span class="n-date">2023.10.15</span>
+                        <div class="n-tags"><span class="n-tag">#기억</span></div>
+                        <p class="n-memo">비디오 팬들과 행복했던 부분...</p>
+                    </div>
+                </div>
+
+                <!-- Related Nodes -->
+                <div class="node" style="top: 70px; left: 580px;">
+                    <div class="n-media nm-img"></div>
+                    <div class="n-info">
+                        <h4>첫 만남 - 무대 영상</h4>
+                        <span class="n-date">2023.09-28</span>
+                        <p class="n-memo">정말 감동적인 무대!</p>
+                    </div>
+                </div>
+
+                <div class="node" style="top: 380px; left: 580px;">
+                    <div class="n-media nm-blank"></div>
+                    <div class="n-info">
+                        <h4>입덕 1주년</h4>
+                        <span class="n-date">2023.12-17</span>
+                        <p class="n-memo">행복한 1주년 파티</p>
+                    </div>
+                </div>
+
+                <div class="node" style="top: 140px; left: 140px;">
+                    <div class="n-media nm-img"></div>
+                    <div class="n-info">
+                        <h4>콘서트 직관</h4>
+                        <span class="n-date">2023.07-20</span>
+                    </div>
+                </div>
+
+                <!-- Add Branch Placeholder (from mobile flow, added to desktop for completeness) -->
+                <div class="add-branch-node" style="top: 550px; left: 360px;">
+                    <span>+</span>
+                    <p>이 순간 뒤에 연결하기</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel (Active properties) -->
+        <aside class="detail-panel">
+            <div class="dp-inner">
+                <div class="dp-nav">
+                    <button class="dp-back">← 비디오 프레젠테이션</button>
+                    <button class="dp-close">✕</button>
+                </div>
+
+                <div class="dp-player">
+                    <div class="dp-ctrls">
+                        <span>▶</span>
+                        <div class="dp-bar"><div class="dp-bar-fill"></div></div>
+                        <span>🔊</span>
+                    </div>
+                </div>
+
+                <div class="dp-meta">
+                    <p>날짜: <b>2023.10.15</b></p>
+                    <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                        <span>태그:</span>
+                        <div class="dp-tags">
+                            <span class="dp-tag">#기억</span>
+                            <span class="dp-tag">#추억</span>
+                            <span class="dp-tag">#팬미팅</span>
+                        </div>
+                    </div>
+                    <p style="margin-bottom: 4px;">메모:</p>
+                    <p class="dp-memo">팬들과의 행복했던 순간. 오늘 정말 분위기 대박이었고 오프닝 곡 나올 때 온몸에 소름이 쫙 돋았다.</p> <!-- Adapted from memory-detail-view.png -->
+                </div>
+
+                <div class="dp-settings">
+                    <h4>연결 설정</h4>
+                    <p>연결 정보는 트리 연결 흐름을 유지합니다.</p>
+                    <div class="dp-toggle">
+                        <span>🔗 미디어 요소 자동 연결</span>
+                        <div class="switch on"></div>
+                    </div>
+                </div>
+
+                <button class="btn-dp-add">+ 새로운 메모리 연결</button>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>

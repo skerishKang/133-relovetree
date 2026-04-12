@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovetree Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+
+    <meta name="relovetree-app-check-site-key" content="">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+    <script src="/src/postgres-client-browser.js"></script>
+</head>
+
+<body class="admin-body" data-page="admin">
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="admin-overlay is-hidden">
+        <div class="admin-login-card">
+            <h2 class="admin-page-title">관리자 로그인</h2>
+            <p class="admin-page-copy admin-login-copy">관리자 페이지에 접근하려면 로그인이 필요합니다.</p>
+            <button id="adminLoginBtn" class="admin-login-btn">
+                <i class="fab fa-google admin-login-icon-google"></i> Google로 로그인
+            </button>
+            <p id="loginStatus" class="admin-login-status"></p>
+            <a href="/index.html" class="admin-home-link">메인으로 돌아가기</a>
+        </div>
+    </div>
+
+    <div id="adminShell" class="admin-shell is-hidden">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h2 class="admin-page-title">
+                    <a href="/index.html" class="admin-brand-link">
+                        <span class="admin-brand-mark">R</span>
+                        <span>Lovetree</span>
+                    </a>
+                </h2>
+            </div>
+            <nav class="admin-sidebar-nav admin-sidebar-list">
+                <a href="#"
+                    class="nav-item admin-nav-item is-active"
+                    data-target="dashboard">
+                    <i class="fas fa-chart-line admin-nav-icon"></i> 대시보드
+                </a>
+                <a href="#"
+                    class="nav-item admin-nav-item"
+                    data-target="users">
+                    <i class="fas fa-users admin-nav-icon"></i> 사용자 관리
+                </a>
+                <a href="#"
+                    class="nav-item admin-nav-item"
+                    data-target="trees">
+                    <i class="fas fa-tree admin-nav-icon"></i> 트리 관리
+                </a>
+                <a href="#"
+                    class="nav-item admin-nav-item"
+                    data-target="ai-logs">
+                    <i class="fas fa-robot admin-nav-icon"></i> AI 로그
+                </a>
+                <a href="#"
+                    class="nav-item admin-nav-item"
+                    data-target="settings">
+                    <i class="fas fa-cog admin-nav-icon"></i> 설정
+                </a>
+            </nav>
+            <div class="admin-sidebar-actions">
+                <button id="adminMyBtn" class="admin-sidebar-btn">
+                    <i class="fas fa-user"></i> 마이
+                </button>
+                <button id="logoutBtn" class="admin-sidebar-btn">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active admin-section-active admin-section-gap-lg">
+                <header class="admin-header-row">
+                    <div>
+                        <h1 class="admin-page-title">대시보드</h1>
+                        <p class="admin-header-copy">오늘의 주요 지표를 확인하세요.</p>
+                    </div>
+                    <span class="admin-date-chip" id="currentDate">2025. 12. 04</span>
+                </header>
+
+                <div class="admin-stat-grid">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon admin-stat-icon-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <p class="admin-stat-label">총 사용자</p>
+                            <p class="admin-stat-value" id="totalUsers">-</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon admin-stat-icon-green">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div>
+                            <p class="admin-stat-label">오늘 방문자</p>
+                            <p class="admin-stat-value" id="activeUsers">-</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon admin-stat-icon-purple">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div>
+                            <p class="admin-stat-label">Pro 사용자</p>
+                            <p class="admin-stat-value" id="proUsers">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card admin-card-clip">
+                    <div class="admin-card-section">
+                        <h2 class="admin-card-heading">최근 가입자</h2>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead class="admin-table-head">
+                                <tr>
+                                    <th class="admin-table-th">사용자</th>
+                                    <th class="admin-table-th">이메일</th>
+                                    <th class="admin-table-th">가입일</th>
+                                    <th class="admin-table-th">상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentUsersTable" class="admin-table-body">
+                                <!-- JS Load -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="users" class="content-section is-hidden admin-section-stack">
+                <header class="admin-header-row">
+                    <h1 class="admin-page-title">사용자 관리</h1>
+                    <div class="admin-toolbar">
+                        <select id="userFilter" class="admin-select">
+                            <option value="all">전체 사용자</option>
+                            <option value="normal">일반 유저</option>
+                            <option value="demo">데모 유저</option>
+                            <option value="ai">AI 유저</option>
+                            <option value="pro">Pro 유저</option>
+                            <option value="admin">관리자</option>
+                        </select>
+                        <div class="admin-icon-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="userSearch" placeholder="이름/이메일 검색..."
+                                class="admin-input-with-icon">
+                        </div>
+                    </div>
+                </header>
+
+                <div class="admin-card admin-card-clip">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead class="admin-table-head">
+                                <tr>
+                                    <th class="admin-table-th">프로필</th>
+                                    <th class="admin-table-th">이메일</th>
+                                    <th class="admin-table-th">등급 (Role)</th>
+                                    <th class="admin-table-th">최근 접속</th>
+                                    <th class="admin-table-th">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allUsersTable" class="admin-table-body">
+                                <!-- JS Load -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tree Management Section -->
+            <section id="trees" class="content-section is-hidden admin-section-stack">
+                <header class="admin-header-row">
+                    <div>
+                        <h1 class="admin-page-title">트리 관리</h1>
+                        <p class="admin-header-copy">트리 목록과 노드 구조를 한눈에 보고 관리할 수 있는 영역입니다.</p>
+                    </div>
+                </header>
+
+                <div class="admin-two-col">
+                    <!-- Tree List Panel -->
+                    <div class="admin-card admin-panel-column">
+                        <div class="admin-card-header-sm">
+                            <div>
+                                <h2 class="admin-card-title">트리 리스트</h2>
+                                <p class="admin-card-copy">최신 업데이트 순으로 정렬된 트리 목록입니다.</p>
+                            </div>
+                            <div class="admin-toolbar">
+                                <input id="treeOwnerFilter" type="text" placeholder="소유자 UID/이메일 필터"
+                                    class="admin-input-compact"
+                                />
+                                <input id="treeSearchInput" type="text" placeholder="트리 이름/ID 검색"
+                                    class="admin-input-compact"
+                                />
+                            </div>
+                        </div>
+                        <div class="admin-panel-scroll">
+                            <table class="admin-table">
+                                <thead class="admin-table-head-compact">
+                                    <tr>
+                                        <th>트리</th>
+                                        <th>소유자</th>
+                                        <th>노드</th>
+                                        <th>뷰/좋아요/공유</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="treeListTable" class="admin-table-body-compact">
+                                    <!-- JS Load -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tree Detail & Nodes Panel -->
+                    <div class="admin-card admin-panel-column">
+                        <div class="admin-card-header-sm">
+                            <div>
+                                <h2 class="admin-card-title" id="treeDetailTitle">트리를 선택해 주세요</h2>
+                                <p class="admin-card-copy" id="treeDetailSubtitle">왼쪽 리스트에서 트리를 선택하면 상세 정보와 노드가 여기 표시됩니다.</p>
+                            </div>
+                            <div class="admin-panel-stats" id="treeDetailStats">
+                                <!-- JS Load -->
+                            </div>
+                        </div>
+                        <div class="admin-card-summary" id="treeMetaSummary">
+                            <!-- JS Load: owner, id, lastUpdated 등 요약 -->
+                        </div>
+                        <div class="admin-panel-scroll">
+                            <table class="admin-table">
+                                <thead class="admin-table-head-compact">
+                                    <tr>
+                                        <th>노드 ID</th>
+                                        <th>제목</th>
+                                        <th>날짜</th>
+                                        <th>영상/모먼트</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="treeNodesTable" class="admin-table-body-compact">
+                                    <tr>
+                                        <td colspan="4" class="admin-table-empty">왼쪽에서 트리를 선택하면 노드 목록이 표시됩니다.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="treeNodeEditorPanel" class="admin-editor-panel">
+                            <div>
+                                <h3 class="admin-card-title">노드 상세 편집</h3>
+                                <p id="treeNodeEditorHint" class="admin-card-copy">왼쪽 노드 목록에서 노드를 선택하면 여기에서 수정할 수 있습니다.</p>
+                            </div>
+                            <div class="admin-form-grid">
+                                <div class="admin-form-field">
+                                    <label for="treeNodeIdDisplay" class="admin-form-label">노드 ID</label>
+                                    <input id="treeNodeIdDisplay" type="text" class="admin-input-compact" disabled />
+                                </div>
+                                <div class="admin-form-field">
+                                    <label for="treeNodeDateInput" class="admin-form-label">날짜</label>
+                                    <input id="treeNodeDateInput" type="text" placeholder="예: 2024-01-01" class="admin-input-compact" />
+                                </div>
+                            </div>
+                            <div class="admin-form-grid">
+                                <div class="admin-form-field">
+                                    <label for="treeNodeTitleInput" class="admin-form-label">제목</label>
+                                    <input id="treeNodeTitleInput" type="text" class="admin-input-compact" />
+                                </div>
+                                <div class="admin-form-field">
+                                    <label for="treeNodeVideoInput" class="admin-form-label">영상 ID (videoId)</label>
+                                    <input id="treeNodeVideoInput" type="text" placeholder="YouTube 영상 ID 등" class="admin-input-compact" />
+                                </div>
+                            </div>
+                            <div class="admin-form-field">
+                                <label for="treeNodeDescriptionInput" class="admin-form-label">설명</label>
+                                <textarea id="treeNodeDescriptionInput" rows="3" class="admin-textarea-compact" placeholder="이 노드에 대한 설명을 입력하세요."></textarea>
+                            </div>
+                            <div class="admin-form-actions">
+                                <button id="treeNodeResetBtn" class="admin-btn-secondary-sm">변경 취소</button>
+                                <button id="treeNodeAiBtn" class="admin-btn-brand-soft">AI로 설명 채우기</button>
+                                <button id="treeNodeSaveBtn" class="admin-btn-primary-sm">변경 내용 저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Bot Activity Logs Section -->
+            <section id="ai-logs" class="content-section is-hidden admin-section-stack">
+                <header class="admin-header-row">
+                    <h1 class="admin-page-title">AI 봇 활동 로그</h1>
+                    <button id="refreshAiLogsBtn" class="admin-btn-secondary">
+                        새로고침
+                    </button>
+                </header>
+
+                <div class="admin-card admin-card-clip">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead class="admin-table-head">
+                                <tr>
+                                    <th class="admin-table-th">시간</th>
+                                    <th class="admin-table-th">유형</th>
+                                    <th class="admin-table-th">봇 계정</th>
+                                    <th class="admin-table-th">요약</th>
+                                </tr>
+                            </thead>
+                            <tbody id="aiLogsTable" class="admin-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section is-hidden admin-section-stack">
+                <header>
+                    <h1 class="admin-page-title">설정</h1>
+                </header>
+                <div class="admin-card admin-card-pad">
+                    <h3 class="admin-card-title">관리자 정보</h3>
+                    <p class="admin-page-copy">현재 계정: <strong id="adminEmail"
+                            class="admin-card-title">-</strong></p>
+                    <div class="admin-info-note">
+                        <i class="fas fa-info-circle"></i>
+                        관리자 추가 기능은 준비 중입니다.
+                    </div>
+                </div>
+                <div class="admin-card admin-card-pad">
+                    <h3 class="admin-card-title">데모 데이터</h3>
+                    <p class="admin-page-copy">
+                        홈, 트리, 커뮤니티 화면이 너무 비어 보이지 않도록 기본 예시 데이터를 생성합니다.
+                    </p>
+                    <div class="admin-toolbar-wrap">
+                        <button id="seedDemoUsersBtn" class="admin-btn-soft">
+                            데모 사용자 생성
+                        </button>
+                        <button id="seedDemoTreesBtn" class="admin-btn-soft">
+                            데모 러브트리 생성
+                        </button>
+                        <button id="seedDemoCommunityBtn" class="admin-btn-soft">
+                            커뮤니티 데모 글 생성
+                        </button>
+                        <button id="recalcNodeCountBtn" class="admin-btn-soft">
+                            모든 트리 노드 수 재계산
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Demo Seed Modal -->
+    <div id="demoSeedModal" class="admin-modal-overlay is-hidden">
+        <div class="admin-modal-card">
+            <h2 id="demoSeedTitle" class="admin-modal-title">데모 데이터 생성</h2>
+            <p id="demoSeedDescription" class="admin-modal-copy">
+                생성할 개수를 입력하세요. 비워두면 기본 개수로 생성됩니다.
+            </p>
+            <div class="admin-spacer-md">
+                <label for="demoSeedCount" class="admin-page-copy">생성 개수</label>
+                <input id="demoSeedCount" type="number" min="1"
+                    class="admin-input"
+                    placeholder="비워두면 기본값으로 생성" />
+            </div>
+            <div class="admin-modal-actions">
+                <button id="demoSeedCancel" class="admin-btn-secondary">취소</button>
+                <button id="demoSeedConfirm" class="admin-btn-primary">생성하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-storage.js"></script>
+    <script src="/src/shared-dom.js"></script>
+    <script src="/src/shared-theme.js"></script>
+    <script src="/src/shared-layout.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/admin-users-render.js"></script>
+    <script src="/src/admin-users-util.js"></script>
+    <script src="/src/admin-users-filter.js"></script>
+    <script src="/src/admin-users.js"></script>
+    <script src="/src/admin-stats.js"></script>
+    <script src="/src/admin-ai-log.js"></script>
+    <script src="/src/admin-ai-settings.js"></script>
+    <script src="/src/admin-ai-request.js"></script>
+    <script src="/src/admin-ai-creator.js"></script>
+    <script src="/src/admin-ai.js"></script>
+    <script src="/src/admin-demo.js"></script>
+    <script src="/src/admin-tree.js"></script>
+    <script src="/src/admin-bootstrap.js"></script>
+    <script src="/src/entries/admin.js?v=20251207-1"></script>
+    <script>
+        // 네비게이션 fallback: admin.js에서 setupNavigation이 동작하지 않더라도 기본 탭 전환이 되도록 보조 스크립트
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                var navItems = document.querySelectorAll('.nav-item');
+                var sections = document.querySelectorAll('.content-section');
+                if (!navItems.length || !sections.length) return;
+
+                navItems.forEach(function (item) {
+                    item.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        var targetId = item.dataset.target;
+
+                        navItems.forEach(function (nav) {
+                            nav.classList.remove('active', 'is-active');
+                        });
+                        item.classList.add('active', 'is-active');
+
+                        sections.forEach(function (section) {
+                            var isTarget = section.id === targetId;
+                            section.classList.toggle('is-hidden', !isTarget);
+                            section.classList.toggle('active', isTarget);
+                        });
+                    });
+                });
+            } catch (e) {
+                console.warn('Admin inline nav fallback error:', e);
+            }
+        });
+    </script>
+</body>
+
+</html>

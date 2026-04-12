@@ -1,0 +1,70 @@
+<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>순간 상세 - Lovetree</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="/assets/css/flow-shared.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/flow-shared.js"></script>
+</head>
+<body>
+    <div class="flow-container">
+        <header class="flow-header">
+            <button id="btn-back" class="flow-back">←</button>
+            <h1 style="color:var(--color-primary-brick);">Lovetree</h1>
+            <div style="width:36px;"></div>
+        </header>
+
+        <div id="loading-area" class="loading-spinner" style="padding-top:60px;"></div>
+
+        <div id="detail-content" style="display:none;">
+            <div id="video-area" class="video-preview" style="margin:0 20px 16px;border-radius:16px;">
+                <div class="preview-placeholder"><span>▶</span><p>영상</p></div>
+            </div>
+
+            <div style="padding:0 20px;">
+                <section style="margin-bottom:20px;">
+                    <h2 id="detail-title" style="font-size:1.4rem;font-weight:800;margin-bottom:4px;"></h2>
+                    <p id="detail-date" style="font-size:0.85rem;color:var(--color-text-muted);"></p>
+                </section>
+
+                <div id="detail-tags" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
+
+                <div id="memo-card" class="card" style="padding:20px;margin-bottom:24px;display:none;">
+                    <b style="display:block;margin-bottom:10px;font-size:0.95rem;">Memo</b>
+                    <p id="detail-memo" style="font-size:0.95rem;line-height:1.7;color:var(--color-text-sub);"></p>
+                </div>
+
+                <section id="connected-section" style="margin-bottom:100px;">
+                    <h4 style="font-size:1rem;font-weight:800;margin-bottom:16px;">이 순간과 이어진 기억</h4>
+                    <div id="connected-list" style="display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;"></div>
+                </section>
+            </div>
+        </div>
+
+        <div id="detail-footer" style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid rgba(0,0,0,0.05);display:flex;justify-content:space-around;padding:16px 0 32px;max-width:480px;margin:0 auto;">
+            <button id="footer-like" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-primary-brick);background:none;border:none;cursor:pointer;">
+                <span style="font-size:1.25rem;">❤️</span>좋아요
+            </button>
+            <button id="footer-comment" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-text-muted);background:none;border:none;cursor:pointer;">
+                <span style="font-size:1.25rem;">💬</span>댓글
+            </button>
+            <button id="footer-share" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-text-muted);background:none;border:none;cursor:pointer;">
+                <span style="font-size:1.25rem;">↗️</span>공유
+            </button>
+            <button id="footer-edit" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-text-muted);background:none;border:none;cursor:pointer;">
+                <span style="font-size:1.25rem;">✏️</span>편집
+            </button>
+        </div>
+    </div>
+
+    <script src="/src/memory-detail.js"></script>
+</body>
+</html>

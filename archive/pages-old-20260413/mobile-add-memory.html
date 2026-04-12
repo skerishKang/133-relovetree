@@ -1,0 +1,76 @@
+<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>순간 추가하기 - Lovetree</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="/assets/css/flow-shared.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/flow-shared.js"></script>
+</head>
+<body>
+    <div class="flow-container">
+        <header class="flow-header">
+            <button id="btn-back" class="flow-back">←</button>
+            <h1>순간 추가하기</h1>
+            <div style="width:36px;"></div>
+        </header>
+
+        <div class="flow-content" id="main-content">
+            <div class="form-group">
+                <label class="form-label">영상 링크</label>
+                <input id="input-url" class="form-input" placeholder="YouTube, TikTok, Instagram 링크를 붙여넣으세요">
+            </div>
+
+            <div id="video-preview" class="video-preview" style="display:none;">
+                <div class="preview-placeholder">
+                    <span>▶</span>
+                    <p>영상 미리보기</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">날짜</label>
+                <input id="input-date" class="form-input" type="date">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">제목</label>
+                <input id="input-title" class="form-input" placeholder="짧은 제목 (예: 앵콜 무대!)">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">영상 속 순간 (시간)</label>
+                <input id="input-timestamp" class="form-input" placeholder="예: 2:30 또는 1:23:45" style="max-width:160px;">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">기분 태그</label>
+                <div id="emotion-tags" class="tag-pills"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">메모</label>
+                <textarea id="input-memo" class="form-textarea" placeholder="이 순간의 소중한 기억을 남겨주세요..."></textarea>
+            </div>
+
+            <div class="form-group" id="connection-section" style="display:none;">
+                <label class="form-label">어느 순간 뒤에 연결할까요?</label>
+                <button id="btn-select-connection" class="btn-secondary" style="width:100%;text-align:left;">
+                    <span id="connection-label">연결 위치 선택하기</span>
+                </button>
+            </div>
+
+            <button id="btn-submit" class="btn-primary" disabled>러브트리에 추가</button>
+        </div>
+    </div>
+
+    <script src="/src/mobile-add-memory.js"></script>
+</body>
+</html>

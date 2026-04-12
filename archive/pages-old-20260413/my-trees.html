@@ -1,0 +1,61 @@
+<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 러브트리 - Lovetree</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="/assets/css/flow-shared.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/flow-shared.js"></script>
+</head>
+<body>
+    <div class="flow-container">
+        <header class="flow-header">
+            <a href="/index.html" class="flow-back">←</a>
+            <h1>나의 러브트리</h1>
+            <div id="user-avatar-wrap" style="width:36px;height:36px;border-radius:50%;background:#eee;overflow:hidden;">
+                <img id="user-avatar" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+            </div>
+        </header>
+
+        <div id="loading-area" class="loading-spinner" style="padding-top:80px;"></div>
+
+        <div id="content-area" style="display:none;">
+            <div style="padding:20px 20px 12px;display:flex;justify-content:space-between;align-items:center;">
+                <h2 style="font-size:1.3rem;font-weight:800;">나의 러브트리</h2>
+                <button id="btn-new-tree" class="btn-secondary" style="font-size:0.85rem;">+ 새 트리</button>
+            </div>
+
+            <div id="empty-state" class="empty-state" style="display:none;">
+                <div style="font-size:3rem;margin-bottom:16px;">🌱</div>
+                <h3>아직 러브트리가 없어요</h3>
+                <p>처음 사랑에 빠진 순간을 기록해보세요</p>
+                <button id="btn-first-tree" class="btn-primary" style="max-width:280px;">첫 러브트리 만들기</button>
+            </div>
+
+            <div id="tree-list" class="flow-content" style="display:none;padding-top:0;">
+            </div>
+        </div>
+
+        <div id="new-tree-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center;">
+            <div style="background:white;border-radius:24px 24px 0 0;padding:32px 24px;width:100%;max-width:480px;">
+                <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:20px;">새 러브트리 만들기</h3>
+                <div class="form-group">
+                    <label class="form-label">트리 이름</label>
+                    <input id="new-tree-name" class="form-input" placeholder="예: BTS 입덕 여정" maxlength="50">
+                </div>
+                <button id="btn-create-tree" class="btn-primary" style="margin-top:8px;">만들기</button>
+                <button id="btn-cancel-tree" class="btn-secondary" style="margin-top:8px;width:100%;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/my-trees.js"></script>
+</body>
+</html>

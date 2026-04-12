@@ -190,7 +190,7 @@ Lovetree의 기본 단위는 영상이다.
 
 이 문서는 아래 인터뷰 답변을 기준으로 정리됐다.
 
-- 작업용 원본: `설문지/relovetree-concept-interview-answer.txt`
-- 공유용 고정본: `설문지/Lovetree 정체성 인터뷰 답변.pdf`
+- 작업용 원본: `docs/identity/relovetree-concept-interview-answer.txt`
+- 공유용 고정본: `docs/identity/Relovetree 정체성 인터뷰 답변.pdf`
 
 텍스트 파일은 인용과 수정 추적에 유리하고, PDF는 사람에게 전달하거나 회의에서 다시 확인할 때 기준본으로 쓰기 좋다.

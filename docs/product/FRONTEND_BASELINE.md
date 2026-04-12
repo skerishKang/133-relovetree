@@ -161,7 +161,7 @@
 
 **참조:**
 - `frontend-concept-v2/` - 시안 파일
-- `설문지/image/` - 시안 스크린샷
+- `docs/image/` - 시안 스크린샷
 - `docs/product/PRODUCT_IDENTITY.md` - 제품 정체성
 - `docs/product/MVP_SCOPE.md` - MVP 범위
 - `docs/product/USER_FLOW.md` - 사용자 흐름

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovetree 커뮤니티</title>
+    <meta name="description" content="러브트리 커뮤니티에서 덕질 이야기를 나누고 트리를 소개해보세요.">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+
+    <!-- Tailwind CSS (빌드된 output) -->
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="stylesheet" href="/assets/css/community-layout.css">
+    <link rel="stylesheet" href="/assets/css/community-cards.css">
+    <link rel="stylesheet" href="/assets/css/community-detail.css">
+    <link rel="stylesheet" href="/assets/css/community-comments.css">
+    <link rel="stylesheet" href="/assets/css/community-forms.css">
+
+    <meta name="relovetree-app-check-site-key" content="">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-check.js"></script>
+    <!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+    <script src="/src/postgres-client-browser.js"></script>
+
+</head>
+
+<body class="community-page" data-page="community">
+    <!-- Nav (공통 헤더는 shared.js에서 JS 주입) -->
+
+    <main class="community-main">
+        <section class="community-section">
+            <header class="community-header">
+                <div>
+                    <h1 class="community-title">커뮤니티</h1>
+                    <p class="community-subtitle">덕질 이야기, 러브트리 소개, 추천 영상을 서로 나눠보세요.</p>
+                </div>
+                <button id="btn-open-create-post" class="community-primary-btn">
+                    글 쓰기
+                </button>
+            </header>
+
+            <div class="community-toolbar">
+                <div class="community-sort-group">
+                    <button id="community-sort-latest" class="community-sort-btn is-active">
+                        최신순
+                    </button>
+                    <button id="community-sort-popular" class="community-sort-btn">
+                        인기순
+                    </button>
+                </div>
+                <div class="community-search-row">
+                    <input id="community-search" type="search" maxlength="50" placeholder="검색(제목/작성자/트리ID)"
+                        class="community-input-wide" />
+                    <button id="community-search-clear" type="button" class="community-secondary-btn">초기화</button>
+                </div>
+            </div>
+
+            <!-- 게시글 리스트 영역 -->
+            <div id="community-empty-state" class="community-empty-state is-hidden">
+                아직 작성된 글이 없습니다. 첫 번째 글을 올려보세요!
+            </div>
+
+            <div id="community-post-list" class="community-list">
+                <!-- Firestore에서 불러온 게시글 카드가 여기에 렌더링됩니다. -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 글 작성 모달 -->
+    <dialog id="create-post-modal" class="community-dialog">
+        <div class="community-dialog-pad">
+            <h2 class="community-title">새 글 작성</h2>
+            <p class="community-muted">러브트리, 직캠, 콘서트 후기 등 자유롭게 공유해 주세요.</p>
+
+            <form id="create-post-form" class="community-form" method="dialog">
+                <div>
+                    <label for="community-title" class="community-label">제목</label>
+                    <input id="community-title" name="title" type="text" maxlength="80" required
+                        class="community-input"
+                        placeholder="예: 이번 콘서트 세트리스트가 미쳤다">
+                </div>
+                <div>
+                    <label for="community-content" class="community-label">내용</label>
+                    <textarea id="community-content" name="content" rows="6" required
+                        class="community-textarea"
+                        placeholder="자유롭게 작성해 주세요. 타인을 공격하거나 스포일러는 자제해주세요."></textarea>
+                </div>
+                <div>
+                    <label class="community-label">미디어 링크 (선택)</label>
+                    <input id="community-media-url" name="mediaUrl" type="url" maxlength="500"
+                        class="community-input"
+                        placeholder="예: https://youtu.be/... 또는 이미지 링크(https://...jpg)" />
+                    <p class="community-help">유튜브 링크는 자동으로 임베드되고, 이미지 링크는 미리보기로 표시됩니다.</p>
+                    <div id="community-media-preview" class="community-preview-stack is-hidden"></div>
+                </div>
+
+                <div>
+                    <label class="community-label">내 트리 선택 (선택)</label>
+                    <input id="community-tree-search" type="text" placeholder="내 트리 검색"
+                        class="community-input" />
+                    <select id="community-tree-select"
+                        class="community-select">
+                        <option value="">(로그인 후 내 트리를 선택할 수 있어요)</option>
+                    </select>
+                    <p class="community-help">내 트리를 선택하면 아래 트리 ID에 자동으로 입력됩니다.</p>
+                </div>
+                <div>
+                    <label for="community-tree-id" class="community-label">트리 ID (선택, 직접입력)</label>
+                    <input id="community-tree-id" name="treeId" type="text" maxlength="200"
+                        class="community-input"
+                        placeholder="예: xOpR0fAlTmXBjjp3g7go 또는 editor.html?id=...">
+                </div>
+                <div class="community-actions">
+                    <button type="button" onclick="closeModal('create-post-modal')"
+                        class="community-ghost-btn">취소</button>
+                    <button type="submit"
+                        class="community-primary-btn">등록</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- 게시글 상세/댓글 모달 -->
+    <dialog id="post-detail-modal" class="community-dialog-lg">
+        <div class="community-detail-shell">
+            <header class="community-detail-header">
+                <div>
+                    <h2 id="detail-title" class="community-title"></h2>
+                    <p id="detail-meta" class="community-detail-meta"></p>
+                    <div id="detail-tree-actions" class="community-action-row is-hidden">
+                        <a id="detail-tree-open" href="#" target="_blank"
+                            class="community-action-btn">트리 열기</a>
+                        <button id="detail-tree-fork" type="button"
+                            class="community-success-btn">내 트리로 가져오기</button>
+                    </div>
+                    <div id="detail-post-actions" class="community-action-row is-hidden">
+                        <button id="detail-post-edit" type="button"
+                            class="community-action-btn">수정</button>
+                        <button id="detail-post-delete" type="button"
+                            class="community-danger-pill">삭제</button>
+                    </div>
+                    <div id="detail-tree-summary" class="community-summary is-hidden"></div>
+                </div>
+                <button type="button" onclick="closeModal('post-detail-modal')"
+                    class="community-close-btn">
+                    <svg class="community-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </header>
+            <div class="community-detail-body">
+                <article class="community-content" id="detail-content"></article>
+
+                <div id="detail-images" class="community-image-stack is-hidden"></div>
+
+                <section>
+                    <h3 class="community-label">댓글</h3>
+                    <div id="comment-list" class="community-comment-stack">
+                        <!-- 댓글 리스트 -->
+                    </div>
+                </section>
+            </div>
+            <form id="comment-form" class="community-comment-form" method="dialog">
+                <textarea id="comment-input" rows="2" placeholder="댓글을 입력하세요"
+                    class="community-textarea"></textarea>
+                <div class="community-actions">
+                    <button type="button" onclick="closeModal('post-detail-modal')"
+                        class="community-ghost-btn">닫기</button>
+                    <button type="submit"
+                        class="community-primary-btn">댓글 등록</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- 삭제 사유 입력 모달(공용) -->
+    <dialog id="delete-reason-modal" class="community-dialog">
+        <div class="community-dialog-pad">
+            <div class="community-detail-header">
+                <h3 class="community-title" id="delete-reason-title">삭제 사유</h3>
+                <button type="button" onclick="closeModal('delete-reason-modal')" class="community-close-btn">
+                    <svg class="community-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="community-muted" id="delete-reason-desc">삭제 사유를 입력해 주세요. (선택)</p>
+            <form id="delete-reason-form" class="community-form" method="dialog">
+                <textarea id="delete-reason-input" rows="4" maxlength="200" placeholder="예: 욕설/광고/도배"
+                    class="community-textarea"></textarea>
+                <div class="community-actions">
+                    <button type="button" onclick="closeModal('delete-reason-modal')"
+                        class="community-ghost-btn">취소</button>
+                    <button type="submit"
+                        class="community-danger-btn">삭제</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- 공용/인증/커뮤니티 스크립트 -->
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-storage.js"></script>
+    <script src="/src/shared-dom.js"></script>
+    <script src="/src/shared-theme.js"></script>
+    <script src="/src/shared-layout.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/community-moderation.js"></script>
+    <script src="/src/community-render-templates.js"></script>
+    <script src="/src/community-render.js"></script>
+    <script src="/src/community-comments.js"></script>
+    <script src="/src/community-compose.js"></script>
+    <script src="/src/community-ui.js"></script>
+    <script src="/src/community-runtime.js"></script>
+    <script src="/src/community-sync.js"></script>
+    <script src="/src/community-write.js"></script>
+    <script src="/src/community-flow.js"></script>
+    <script src="/src/community-entry-flow.js"></script>
+    <script src="/src/entries/community.js"></script>
+</body>
+
+</html>

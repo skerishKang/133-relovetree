@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>설정 - Lovetree</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/settings.css">
+</head>
+<body class="settings-page">
+    <div class="settings-container">
+
+        <header class="settings-header">
+            <a href="/" class="btn-back-home" aria-label="뒤로가기">←</a>
+            <div>
+                <h1>설정</h1>
+                <p>내 기록과 계정을 관리하는 공간</p>
+            </div>
+        </header>
+
+        <main>
+            <section class="s-section">
+                <h2 class="s-section-title">프로필</h2>
+                <div class="profile-row">
+                    <div class="profile-initial">러</div>
+                    <div class="profile-info">
+                        <h3>러브트리 여행자</h3>
+                        <p>lovetree@example.com</p>
+                    </div>
+                    <a href="#" class="link-subtle">수정</a>
+                </div>
+            </section>
+
+            <section class="s-section">
+                <h2 class="s-section-title">기록 공개 범위</h2>
+                <div class="settings-list">
+                    <label class="radio-row active">
+                        <div class="radio-row-content">
+                            <span class="radio-icon"><i class="ico-lock"></i></span>
+                            <div>
+                                <h4>나만 보기</h4>
+                                <p>비밀스러운 나만의 기록</p>
+                            </div>
+                        </div>
+                        <span class="radio-dot"></span>
+                    </label>
+                    <label class="radio-row">
+                        <div class="radio-row-content">
+                            <span class="radio-icon"><i class="ico-link"></i></span>
+                            <div>
+                                <h4>링크 공개</h4>
+                                <p>링크를 아는 사람과만</p>
+                            </div>
+                        </div>
+                        <span class="radio-dot"></span>
+                    </label>
+                    <label class="radio-row">
+                        <div class="radio-row-content">
+                            <span class="radio-icon"><i class="ico-globe"></i></span>
+                            <div>
+                                <h4>커뮤니티 공개</h4>
+                                <p>모든 팬과 함께 감상</p>
+                            </div>
+                        </div>
+                        <span class="radio-dot"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="s-section">
+                <h2 class="s-section-title">알림</h2>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>공감 알림</h4>
+                        </div>
+                        <div class="l-switch on"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>댓글 알림</h4>
+                        </div>
+                        <div class="l-switch on"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>서비스 소식</h4>
+                        </div>
+                        <div class="l-switch"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="s-section">
+                <h2 class="s-section-title">계정</h2>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>프로필 공개</h4>
+                            <p>내 활동명을 다른 팬에게 보여줍니다</p>
+                        </div>
+                        <div class="l-switch"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="settings-footer">
+            <button class="btn-logout">로그아웃</button>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('.l-switch').forEach(function(sw) {
+            sw.addEventListener('click', function() { sw.classList.toggle('on'); });
+        });
+        document.querySelectorAll('.radio-row').forEach(function(row) {
+            row.addEventListener('click', function() {
+                document.querySelectorAll('.radio-row').forEach(function(r) { r.classList.remove('active'); });
+                row.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

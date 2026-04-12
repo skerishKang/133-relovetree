@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovetree - 커뮤니티</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/community.css">
+</head>
+<body>
+    <header class="global-nav community-header shell">
+        <div class="logo">🌱 Lovetree</div>
+        <div class="comm-search">
+            <span>🔍</span>
+            <input type="text" placeholder="팬심 가득한 러브트리 검색...">
+        </div>
+        <div class="comm-filters">
+            <button class="f-pill active">인기</button>
+            <button class="f-pill">최신</button>
+            <button class="f-pill">콘서트</button>
+        </div>
+    </header>
+
+    <main class="shell">
+        <!-- Section 1: Discovery Grid -->
+        <section class="discovery-section">
+            <div class="discovery-title">
+                <h1>"다른 팬들의 러브트리 구경하기"</h1>
+            </div>
+            <div class="comm-grid">
+                <!-- Left -->
+                <div class="c-col">
+                    <div class="card dc-card">
+                        <div class="dc-media m1"><span class="badge">MEMORY</span></div>
+                        <div class="dc-info">
+                            <h3>BTS - Map of the Soul 7 Memories</h3>
+                            <p class="dc-auth">@HappyARMY</p>
+                            <div class="dc-tags"><span class="dc-tag">#감동</span></div>
+                            <div class="dc-stats"><span>❤️ 256</span><span>💬 42</span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Center Featured -->
+                <div class="c-col">
+                    <div class="card dc-card featured-rect">
+                        <div class="ft-banner">FEATURED LOVETREE</div>
+                        <div class="ft-canvas">
+                            <div class="tree-abstract">
+                                <div class="tk-dot"></div><div class="tk-dot"></div><div class="tk-dot"></div>
+                            </div>
+                        </div>
+                        <div class="ft-content">
+                            <h2>OUR JOURNEY WITH RED VELVET</h2>
+                            <p style="opacity: 0.7;">@ReVeluv_Fan</p>
+                            <a href="#shared-view" class="ft-link">연결된 미니 트리 미리보기</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right -->
+                <div class="c-col">
+                    <div class="card dc-card">
+                        <div class="dc-media m2"><span class="badge">TWICE</span></div>
+                        <div class="dc-info">
+                            <h3>TWICE Comeback Cheer</h3>
+                            <p class="dc-auth">@ONCE_forever</p>
+                            <div class="dc-tags"><span class="dc-tag">#행복</span></div>
+                            <div class="dc-stats"><span>❤️ 210</span><span>💬 39</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Shared Tree View (Triggered by clicking a card) -->
+        <section id="shared-view" class="shared-tree-view">
+            <div class="st-layout">
+                <div>
+                    <div class="st-header">
+                        <div>
+                            <p style="color:var(--text-sub); font-size:0.9rem; margin-bottom:4px;">입덕부터 지금까지 이어진 순간들</p>
+                            <div class="st-auth-info">
+                                <h2>테스트 러버 A의 러브트리</h2>
+                                <span>🌐 전체공개</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="st-canvas">
+                        <div class="st-timeline"></div>
+                        <div class="st-node n-top" style="left: 40px;">
+                            <div class="sn-media" style="background: #eaddd3; display: flex; align-items:center; justify-content:center;"><div class="play-icon" style="transform: scale(0.6)"></div></div>
+                            <h4>첫 만남 - 무대 영상</h4>
+                            <p class="date">2023-09-28</p>
+                        </div>
+                        <div class="st-node n-bot" style="left: 200px;">
+                            <div class="sn-media"></div>
+                            <h4>입덕 1주년</h4>
+                            <p class="date">2023-12-17</p>
+                        </div>
+                        <div class="st-node n-top" style="left: 360px;">
+                            <div class="sn-media" style="background: #d3e2ea;"></div>
+                            <h4>첫 콘서트의 전율</h4>
+                            <p class="date">2024-03-01</p>
+                        </div>
+                        <div class="st-node n-bot" style="left: 520px;">
+                            <div class="sn-media" style="background: #ead3d3;"></div>
+                            <h4>팬사인회</h4>
+                            <p class="date">2024-05-15</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <aside>
+                    <div class="st-side-actions">
+                        <button>❤️ 좋아요</button>
+                        <button>💬 댓글</button>
+                        <button>🔗 공유</button>
+                    </div>
+                    <button class="st-save-btn">내 러브트리에 저장</button>
+
+                    <h3 style="margin-bottom: 24px; font-size: 1.2rem;">댓글</h3>
+                    <div class="comment-list">
+                        <div class="comment-item">
+                            <div class="avatar-sm"></div>
+                            <div class="c-text">
+                                <h5>아트라</h5>
+                                <p>이 트리 너무 감동적이에요! ❤️</p>
+                            </div>
+                        </div>
+                        <div class="comment-item">
+                            <div class="avatar-sm" style="background:#e5baba;"></div>
+                            <div class="c-text">
+                                <h5>타이마</h5>
+                                <p>저도 이 순간 좋아해요 ㅠㅠ 폭풍 공감!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-input">
+                        <div class="avatar-sm" style="background:#a3b89b;"></div>
+                        <input type="text" placeholder="댓글 달기...">
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

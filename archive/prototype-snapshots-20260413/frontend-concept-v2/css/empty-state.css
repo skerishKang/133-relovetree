@@ -1,0 +1,70 @@
+/* frontend-concept-v2/css/empty-state.css */
+:root {
+    --es-bg: #fdfaf4;
+    --es-brick: #b56e6e;
+    --es-text: #3d2b2b;
+    --es-text-muted: #a3958c;
+    --es-border: #f2ede9;
+}
+
+.es-page { 
+    background: var(--es-bg); 
+    background-image: radial-gradient(circle at 2px 2px, #ebdcd0 1px, transparent 0);
+    background-size: 40px 40px;
+    margin: 0;
+    min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 40px 20px;
+}
+
+.es-frame {
+    width: 100%; max-width: 440px; background: #ffffff; border-radius: 56px;
+    box-shadow: 0 40px 100px rgba(74, 63, 53, 0.08); border: 1px solid var(--es-border);
+    height: 860px; display: flex; flex-direction: column; overflow: hidden; padding: 48px;
+    align-items: center; justify-content: center; text-align: center;
+    animation: esFadeIn 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes esFadeIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.es-header { margin-bottom: 56px; }
+.es-header .logo-ico { font-size: 0.8rem; font-weight: 850; color: var(--es-brick); margin-bottom: 24px; display: block; letter-spacing: 0.2em; }
+.es-header h2 { font-size: 2rem; font-weight: 950; margin-bottom: 16px; letter-spacing: -0.04em; color: var(--es-text); }
+.es-header p { font-size: 1rem; color: var(--es-text-muted); line-height: 1.6; font-weight: 600; }
+
+.es-visual {
+    width: 320px; height: 380px; position: relative; margin: 0 0 48px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+}
+
+/* Redesigned Floating Cards Fragment */
+.float-cards { position: absolute; inset: 0; z-index: 10; }
+.f-node {
+    position: absolute; width: 72px; aspect-ratio: 1/1.2; background: white; border: 1px solid #f2ede9;
+    border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+.f1 { top: 60px; left: 40px; transform: rotate(-12deg); }
+.f2 { top: 20px; left: 130px; transform: rotate(5deg); }
+.f3 { top: 60px; right: 40px; transform: rotate(15deg); }
+
+/* Sprout: Branded Design */
+.es-plant-pot { width: 120px; height: 10px; background: #f2ede9; border-radius: 100px; margin-bottom: 24px; opacity: 0.6; }
+.seed-sprout { width: 40px; height: 60px; position: relative; margin-bottom: -15px; }
+.sprout-stem { width: 3px; height: 40px; background: #94a395; margin: 0 auto; border-radius: 2px; }
+.sprout-leaf { width: 22px; height: 14px; background: #94a395; position: absolute; top: 12px; transition: 0.5s; }
+.sprout-leaf.left { left: -10px; border-radius: 22px 0; transform: rotate(-15deg); }
+.sprout-leaf.right { right: -10px; border-radius: 0 22px; transform: rotate(15deg); }
+
+.btn-start {
+    background: var(--es-brick); color: white; width: 100%; padding: 22px;
+    border-radius: 100px; font-weight: 900; font-size: 1.15rem; margin-bottom: 48px;
+    border: none; cursor: pointer; box-shadow: 0 16px 32px rgba(181, 110, 110, 0.3); transition: 0.3s;
+}
+.btn-start:hover { transform: translateY(-4px); box-shadow: 0 20px 45px rgba(181, 110, 110, 0.4); }
+
+.es-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.es-tag { 
+    border: 1px solid var(--es-border); padding: 10px 18px; border-radius: 100px; 
+    color: var(--es-text-muted); font-size: 0.85rem; font-weight: 700; background: #ffffff;
+}

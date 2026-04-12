@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기억??조각 - Lovetree</title>
+        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/story-view.css">
+</head>
+<body class="story-page">
+    <!-- 몰입??배경: ?리??중심부 -->
+    <div class="story-bg-overlay"></div>
+    <div class="story-trunk-line"></div>
+
+    <!-- ?장??궤적: 기억???름 진행?-->
+    <div class="story-progress-container">
+        <div class="st-bar complete"><div class="st-fill"></div></div>
+        <div class="st-bar active"><div class="st-fill"></div></div>
+        <div class="st-bar"><div class="st-fill"></div></div>
+        <div class="st-bar"><div class="st-fill"></div></div>
+    </div>
+
+    <!-- ?단 ?비게이??-->
+    <header class="story-top-nav">
+        <div class="st-brand">?리??경로</div>
+        <button class="btn-story-close" onclick="window.history.back()">??/button>
+    </header>
+
+    <!-- 메인 콘텐? ?리?서 ?어??기억 -->
+    <main class="story-main">
+        <div class="slider-track" data-binding-state="empty">
+            <article class="story-card">
+                <section class="st-video-box">
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=800&auto=format&fit=crop" alt="기억 ?상 ?네??>
+                    <div class="st-play-btn"></div>
+                </section>
+
+                <section class="st-content">
+                    <span class="st-date">2023. 11. 15</span>
+                    <h2 class="st-title">?콘서?의 ?율</h2>
+                    
+                    <div class="st-memo-box">
+                        <p class="st-memo-text">
+                            "처음?로 ?티?트? 같? 공간???었?는 ?실만으로도 가?이 벅찼???루. 
+                            ?창???의 ??율? ?생 ?? 못할 기록?????같다."
+                        </p>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </main>
+
+    <!-- ?단 ?션: ?제??공유 ?공감 -->
+    <footer class="story-footer-actions">
+        <a href="#" class="st-action-btn">
+            <div class="st-action-ico"><i class="st-sym">??/i></div>
+            <span class="st-action-lbl">125</span>
+        </a>
+        <a href="#" class="st-action-btn">
+            <div class="st-action-ico"><i class="st-sym">?</i></div>
+            <span class="st-action-lbl">3</span>
+        </a>
+        <a href="#" class="st-action-btn">
+            <div class="st-action-ico"><i class="st-sym">??/i></div>
+            <span class="st-action-lbl">공유</span>
+        </a>
+    </footer>
+
+    <script src="/src/concept-state.js"></script>
+    <script>
+        // ?토??환 ??동 ?생 로직 (개념 구현??
+    </script>
+</body>
+</html>
+
+

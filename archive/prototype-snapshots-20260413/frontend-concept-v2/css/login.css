@@ -1,0 +1,99 @@
+/* frontend-concept-v2/css/login.css */
+:root {
+    --log-bg: #fdfaf4;
+    --log-brick: #b56e6e;
+    --log-sage: #94a395;
+    --log-text: #3d2b2b;
+    --log-text-muted: #a3958c;
+    --log-border: #f2ede9;
+    --log-white: #ffffff;
+}
+
+body.login-page {
+    margin: 0; padding: 0;
+    background-color: var(--log-bg);
+    background-image: radial-gradient(circle at 2px 2px, #ebdcd0 1px, transparent 0);
+    background-size: 40px 40px;
+    font-family: 'Pretendard', sans-serif;
+    color: var(--log-text);
+    display: flex; justify-content: center; align-items: center; min-height: 100vh;
+}
+
+/* Login Card: Soft Archival Portal */
+.login-container {
+    width: 100%; max-width: 440px; padding: 64px 40px; text-align: center;
+    background: var(--log-white); border-radius: 48px; 
+    box-shadow: 0 40px 100px rgba(74, 63, 53, 0.06);
+    border: 1px solid var(--log-border);
+    position: relative;
+    animation: loginFadeUp 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes loginFadeUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.login-logo { 
+    font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 900; 
+    color: var(--log-brick); margin-bottom: 56px; letter-spacing: -0.04em;
+}
+
+.login-header h1 { 
+    font-size: 1.6rem; font-weight: 950; line-height: 1.4; 
+    margin-bottom: 20px; word-break: keep-all; letter-spacing: -0.03em;
+}
+.login-header p { 
+    font-size: 0.95rem; color: var(--log-text-muted); line-height: 1.7; 
+    margin-bottom: 56px; font-weight: 500;
+}
+
+/* Buttons: Premium Muted Style */
+.login-actions { display: flex; flex-direction: column; gap: 16px; }
+
+.btn-social {
+    width: 100%; height: 64px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    gap: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; border: 1.5px solid var(--log-border);
+    text-decoration: none; transition: 0.3s; background: var(--log-white); color: var(--log-text);
+}
+.btn-social:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); border-color: #d3c4bb; }
+
+.btn-brick-main {
+    background-color: var(--log-brick); color: white; border: none;
+    box-shadow: 0 16px 32px rgba(181, 110, 110, 0.25);
+}
+.btn-brick-main:hover { background: #a45a5a; box-shadow: 0 20px 40px rgba(181, 110, 110, 0.35); }
+
+/* Benefits: Quiet Recognition */
+.benefits-area {
+    margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--log-border);
+}
+.benefits-area h3 { 
+    font-size: 0.75rem; font-weight: 800; margin-bottom: 24px; 
+    color: var(--log-sage); letter-spacing: 0.02em;
+}
+.benefits-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.benefit-tag {
+    padding: 8px 16px; border-radius: 12px; background: #fdfaf7; 
+    border: 1px solid var(--log-border); font-size: 0.85rem; 
+    color: var(--log-text-muted); font-weight: 700;
+}
+
+/* Footer Link */
+.back-subtle {
+    margin-top: 48px; display: inline-block;
+    color: var(--log-text-muted); text-decoration: none; font-size: 0.85rem; 
+    font-weight: 600; opacity: 0.6; transition: 0.3s;
+}
+.back-subtle:hover { opacity: 1; color: var(--log-brick); }
+
+/* Mobile Optimization: Bottom Sheet Feel */
+@media (max-width: 480px) {
+    body.login-page { align-items: flex-end; }
+    .login-container { 
+        border-radius: 48px 48px 0 0; 
+        padding-top: 80px;
+        box-shadow: 0 -20px 80px rgba(74, 63, 53, 0.08); 
+    }
+}
+

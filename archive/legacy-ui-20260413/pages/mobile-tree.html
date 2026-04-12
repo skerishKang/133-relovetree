@@ -1,0 +1,59 @@
+<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>러브트리 - Lovetree</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="/assets/css/flow-shared.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/flow-shared.js"></script>
+</head>
+<body>
+    <div class="flow-container">
+        <header class="flow-header">
+            <a href="/pages/my-trees.html" class="flow-back">←</a>
+            <h1 id="tree-title">러브트리</h1>
+            <button id="btn-add" class="btn-secondary" style="font-size:0.85rem;padding:8px 14px;">+ 추가</button>
+        </header>
+
+        <div id="loading-area" class="loading-spinner" style="padding-top:60px;"></div>
+
+        <div id="tree-empty" class="empty-state" style="display:none;">
+            <div style="font-size:3rem;margin-bottom:16px;">🌱</div>
+            <h3>아직 기록된 순간이 없어요</h3>
+            <p>처음 사랑에 빠진 순간을 남겨보세요</p>
+            <button id="btn-first-memory" class="btn-primary" style="max-width:280px;">첫 순간 기록하기</button>
+        </div>
+
+        <div id="tree-view" style="display:none;">
+            <div style="padding:16px 20px 8px;text-align:center;">
+                <p id="tree-subtitle" style="font-size:0.85rem;color:var(--color-text-muted);"></p>
+            </div>
+
+            <div id="node-list" style="padding:8px 20px 100px;position:relative;">
+                <div id="center-line" style="position:absolute;left:50%;top:16px;bottom:100px;width:2px;background:var(--color-border);transform:translateX(-50%);z-index:1;"></div>
+            </div>
+        </div>
+
+        <div style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--color-border);display:flex;justify-content:space-around;padding:10px 0 24px;max-width:480px;margin:0 auto;">
+            <a href="/pages/my-trees.html" style="text-align:center;font-size:0.7rem;color:var(--color-text-muted);text-decoration:none;">
+                <div style="font-size:1.4rem;">🏠</div>홈
+            </a>
+            <a id="nav-add" href="#" style="text-align:center;font-size:0.7rem;color:var(--color-primary-brick);text-decoration:none;">
+                <div style="font-size:1.4rem;">➕</div>추가
+            </a>
+            <a id="nav-profile" href="/pages/my-trees.html" style="text-align:center;font-size:0.7rem;color:var(--color-text-muted);text-decoration:none;">
+                <div style="font-size:1.4rem;">👤</div>내 트리
+            </a>
+        </div>
+    </div>
+
+    <script src="/src/mobile-tree.js"></script>
+</body>
+</html>

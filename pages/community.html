@@ -1,228 +1,207 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lovetree 커뮤니티</title>
-    <meta name="description" content="러브트리 커뮤니티에서 덕질 이야기를 나누고 트리를 소개해보세요.">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>커뮤니티 광장 - Lovetree</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/community.css">
+</head>
+<body class="comm-page">
+    <!-- Standard Navigation -->
+<nav class="gnb">
+<a href="/" class="gnb-brand">Lovetree</a>
+<div class="nav-links">
+<a href="/#features">첫 순간 가이드</a>
+<a href="/pages/lovetree.html" id="nav-lovtree-item">러브트리</a>
+<a href="/pages/community.html" class="active">커뮤니티</a>
+            <div class="auth-box">
+                <a href="/pages/login.html" id="nav-auth-item" class="nav-login">로그인</a>
+                <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Tailwind CSS (빌드된 output) -->
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link rel="stylesheet" href="/assets/css/community-layout.css">
-    <link rel="stylesheet" href="/assets/css/community-cards.css">
-    <link rel="stylesheet" href="/assets/css/community-detail.css">
-    <link rel="stylesheet" href="/assets/css/community-comments.css">
-    <link rel="stylesheet" href="/assets/css/community-forms.css">
+    <div class="shell">
+        <!-- Brand Header: Consistent with whole app -->
+        <header class="comm-top">
+            <div class="top-left">
+                <div class="logo">Lovetree</div>
+            </div>
+            <div class="search-area">
+                <div class="search-box">
+                    <span>🔍 어떤 팬의 사랑 경로를 발견해볼까요?</span>
+                </div>
+            </div>
+            <div class="filter-area">
+                <button class="f-btn active">인기순</button>
+                <button class="f-btn">최신순</button>
+                <button class="f-btn">입덕 스토리</button>
+            </div>
+        </header>
 
-    <meta name="relovetree-app-check-site-key" content="">
+        <main>
+            <div class="comm-title">
+                <h2>"사랑이 모여 자라나는 광장"</h2>
+                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요.</p>
+            </div>
 
-    <!-- Firebase SDKs -->
+            <!-- Dynamic Discovery Plaza Grid -->
+            <div class="discovery-grid">
+                
+                <!-- Col 1 -->
+                <div class="disc-col">
+                    <a href="/pages/community-tree-detail.html" class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                            <div class="mini-tree-viz">
+                                <div class="tree-node-dot"></div>
+                                <div class="tree-stem-line"></div>
+                                <div class="tree-node-dot"></div>
+                                <div class="tree-stem-line"></div>
+                                <div class="tree-node-dot"></div>
+                            </div>
+                        </div>
+                        <div class="dc-info">
+                            <h3>나의 첫 단독 콘서트 감동의 기록</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm"></div>
+                                <span>@CARAT_love</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#입덕</span>
+                                <span class="dc-tag">#콘서트</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 1.2k 공감</span>
+                                <span>💬 42 응원</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                        </div>
+                        <div class="dc-info">
+                            <h3>밤새 찾아본 레전드 무대들 모음</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm" style="background: #cfe6cf;"></div>
+                                <span>@Daily_Kpop</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#정주행</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 842 공감</span>
+                                <span>💬 15 응원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Spotlight (Span 2) -->
+                <div class="featured-col">
+                    <div class="featured-card">
+                        <div class="fc-banner">이번 주 가장 따뜻했던 러브트리</div>
+                        <div class="fc-viz-area">
+                            <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천">
+                            <div class="fc-tree-overlay">
+                                <svg class="fc-tree-svg" viewBox="0 0 100 200">
+                                     <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />
+                                     <circle cx="50" cy="180" r="5" fill="#b56e6e" />
+                                     <circle cx="30" cy="50" r="4" fill="#b56e6e" />
+                                     <circle cx="70" cy="50" r="4" fill="#b56e6e" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="fc-text">
+                            <h3>BTS와 함께 걸어온 1000일의 시간</h3>
+                            <p>첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 따뜻한 사랑의 경로를 함께 확인해보세요.</p>
+                            <a href="/pages/community-tree-detail.html" class="fc-btn-view">사랑의 경로 감상하기</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Col 3 -->
+                <div class="disc-col">
+                    <div class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                        </div>
+                        <div class="dc-info">
+                            <h3>쇼케이스 1열 직관, 그 꿈같은 날</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm" style="background: #e3cfe6;"></div>
+                                <span>@HappyMood</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#직관후기</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 512 공감</span>
+                                <span>💬 28 응원</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                            <div class="mini-tree-viz">
+                                <div class="tree-node-dot"></div>
+                                <div class="tree-stem-line"></div>
+                                <div class="tree-node-dot"></div>
+                            </div>
+                        </div>
+                        <div class="dc-info">
+                            <h3>앨범 언박싱, 드디어 풀셋 완성!</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm" style="background: #cfe6e6;"></div>
+                                <span>@Album_Lover</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#행복기록</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 320 공감</span>
+                                <span>💬 12 응원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Core App Modules -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-check.js"></script>
-    <!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
-    <script src="/src/postgres-client-browser.js"></script>
-
-</head>
-
-<body class="community-page" data-page="community">
-    <!-- Nav (공통 헤더는 shared.js에서 JS 주입) -->
-
-    <main class="community-main">
-        <section class="community-section">
-            <header class="community-header">
-                <div>
-                    <h1 class="community-title">커뮤니티</h1>
-                    <p class="community-subtitle">덕질 이야기, 러브트리 소개, 추천 영상을 서로 나눠보세요.</p>
-                </div>
-                <button id="btn-open-create-post" class="community-primary-btn">
-                    글 쓰기
-                </button>
-            </header>
-
-            <div class="community-toolbar">
-                <div class="community-sort-group">
-                    <button id="community-sort-latest" class="community-sort-btn is-active">
-                        최신순
-                    </button>
-                    <button id="community-sort-popular" class="community-sort-btn">
-                        인기순
-                    </button>
-                </div>
-                <div class="community-search-row">
-                    <input id="community-search" type="search" maxlength="50" placeholder="검색(제목/작성자/트리ID)"
-                        class="community-input-wide" />
-                    <button id="community-search-clear" type="button" class="community-secondary-btn">초기화</button>
-                </div>
-            </div>
-
-            <!-- 게시글 리스트 영역 -->
-            <div id="community-empty-state" class="community-empty-state is-hidden">
-                아직 작성된 글이 없습니다. 첫 번째 글을 올려보세요!
-            </div>
-
-            <div id="community-post-list" class="community-list">
-                <!-- Firestore에서 불러온 게시글 카드가 여기에 렌더링됩니다. -->
-            </div>
-        </section>
-    </main>
-
-    <!-- 글 작성 모달 -->
-    <dialog id="create-post-modal" class="community-dialog">
-        <div class="community-dialog-pad">
-            <h2 class="community-title">새 글 작성</h2>
-            <p class="community-muted">러브트리, 직캠, 콘서트 후기 등 자유롭게 공유해 주세요.</p>
-
-            <form id="create-post-form" class="community-form" method="dialog">
-                <div>
-                    <label for="community-title" class="community-label">제목</label>
-                    <input id="community-title" name="title" type="text" maxlength="80" required
-                        class="community-input"
-                        placeholder="예: 이번 콘서트 세트리스트가 미쳤다">
-                </div>
-                <div>
-                    <label for="community-content" class="community-label">내용</label>
-                    <textarea id="community-content" name="content" rows="6" required
-                        class="community-textarea"
-                        placeholder="자유롭게 작성해 주세요. 타인을 공격하거나 스포일러는 자제해주세요."></textarea>
-                </div>
-                <div>
-                    <label class="community-label">미디어 링크 (선택)</label>
-                    <input id="community-media-url" name="mediaUrl" type="url" maxlength="500"
-                        class="community-input"
-                        placeholder="예: https://youtu.be/... 또는 이미지 링크(https://...jpg)" />
-                    <p class="community-help">유튜브 링크는 자동으로 임베드되고, 이미지 링크는 미리보기로 표시됩니다.</p>
-                    <div id="community-media-preview" class="community-preview-stack is-hidden"></div>
-                </div>
-
-                <div>
-                    <label class="community-label">내 트리 선택 (선택)</label>
-                    <input id="community-tree-search" type="text" placeholder="내 트리 검색"
-                        class="community-input" />
-                    <select id="community-tree-select"
-                        class="community-select">
-                        <option value="">(로그인 후 내 트리를 선택할 수 있어요)</option>
-                    </select>
-                    <p class="community-help">내 트리를 선택하면 아래 트리 ID에 자동으로 입력됩니다.</p>
-                </div>
-                <div>
-                    <label for="community-tree-id" class="community-label">트리 ID (선택, 직접입력)</label>
-                    <input id="community-tree-id" name="treeId" type="text" maxlength="200"
-                        class="community-input"
-                        placeholder="예: xOpR0fAlTmXBjjp3g7go 또는 editor.html?id=...">
-                </div>
-                <div class="community-actions">
-                    <button type="button" onclick="closeModal('create-post-modal')"
-                        class="community-ghost-btn">취소</button>
-                    <button type="submit"
-                        class="community-primary-btn">등록</button>
-                </div>
-            </form>
-        </div>
-    </dialog>
-
-    <!-- 게시글 상세/댓글 모달 -->
-    <dialog id="post-detail-modal" class="community-dialog-lg">
-        <div class="community-detail-shell">
-            <header class="community-detail-header">
-                <div>
-                    <h2 id="detail-title" class="community-title"></h2>
-                    <p id="detail-meta" class="community-detail-meta"></p>
-                    <div id="detail-tree-actions" class="community-action-row is-hidden">
-                        <a id="detail-tree-open" href="#" target="_blank"
-                            class="community-action-btn">트리 열기</a>
-                        <button id="detail-tree-fork" type="button"
-                            class="community-success-btn">내 트리로 가져오기</button>
-                    </div>
-                    <div id="detail-post-actions" class="community-action-row is-hidden">
-                        <button id="detail-post-edit" type="button"
-                            class="community-action-btn">수정</button>
-                        <button id="detail-post-delete" type="button"
-                            class="community-danger-pill">삭제</button>
-                    </div>
-                    <div id="detail-tree-summary" class="community-summary is-hidden"></div>
-                </div>
-                <button type="button" onclick="closeModal('post-detail-modal')"
-                    class="community-close-btn">
-                    <svg class="community-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </header>
-            <div class="community-detail-body">
-                <article class="community-content" id="detail-content"></article>
-
-                <div id="detail-images" class="community-image-stack is-hidden"></div>
-
-                <section>
-                    <h3 class="community-label">댓글</h3>
-                    <div id="comment-list" class="community-comment-stack">
-                        <!-- 댓글 리스트 -->
-                    </div>
-                </section>
-            </div>
-            <form id="comment-form" class="community-comment-form" method="dialog">
-                <textarea id="comment-input" rows="2" placeholder="댓글을 입력하세요"
-                    class="community-textarea"></textarea>
-                <div class="community-actions">
-                    <button type="button" onclick="closeModal('post-detail-modal')"
-                        class="community-ghost-btn">닫기</button>
-                    <button type="submit"
-                        class="community-primary-btn">댓글 등록</button>
-                </div>
-            </form>
-        </div>
-    </dialog>
-
-    <!-- 삭제 사유 입력 모달(공용) -->
-    <dialog id="delete-reason-modal" class="community-dialog">
-        <div class="community-dialog-pad">
-            <div class="community-detail-header">
-                <h3 class="community-title" id="delete-reason-title">삭제 사유</h3>
-                <button type="button" onclick="closeModal('delete-reason-modal')" class="community-close-btn">
-                    <svg class="community-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            <p class="community-muted" id="delete-reason-desc">삭제 사유를 입력해 주세요. (선택)</p>
-            <form id="delete-reason-form" class="community-form" method="dialog">
-                <textarea id="delete-reason-input" rows="4" maxlength="200" placeholder="예: 욕설/광고/도배"
-                    class="community-textarea"></textarea>
-                <div class="community-actions">
-                    <button type="button" onclick="closeModal('delete-reason-modal')"
-                        class="community-ghost-btn">취소</button>
-                    <button type="submit"
-                        class="community-danger-btn">삭제</button>
-                </div>
-            </form>
-        </div>
-    </dialog>
-
-    <!-- 공용/인증/커뮤니티 스크립트 -->
-    <script src="/src/runtime-config.js"></script>
-    <script src="/src/shared-storage.js"></script>
-    <script src="/src/shared-dom.js"></script>
-    <script src="/src/shared-theme.js"></script>
-    <script src="/src/shared-layout.js"></script>
     <script src="/src/shared-utils.js"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
-    <script src="/src/community-moderation.js"></script>
-    <script src="/src/community-render-templates.js"></script>
-    <script src="/src/community-render.js"></script>
-    <script src="/src/community-comments.js"></script>
-    <script src="/src/community-compose.js"></script>
-    <script src="/src/community-ui.js"></script>
-    <script src="/src/community-runtime.js"></script>
-    <script src="/src/community-sync.js"></script>
-    <script src="/src/community-write.js"></script>
-    <script src="/src/community-flow.js"></script>
-    <script src="/src/community-entry-flow.js"></script>
-    <script src="/src/entries/community.js"></script>
-</body>
+    <script src="/src/concept-state.js"></script>
 
+    <!-- Auth Integration Logic (Shared) -->
+    <script>
+        function updateLTAuthUI(user) {
+            const authItem = document.getElementById('nav-auth-item');
+            const logoutBtn = document.getElementById('nav-logout-btn');
+            if (user) {
+                authItem.textContent = '내 트리';
+                authItem.href = 'my-trees.html';
+                authItem.classList.add('logged-in');
+                logoutBtn.classList.remove('is-hidden');
+            } else {
+                authItem.textContent = '로그인';
+                authItem.href = 'login.html';
+                authItem.classList.remove('logged-in');
+                logoutBtn.classList.add('is-hidden');
+            }
+        }
+        window.onAuthReady = function(user) { updateLTAuthUI(user); };
+        setTimeout(() => { if (window.firebase && firebase.auth().currentUser) updateLTAuthUI(firebase.auth().currentUser); }, 1000);
+        document.getElementById('nav-logout-btn').addEventListener('click', () => { if (window.signOut) window.signOut(); });
+    </script>
+</body>
 </html>

@@ -1,39 +1,85 @@
-<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순간 연결 - Lovetree</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="/assets/css/flow-shared.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/flow-shared.js"></script>
+        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>연결 지점 선택 - Lovetree</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/mobile-add-branch.css">
 </head>
-<body>
-    <div class="flow-container">
-        <header class="flow-header">
-            <button id="btn-back" class="flow-back">←</button>
-            <h1>어느 순간과 연결할까요?</h1>
-            <div style="width:36px;"></div>
+<body class="mab-page">
+    <div class="mab-frame">
+        <!-- 감상 흐름 헤더 -->
+        <header class="mab-header">
+            <span class="btn-cancel">취소</span>
+            <h2>새로운 이야기가<br>시작될 곳을 골라주세요</h2>
         </header>
 
-        <div id="loading-area" class="loading-spinner" style="padding-top:60px;"></div>
+        <main class="mab-scroll">
+            <div class="branch-tree">
+                <!-- Center trunk -->
+                <div class="bt-line"></div>
+                
+                <!-- Node 1 -->
+                <div class="bt-node-container">
+                    <div class="bt-node">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" alt="기억 1">
+                        </div>
+                        <span class="emotion">첫 만남</span>
+                        <h3>첫 단독 콘서트의 기록</h3>
+                        <span class="date">2023. 11. 15</span>
+                    </div>
+                </div>
 
-        <div id="branch-list" style="display:none;padding:20px;position:relative;">
-            <div style="position:absolute;left:50%;top:20px;bottom:20px;width:2px;background:var(--color-border);transform:translateX(-50%);z-index:1;"></div>
-            <div id="node-cards"></div>
-        </div>
+                <!-- Node 2 (Selected) -->
+                <div class="bt-node-container">
+                    <div class="bt-node active">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=200&auto=format&fit=crop" alt="기억 2">
+                        </div>
+                        <span class="emotion">설렘</span>
+                        <h3>레전드 음악방송 직캠</h3>
+                        <span class="date">2023. 12. 01</span>
+                    </div>
 
-        <div id="branch-footer" style="display:none;padding:20px;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--color-border);max-width:480px;margin:0 auto;">
-            <button id="btn-connect" class="btn-primary" disabled>이 순간 뒤에 연결하기</button>
-        </div>
+                    <!-- Sprout: Where the new story begins -->
+                    <div class="sprout-anchor">
+                        <div class="sprout-line"></div>
+                        <div class="sprout-dot">+</div>
+                    </div>
+                </div>
+
+                <!-- Node 3 -->
+                <div class="bt-node-container">
+                    <div class="bt-node">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=200&auto=format&fit=crop" alt="기억 3">
+                        </div>
+                        <span class="emotion">행복</span>
+                        <h3>앵콜 무대 떼창의 전율</h3>
+                        <span class="date">2024. 01. 20</span>
+                    </div>
+                </div>
+
+                <!-- Node 4 -->
+                <div class="bt-node-container">
+                    <div class="bt-node">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=200&auto=format&fit=crop" alt="기억 4">
+                        </div>
+                        <span class="emotion">심장소리</span>
+                        <h3>팬미팅 첫 눈맞춤</h3>
+                        <span class="date">2024. 04. 12</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mab-footer">
+            <button class="btn-connect">이 기억 뒤에 연결하기</button>
+        </footer>
     </div>
-
-    <script src="/src/mobile-add-branch.js"></script>
 </body>
 </html>

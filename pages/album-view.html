@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>기억 보관함 - Lovetree</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/album-view.css">
+</head>
+<body class="av-page">
+    <div class="av-frame">
+        <!-- 감상 무드 헤더 -->
+        <header class="av-header">
+            <h2>나의 기억</h2>
+            <button class="av-close-btn" aria-label="닫기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </header>
+
+        <main class="av-scroll">
+            <!-- 트리에서 열린 기록 -->
+            <p class="av-context-hint">오늘의 추억</p>
+            <div class="album-grid">
+                
+                <!-- 기억 1 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="기억 1">
+                    </div>
+                    <div class="av-info">
+                        <span class="av-date">2023. 11. 15</span>
+                        <h3>첫 단독 콘서트 엔딩 무대, 우리가 공유한 눈물</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#콘서트</span>
+                            <span class="av-tag">#감동</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 기억 2 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기억 2">
+                    </div>
+                    <div class="av-info">
+                        <span class="av-date">2023. 12. 01</span>
+                        <h3>레전드 음악방송 직캠, 입덕의 결정적 순간</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#입덕</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 기억 3 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=400&auto=format&fit=crop" alt="기억 3">
+                    </div>
+                    <div class="av-info">
+                        <span class="av-date">2024. 01. 20</span>
+                        <h3>앵콜 무대 떼창의 전율, 그 뜨거웠던 열기</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#열광</span>
+                            <span class="av-tag">#행복</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 기억 4 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기억 4">
+                    </div>
+                    <div class="av-info">
+                        <span class="av-date">2024. 04. 12</span>
+                        <h3>팬미팅 첫 눈맞춤, 심장이 멈추는 줄 알았던 날</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#설렘</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 기억 5 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="기억 5">
+                    </div>
+                    <div class="av-info">
+                        <span class="av-date">2024. 05. 05</span>
+                        <h3>가사에 울컥했던 라이브, 나를 위한 위로</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#위로</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 기억 6 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop" alt="기억 6">
+                    </div>
+                    <div class="av-info">
+                        <span class="av-date">2024. 06. 12</span>
+                        <h3>티켓팅 대성공! 소리 지르며 뛰어다닌 오후</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#일상</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </main>
+
+        <!-- 정제된 내비게이션 바 -->
+        <nav class="av-nav">
+            <div class="an-item active">
+                <div class="an-dot"></div>
+                <span class="an-text">트리</span>
+            </div>
+            <div class="an-item">
+                <div class="an-dot"></div>
+                <span class="an-text">탐색</span>
+            </div>
+            <div class="an-item">
+                <div class="an-dot"></div>
+                <span class="an-text">마이</span>
+            </div>
+        </nav>
+    </div>
+</body>
+</html>

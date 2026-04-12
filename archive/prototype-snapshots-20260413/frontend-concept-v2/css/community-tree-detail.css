@@ -1,0 +1,173 @@
+/* frontend-concept-v2/css/community-tree-detail.css */
+:root {
+    --ct-bg: #f9f6f2;
+    --ct-card: #ffffff;
+    --ct-brick: #b56e6e;
+    --ct-sage: #94a395;
+    --ct-text: #3d2b2b;
+    --ct-text-muted: #a3958c;
+    --ct-border: #f2ede9;
+}
+
+.ctd-page { background: var(--ct-bg); min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; font-family: 'Pretendard', sans-serif; }
+
+/* Cinematic Narrative Header: Exhibition Title Style */
+.ctd-top {
+    min-height: 160px; display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 60px 80px 48px; background: white; border-bottom: 1px solid var(--ct-border);
+    position: relative; z-index: 200;
+}
+.back-link { 
+    display: flex; align-items: center; gap: 12px; font-weight: 800; color: #d3c4bb; 
+    font-size: 0.85rem; text-decoration: none; transition: 0.3s;
+    position: absolute; top: 40px; left: 80px;
+}
+.back-link:hover { color: var(--ct-brick); transform: translateX(-4px); }
+
+.tree-header-main { flex: 1; text-align: left; }
+.tree-header-main h1 { 
+    font-size: 2.8rem; color: var(--ct-text); font-weight: 950; 
+    letter-spacing: -0.04em; margin-bottom: 14px; line-height: 1.1; 
+}
+.tree-header-main p { font-size: 1.1rem; color: var(--ct-brick); font-weight: 600; opacity: 0.7; }
+
+.user-profile-badge { 
+    display: flex; align-items: center; gap: 20px; padding: 14px 26px; 
+    background: #fdfaf7; border-radius: 16px; border: 1px solid var(--ct-border); 
+}
+.user-info-text { text-align: right; }
+.user-info-text b { display: block; font-size: 1rem; color: var(--ct-text); font-weight: 900; }
+.user-info-text span { font-size: 0.8rem; color: var(--ct-sage); font-weight: 700; margin-top: 2px; }
+.user-avatar-circle { width: 56px; height: 56px; border-radius: 50%; background: #ebdcd0; border: 4px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+
+/* Main Composition */
+.ctd-main { flex: 1; display: grid; grid-template-columns: 1fr 480px; }
+
+/* Canvas Area: Quiet Gallery Exhibition */
+.canvas-area {
+    position: relative; background: #fdfaf7; overflow: auto;
+    /* Soften the grid to be almost invisible, more like a high-end exhibition floor/paper */
+    background-image: radial-gradient(#ebdcd0 0.8px, transparent 0.8px);
+    background-size: 100px 100px;
+    scrollbar-width: none;
+    cursor: grab;
+}
+.canvas-area:active { cursor: grabbing; }
+.canvas-area::-webkit-scrollbar { display: none; }
+
+.tree-canvas-inner {
+    padding: 240px 180px; min-width: 2000px; position: relative;
+    display: flex; align-items: center; min-height: 100%;
+}
+
+/* Organic Flowing Growth Line: Muted Softened */
+.timeline-path {
+    position: absolute; top: 50%; left: 0; width: 100%; height: 2px; 
+    background: linear-gradient(90deg, transparent 0%, #f2ede9 10%, #d3c4bb 50%, #f2ede9 90%, transparent 100%);
+    transform: translateY(-50%);
+    opacity: 0.5;
+}
+
+.ctd-node {
+    position: absolute; width: 280px; transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.ctd-node:hover { transform: translateY(-12px); z-index: 10; }
+
+.n-up { bottom: 50%; margin-bottom: 110px; }
+.n-down { top: 50%; margin-top: 110px; }
+
+.ctd-node::after {
+    content: ''; position: absolute; left: 50%; width: 1px; height: 110px;
+    background: #d3c4bb; transform: translateX(-50%); opacity: 0.15;
+}
+.n-up::after { bottom: -110px; }
+.n-down::after { top: -110px; }
+
+.node-card {
+    background: white; border-radius: 4px; padding: 14px; 
+    box-shadow: 0 25px 70px rgba(61, 43, 43, 0.07); 
+    border: 1px solid #f2ede9; position: relative;
+    transition: 0.4s;
+}
+.ctd-node:hover .node-card { border-color: var(--ct-brick); }
+
+.node-card .card-visual { 
+    width: 100%; aspect-ratio: 1.1; background: #f9f6f2; 
+    border-radius: 2px; margin-bottom: 20px; overflow: hidden;
+}
+.node-card .card-visual img { width: 100%; height: 100%; object-fit: cover; transition: 1.2s; opacity: 0.9; }
+.ctd-node:hover img { transform: scale(1.06); opacity: 1; }
+
+.node-card h4 { font-size: 1.15rem; font-weight: 950; margin-bottom: 10px; color: var(--ct-text); letter-spacing: -0.04em; line-height: 1.3; }
+.node-card .card-memo { 
+    font-size: 0.9rem; color: #8a7a7a; line-height: 1.7; 
+    margin-bottom: 20px; font-weight: 500;
+}
+.card-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #fdfaf7; margin-top: 4px; padding-top: 16px; }
+.card-date { font-size: 0.8rem; font-weight: 800; color: #d3c4bb; letter-spacing: 0.05em; }
+
+/* Tag Styling: Natural Korean */
+.card-tag { 
+    font-size: 0.72rem; color: var(--ct-brick); font-weight: 850; 
+    text-transform: none; letter-spacing: -0.01em; 
+}
+
+/* Side Panel: Emotional Resonance */
+.side-panel {
+    background: white; border-left: 1px solid var(--ct-border);
+    display: flex; flex-direction: column; padding: 64px 48px; overflow-y: auto;
+    scrollbar-width: none;
+}
+.side-panel::-webkit-scrollbar { display: none; }
+
+.participation-box { margin-bottom: 64px; }
+.engagement-btns { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
+.re-btn {
+    padding: 22px 28px; border-radius: 16px; border: 1.5px solid var(--ct-border);
+    font-weight: 900; color: var(--ct-text); display: flex; align-items: center; gap: 18px; font-size: 1.05rem;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1); background: white; cursor: pointer; text-align: left;
+}
+
+/* Symbolized Actions instead of heavy emojis */
+.re-btn .ico { 
+    width: 48px; height: 48px; background: #fdfaf4; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    color: var(--ct-brick); font-size: 1rem; flex-shrink: 0;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+}
+.re-btn:hover { border-color: var(--ct-brick); box-shadow: 0 15px 35px rgba(181, 110, 110, 0.08); transform: translateY(-4px); }
+
+.action-cta-full {
+    background: var(--ct-text); color: white; border-radius: 100px;
+    padding: 24px; font-weight: 950; font-size: 1.15rem; width: 100%; border: none;
+    cursor: pointer; transition: 0.35s; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+.action-cta-full:hover { background: #000; transform: translateY(-5px); box-shadow: 0 25px 60px rgba(0,0,0,0.15); }
+
+.comments-area { margin-top: 32px; }
+.comments-area h3 { 
+    font-size: 1.25rem; font-weight: 950; margin-bottom: 48px; 
+    color: var(--ct-text); letter-spacing: -0.03em; 
+}
+
+.comment-item { display: flex; gap: 24px; margin-bottom: 48px; }
+.c-ava { width: 56px; height: 56px; border-radius: 50%; background: #f2ede9; flex-shrink: 0; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+.c-content { flex: 1; }
+.c-content b { font-size: 1rem; color: var(--ct-text); margin-bottom: 6px; display: block; font-weight: 950; }
+.c-content p { font-size: 1.05rem; color: #8a7a7a; line-height: 1.75; font-weight: 500; }
+
+.c-input-wrapper { margin-top: auto; padding-top: 64px; }
+.c-input-wrapper input {
+    width: 100%; background: #fdfbf9; border: 1.5px solid var(--ct-border); padding: 24px 32px; border-radius: 24px; 
+    outline: none; transition: 0.3s; font-family: inherit; font-size: 1.05rem; font-weight: 600;
+}
+.c-input-wrapper input:focus { background: white; border-color: var(--ct-brick); box-shadow: 0 15px 40px rgba(181, 110, 110, 0.08); }
+
+/* Node Position Classes */
+.ctd-node.pos-1 { left: 100px; }
+.ctd-node.pos-2 { left: 480px; }
+.ctd-node.pos-3 { left: 860px; }
+.ctd-node.pos-4 { left: 1240px; }
+
+
+
