@@ -76,7 +76,7 @@ body.detail-page {
 
 /* Organic Connected Path */
 .related-section { margin-top: 64px; position: relative; padding-left: 4px; }
-.related-section h3 { font-size: 0.9rem; font-weight: 950; margin-bottom: 28px; color: #d3c4bb; letter-spacing: 0.05em; text-transform: uppercase; }
+.related-section h3 { font-size: 0.9rem; font-weight: 950; margin-bottom: 28px; color: #d3c4bb; letter-spacing: 0.02em; }
 
 .related-path { display: flex; flex-direction: column; gap: 20px; position: relative; padding-left: 20px; }
 .related-path::before {

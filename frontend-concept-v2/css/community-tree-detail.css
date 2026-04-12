@@ -163,5 +163,11 @@
 }
 .c-input-wrapper input:focus { background: white; border-color: var(--ct-brick); box-shadow: 0 15px 40px rgba(181, 110, 110, 0.08); }
 
+/* Node Position Classes */
+.ctd-node.pos-1 { left: 100px; }
+.ctd-node.pos-2 { left: 480px; }
+.ctd-node.pos-3 { left: 860px; }
+.ctd-node.pos-4 { left: 1240px; }
+
 
 

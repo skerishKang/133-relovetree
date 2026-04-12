@@ -116,7 +116,7 @@ function setupVideoPreview() {
       if (thumbBox) {
         thumbBox.style.background = '#000';
         // 실제 구현 시 YouTube 썸네일 API 연동
-        thumbBox.innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">';
+        thumbBox.innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" class="preview-dynamic-img">';
       }
 
       // URL에서 제목 추출 시도

@@ -70,7 +70,7 @@ body.login-page {
 }
 .benefits-area h3 { 
     font-size: 0.75rem; font-weight: 800; margin-bottom: 24px; 
-    color: var(--log-sage); text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--log-sage); letter-spacing: 0.02em;
 }
 .benefits-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .benefit-tag {

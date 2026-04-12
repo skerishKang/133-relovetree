@@ -29,7 +29,7 @@
 /* 트리와의 연결 힌트 */
 .av-context-hint {
     font-size: 0.7rem; font-weight: 700; color: #d3c4bb; 
-    margin-bottom: 20px; letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 20px; letter-spacing: 0.02em;
 }
 
 /* 기억 스크랩북 그리드 */
