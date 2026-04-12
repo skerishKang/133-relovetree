@@ -1,56 +1,49 @@
-<!-- frontend-concept-v2/login.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 - Lovetree</title>
+    <title>환영합니다 - Lovetree</title>
     <base href="/frontend-concept-v2/">
-    <link rel="stylesheet" href="css/app.css?v=20260412-8">
-    <link rel="stylesheet" href="css/login.css?v=20260412-8">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
-<body class="login-page">
-    <div class="bg-decor">
-        <div class="decor-tree tree-1"></div>
-        <div class="decor-tree tree-2"></div>
-    </div>
-
-    <div class="login-container">
-        <div class="login-logo">Lovetree</div>
+<body class="login-page" data-concept-page="login">
+    <div class="login-container" id="concept-main">
+        <div class="login-logo">러브트리</div>
         
         <header class="login-header">
-            <h1>내 러브트리를 계속<br>이어가려면 로그인하세요</h1>
-            <p>기록한 순간을 안전하게 저장하고,<br>다른 기기에서도 이어서 볼 수 있어요</p>
+            <h1>다시, 당신의 사랑을<br>기록할 시간입니다</h1>
+            <p>흩어진 순간들을 모아 하나의 나무로 완성하세요.<br>로그인하면 모든 기록이 안전하게 보관됩니다.</p>
         </header>
 
         <div class="login-actions">
             <!-- Google Login -->
             <a href="#" class="btn-social">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="24" height="24">
-                구글 계정으로 계속하기
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="20" height="20">
+                구글 계정으로 시작하기
             </a>
             
             <!-- Email Login -->
-            <a href="#" class="btn-social btn-brick">
-                <span style="font-size: 1.2rem;">✉️</span>이메일로 로그인
+            <a href="#" class="btn-social btn-brick-main">
+                이메일 주소로 계속하기
             </a>
         </div>
 
-        <!-- Benefits Checklist -->
+        <!-- Benefits Recognition -->
         <section class="benefits-area">
-            <h3>로그인하면 이런 점이 좋아요</h3>
+            <h3>로그인 후의 즐거움</h3>
             <div class="benefits-grid">
-                <div class="benefit-item"><span class="dot"></span>기록 영구 저장</div>
-                <div class="benefit-item"><span class="dot"></span>공유 및 관리</div>
-                <div class="benefit-item"><span class="dot"></span>댓글 알림</div>
-                <div class="benefit-item"><span class="dot"></span>트리 동기화</div>
+                <span class="benefit-tag">기억의 영구 보존</span>
+                <span class="benefit-tag">트리 동기화</span>
+                <span class="benefit-tag">비밀 기록 관리</span>
+                <span class="benefit-tag">따뜻한 소통</span>
             </div>
         </section>
 
         <!-- Back to Home -->
-        <div style="margin-top: 40px;">
-            <a href="home.html" style="color: #aaa; text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #eee;">홈으로 돌아가기</a>
-        </div>
+        <a href="home.html" class="back-subtle">나중에 기록할게요 (홈으로)</a>
     </div>
 
     <!-- Firebase SDK (External) - Placeholder for integration -->
@@ -61,5 +54,7 @@
     <script src="/src/shared-utils.js"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
+<script src="js/concept-state.js"></script>
 </body>
 </html>
+

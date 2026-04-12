@@ -214,12 +214,12 @@
     gap: 8px;
 }
 .card-meta::before {
-    content: 'CH';
-    font-size: 0.65rem;
-    font-weight: 900;
+    content: '채널';
+    font-size: 0.6rem;
+    font-weight: 800;
     background: #f5ece6;
     color: #9c8e84;
-    padding: 2px 4px;
+    padding: 2px 6px;
     border-radius: 4px;
 }
 

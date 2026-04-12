@@ -1,0 +1,66 @@
+{
+  "$schema": "https://kilo.ai/config.json",
+  "model": "nvidia/minimaxai/minimax-m2.7",
+  "provider": {
+    "nvidia": {
+      "name": "nvidia",
+      "npm": "@ai-sdk/openai-compatible",
+      "models": {
+        "minimaxai/minimax-m2.7": {
+          "name": "MiniMax M2.7"
+        }
+      },
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "[REDACTED]"
+      }
+    },
+    "modalresearch1": {
+      "name": "modalresearch1",
+      "npm": "@ai-sdk/openai-compatible",
+      "models": {
+        "zai-org/GLM-5.1-FP8": {
+          "name": "GLM-5.1-FP8 (계정1)"
+        }
+      },
+      "options": {
+        "baseURL": "https://api.us-west-2.modal.direct/v1/",
+        "headers": {
+          "Authorization": "Bearer [REDACTED]"
+        }
+      }
+    },
+    "modalresearch2": {
+      "name": "modalresearch2",
+      "npm": "@ai-sdk/openai-compatible",
+      "models": {
+        "zai-org/GLM-5.1-FP8": {
+          "name": "GLM-5.1-FP8 (계정2)"
+        }
+      },
+      "options": {
+        "baseURL": "https://api.us-west-2.modal.direct/v1/",
+        "headers": {
+          "Authorization": "Bearer [REDACTED]"
+        }
+      }
+    }
+  },
+  "mcp": {
+    "perplexity": {
+      "command": ["node", "G:/Ddrive/BatangD/task/workdiary/42.mcp_server/perplexity-mcp/build/index.js"],
+      "environment": {
+        "PERPLEXITY_API_KEY": ""
+      },
+      "type": "local"
+    },
+    "fetch": {
+      "command": ["node", "G:/Ddrive/BatangD/task/workdiary/42.mcp_server/fetch-mcp/dist/index.js"],
+      "type": "local"
+    },
+    "filesystem": {
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "G:/Ddrive/BatangD/task/workdiary"],
+      "type": "local"
+    }
+  }
+}

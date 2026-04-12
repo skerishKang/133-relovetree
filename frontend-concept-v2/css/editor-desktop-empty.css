@@ -1,41 +1,63 @@
 /* frontend-concept-v2/css/editor-desktop-empty.css */
-.ede-page { background: #fdfbf7; height: 100vh; overflow: hidden; display: flex; }
+@import "editor-desktop.css";
 
-/* Reuse sidebar/workspace structure from editor-desktop for consistency but separate file */
-.ede-sidebar {
-    width: 260px; background: #f4efdf; border-right: 1px solid var(--color-border);
-    display: flex; flex-direction: column; padding: 32px 24px;
-}
-.ede-sidebar .logo { font-size: 1.4rem; color: var(--color-primary-brick); font-weight: 800; margin-bottom: 40px; text-align: center; }
-
-.ede-nav { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.ede-nav-item { padding: 14px 20px; border-radius: var(--radius-sm); font-weight: 700; color: var(--color-text-sub); display: flex; align-items: center; gap: 12px; }
-.ede-nav-item.active { background: #dfd6c4; color: var(--color-text-main); }
-
-.ede-workspace { flex: 1; display: flex; flex-direction: column; position: relative; }
-
+/* Specific overrides for Empty State */
 .canvas-empty {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    background-image: radial-gradient(#d3c4bb 1px, transparent 1px);
-    background-size: 32px 32px;
+    flex: 1; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background-image: radial-gradient(circle at 2px 2px, #ebdcd0 0.8px, transparent 0);
+    background-size: 80px 80px;
+    background-color: var(--ed-bg);
 }
 
-.empty-prompt {
-    text-align: center; max-width: 480px;
-}
-.empty-prompt h2 { font-size: 2.2rem; margin-bottom: 24px; letter-spacing: -1px; }
-.empty-prompt p { font-size: 1.15rem; color: var(--color-text-sub); margin-bottom: 48px; line-height: 1.6; }
-
-.btn-big-add {
-    background: var(--color-primary-brick); color: white; padding: 20px 48px;
-    border-radius: var(--radius-pill); font-weight: 800; font-size: 1.25rem;
-    box-shadow: 0 12px 32px rgba(181, 110, 110, 0.3);
+/* Growth Root Background Decor */
+.growth-root-svg {
+    position: absolute; width: 700px; height: 700px;
+    opacity: 0.15; pointer-events: none;
+    z-index: 1; margin-bottom: 80px;
 }
 
-.empty-deco {
-    margin-top: 60px; display: flex; gap: 12px; justify-content: center;
+/* Ghost Node: The Invitation */
+.ghost-node-container {
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column; align-items: center;
 }
-.tag-guide {
-    background: #fdfbf7; border: 1px solid #ebdcd0; padding: 8px 16px; border-radius: 20px;
-    font-size: 0.9rem; font-weight: 700; color: #a18e8e;
+
+.ghost-node-link {
+    text-decoration: none; display: flex; flex-direction: column; align-items: center;
 }
+
+.ghost-node {
+    width: 220px; aspect-ratio: 1;
+    background: rgba(253, 250, 247, 0.6);
+    border: 2px dashed #ebdcd0;
+    border-radius: 8px;
+    margin-bottom: 32px;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+}
+.ghost-node::after {
+    content: '+'; font-size: 3.5rem; color: #ebdcd0; font-weight: 300; transition: 0.4s;
+}
+.ghost-node-link:hover .ghost-node {
+    background: white; border-color: var(--ed-accent); transform: translateY(-12px);
+    box-shadow: 0 25px 60px rgba(181, 110, 110, 0.08); border-style: solid;
+}
+.ghost-node-link:hover .ghost-node::after { color: var(--ed-accent); transform: scale(1.1); }
+
+.empty-guide-text { text-align: center; }
+.empty-guide-text h2 { font-size: 1.8rem; font-weight: 900; margin-bottom: 16px; letter-spacing: -0.03em; color: var(--ed-text); }
+.empty-guide-text p { font-size: 1.05rem; color: #887a70; line-height: 1.7; font-weight: 500; }
+
+/* Guide Panel specific */
+.pan-guide-icon {
+    width: 56px; height: 56px; background: #fdfaf4;
+    border-radius: 50%; color: var(--ed-accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; margin-bottom: 24px;
+    border: 1px solid #f2ede9;
+}
+.guide-step { margin-bottom: 40px; }
+.guide-step h5 { font-size: 1rem; font-weight: 900; margin-bottom: 12px; color: var(--ed-text); }
+.guide-step p { font-size: 0.95rem; color: #887a70; line-height: 1.7; }

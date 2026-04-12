@@ -1,3 +1,4 @@
+<!-- frontend-concept-v2/editor-desktop-empty.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -5,34 +6,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>새 트리 만들기 - Lovetree</title>
+    <title>트리 아카이브 시작하기 - Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/editor-desktop-empty.css">
 </head>
-<body class="ede-page">
-    <aside class="ede-sidebar">
-        <div class="logo">🌱 Lovetree</div>
-        <nav class="ede-nav">
-            <a href="home.html" class="ede-nav-item">🏠 홈</a>
-            <a href="my-trees.html" class="ede-nav-item active">📂 내 러브트리</a>
-            <a href="settings.html" class="ede-nav-item">⚙️ 설정</a>
+<body class="ed-page">
+    <!-- Sidebar: Final Refined Structure -->
+    <aside class="ed-sidebar">
+        <div class="logo"><span class="logo-mark"></span>러브트리</div>
+        <nav class="ed-nav">
+            <span class="nav-group-label">나의 아카이브</span>
+            <a href="home.html" class="ed-nav-item">
+                <span class="nav-dot"></span> 홈
+            </a>
+            <a href="my-trees.html" class="ed-nav-item active">
+                <span class="nav-dot"></span> 나의 러브트리
+            </a>
+            <a href="community.html" class="ed-nav-item">
+                <span class="nav-dot"></span> 탐색하기
+            </a>
+            <a href="settings.html" class="ed-nav-item">
+                <span class="nav-dot"></span> 설정
+            </a>
         </nav>
+        <button class="side-btn">새 러브트리 심기</button>
     </aside>
 
-    <main class="ede-workspace">
-        <div class="canvas-empty">
-            <div class="empty-prompt">
-                <h2>첫 순간을 기록해 볼까요?</h2>
-                <p>당신과 최애가 만난 그 특별한 순간부터<br>하나씩 러브트리를 키워보세요.</p>
-                <button class="btn-big-add">+ 첫 메모리 추가하기</button>
-                
-                <div class="empty-deco">
-                    <span class="tag-guide">🏷️ 입덕</span>
-                    <span class="tag-guide">🏷️ 첫 콘서트</span>
-                    <span class="tag-guide">🏷️ 최애 무대</span>
-                </div>
+    <!-- Workspace: Immersive Empty State -->
+    <main class="ed-workspace">
+        <header class="ws-top">
+            <div class="ws-search">사용 가이드를 확인해보세요...</div>
+            <a href="video-search.html" class="btn-primary-sm">+ 첫 순간 수집하기</a>
+        </header>
+
+        <section class="canvas-empty">
+            <!-- Decorative Root Silhouette -->
+            <svg class="growth-root-svg" viewBox="0 0 200 200">
+                <path d="M100,200 C100,150 70,120 40,110 M100,180 C110,140 140,120 170,110 M100,200 L100,100" 
+                      fill="none" stroke="#ebdcd0" stroke-width="2" stroke-dasharray="4 4" />
+            </svg>
+
+            <!-- Ghost Node Invitation -->
+            <div class="ghost-node-container">
+                <a href="video-search.html" class="ghost-node-link">
+                    <div class="ghost-node"></div>
+                    <div class="empty-guide-text">
+                        <h2>첫 번째 기억의 조각을 놓아주세요</h2>
+                        <p>당신과 아티스트의 첫 만남, 그 설레는 순간을<br>이곳에 가장 먼저 심어보세요.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Guide Panel: Cinematic Onboarding -->
+    <aside class="ed-panel">
+        <header class="pan-top">
+            <div class="pan-title">
+                <span>시작 가이드</span>
+                <div class="pan-sub">아카이브 첫걸음</div>
+            </div>
+            <button class="close-minimal">✕</button>
+        </header>
+
+        <div class="pan-content">
+            <div class="guide-step">
+                <div class="pan-guide-icon">◈</div>
+                <h5>1. 소중한 영상 찾기</h5>
+                <p>유튜브나 틱톡에서 가슴 뛰게 했던 영상을 검색하여 첫 번째 노드로 수집하세요.</p>
+            </div>
+
+            <div class="guide-step">
+                <div class="pan-guide-icon">✧</div>
+                <h5>2. 나만의 감정 기록하기</h5>
+                <p>그 장면을 보며 느꼈던 감정을 잊기 전에 짧은 메모와 함께 기록하세요.</p>
+            </div>
+
+            <div class="guide-step">
+                <div class="pan-guide-icon">ꕤ</div>
+                <h5>3. 트리로 연결하기</h5>
+                <p>수집된 순간들을 줄기로 연결하여 당신만의 특별한 러브트리를 키워보세요.</p>
             </div>
         </div>
-    </main>
+
+        <div class="pan-footer">
+            <a href="video-search.html" class="btn-full-brick">지금 바로 시작하기</a>
+        </div>
+    </aside>
 </body>
 </html>

@@ -5,43 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>트리 에디터 - Lovetree</title>
+    <title>트리 아카이브 - Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/editor-desktop.css">
 </head>
 <body class="ed-page">
-    <!-- Sidebar: Personal Archive -->
     <aside class="ed-sidebar">
-        <div class="logo">🌿 Lovetree</div>
+        <div class="logo"><span class="logo-mark"></span>러브트리</div>
         <nav class="ed-nav">
-            <span class="nav-group-label">Library</span>
+            <span class="nav-group-label">나의 아카이브</span>
             <a href="home.html" class="ed-nav-item">
-                <span class="nav-circle"></span> 홈
+                <span class="nav-dot"></span> 홈
             </a>
             <a href="my-trees.html" class="ed-nav-item active">
-                <span class="nav-circle"></span> 내 러브트리
+                <span class="nav-dot"></span> 나의 러브트리
             </a>
             <a href="community.html" class="ed-nav-item">
-                <span class="nav-circle"></span> 커뮤니티
+                <span class="nav-dot"></span> 탐색하기
             </a>
             <a href="settings.html" class="ed-nav-item">
-                <span class="nav-circle"></span> 설정
+                <span class="nav-dot"></span> 설정
             </a>
         </nav>
         <button class="side-btn">새 러브트리 심기</button>
     </aside>
 
-    <!-- Workspace: The Love Tree Board -->
     <main class="ed-workspace">
         <header class="ws-top">
-            <div class="ws-search">기억하고 싶은 순간을 검색하세요...</div>
-            <a href="video-search.html" style="text-decoration: none;">
-                <button class="btn-primary-sm">+ 새 순간 추가</button>
-            </a>
+            <div class="ws-search">소중한 순간의 제목을 검색하세요...</div>
+            <a href="video-search.html" class="link-add-moment"><button class="btn-primary-sm">+ 새로운 순간 수집</button></a>
         </header>
 
         <section class="canvas" id="zoom-canvas">
-            <!-- Organic Branches (SVG) -->
             <svg class="canvas-svg" width="2000" height="2000" viewBox="0 0 2000 2000">
                 <path class="branch-path main" d="M100,600 L400,600" />
                 <path class="branch-path sub" d="M400,600 C500,600 550,450 700,350" />
@@ -50,120 +45,114 @@
                 <path class="branch-path leaf" d="M700,350 L900,500" />
             </svg>
 
-            <!-- Memory Nodes (Moment Cards / Fragments) -->
-            <!-- Root Moment -->
-            <div class="ed-node" style="top: 540px; left: 100px;">
+            <div class="ed-node pos-1">
                 <div class="node-img">
-                    <img src="https://img.youtube.com/vi/aqz-KE-bpKQ/mqdefault.jpg" alt="Moment">
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" alt="">
                 </div>
                 <div class="node-info">
                     <h5>첫 만남의 떨림</h5>
-                    <p class="node-meta">2023.10.15</p>
+                    <p class="node-meta">2023. 10. 15</p>
                 </div>
             </div>
 
-            <!-- Active Moment -->
-            <div class="ed-node active" style="top: 290px; left: 630px;">
+            <div class="ed-node active pos-2">
                 <div class="node-img">
-                    <img src="https://img.youtube.com/vi/fS6_C_yL9Zc/mqdefault.jpg" alt="Moment">
+                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=300&auto=format&fit=crop" alt="">
                 </div>
                 <div class="node-info">
+                    <span class="node-emotion">설렘</span>
                     <h5>춤선이 예쁜 날</h5>
-                    <p class="node-meta">2023.10.20</p>
+                    <p class="node-meta">2023. 10. 20</p>
                 </div>
             </div>
 
-            <!-- Other Branches -->
-            <div class="ed-node" style="top: 790px; left: 740px;">
+            <div class="ed-node pos-3">
                 <div class="node-img">
-                    <img src="https://img.youtube.com/vi/zS88e0x3vI4/mqdefault.jpg" alt="Moment">
+                    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=300&auto=format&fit=crop" alt="">
                 </div>
                 <div class="node-info">
                     <h5>가사가 들린 순간</h5>
-                    <p class="node-meta">2023.11.02</p>
+                    <p class="node-meta">2023. 11. 02</p>
                 </div>
             </div>
 
-            <div class="ed-node" style="top: 130px; left: 920px;">
+            <div class="ed-node pos-4">
                 <div class="node-img">
-                    <img src="https://img.youtube.com/vi/QU9c0053UAU/mqdefault.jpg" alt="Moment">
+                    <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=300&auto=format&fit=crop" alt="">
                 </div>
                 <div class="node-info">
                     <h5>앵콜의 감동</h5>
-                    <p class="node-meta">2023.11.15</p>
+                    <p class="node-meta">2023. 11. 15</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Detail Story Panel (The Archival Side) -->
     <aside class="ed-panel">
         <header class="pan-top">
             <div class="pan-title">
-                <span class="ico-back">←</span>
                 <span>춤선이 예쁜 날</span>
+                <div class="pan-sub">기록 상세</div>
             </div>
-            <button class="close-minimal">✕</button>
+            <button class="close-minimal" aria-label="닫기">✕</button>
         </header>
 
         <div class="pan-video-container">
             <div class="pan-video">
                 <div class="vid-placeholder">
                     <div class="play-circle">▶</div>
-                    <span>이 순간의 기록을 불러오는 중...</span>
+                    <span>이 순간의 영상을 다시 상영합니다</span>
                 </div>
             </div>
         </div>
 
         <div class="pan-content">
-            <div class="story-card">
-                <h4>Sentiment / 감정 기록</h4>
-                <p class="memo-text">무대 위에서 손끝 하나하나 살아있는 느낌이 너무 좋았어요. 기록해두고 싶을 만큼 계속 돌려보게 되는 영상입니다.</p>
+            <!-- Skeleton Loader (Visible during data binding) -->
+            <div class="pan-skeleton-wrap is-hidden">
+                <div class="sk-title ui-skeleton"></div>
+                <div class="sk-text ui-skeleton"></div>
+                <div class="sk-text short ui-skeleton"></div>
+                <div class="sk-meta-row ui-skeleton"></div>
+                <div class="sk-meta-row ui-skeleton"></div>
             </div>
 
-            <div class="archival-meta">
-                <div class="archive-item">
-                    <span class="archive-label">DATE</span>
-                    <span class="archive-val">2023.10.20</span>
+            <!-- Actual Content -->
+            <div class="pan-data-wrap">
+                <div class="story-card">
+                    <h4>그날의 감정 기록</h4>
+                    <p class="memo-text">"무대 위에서 손끝 하나하나 살아있는 느낌이 너무 좋았어요. 기록해두고 싶을 만큼 계속 돌려보게 되는 소중한 영상입니다. 아티스트와 눈이 마주친 것만 같은 그 찰나의 순간을 영원히 간직하고 싶어요."</p>
                 </div>
-                <div class="archive-item">
-                    <span class="archive-label">TAGS</span>
-                    <span class="archive-val tag">#감동 #설렘 #입덕</span>
-                </div>
-                <div class="archive-item">
-                    <span class="archive-label">SOURCE</span>
-                    <span class="archive-val">YouTube • BANGTANTV</span>
+
+                <div class="archival-meta">
+                    <div class="archive-item">
+                        <span class="archive-label">기억날짜</span>
+                        <span class="archive-val">2023. 10. 20</span>
+                    </div>
+                    <div class="archive-item">
+                        <span class="archive-label">태그</span>
+                        <span class="archive-val tag">#감동 #설렘 #무대천재</span>
+                    </div>
+                    <div class="archive-item">
+                        <span class="archive-label">저장경로</span>
+                        <span class="archive-val">내 러브트리 > 2023 하이라이트</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="pan-footer">
-            <a href="video-search.html" class="btn-full-brick">이 뒤에 새 순간 연결하기</a>
+            <a href="video-search.html" class="btn-full-brick">이 기억 뒤에 새로운 순간 연결하기</a>
         </div>
     </aside>
 
+    <script src="src/concept-state.js"></script>
     <script>
-        // Simple Interaction: Switch nodes (concept only)
-        document.querySelectorAll('.ed-node').forEach(node => {
-            node.addEventListener('click', () => {
-                document.querySelectorAll('.ed-node').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.ed-node').forEach(function(node) {
+            node.addEventListener('click', function() {
+                document.querySelectorAll('.ed-node').forEach(function(n) { n.classList.remove('active'); });
                 node.classList.add('active');
             });
         });
     </script>
 </body>
 </html>
-
-
-    <script>
-        // Simple Interaction: Switch nodes (concept only)
-        document.querySelectorAll('.ed-node').forEach(node => {
-            node.addEventListener('click', () => {
-                document.querySelectorAll('.ed-node').forEach(n => n.classList.remove('active'));
-                node.classList.add('active');
-            });
-        });
-    </script>
-</body>
-</html>
-
