@@ -1,76 +1,130 @@
-<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순간 추가하기 - Lovetree</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="/assets/css/flow-shared.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/flow-shared.js"></script>
+    <title>순간 기록하기 - Lovetree</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/mobile-add-memory.css">
 </head>
-<body>
-    <div class="flow-container">
-        <header class="flow-header">
-            <button id="btn-back" class="flow-back">←</button>
-            <h1>순간 추가하기</h1>
-            <div style="width:36px;"></div>
-        </header>
+<body class="add-memory-page">
+    <!-- Header: Quiet Focus -->
+    <nav class="add-header">
+        <button class="btn-back" onclick="window.history.back()">←</button>
+        <h1>순간 기록하기</h1>
+    </nav>
 
-        <div class="flow-content" id="main-content">
-            <div class="form-group">
-                <label class="form-label">영상 링크</label>
-                <input id="input-url" class="form-input" placeholder="YouTube, TikTok, Instagram 링크를 붙여넣으세요">
+    <!-- Content: Emotional Journey -->
+    <main class="add-container" id="concept-main">
+        <!-- Step 1: Link Discovery -->
+        <section class="journey-step">
+            <label class="step-label">어떤 영상인가요?</label>
+            <input type="text" id="video-url" name="videoUrl" class="input-minimal" placeholder="유튜브 링크를 알려주세요">
+        </section>
+
+        <!-- Step 2: Visual Fragment Preview -->
+        <section class="moment-preview-node" id="preview-node">
+            <div class="preview-img-box" id="preview-thumb">
+                <span>🎬</span>
             </div>
+            <div class="preview-text-info">
+                <div class="preview-title" id="preview-title">새로운 기억</div>
+                <div class="preview-date" id="preview-date">2023. 10. 26</div>
+            </div>
+        </section>
 
-            <div id="video-preview" class="video-preview" style="display:none;">
-                <div class="preview-placeholder">
-                    <span>▶</span>
-                    <p>영상 미리보기</p>
+        <!-- Step 3: Emotional Details -->
+        <form id="memory-form">
+            <section class="journey-step">
+                <label class="step-label">그때의 마음은 어땠나요?</label>
+                
+                <div class="field-row">
+                    <div class="field-item">
+                        <span class="input-small-label">제목</span>
+                        <input type="text" id="memory-title" name="title" class="input-soft" placeholder="기억의 이름을 지어주세요">
+                    </div>
+                    <div class="field-item">
+                        <span class="input-small-label">날짜</span>
+                        <input type="date" id="memory-date" name="date" class="input-soft" value="2023-10-26">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label class="form-label">날짜</label>
-                <input id="input-date" class="form-input" type="date">
-            </div>
+                <div class="emotion-field">
+                    <span class="input-small-label">어떤 기분이었나요?</span>
+                    <div class="emotion-tabs" id="emotion-tabs">
+                        <div class="emotion-chip" data-emotion="설렘">설렘</div>
+                        <div class="emotion-chip selected" data-emotion="감동">감동</div>
+                        <div class="emotion-chip" data-emotion="감복">감복</div>
+                        <div class="emotion-chip" data-emotion="응원">응원</div>
+                        <div class="emotion-chip" data-emotion="치유">치유</div>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">제목</label>
-                <input id="input-title" class="form-input" placeholder="짧은 제목 (예: 앵콜 무대!)">
-            </div>
+                <div>
+                    <span class="input-small-label">나만의 감정 기록</span>
+                    <textarea id="memory-memo" name="memo" class="memo-journal" placeholder="그날이 얼마나 특별했던지 이야기해 보세요.."></textarea>
+                </div>
+            </section>
 
-            <div class="form-group">
-                <label class="form-label">영상 속 순간 (시간)</label>
-                <input id="input-timestamp" class="form-input" placeholder="예: 2:30 또는 1:23:45" style="max-width:160px;">
-            </div>
+            <!-- Step 4: Connection Context -->
+            <section class="journey-step">
+                <label class="step-label">어떤 기억과 연결할까요?</label>
+                <div class="connection-flow">
+                    <select id="tree-select" name="treeId" class="select-connection">
+                        <option value="">첫 번째 기록으로 시작하기</option>
+                        <option value="tree-1">내 러브트리에 연결하기</option>
+                        <option value="tree-2">기존 트리에 붙여보기</option>
+                    </select>
+                </div>
+            </section>
+        </form>
+    </main>
 
-            <div class="form-group">
-                <label class="form-label">기분 태그</label>
-                <div id="emotion-tags" class="tag-pills"></div>
-            </div>
+    <!-- Footer: Planting Action -->
+    <footer class="planting-footer">
+        <button class="btn-plant" id="btn-submit-memory">
+            <span class="state-idle">러브트리에 심기</span>
+            <span class="state-loading is-hidden">기억을 심는 중...</span>
+        </button>
+    </footer>
 
-            <div class="form-group">
-                <label class="form-label">메모</label>
-                <textarea id="input-memo" class="form-textarea" placeholder="이 순간의 소중한 기억을 남겨주세요..."></textarea>
-            </div>
+    <script src="/src/api.js"></script>
+    <script src="/src/add-memory.js"></script>
+    <script>
+        // Simple Interaction: Emotion chips
+        document.querySelectorAll('.emotion-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.emotion-chip').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
 
-            <div class="form-group" id="connection-section" style="display:none;">
-                <label class="form-label">어느 순간 뒤에 연결할까요?</label>
-                <button id="btn-select-connection" class="btn-secondary" style="width:100%;text-align:left;">
-                    <span id="connection-label">연결 위치 선택하기</span>
-                </button>
-            </div>
+        // Submit button click handler - go to branch selection
+        document.getElementById('btn-submit-memory').addEventListener('click', function() {
+            // Validate and submit
+            const form = document.getElementById('memory-form');
+            if (form) {
+                // If valid, go to branch selection page
+                window.location.href = '/pages/mobile-add-branch.html';
+            }
+        });
 
-            <button id="btn-submit" class="btn-primary" disabled>러브트리에 추가</button>
-        </div>
-    </div>
+        // Simulating the "Vibe Shift" when video is recognized
+        const videoInput = document.getElementById('video-url');
+        const previewNode = document.getElementById('preview-node');
+        
+        if (videoInput && previewNode) {
+            videoInput.addEventListener('input', function(e) {
+                if (e.target.value.length > 10) {
+                    previewNode.style.transform = 'rotate(0deg) scale(1.05)';
+                    previewNode.style.borderColor = '#b56e6e';
+                    previewNode.querySelector('.preview-img-box').style.background = '#000';
+                    previewNode.querySelector('.preview-img-box').innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" class="preview-dynamic-img">';
 
-    <script src="/src/mobile-add-memory.js"></script>
+                }
+            });
+        }
+    </script>
 </body>
 </html>

@@ -1,70 +1,103 @@
-<!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
+<!-- frontend-concept-v2/memory-detail.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순간 상세 - Lovetree</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="/assets/css/flow-shared.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/postgres-client-browser.js"></script> <!-- Neon Postgres Data Layer -->
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/flow-shared.js"></script>
+    <title>기억 상세 - Lovetree</title>
+        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/memory-detail.css">
 </head>
-<body>
-    <div class="flow-container">
-        <header class="flow-header">
-            <button id="btn-back" class="flow-back">←</button>
-            <h1 style="color:var(--color-primary-brick);">Lovetree</h1>
-            <div style="width:36px;"></div>
+<body class="detail-page" data-concept-page="memory-detail">
+    <div class="mob-frame" id="concept-main">
+        <!-- 단일 비디오 -->
+        <header class="detail-header">
+            <button class="btn-header" onclick="window.history.back()">←</button>
+            <span class="header-brand">러브트리 기록</span>
+            <button class="btn-header">⋮</button>
         </header>
 
-        <div id="loading-area" class="loading-spinner" style="padding-top:60px;"></div>
+        <main class="detail-scroll">
+            <!-- 메인 비디오 플레이어 -->
+            <section class="hero-player" id="video-skeleton">
+                <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=800&auto=format&fit=crop" alt="기억 영상">
+                <div class="play-btn-large"></div>
+                <!-- 스keleton 로더 -->
+                <div class="skeleton-loader" data-skeleton="video"></div>
+            </section>
 
-        <div id="detail-content" style="display:none;">
-            <div id="video-area" class="video-preview" style="margin:0 20px 16px;border-radius:16px;">
-                <div class="preview-placeholder"><span>▶</span><p>영상</p></div>
-            </div>
-
-            <div style="padding:0 20px;">
-                <section style="margin-bottom:20px;">
-                    <h2 id="detail-title" style="font-size:1.4rem;font-weight:800;margin-bottom:4px;"></h2>
-                    <p id="detail-date" style="font-size:0.85rem;color:var(--color-text-muted);"></p>
-                </section>
-
-                <div id="detail-tags" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
-
-                <div id="memo-card" class="card" style="padding:20px;margin-bottom:24px;display:none;">
-                    <b style="display:block;margin-bottom:10px;font-size:0.95rem;">Memo</b>
-                    <p id="detail-memo" style="font-size:0.95rem;line-height:1.7;color:var(--color-text-sub);"></p>
+            <!-- 기록 상세 정보 -->
+            <section class="detail-info">
+                <span class="detail-date">2023. 11. 15</span>
+                <h2>콘서트의 전율</h2>
+                
+                <div class="detail-tags" id="tags-skeleton">
+                    <span class="detail-tag">#설렘</span>
+                    <span class="detail-tag">#감동</span>
+                    <span class="detail-tag">#첫콘</span>
+                    <!-- 스keleton -->
+                    <div class="skeleton-loader" data-skeleton="tags"></div>
                 </div>
 
-                <section id="connected-section" style="margin-bottom:100px;">
-                    <h4 style="font-size:1rem;font-weight:800;margin-bottom:16px;">이 순간과 이어진 기억</h4>
-                    <div id="connected-list" style="display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;"></div>
-                </section>
-            </div>
-        </div>
+                <!-- 스크랩북 감정 메모 -->
+                <div class="memo-box">
+                    첫 디아웃 콘서트에 다녀왔다. 그 현장의 압도감에 몸이 떨렸다. 정말 잊지 못할 밤이었다.
+                </div>
 
-        <div id="detail-footer" style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid rgba(0,0,0,0.05);display:flex;justify-content:space-around;padding:16px 0 32px;max-width:480px;margin:0 auto;">
-            <button id="footer-like" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-primary-brick);background:none;border:none;cursor:pointer;">
-                <span style="font-size:1.25rem;">❤️</span>좋아요
-            </button>
-            <button id="footer-comment" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-text-muted);background:none;border:none;cursor:pointer;">
-                <span style="font-size:1.25rem;">💬</span>댓글
-            </button>
-            <button id="footer-share" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-text-muted);background:none;border:none;cursor:pointer;">
-                <span style="font-size:1.25rem;">↗️</span>공유
-            </button>
-            <button id="footer-edit" style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--color-text-muted);background:none;border:none;cursor:pointer;">
-                <span style="font-size:1.25rem;">✏️</span>편집
-            </button>
-        </div>
+                <!-- 연결 경로: 이어지는 기억 -->
+                <div class="related-section">
+                    <h3>그날의 연결 경로</h3>
+                    <div class="related-path">
+                        <a href="#" class="r-item">
+                            <div class="r-thumb">
+                                <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=200&auto=format&fit=crop" alt="이전 기억">
+                            </div>
+                            <div class="r-info">
+                                <span class="r-title">첫 만남의 기록</span>
+                                <span class="r-date">2023. 11. 15</span>
+                            </div>
+                        </a>
+                        <a href="#" class="r-item active">
+                            <div class="r-thumb">
+                                <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" alt="현재 기억">
+                            </div>
+                            <div class="r-info">
+                                <span class="r-title">콘서트의 전율</span>
+                                <span class="r-date">현재 머물러 있는 기록</span>
+                            </div>
+                        </a>
+                        <a href="#" class="r-item">
+                            <div class="r-thumb">
+                                <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=200&auto=format&fit=crop" alt="다음 기억">
+                            </div>
+                            <div class="r-info">
+                                <span class="r-title">공연 종료 후의 여운</span>
+                                <span class="r-date">2023. 11. 15</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 감상 중심 액션 바 -->
+        <footer class="bottom-bar">
+            <a href="#" class="bottom-item">
+                <span class="b-ico">♥</span>
+                <span class="b-num">125</span>
+            </a>
+            <a href="#" class="bottom-item">
+                <span class="b-ico">💬</span>
+                <span class="b-num">3</span>
+            </a>
+            <a href="#" class="bottom-item">
+                <span class="b-ico">↗</span>
+                <span class="b-num">공유</span>
+            </a>
+        </footer>
     </div>
-
-    <script src="/src/memory-detail.js"></script>
+    <script src="/src/api.js"></script>
+    <script src="/src/concept-state.js"></script>
 </body>
 </html>

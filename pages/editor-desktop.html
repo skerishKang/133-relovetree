@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0">
+    <title>아카이브 - Lovetree</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/editor-desktop.css">
+</head>
+<body class="ed-page">
+    <aside class="ed-sidebar">
+        <div class="logo"><span class="logo-mark"></span>러브트리</div>
+        <nav class="ed-nav">
+            <span class="nav-group-label">내 아카이브</span>
+            <a href="/" class="ed-nav-item">
+                <span class="nav-dot"></span> 홈
+            </a>
+            <a href="/pages/my-trees.html" class="ed-nav-item active">
+                <span class="nav-dot"></span> 내 러브트리
+            </a>
+            <a href="/pages/community.html" class="ed-nav-item">
+                <span class="nav-dot"></span> 탐색
+            </a>
+            <a href="/pages/settings.html" class="ed-nav-item">
+                <span class="nav-dot"></span> 설정
+            </a>
+        </nav>
+        <button class="side-btn">새 러브트리 만들기</button>
+    </aside>
+
+    <main class="ed-workspace">
+        <header class="ws-top">
+            <div class="ws-search">추억하고 싶은 순간을 검색하세요</div>
+            <a href="/pages/video-search.html" class="link-add-moment"><button class="btn-primary-sm">+ 새로운 순간 담기</button></a>
+        </header>
+
+        <section class="canvas" id="zoom-canvas">
+            <svg class="canvas-svg" width="2000" height="2000" viewBox="0 0 2000 2000">
+                <path class="branch-path main" d="M100,600 L400,600" />
+                <path class="branch-path sub" d="M400,600 C500,600 550,450 700,350" />
+                <path class="branch-path sub" d="M400,600 C500,600 550,750 750,850" />
+                <path class="branch-path leaf" d="M700,350 L950,200" />
+                <path class="branch-path leaf" d="M700,350 L900,500" />
+            </svg>
+
+            <div class="ed-node pos-1">
+                <div class="node-img">
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" alt="">
+                </div>
+                <div class="node-info">
+                    <h5>첫 만남의 기록</h5>
+                    <p class="node-meta">2023. 10. 15</p>
+                </div>
+            </div>
+
+            <div class="ed-node active pos-2">
+                <div class="node-img">
+                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=300&auto=format&fit=crop" alt="">
+                </div>
+                <div class="node-info">
+                    <span class="node-emotion">설렘</span>
+                    <h5>무대 위 설렘의 순간</h5>
+                    <p class="node-meta">2023. 10. 20</p>
+                </div>
+            </div>
+
+            <div class="ed-node pos-3">
+                <div class="node-img">
+                    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=300&auto=format&fit=crop" alt="">
+                </div>
+                <div class="node-info">
+                    <h5>가장 행복한 시간</h5>
+                    <p class="node-meta">2023. 11. 02</p>
+                </div>
+            </div>
+
+            <div class="ed-node pos-4">
+                <div class="node-img">
+                    <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=300&auto=format&fit=crop" alt="">
+                </div>
+                <div class="node-info">
+                    <h5>앵콜의 감동</h5>
+                    <p class="node-meta">2023. 11. 15</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <aside class="ed-panel">
+        <header class="pan-top">
+            <div class="pan-title">
+                <span>무대 위 설렘의 순간</span>
+                <div class="pan-sub">기록 상세</div>
+            </div>
+            <button class="close-minimal" aria-label="닫기">×</button>
+        </header>
+
+        <div class="pan-video-container">
+            <div class="pan-video">
+                <div class="vid-placeholder">
+                    <div class="play-circle">▶</div>
+                    <span>영상이 여기에 재생됩니다</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pan-content">
+            <!-- Skeleton Loader (Visible during data binding) -->
+            <div class="pan-skeleton-wrap is-hidden">
+                <div class="sk-title ui-skeleton"></div>
+                <div class="sk-text ui-skeleton"></div>
+                <div class="sk-text short ui-skeleton"></div>
+                <div class="sk-meta-row ui-skeleton"></div>
+                <div class="sk-meta-row ui-skeleton"></div>
+            </div>
+
+            <!-- Actual Content -->
+            <div class="pan-data-wrap">
+                <div class="story-card">
+                    <h4>그날의 감정 기록</h4>
+                    <p class="memo-text">"무언가에 빠진 건 처음이었어요. 계속 봐도 보고 싶고, 누구에게도 보여주고 싶었던 그 순간입니다."</p>
+                </div>
+
+                <div class="archival-meta">
+                    <div class="archive-item">
+                        <span class="archive-label">기억 날짜</span>
+                        <span class="archive-val">2023. 10. 20</span>
+                    </div>
+                    <div class="archive-item">
+                        <span class="archive-label">태그</span>
+                        <span class="archive-val tag">#감동 #설렘 #무대천재</span>
+                    </div>
+                    <div class="archive-item">
+                        <span class="archive-label">경로</span>
+                        <span class="archive-val">나의 트리 > 2023년 여행기 > 무대 기록</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pan-footer">
+            <a href="/pages/video-search.html" class="btn-full-brick">이 기억에 새로운 순간 연결하기</a>
+        </div>
+    </aside>
+
+    <script src="/src/concept-state.js"></script>
+    <script>
+        document.querySelectorAll('.ed-node').forEach(function(node) {
+            node.addEventListener('click', function() {
+                document.querySelectorAll('.ed-node').forEach(function(n) { n.classList.remove('active'); });
+                node.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
