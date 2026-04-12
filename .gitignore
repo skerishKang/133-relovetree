@@ -1,12 +1,7 @@
-# Fossil 공통 제외 - 바이너리 문서
-*.pdf
-*.hwp
-*.hwpx
-*.docx
-*.xlsx
-*.pptx
+# Fossil 메모와 별개로, Git에는 제품 자산/문서/미디어를 올린다.
+# 문서/이미지/영상은 Git 추적 허용.
 
-# Fossil/Git 공통 제외 - 이미지 (GitHub 업로드를 위해 주석 처리)
+# 이미지 전역 제외는 사용하지 않음
 # *.jpg
 # *.jpeg
 # *.png
@@ -16,15 +11,7 @@
 # *.ico
 !assets/favicon.svg
 !설문지/image/
-
-# Fossil 공통 제외 - 영상/오디오
-*.mp4
-*.mov
-*.avi
-*.mp3
-*.wav
-*.m4a
-*.flac
+!설문지/image/**
 
 # Fossil 공통 제외 - 압축파일
 *.zip

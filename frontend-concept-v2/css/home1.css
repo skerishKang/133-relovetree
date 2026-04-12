@@ -207,6 +207,10 @@ body::after {
     opacity: 0.8;
 }
 
+.node-thumb img.is-blurred {
+    filter: blur(2px);
+}
+
 .play-ico {
     position: absolute;
     width: 30px;
