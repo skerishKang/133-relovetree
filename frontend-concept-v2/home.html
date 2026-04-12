@@ -7,8 +7,11 @@
     <title>Lovetree - 사랑을 기록하고 잇는 공간</title>
     <!-- Use base to fix relative paths for CSS/assets -->
     <base href="/frontend-concept-v2/">
-    <link rel="stylesheet" href="css/app.css?v=20260412-3">
-    <link rel="stylesheet" href="css/home.css?v=20260412-3">
+    <link rel="stylesheet" href="css/app.css?v=20260412-4">
+    <link rel="stylesheet" href="css/home.css?v=20260412-4">
+    <!-- Firebase SDK (External for auth) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body class="home-page">
     <div class="page-container">
@@ -17,9 +20,12 @@
             <div class="gnb-brand">Lovetree</div>
             <div class="nav-links">
                 <a href="#about">소개</a>
-                <a href="#features">기록 방식</a>
+                <a href="my-trees.html">러브트리</a>
                 <a href="community.html">커뮤니티</a>
-                <a href="login.html" class="nav-login">로그인</a>
+                <div class="auth-box">
+                    <a href="login.html" id="nav-auth-item" class="nav-login">로그인</a>
+                    <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
+                </div>
             </div>
         </nav>
 
@@ -27,41 +33,44 @@
         <section class="hero">
             <div class="hero-content">
                 <div class="hero-badge">🌿 첫 순간부터 팬이 되어가는 경로</div>
-                <h1>사랑에 빠진<br>모든 순간을<br>기록해 보세요</h1>
-                <p>영상, 날짜, 감정, 메모가 이어져<br>나만의 러브트리가 됩니다</p>
+                <h1>사랑에 빠진 모든 순간을<br>연결하세요.</h1>
+                <p>영상, 날짜, 감정, 메모가 아름답게 이어져<br>당신만의 러브트리가 자라납니다.</p>
                 <div class="hero-btns">
-                    <a href="my-trees.html" class="btn-brick">첫 러브트리 만들기</a>
-                    <a href="community.html" class="btn-outline">다른 러브트리 구경하기</a>
+                    <a href="pages/my-trees.html" class="btn-brick">러브트리 시작하기</a>
+                    <a href="pages/community.html" class="btn-outline">다른 트리 보기</a>
                 </div>
             </div>
 
-            <!-- Hero Slider (Replacing Tree Visualization) -->
+            <!-- Hero Slider -->
             <div class="hero-slider">
                 <div class="slider-viewport">
                     <div class="slider-track">
-                        <!-- Step 1: Discovering the video -->
-                        <div class="slide-item active">
+                        <!-- Step 1 -->
+                        <div class="slide-item active" id="slide-1">
+                            <img src="/설문지/image/slide/home-slide-01-empty-tree_bts.png" alt="Step 1" onerror="this.classList.add('is-hidden')">
                             <div class="slide-placeholder">
                                 <span class="step-num">Step 1</span>
                                 <p>영상을 발견하고<br>첫 순간을 기록합니다</p>
                             </div>
-                            <!-- <img src="images/hero/step1.jpg" alt="Step 1"> -->
                         </div>
                         <!-- Step 2 -->
-                        <div class="slide-item">
-                            <div class="slide-placeholder"><span class="step-num">Step 2</span></div>
+                        <div class="slide-item" id="slide-2">
+                             <img src="/설문지/image/slide/home-slide-02-first-memory_bts.png" alt="Step 2" onerror="this.classList.add('is-hidden')">
+                             <div class="slide-placeholder"><span class="step-num">Step 2</span><p>기록이 쌓여<br>나만의 추억이 됩니다</p></div>
                         </div>
                         <!-- Step 3 -->
-                        <div class="slide-item">
-                            <div class="slide-placeholder"><span class="step-num">Step 3</span></div>
+                        <div class="slide-item" id="slide-3">
+                             <img src="/설문지/image/slide/slide1.png" alt="Step 3" onerror="this.classList.add('is-hidden')">
+                             <div class="slide-placeholder"><span class="step-num">Step 3</span></div>
                         </div>
                         <!-- Step 4 -->
-                        <div class="slide-item">
-                            <div class="slide-placeholder"><span class="step-num">Step 4</span></div>
+                        <div class="slide-item" id="slide-4">
+                             <img src="/설문지/image/slide/slide2.png" alt="Step 4" onerror="this.classList.add('is-hidden')">
+                             <div class="slide-placeholder"><span class="step-num">Step 4</span></div>
                         </div>
                         <!-- Step 5 -->
-                        <div class="slide-item">
-                            <div class="slide-placeholder"><span class="step-num">Step 5</span></div>
+                        <div class="slide-item" id="slide-5">
+                             <div class="slide-placeholder"><span class="step-num">Step 5</span><p>완성된 러브트리를<br>공유해 보세요</p></div>
                         </div>
                     </div>
                 </div>
@@ -76,25 +85,66 @@
             </div>
         </section>
 
-        <!-- Features (Fixed Typos) -->
+        <!-- Bottom Features (Baseline Matching) -->
         <section class="features">
             <div class="feature-card">
-                <div class="f-ico">📹</div>
-                <div class="feature-info"><h3>기록하기</h3><p>러브트리 만들기 등<br>소중한 순간을 기록합니다.</p></div>
+                <div class="f-ico">📷</div>
+                <div class="feature-info"><h3>순간 포착</h3><p>좋아하게 된 장면을<br>영상과 함께 남깁니다.</p></div>
             </div>
             <div class="feature-card">
                 <div class="f-ico">🔗</div>
-                <div class="feature-info"><h3>연결하기</h3><p>영상과 날짜가 이어져<br>하나의 트리로 연결됩니다.</p></div>
+                <div class="feature-info"><h3>경로 연결</h3><p>날짜와 감정이 이어져<br>하나의 흐름이 됩니다.</p></div>
             </div>
             <div class="feature-card">
-                <div class="f-ico">▶</div>
-                <div class="feature-info"><h3>다시 보기</h3><p>기록된 모든 순간을<br>다시 보고 추억합니다.</p></div>
+                <div class="f-ico">🌳</div>
+                <div class="feature-info"><h3>트리 완성</h3><p>기록이 모여 당신만의<br>러브트리가 자랍니다.</p></div>
             </div>
             <div class="feature-card">
-                <div class="f-ico">🌟</div>
-                <div class="feature-info"><h3>공유하기</h3><p>완성된 러브트리를<br>공유하고 응원해 보세요.</p></div>
+                <div class="f-ico">✨</div>
+                <div class="feature-info"><h3>공유하기</h3><p>완성된 트리를 다른<br>팬과 나눌 수 있습니다.</p></div>
             </div>
         </section>
     </div>
+
+    <!-- Auth State Integration -->
+    <script type="module">
+        import { initFirebase } from '../src/firebase-init.js';
+        
+        // Wait for Firebase to be ready via global init or local if needed
+        // Since home.html is concept V2, we use direct observation
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Placeholder: Assume firebase is initialized by app.js or similar
+            // For stability in this environment, we check every 500ms
+            const checkFirebase = setInterval(() => {
+                if (window.firebase && firebase.apps.length > 0) {
+                    clearInterval(checkFirebase);
+                    const auth = firebase.auth();
+                    const authItem = document.getElementById('nav-auth-item');
+                    const logoutBtn = document.getElementById('nav-logout-btn');
+
+                    auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            // Logged In
+                            authItem.textContent = '내 트리';
+                            authItem.href = 'pages/my-trees.html';
+                            authItem.classList.add('logged-in');
+                            logoutBtn.classList.remove('is-hidden');
+                        } else {
+                            // Logged Out
+                            authItem.textContent = '로그인';
+                            authItem.href = 'pages/login.html';
+                            authItem.classList.remove('logged-in');
+                            logoutBtn.classList.add('is-hidden');
+                        }
+                    });
+
+                    logoutBtn.addEventListener('click', async () => {
+                        await auth.signOut();
+                        window.location.reload();
+                    });
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html>
