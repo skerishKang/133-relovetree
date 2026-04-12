@@ -97,15 +97,21 @@
     align-items: center;
     justify-content: center;
 }
-.dc-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
-.dc-media img.error { opacity: 0; position: absolute; }
-.dc-media::before {
-    content: '🎬';
-    font-size: 2rem;
-    opacity: 0.3;
+.dc-media img { 
+    width: 100%; height: 100%; object-fit: cover; 
+    opacity: 0; 
+    transition: opacity 0.3s;
     position: absolute;
+    z-index: 1;
 }
-.dc-media img:not(.error) + ::before { display: none; }
+.dc-media img.loaded { opacity: 1; }
+.dc-media img.failed { display: none; }
+.dc-media .img-placeholder {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.25;
+    z-index: 0;
+}
 
 .dc-info { padding: 22px 20px; }
 .dc-info h3 { font-size: 1rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 8px; line-height: 1.4; }
@@ -148,13 +154,27 @@
 .fc-viz-area { 
     flex: 1; 
     position: relative; 
-    background: var(--color-bg-surface); 
+    background: linear-gradient(135deg, var(--color-bg-surface) 0%, var(--color-bg-ivory) 100%);
     display: flex; 
     align-items: center; 
     justify-content: center; 
     overflow: hidden; 
 }
-.fc-viz-area img { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; }
+.fc-viz-area img { 
+    width: 100%; height: 100%; object-fit: cover; 
+    opacity: 0; 
+    transition: opacity 0.3s;
+    position: absolute;
+    z-index: 1;
+}
+.fc-viz-area img.loaded { opacity: 0.25; }
+.fc-viz-area img.failed { display: none; }
+.fc-viz-area .img-placeholder {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.2;
+    z-index: 0;
+}
 
 .fc-tree-overlay { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .fc-tree-svg { width: 40%; opacity: 0.7; }
