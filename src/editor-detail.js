@@ -675,10 +675,24 @@
         createNewNode: createNewNode,
         deleteNode: deleteNode,
         startMomentEdit: startMomentEdit,
-        cancelMomentEdit: cancelMomentEdit,
-        saveMomentEdit: saveMomentEdit,
-        deleteMoment: deleteMoment,
-        closeModal: closeModal,
-        bindDetailModalDismiss: bindDetailModalDismiss
-    };
+cancelMomentEdit: cancelMomentEdit,
+  saveMomentEdit: saveMomentEdit,
+  deleteMoment: deleteMoment,
+  closeModal: closeModal,
+  bindDetailModalDismiss: bindDetailModalDismiss
+};
+
+  // Expose global functions for HTML onclick handlers
+  window.deleteMoment = function(index) {
+    deleteMoment(window.__editorRuntime, index);
+  };
+  window.saveMomentEdit = function(index) {
+    saveMomentEdit(window.__editorRuntime, index);
+  };
+  window.startMomentEdit = function(index) {
+    startMomentEdit(window.__editorRuntime, index);
+  };
+  window.cancelMomentEdit = function() {
+    cancelMomentEdit(window.__editorRuntime);
+  };
 })();
