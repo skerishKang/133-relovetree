@@ -156,7 +156,8 @@
 
     // Render each moment
     sortedNodes.forEach(function(node, index) {
-      var card = createMomentCard(node, index);
+      var isLast = (index === sortedNodes.length - 1);
+      var card = createMomentCard(node, index, isLast);
       trunk.appendChild(card);
     });
 
@@ -169,44 +170,54 @@
     trunk.appendChild(endDiv);
   }
 
-  function createMomentCard(node, index) {
+  function createMomentCard(node, index, isLast) {
     var card = document.createElement('article');
     card.className = 'moment-card';
     if (index % 2 === 1) card.classList.add('mc-alt');
+    if (isLast) card.classList.add('mc-bloom');
 
     var dateStr = F.formatKoreanDate(node.date);
     var title = escapeHtml(node.title || '순간');
     var memo = escapeHtml(node.description || node.memo || '');
     
-    // Get emotion tag
     var emotionTag = '';
+    var emotionEmoji = '';
     if (node.moments && node.moments.length > 0 && node.moments[0].feeling) {
       emotionTag = F.feelingToTag(node.moments[0].feeling);
+      emotionEmoji = F.getEmotionEmoji(node.moments[0].feeling);
     }
 
-    // Get thumbnail
+    var momentCount = (node.moments && node.moments.length) || 0;
+
     var thumbHtml = '';
-    if (node.videoId) {
+    var hasVideo = !!(node.videoId);
+    if (hasVideo) {
       var thumbUrl = F.getYouTubeThumb(node.videoId);
-      thumbHtml = '<img src="' + thumbUrl + '" alt="">';
+      var veilClass = 'mc-thumb-veil';
+      if (index % 3 === 1) veilClass += ' mc-thumb-veil--rose';
+      else if (index % 3 === 2) veilClass += ' mc-thumb-veil--sage';
+      thumbHtml = '<img src="' + thumbUrl + '" alt="" onload="this.classList.add(\'loaded\')">' +
+        '<div class="' + veilClass + '"></div>' +
+        '<div class="mc-play-indicator"></div>' +
+        (emotionTag ? '<span class="mc-emotion-badge">' + emotionEmoji + ' ' + emotionTag + '</span>' : '');
     } else {
-      thumbHtml = '<span>🎬</span>';
+      thumbHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0ebe3;border-radius:10px;">🎬</div>';
     }
 
     card.innerHTML = 
       '<div class="mc-branch">' +
-      '<span class="mc-node-dot"></span>' +
+      '<span class="mc-node-dot' + (isLast ? ' mc-node-dot--bloom' : '') + '"></span>' +
       '<span class="mc-node-line"></span>' +
       '</div>' +
       '<div class="mc-body">' +
       '<div class="mc-thumb">' +
       thumbHtml +
-      '<div class="mc-thumb-veil"></div>' +
       '</div>' +
       '<span class="mc-date">' + dateStr + '</span>' +
       '<h3 class="mc-title">' + title + '</h3>' +
       (memo ? '<p class="mc-memo">' + memo + '</p>' : '') +
-      (emotionTag ? '<span class="mc-tag">#' + emotionTag + '</span>' : '') +
+      (emotionTag && !hasVideo ? '<span class="mc-tag">#' + emotionTag + '</span>' : '') +
+      (momentCount > 1 ? '<span class="mc-moment-count">💬 ' + momentCount + '개의 감정 기록</span>' : '') +
       '</div>';
 
     return card;
@@ -258,7 +269,6 @@ function bindEvents() {
     });
   }
 }
-  }
 
   // Initialize
   if (document.readyState === 'loading') {
