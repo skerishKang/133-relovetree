@@ -149,6 +149,39 @@
             });
     }
 
+    function loadPublicTrees(sortBy) {
+        var db = getDb();
+        if (!db) return Promise.resolve([]);
+
+        return db.collection('trees')
+            .where('isPublic', '==', true)
+            .get()
+            .then(function (snap) {
+                var trees = [];
+                snap.forEach(function (doc) {
+                    trees.push(Object.assign({ _id: doc.id }, doc.data()));
+                });
+                if (sortBy === 'latest') {
+                    trees.sort(function (a, b) {
+                        var ta = a.createdAt || a.lastUpdated || '';
+                        var tb = b.createdAt || b.lastUpdated || '';
+                        return tb.localeCompare(ta);
+                    });
+                } else {
+                    trees.sort(function (a, b) {
+                        var va = a.likeCount || 0;
+                        var vb = b.likeCount || 0;
+                        return vb - va;
+                    });
+                }
+                return trees;
+            })
+            .catch(function (err) {
+                console.warn('loadPublicTrees failed:', err);
+                return Promise.reject(err);
+            });
+    }
+
     function addMemoryToTree(treeId, treeData, parentId, memoryData) {
         var db = getDb();
         if (!db) return Promise.reject(new Error('Not initialized'));

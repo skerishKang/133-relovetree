@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <title>커뮤니티 광장 - Lovetree</title>
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/community.css">
@@ -22,166 +22,309 @@
         </div>
     </nav>
 
-    <div class="shell">
-        <!-- Top Area: Search + Filter -->
-        <header class="comm-top">
+    <!-- Discovery Square Hero Section -->
+    <header class="discovery-hero">
+        <div class="shell hero-inner">
+            <div class="hero-badge">Discovery Square</div>
+            <div class="comm-title">
+                <h1>사랑이 모여 자라나는 광장</h1>
+                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요.</p>
+            </div>
+            
             <div class="search-area">
                 <div class="search-box">
-                    <span>🔍 어떤 팬의 사랑 경로를 발견해볼까요?</span>
+                    <span class="search-icon">🔍</span>
+                    <span class="search-placeholder">어떤 팬의 사랑 경로를 발견해볼까요?</span>
                 </div>
             </div>
+
             <div class="filter-area">
                 <button class="f-btn active">인기순</button>
                 <button class="f-btn">최신순</button>
                 <button class="f-btn">입덕 스토리</button>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <main>
-            <div class="comm-title">
-                <h2>"사랑이 모여 자라나는 광장"</h2>
-                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요.</p>
-            </div>
-
-            <!-- Dynamic Discovery Plaza Grid -->
-            <div class="discovery-grid">
-                
-                <!-- Col 1 -->
-                <div class="disc-col">
-                    <a href="/pages/community-tree-detail.html" class="disc-card">
-                        <div class="dc-media">
-                            <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="기억 이미지" onload="this.classList.add('loaded')" onerror="this.classList.add('failed')">
-                            <div class="img-placeholder">🎬</div>
-                            <div class="mini-tree-viz">
-                                <div class="tree-node-dot"></div>
-                                <div class="tree-stem-line"></div>
-                                <div class="tree-node-dot"></div>
-                                <div class="tree-stem-line"></div>
-                                <div class="tree-node-dot"></div>
-                            </div>
-                        </div>
-                        <div class="dc-info">
-                            <h3>나의 첫 단독 콘서트 감동의 기록</h3>
-                            <div class="dc-auth">
-                                <div class="avatar-sm"></div>
-                                <span>@CARAT_love</span>
-                            </div>
-                            <div class="dc-tags">
-                                <span class="dc-tag">#입덕</span>
-                                <span class="dc-tag">#콘서트</span>
-                            </div>
-                            <div class="dc-stats">
-                                <span>❤️ 1.2k 공감</span>
-                                <span>💬 42 응원</span>
-                            </div>
-                        </div>
-                    </a>
-
-                    <div class="disc-card">
-                        <div class="dc-media">
-                            <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기억 이미지" onload="this.classList.add('loaded')" onerror="this.classList.add('failed')">
-                            <div class="img-placeholder">🎬</div>
-                        </div>
-                        <div class="dc-info">
-                            <h3>밤새 찾아본 레전드 무대들 모음</h3>
-                            <div class="dc-auth">
-                                <div class="avatar-sm" style="background: #cfe6cf;"></div>
-                                <span>@Daily_Kpop</span>
-                            </div>
-                            <div class="dc-tags">
-                                <span class="dc-tag">#정주행</span>
-                            </div>
-                            <div class="dc-stats">
-                                <span>❤️ 842 공감</span>
-                                <span>💬 15 응원</span>
-                            </div>
-                        </div>
+    <main class="shell comm-main">
+        <!-- Spotlight Area: Featured Iconic Tree -->
+        <div id="featured-spotlight-demo" class="featured-spotlight-area">
+             <div class="featured-card horizontal">
+                <div class="fc-visual">
+                    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천" onload="this.classList.add('loaded')">
+                    <div class="fc-tree-visual">
+                        <svg class="fc-tree-svg" viewBox="0 0 100 200">
+                            <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />
+                            <circle cx="50" cy="180" r="5" fill="#b56e6e" />
+                            <circle cx="30" cy="50" r="4" fill="#b56e6e" />
+                            <circle cx="70" cy="50" r="4" fill="#b56e6e" />
+                        </svg>
                     </div>
                 </div>
-
-                <!-- Featured Spotlight (Span 2) -->
-                <div class="featured-col">
-                    <div class="featured-card">
-                        <div class="fc-banner">이번 주 가장 따뜻했던 러브트리</div>
-                        <div class="fc-viz-area">
-                            <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천" onload="this.classList.add('loaded')" onerror="this.classList.add('failed')">
-                            <div class="img-placeholder">🎬</div>
-                            <div class="fc-tree-overlay">
-                                <svg class="fc-tree-svg" viewBox="0 0 100 200">
-                                     <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />
-                                     <circle cx="50" cy="180" r="5" fill="#b56e6e" />
-                                     <circle cx="30" cy="50" r="4" fill="#b56e6e" />
-                                     <circle cx="70" cy="50" r="4" fill="#b56e6e" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="fc-text">
-                            <h3>BTS와 함께 걸어온 1000일의 시간</h3>
-                            <p>첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 따뜻한 사랑의 경로를 함께 확인해보세요.</p>
-                            <a href="/pages/community-tree-detail.html" class="fc-btn-view">사랑의 경로 감상하기</a>
-                        </div>
+                <div class="fc-content">
+                    <div class="fc-meta">
+                        <span class="fc-badge">Weekly Spotlight</span>
+                        <span class="fc-author">@HappyARMY</span>
                     </div>
-                </div>
-
-                <!-- Col 3 -->
-                <div class="disc-col">
-                    <div class="disc-card">
-                        <div class="dc-media">
-                            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기억 이미지" onload="this.classList.add('loaded')" onerror="this.classList.add('failed')">
-                            <div class="img-placeholder">🎬</div>
+                    <h3>BTS와 함께 걸어온 1000일의 시간</h3>
+                    <p>첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 찬란한 사랑의 경로를 함께 감상해보세요.</p>
+                    <div class="fc-footer">
+                        <div class="fc-stats">
+                            <span>❤️ 1,240 공감</span>
+                            <span>💬 86 응원</span>
                         </div>
-                        <div class="dc-info">
-                            <h3>쇼케이스 1열 직관, 그 꿈같은 날</h3>
-                            <div class="dc-auth">
-                                <div class="avatar-sm" style="background: #e3cfe6;"></div>
-                                <span>@HappyMood</span>
-                            </div>
-                            <div class="dc-tags">
-                                <span class="dc-tag">#직관후기</span>
-                            </div>
-                            <div class="dc-stats">
-                                <span>❤️ 512 공감</span>
-                                <span>💬 28 응원</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="disc-card">
-                        <div class="dc-media">
-                            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="기억 이미지" onload="this.classList.add('loaded')" onerror="this.classList.add('failed')">
-                            <div class="img-placeholder">🎬</div>
-                            <div class="mini-tree-viz">
-                                <div class="tree-node-dot"></div>
-                                <div class="tree-stem-line"></div>
-                                <div class="tree-node-dot"></div>
-                            </div>
-                        </div>
-                        <div class="dc-info">
-                            <h3>앨범 언박싱, 드디어 풀셋 완성!</h3>
-                            <div class="dc-auth">
-                                <div class="avatar-sm" style="background: #cfe6e6;"></div>
-                                <span>@Album_Lover</span>
-                            </div>
-                            <div class="dc-tags">
-                                <span class="dc-tag">#행복기록</span>
-                            </div>
-                            <div class="dc-stats">
-                                <span>❤️ 320 공감</span>
-                                <span>💬 12 응원</span>
-                            </div>
-                        </div>
+                        <a href="/pages/community-tree-detail.html" class="fc-btn">경로 감상하기</a>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+
+        <!-- Loading / Status States -->
+        <div id="community-loading" class="comm-status state-loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>커뮤니티를 불러오는 중...</p>
+        </div>
+
+        <div id="community-error" class="comm-status comm-error" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <h3>불러오기 실패</h3>
+            <p id="community-error-msg">데이터를 불러오는 중 오류가 발생했습니다.</p>
+            <button id="btn-retry-community" class="btn-retry">다시 시도</button>
+        </div>
+
+        <div id="community-empty" class="comm-status comm-empty" style="display: none;">
+            <div class="empty-icon">🌱</div>
+            <h3>아직 공개된 트리가 없습니다</h3>
+            <p>첫 번째 러브트리를 공개해보세요!</p>
+            <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
+        </div>
+
+        <!-- Dynamic Discovery Plaza Grid -->
+        <div id="discovery-grid" class="discovery-grid" style="display: none;">
+            <!-- Cards will be rendered here dynamically -->
+        </div>
+
+        <!-- Fallback static demo (curated gallery) -->
+        <div id="discovery-grid-demo" class="discovery-grid">
+            <a href="/pages/community-tree-detail.html" class="disc-card">
+                <div class="dc-media">
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
+                    <div class="mini-tree-viz">
+                        <div class="tree-node-dot"></div>
+                        <div class="tree-stem-line"></div>
+                        <div class="tree-node-dot"></div>
+                    </div>
+                </div>
+                <div class="dc-info">
+                    <h3>나의 첫 단독 콘서트 감동의 기록</h3>
+                    <div class="dc-auth">
+                        <div class="avatar-sm"></div>
+                        <span>@CARAT_love</span>
+                    </div>
+                    <div class="dc-stats">
+                        <span>❤️ 1.2k</span>
+                        <span>💬 42</span>
+                    </div>
+                </div>
+            </a>
+            
+            <div class="disc-card">
+                <div class="dc-media">
+                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
+                </div>
+                <div class="dc-info">
+                    <h3>밤새 찾아본 레전드 무대들 모음</h3>
+                    <div class="dc-auth">
+                        <div class="avatar-sm" style="background: #cfe6cf;"></div>
+                        <span>@Daily_Kpop</span>
+                    </div>
+                    <div class="dc-stats">
+                        <span>❤️ 842</span>
+                        <span>💬 15</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="disc-card">
+                <div class="dc-media">
+                    <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
+                </div>
+                <div class="dc-info">
+                    <h3>쇼케이스 1열 직관, 그 꿈같은 날</h3>
+                    <div class="dc-auth">
+                        <div class="avatar-sm" style="background: #e3cfe6;"></div>
+                        <span>@HappyMood</span>
+                    </div>
+                    <div class="dc-stats">
+                        <span>❤️ 512</span>
+                        <span>💬 28</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="disc-card">
+                <div class="dc-media">
+                    <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
+                </div>
+                <div class="dc-info">
+                    <h3>앨범 언박싱, 드디어 풀셋 완성!</h3>
+                    <div class="dc-auth">
+                        <div class="avatar-sm" style="background: #cfe6e6;"></div>
+                        <span>@Album_Lover</span>
+                    </div>
+                    <div class="dc-stats">
+                        <span>❤️ 320</span>
+                        <span>💬 12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <!-- Core App Modules -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script>
     <script src="/src/shared-utils.js"></script>
     <script src="/src/shared.js"></script>
+    <script src="/src/flow-shared.js"></script>
     <script src="/src/auth.js"></script>
     <script src="/src/concept-state.js"></script>
+
+    <!-- Community Feed Logic -->
+    <script>
+    (function() {
+      var currentSort = 'popular';
+      var treesLoaded = false;
+
+      function showLoading() {
+        document.getElementById('community-loading').style.display = 'block';
+        document.getElementById('community-error').style.display = 'none';
+        document.getElementById('community-empty').style.display = 'none';
+        document.getElementById('discovery-grid').style.display = 'none';
+        document.getElementById('discovery-grid-demo').style.display = 'none';
+        document.getElementById('featured-spotlight-demo').style.display = 'none';
+      }
+
+      function showError(msg) {
+        document.getElementById('community-loading').style.display = 'none';
+        document.getElementById('community-error').style.display = 'block';
+        document.getElementById('community-empty').style.display = 'none';
+        document.getElementById('discovery-grid').style.display = 'none';
+        document.getElementById('discovery-grid-demo').style.display = 'none';
+        document.getElementById('featured-spotlight-demo').style.display = 'none';
+        if (msg) {
+          document.getElementById('community-error-msg').textContent = msg;
+        }
+      }
+
+      function showEmpty() {
+        document.getElementById('community-loading').style.display = 'none';
+        document.getElementById('community-error').style.display = 'none';
+        document.getElementById('community-empty').style.display = 'block';
+        document.getElementById('discovery-grid').style.display = 'none';
+        document.getElementById('discovery-grid-demo').style.display = 'none';
+        document.getElementById('featured-spotlight-demo').style.display = 'none';
+      }
+
+      function showContent() {
+        document.getElementById('community-loading').style.display = 'none';
+        document.getElementById('community-error').style.display = 'none';
+        document.getElementById('community-empty').style.display = 'none';
+        document.getElementById('discovery-grid').style.display = 'grid';
+        document.getElementById('discovery-grid-demo').style.display = 'none';
+        document.getElementById('featured-spotlight-demo').style.display = 'none';
+      }
+
+      function renderPublicTrees(trees) {
+        var grid = document.getElementById('discovery-grid');
+        grid.innerHTML = '';
+
+        if (!trees || trees.length === 0) {
+          showEmpty();
+          return;
+        }
+
+        trees.forEach(function(tree) {
+          var treeId = tree._id || tree.id || '';
+          if (!treeId) return;
+
+          var name = tree.name || '이름 없는 트리';
+          var nodeCount = (tree.nodes && tree.nodes.length) || 0;
+          var likeCount = tree.likeCount || tree.likes || 0;
+          var commentCount = tree.commentCount || 0;
+
+          var firstThumb = '';
+          if (tree.nodes && tree.nodes.length > 0 && tree.nodes[0].videoId) {
+            firstThumb = 'https://img.youtube.com/vi/' + tree.nodes[0].videoId + '/hqdefault.jpg';
+          } else {
+            firstThumb = 'https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop';
+          }
+
+          var card = document.createElement('a');
+          card.href = '/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId);
+          card.className = 'disc-card';
+          card.innerHTML =
+            '<div class="dc-media">' +
+            '<img src="' + firstThumb + '" alt="트리 이미지" onload="this.classList.add(\'loaded\')">' +
+            '</div>' +
+            '<div class="dc-info">' +
+            '<h3>' + escapeHtml(name) + '</h3>' +
+            '<div class="dc-auth">' +
+            '<div class="avatar-sm"></div>' +
+            '<span>@' + escapeHtml(tree.ownerId ? tree.ownerId.substring(0, 8) : 'anonymous') + '</span>' +
+            '</div>' +
+            '<div class="dc-stats">' +
+            '<span>❤️ ' + likeCount + '</span>' +
+            '<span>💬 ' + commentCount + '</span>' +
+            '</div>' +
+            '</div>';
+          grid.appendChild(card);
+        });
+
+        showContent();
+        treesLoaded = true;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function loadPublicTrees() {
+        showLoading();
+        if (typeof window.FlowShared !== 'undefined' && typeof window.FlowShared.loadPublicTrees === 'function') {
+          window.FlowShared.loadPublicTrees(currentSort).then(function(trees) {
+            renderPublicTrees(trees);
+          }).catch(function(err) {
+            console.error('Failed to load public trees:', err);
+            showError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+          });
+        } else {
+          showError('데이터 로딩 기능이 준비되지 않았습니다.');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var filterBtns = document.querySelectorAll('.filter-area .f-btn');
+        filterBtns.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            filterBtns.forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            currentSort = this.textContent.includes('최신') ? 'latest' : 'popular';
+            loadPublicTrees();
+          });
+        });
+
+        var retryBtn = document.getElementById('btn-retry-community');
+        if (retryBtn) retryBtn.addEventListener('click', loadPublicTrees);
+
+        setTimeout(loadPublicTrees, 500);
+      });
+    })();
+    </script>
 
     <!-- Auth Integration Logic (Shared) -->
     <script>
