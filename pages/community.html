@@ -203,7 +203,7 @@
         document.getElementById('community-empty').style.display = 'none';
         document.getElementById('discovery-grid').style.display = 'none';
         document.getElementById('discovery-grid-demo').style.display = 'none';
-        document.getElementById('featured-spotlight-demo').style.display = 'none';
+        document.getElementById('featured-spotlight').style.display = 'none';
       }
 
       function showError(msg) {
@@ -212,7 +212,7 @@
         document.getElementById('community-empty').style.display = 'none';
         document.getElementById('discovery-grid').style.display = 'none';
         document.getElementById('discovery-grid-demo').style.display = 'none';
-        document.getElementById('featured-spotlight-demo').style.display = 'none';
+        document.getElementById('featured-spotlight').style.display = 'none';
         if (msg) {
           document.getElementById('community-error-msg').textContent = msg;
         }
@@ -224,12 +224,12 @@
         document.getElementById('community-empty').style.display = 'block';
         document.getElementById('discovery-grid').style.display = 'none';
         document.getElementById('discovery-grid-demo').style.display = 'none';
-        document.getElementById('featured-spotlight-demo').style.display = 'none';
+        document.getElementById('featured-spotlight').style.display = 'none';
       }
 
       function renderPublicTrees(trees) {
         var grid = document.getElementById('discovery-grid');
-        var spotlightArea = document.getElementById('featured-spotlight-demo');
+        var spotlightArea = document.getElementById('featured-spotlight');
         grid.innerHTML = '';
 
         if (!trees || trees.length === 0) {
@@ -237,16 +237,10 @@
           return;
         }
 
-        // Highlight the first tree as the Featured Spotlight
         var featuredTree = trees[0];
         renderFeaturedSpotlight(featuredTree);
 
-        // Render the rest in the discovery grid
         var remainder = trees.slice(1);
-        if (remainder.length === 0) {
-            // If only one tree, we still show the spotlight but grid stays empty or shows a hint
-            // For now, let's just show the grid anyway
-        }
 
         remainder.forEach(function(tree) {
           var treeId = tree._id || tree.id || '';
