@@ -7,11 +7,13 @@
     <title>Lovetree - 사랑을 기록하고 잇는 공간</title>
     <!-- Use base to fix relative paths for CSS/assets -->
     <base href="/frontend-concept-v2/">
-    <link rel="stylesheet" href="css/app.css?v=20260412-4">
-    <link rel="stylesheet" href="css/home.css?v=20260412-4">
-    <!-- Firebase SDK (External for auth) -->
+    <link rel="stylesheet" href="css/app.css?v=20260412-5">
+    <link rel="stylesheet" href="css/home.css?v=20260412-5">
+    
+    <!-- Firebase SDK (External) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body class="home-page">
     <div class="page-container">
@@ -20,10 +22,10 @@
             <div class="gnb-brand">Lovetree</div>
             <div class="nav-links">
                 <a href="#about">소개</a>
-                <a href="my-trees.html">러브트리</a>
-                <a href="community.html">커뮤니티</a>
+                <a href="/pages/owner.html">러브트리</a>
+                <a href="/pages/community.html">커뮤니티</a>
                 <div class="auth-box">
-                    <a href="login.html" id="nav-auth-item" class="nav-login">로그인</a>
+                    <a href="/pages/login.html" id="nav-auth-item" class="nav-login">로그인</a>
                     <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
                 </div>
             </div>
@@ -36,8 +38,8 @@
                 <h1>사랑에 빠진 모든 순간을<br>연결하세요.</h1>
                 <p>영상, 날짜, 감정, 메모가 아름답게 이어져<br>당신만의 러브트리가 자라납니다.</p>
                 <div class="hero-btns">
-                    <a href="pages/my-trees.html" class="btn-brick">러브트리 시작하기</a>
-                    <a href="pages/community.html" class="btn-outline">다른 트리 보기</a>
+                    <a href="/pages/login.html" id="hero-cta-main" class="btn-brick">러브트리 시작하기</a>
+                    <a href="/pages/community.html" class="btn-outline">다른 트리 보기</a>
                 </div>
             </div>
 
@@ -45,31 +47,35 @@
             <div class="hero-slider">
                 <div class="slider-viewport">
                     <div class="slider-track">
-                        <!-- Step 1 -->
+                        <!-- Step 1: Empty Tree -->
                         <div class="slide-item active" id="slide-1">
-                            <img src="/설문지/image/slide/home-slide-01-empty-tree_bts.png" alt="Step 1" onerror="this.classList.add('is-hidden')">
+                            <img src="/설문지/image/slide/home-slide-01-empty-tree_bts.png" alt="Step 1" class="slide-img">
                             <div class="slide-placeholder">
                                 <span class="step-num">Step 1</span>
                                 <p>영상을 발견하고<br>첫 순간을 기록합니다</p>
                             </div>
                         </div>
-                        <!-- Step 2 -->
+                        <!-- Step 2: First Memory -->
                         <div class="slide-item" id="slide-2">
-                             <img src="/설문지/image/slide/home-slide-02-first-memory_bts.png" alt="Step 2" onerror="this.classList.add('is-hidden')">
-                             <div class="slide-placeholder"><span class="step-num">Step 2</span><p>기록이 쌓여<br>나만의 추억이 됩니다</p></div>
+                             <img src="/설문지/image/slide/home-slide-02-first-memory_bts.png" alt="Step 2" class="slide-img">
+                             <div class="slide-placeholder">
+                                <span class="step-num">Step 2</span>
+                                <p>기록이 쌓여<br>나만의 추억이 됩니다</p>
+                             </div>
                         </div>
-                        <!-- Step 3 -->
+                        <!-- Step 3: Branching -->
                         <div class="slide-item" id="slide-3">
-                             <img src="/설문지/image/slide/slide1.png" alt="Step 3" onerror="this.classList.add('is-hidden')">
+                             <img src="/설문지/image/slide/slide1.png" alt="Step 3" class="slide-img">
                              <div class="slide-placeholder"><span class="step-num">Step 3</span></div>
                         </div>
-                        <!-- Step 4 -->
+                        <!-- Step 4: Growth -->
                         <div class="slide-item" id="slide-4">
-                             <img src="/설문지/image/slide/slide2.png" alt="Step 4" onerror="this.classList.add('is-hidden')">
+                             <img src="/설문지/image/slide/slide2.png" alt="Step 4" class="slide-img">
                              <div class="slide-placeholder"><span class="step-num">Step 4</span></div>
                         </div>
-                        <!-- Step 5 -->
+                        <!-- Step 5: Sharing -->
                         <div class="slide-item" id="slide-5">
+                             <img src="/설문지/image/slide/Gemini_Generated_Image_z8g408z8g408z8g4.png" alt="Step 5" class="slide-img">
                              <div class="slide-placeholder"><span class="step-num">Step 5</span><p>완성된 러브트리를<br>공유해 보세요</p></div>
                         </div>
                     </div>
@@ -106,44 +112,62 @@
         </section>
     </div>
 
-    <!-- Auth State Integration -->
-    <script type="module">
-        import { initFirebase } from '../src/firebase-init.js';
+    <!-- Core App Modules -->
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
+
+    <!-- Home Specific Logic -->
+    <script>
+        // Observe auth state via existing onAuthStateChanged in auth.js
+        // auth.js exports initAuth to window and adds a DOMContentLoaded listener
+        // We can hook into window.onAuthReady if needed or use a safe interval
         
-        // Wait for Firebase to be ready via global init or local if needed
-        // Since home.html is concept V2, we use direct observation
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Placeholder: Assume firebase is initialized by app.js or similar
-            // For stability in this environment, we check every 500ms
-            const checkFirebase = setInterval(() => {
-                if (window.firebase && firebase.apps.length > 0) {
-                    clearInterval(checkFirebase);
-                    const auth = firebase.auth();
-                    const authItem = document.getElementById('nav-auth-item');
-                    const logoutBtn = document.getElementById('nav-logout-btn');
+        function updateHomeAuthUI(user) {
+            const authItem = document.getElementById('nav-auth-item');
+            const logoutBtn = document.getElementById('nav-logout-btn');
+            const heroCTA = document.getElementById('hero-cta-main');
 
-                    auth.onAuthStateChanged((user) => {
-                        if (user) {
-                            // Logged In
-                            authItem.textContent = '내 트리';
-                            authItem.href = 'pages/my-trees.html';
-                            authItem.classList.add('logged-in');
-                            logoutBtn.classList.remove('is-hidden');
-                        } else {
-                            // Logged Out
-                            authItem.textContent = '로그인';
-                            authItem.href = 'pages/login.html';
-                            authItem.classList.remove('logged-in');
-                            logoutBtn.classList.add('is-hidden');
-                        }
-                    });
-
-                    logoutBtn.addEventListener('click', async () => {
-                        await auth.signOut();
-                        window.location.reload();
-                    });
+            if (user) {
+                // Logged In
+                authItem.textContent = '내 트리';
+                authItem.href = '/pages/owner.html';
+                authItem.classList.add('logged-in');
+                logoutBtn.classList.remove('is-hidden');
+                
+                if (heroCTA) {
+                    heroCTA.textContent = '내 트리 관리하기';
+                    heroCTA.href = '/pages/owner.html';
                 }
-            }, 500);
+            } else {
+                // Logged Out
+                authItem.textContent = '로그인';
+                authItem.href = '/pages/login.html';
+                authItem.classList.remove('logged-in');
+                logoutBtn.classList.add('is-hidden');
+                
+                if (heroCTA) {
+                    heroCTA.textContent = '러브트리 시작하기';
+                    heroCTA.href = '/pages/login.html';
+                }
+            }
+        }
+
+        // Hook into auth.js events
+        window.onAuthReady = function(user) {
+            updateHomeAuthUI(user);
+        };
+
+        // Manual check if auth already loaded
+        setTimeout(() => {
+            if (window.firebase && firebase.auth().currentUser) {
+                updateHomeAuthUI(firebase.auth().currentUser);
+            }
+        }, 1000);
+
+        // Simple Logout functionality
+        document.getElementById('nav-logout-btn').addEventListener('click', () => {
+             if (window.signOut) window.signOut();
         });
     </script>
 </body>
