@@ -175,6 +175,39 @@
         return window.EditorMinimapHelpers.updateMinimap(runtime());
     }
 
+    function openAiHelper(mode) {
+        if (typeof window.EditorAiUiHelpers !== 'undefined' && typeof window.EditorAiUiHelpers.openAiHelper === 'function') {
+            return window.EditorAiUiHelpers.openAiHelper(runtime(), mode);
+        }
+        if (typeof window.openAiHelper === 'function') {
+            return window.openAiHelper(mode);
+        }
+    }
+
+    function closeAiHelper() {
+        if (typeof window.EditorAiUiHelpers !== 'undefined' && typeof window.EditorAiUiHelpers.closeAiHelper === 'function') {
+            return window.EditorAiUiHelpers.closeAiHelper(runtime());
+        }
+        const modal = document.getElementById('ai-helper-modal');
+        if (modal && typeof modal.close === 'function') modal.close();
+    }
+
+    function openMomentAiHelper() {
+        if (typeof window.openMomentAiHelper === 'function') {
+            return window.openMomentAiHelper();
+        }
+    }
+
+    function openNodeAiHelperFromDetail() {
+        const node = runtime().state.nodes.find(n => n.id === runtime().state.activeNodeId);
+        if (node && typeof window.openAiHelper === 'function') {
+            window.openAiHelper('node');
+            if (typeof window.prepareNodeAiContext === 'function') {
+                window.prepareNodeAiContext(node);
+            }
+        }
+    }
+
     window.drawConnection = drawConnection;
     window.onConnectionHandleClick = onConnectionHandleClick;
     window.autoConnectTimeline = autoConnectTimeline;
@@ -218,4 +251,8 @@
     window.deleteMoment = deleteMoment;
     window.closeModal = closeModal;
     window.updateMinimap = updateMinimap;
+    window.openAiHelper = openAiHelper;
+    window.closeAiHelper = closeAiHelper;
+    window.openMomentAiHelper = openMomentAiHelper;
+    window.openNodeAiHelperFromDetail = openNodeAiHelperFromDetail;
 })();

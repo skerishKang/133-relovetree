@@ -204,7 +204,18 @@
         getSaveDataImmediate: () => window.saveDataImmediate
     });
 
+    window.state = state;
+    window.render = render;
+    window.saveData = saveData;
+
     window.isKorean = state.isKorean;
+    
+    // Bridge for read-only state
+    Object.defineProperty(window, 'isReadOnly', {
+        get: () => state.isReadOnly,
+        set: (v) => { state.isReadOnly = v; }
+    });
+
     if (window.EditorHeaderHelpers && typeof window.EditorHeaderHelpers.syncHeaderState === 'function') {
         window.EditorHeaderHelpers.syncHeaderState(window.__editorRuntime);
     }

@@ -137,6 +137,18 @@
         return map[feeling] || '😊';
     }
 
+    function timeToSeconds(timeStr) {
+        if (!timeStr) return 0;
+        const parts = timeStr.split(':');
+        if (parts.length === 2) {
+            return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        }
+        if (parts.length === 3) {
+            return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseInt(parts[2], 10);
+        }
+        return parseInt(timeStr, 10) || 0;
+    }
+
     function renderMomentsList(runtime, moments) {
         const list = document.getElementById('moments-list');
         if (!list) return;
@@ -235,6 +247,12 @@
         const node = runtime.state.nodes.find(function(n) { return n.id === runtime.state.activeNodeId; });
         if (node && node.moments[index]) {
             node.moments[index].text = newText;
+            
+            // Sort moments chronologically
+            node.moments.sort(function (a, b) {
+                return timeToSeconds(a.time) - timeToSeconds(b.time);
+            });
+
             runtime.state.editingMomentIndex = null;
             renderMomentsList(runtime, node.moments);
             saveDebounced(runtime);
@@ -394,9 +412,9 @@
 
         node.moments.push({ time: time, text: text, feeling: feeling });
         
-        // Optional: Sort moments by time string
+        // Sort moments chronologically
         node.moments.sort(function(a, b) {
-            return a.time.localeCompare(b.time);
+            return timeToSeconds(a.time) - timeToSeconds(b.time);
         });
 
         renderMomentsList(runtime, node.moments);
