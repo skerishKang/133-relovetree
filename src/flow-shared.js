@@ -311,6 +311,7 @@
             createTree: createTree,
             loadTree: loadTree,
             loadUserTrees: loadUserTrees,
+            loadPublicTrees: loadPublicTrees,
             addMemoryToTree: addMemoryToTree,
             getRootNode: getRootNode,
             getChildrenOf: getChildrenOf,
