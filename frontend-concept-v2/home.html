@@ -35,61 +35,43 @@
                 </div>
             </div>
 
-            <!-- Love Tree Vine Visualization -->
-            <div class="hero-visual">
-                <div class="viz-canvas">
-                    <svg class="svg-lines" viewBox="0 0 840 500" xmlns="http://www.w3.org/2000/svg">
-                        <g fill="none" stroke="#d3c4bb" stroke-width="2">
-                            <!-- Vine 1: Node 1 (right) -> Node 2 (left) -->
-                            <path d="M210,245 C250,245 280,60 330,60" />
-                            <!-- Vine 2: Node 1 (right) -> Node 3 (left) -->
-                            <path d="M210,245 C250,245 280,390 330,390" />
-                            <!-- Vine 3: Node 2 (right) -> Node 4 (left) -->
-                            <path d="M480,60 C550,60 600,120 650,150" />
-                            <!-- Vine 4: Node 3 (right) -> Node 5 (left) -->
-                            <path d="M480,390 C550,390 600,350 640,335" />
-                        </g>
-                        <!-- Connection dots -->
-                        <circle fill="#d3c4bb" cx="210" cy="245" r="3" />
-                        <circle fill="#d3c4bb" cx="330" cy="60" r="3" />
-                        <circle fill="#d3c4bb" cx="330" cy="390" r="3" />
-                    </svg>
-                    
-                    <!-- Node Cards -->
-                    <div class="node-card nc-1">
-                        <div class="thumb"><img src="https://img.youtube.com/vi/gdZLi9oWNZg/hqdefault.jpg" alt="BTS"></div>
-                        <p class="card-date">2023-03-06</p>
-                        <h4>우연히 보게 된 첫 무대의 설렘</h4>
-                        <div class="node-meta"><span class="node-tag">#입덕</span><span>첫 기록</span></div>
+            <!-- Hero Slider (Replacing Tree Visualization) -->
+            <div class="hero-slider">
+                <div class="slider-viewport">
+                    <div class="slider-track">
+                        <!-- Step 1: Discovering the video -->
+                        <div class="slide-item active">
+                            <div class="slide-placeholder">
+                                <span class="step-num">Step 1</span>
+                                <p>영상을 발견하고<br>첫 순간을 기록합니다</p>
+                            </div>
+                            <!-- <img src="images/hero/step1.jpg" alt="Step 1"> -->
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="slide-item">
+                            <div class="slide-placeholder"><span class="step-num">Step 2</span></div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="slide-item">
+                            <div class="slide-placeholder"><span class="step-num">Step 3</span></div>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="slide-item">
+                            <div class="slide-placeholder"><span class="step-num">Step 4</span></div>
+                        </div>
+                        <!-- Step 5 -->
+                        <div class="slide-item">
+                            <div class="slide-placeholder"><span class="step-num">Step 5</span></div>
+                        </div>
                     </div>
-
-                    <div class="node-card nc-2">
-                        <div class="thumb"><img src="https://img.youtube.com/vi/WMweEpGlu_U/hqdefault.jpg" alt="BTS"></div>
-                        <p class="card-date">2023-03-20</p>
-                        <h4>뮤비 공개 전날의 설레는 기다림</h4>
-                        <div class="node-meta"><span class="node-tag">#설렘</span><span>뮤직비디오</span></div>
-                    </div>
-
-                    <div class="node-card nc-3">
-                        <div class="thumb"><img src="https://img.youtube.com/vi/eBBEDdaQcds/hqdefault.jpg" alt="BTS"></div>
-                        <p class="card-date">2023-05-17</p>
-                        <h4>콘서트 티켓팅 드디어 성공하다</h4>
-                        <div class="node-meta"><span class="node-tag">#감동</span><span>티켓 성공</span></div>
-                    </div>
-
-                    <div class="node-card nc-4">
-                        <div class="thumb"><img src="https://img.youtube.com/vi/6m4B8mD3-24/hqdefault.jpg" alt="BTS"></div>
-                        <p class="card-date">2023-08-10</p>
-                        <h4>첫 직관 무대, 꿈만 같던 순간</h4>
-                        <div class="node-meta"><span class="node-tag">#행복</span><span>콘서트 현장</span></div>
-                    </div>
-
-                    <div class="node-card nc-5">
-                        <div class="thumb"><img src="https://img.youtube.com/vi/GFBVCq7D3qs/hqdefault.jpg" alt="BTS"></div>
-                        <p class="card-date">2023-12-01</p>
-                        <h4>여전히 이어지는 우리들의 이야기</h4>
-                        <div class="node-meta"><span class="node-tag">#애모</span><span>최근 기록</span></div>
-                    </div>
+                </div>
+                <!-- 5-Step Pagination -->
+                <div class="slider-pagination">
+                    <button class="dot active"></button>
+                    <button class="dot"></button>
+                    <button class="dot"></button>
+                    <button class="dot"></button>
+                    <button class="dot"></button>
                 </div>
             </div>
         </section>
