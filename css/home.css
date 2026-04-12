@@ -141,12 +141,21 @@ body::after {
 }
 
 .btn-sub {
-    border: 2px solid #ebdcd0;
-    color: #776a60;
+    border: 2px solid var(--color-primary-brick);
+    color: var(--color-primary-brick);
     padding: 18px 36px;
     border-radius: 16px;
     font-weight: 800;
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-sub:hover {
+    background: var(--color-primary-brick);
+    color: white;
 }
 
 /* Tree Visualization */
@@ -190,6 +199,64 @@ body::after {
 .n3 { top: 180px; left: 150px; }
 .n4 { top: 15px; left: 280px; }
 .n5 { top: 150px; left: 300px; }
+
+/* Memory Node Internal Structure */
+.memory-node .node-thumb {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #f5f1eb;
+    margin-bottom: 6px;
+}
+
+.memory-node .node-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.memory-node .node-thumb img.is-blurred {
+    filter: blur(8px);
+    opacity: 0.6;
+}
+
+.memory-node .play-ico {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--color-primary-brick);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.memory-node .node-meta {
+    font-size: 0.65rem;
+    color: #776a60;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.memory-node .badge-memo {
+    display: inline-block;
+    font-size: 0.55rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--color-primary-brick);
+    color: white;
+    font-weight: 600;
+}
 
 /* Bottom Features */
 .features-v2 {

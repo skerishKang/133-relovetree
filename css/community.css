@@ -1,14 +1,18 @@
 /* frontend-concept-v2/css/community.css */
 .comm-page { background: #f9f6f2; min-height: 100vh; padding-bottom: 120px; }
 
-/* Refined Brand Header */
+/* Shell container aligned with page-container */
+.shell { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+
+/* Refined Brand Header - Remove duplicate logo, integrate with gnb */
 .comm-top {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 0; border-bottom: 1px solid rgba(181, 110, 110, 0.1); margin-bottom: 48px;
+    padding: 16px 0; border-bottom: 1px solid rgba(181, 110, 110, 0.1); margin-bottom: 32px;
 }
-.top-left .logo { font-size: 1.8rem; font-weight: 800; color: var(--color-primary-brick); letter-spacing: -0.04em; }
 
-.search-area { flex: 1; display: flex; justify-content: center; }
+.top-left { display: none; } /* Hide duplicate logo - gnb-brand handles it */
+
+.search-area { flex: 1; display: flex; justify-content: center; max-width: 500px; margin: 0 auto; }
 .search-box {
     width: 460px; background: white; border-radius: 30px; padding: 14px 28px;
     font-size: 0.9rem; color: var(--color-text-muted); border: 1.5px solid #ebdcd0;
