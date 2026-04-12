@@ -1,80 +1,128 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/frontend-concept-v2/">
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>모바일 트리 - Lovetree</title>
-    <link rel="stylesheet" href="css/app.css">
-    <link rel="stylesheet" href="css/mobile-tree.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/frontend-concept-v2/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<title>사랑의 흐름 - Lovetree</title>
+<link rel="stylesheet" href="css/app.css?v=20260412">
+<link rel="stylesheet" href="css/mobile-tree.css?v=20260412">
 </head>
 <body class="mob-page">
-    <div class="mob-frame">
-        <header class="mob-top">
-            <h2>처음 빠진 순간부터 이어진 사랑의 흐름</h2>
-            <p>테스트 러버 A님의 입덕부터 지금까지의 러브트리</p>
-        </header>
+<div class="mob-frame">
 
-        <main class="mob-scroll">
-            <div class="mob-stem-container">
-                <svg class="stem-svg" viewBox="0 0 40 800" preserveAspectRatio="none">
-                    <path class="stem-path" d="M20,0 C30,100 10,200 20,300 C30,400 10,500 20,600 C30,700 10,800 20,900" />
-                </svg>
-            </div>
+<!-- Header: Emotional & Minimal -->
+<header class="mob-top">
+  <div class="mob-tree-title">
+    <span class="tree-title-emoji">🌿</span>
+    <h2>사랑의 흐름</h2>
+  </div>
+  <p class="mob-tree-sub">2023.11.15부터 함께한 기록</p>
+</header>
 
-            <!-- Row 1 -->
-            <div class="m-node-row">
-                <div class="m-node">
-                    <div class="thumb" style="background: #ead3d3;"><div class="play-ico" style="transform: scale(0.6)"><span></span></div></div>
-                    <h4>첫 단독 콘서트 감동</h4>
-                    <span class="date">2023.11.15</span>
-                    <div><span class="m-tag">#심쿵</span></div>
-                    <div class="m-stats">❤️ 128 &nbsp; 💬 35</div>
-                </div>
-            </div>
+<main class="mob-scroll">
 
-            <!-- Row 2 -->
-            <div class="m-node-row">
-                <div class="m-node">
-                    <div class="thumb" style="background: #d3e2ea;"><div class="play-ico" style="transform: scale(0.6)"><span></span></div></div>
-                    <h4>최애 생일 라이브를 기다리던 밤</h4>
-                    <span class="date">2023.06.01</span>
-                    <div><span class="m-tag">#눈물</span></div>
-                    <div class="m-stats">❤️ 128 &nbsp; 💬 35</div>
-                </div>
-            </div>
+<!-- Central Stem (Trunk) -->
+<div class="mob-trunk">
+  <div class="trunk-line"></div>
 
-            <!-- Row 3 -->
-            <div class="m-node-row">
-                <div class="m-node">
-                    <div class="thumb"><div class="play-ico" style="transform: scale(0.6)"><span></span></div></div>
-                    <h4>처음으로 배경화면 바꾼 날</h4>
-                    <span class="date">2023.05.12</span>
-                    <div><span class="m-tag">#추억</span></div>
-                    <div class="m-stats">❤️ 125 &nbsp; 💬 39</div>
-                </div>
-            </div>
-
-            <!-- Row 4 -->
-            <div class="m-node-row">
-                <div class="m-node">
-                    <div class="thumb" style="background: #dfd6c4;"><div class="play-ico" style="transform: scale(0.6)"><span></span></div></div>
-                    <h4>유튜브 레전드 직캠 발견</h4>
-                    <span class="date">2022.06.01</span>
-                    <div><span class="m-tag">#심쿵</span></div>
-                    <div class="m-stats">❤️ 128 &nbsp; 💬 35</div>
-                </div>
-            </div>
-            
-            <button class="mob-bottom-btn">이 사랑의 연결을 다른 팬과 공유하기</button>
-        </main>
-
-        <nav class="mob-tabs">
-            <span class="tab-ico active">🏠</span>
-            <span class="tab-ico">🧭</span>
-            <span class="tab-ico">👤</span>
-        </nav>
+  <!-- Moment 1: Root (First Moment) -->
+  <article class="moment-card moment-root">
+    <div class="moment-connector">
+      <div class="connector-dot"></div>
+      <div class="connector-branch"></div>
     </div>
+    <div class="moment-content">
+      <div class="moment-thumb">
+        <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="첫 순간">
+      </div>
+      <div class="moment-body">
+        <span class="moment-date">2023.11.15</span>
+        <h3 class="moment-title">첫 단독 콘서트의 전율</h3>
+        <p class="moment-memo">처음 아미밤을 흔들며 들었던 그 목소리를 잊을 수 없어요. 바로 이 순간부터 제 세계가 바뀌었습니다.</p>
+        <span class="moment-tag">#첫만남</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- Moment 2 -->
+  <article class="moment-card">
+    <div class="moment-connector">
+      <div class="connector-dot"></div>
+      <div class="connector-branch"></div>
+    </div>
+    <div class="moment-content">
+      <div class="moment-thumb">
+        <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="두번째 기록">
+      </div>
+      <div class="moment-body">
+        <span class="moment-date">2023.12.01</span>
+        <h3 class="moment-title">직캠 무한 반복의 시작</h3>
+        <p class="moment-memo">밤새도록 찾아본 레전드 무대들. 이 작은 손짓 하나에도 마음이 움직이는 걸 보며 입덕을 확신했죠.</p>
+        <span class="moment-tag">#입덕부정기</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- Moment 3 -->
+  <article class="moment-card">
+    <div class="moment-connector">
+      <div class="connector-dot"></div>
+      <div class="connector-branch"></div>
+    </div>
+    <div class="moment-content">
+      <div class="moment-thumb">
+        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=400&auto=format&fit=crop" alt="세번째 기록">
+      </div>
+      <div class="moment-body">
+        <span class="moment-date">2024.01.20</span>
+        <h3 class="moment-title">입덕 1주년 축하</h3>
+        <p class="moment-memo">일 년이라는 시간이 어떻게 흘러갔는지 모르겠네요. 함께 성장하고 있다는 느낌이 들어 행복합니다.</p>
+        <span class="moment-tag">#축하해</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- Moment 4 -->
+  <article class="moment-card">
+    <div class="moment-connector">
+      <div class="connector-dot"></div>
+      <div class="connector-branch"></div>
+    </div>
+    <div class="moment-content">
+      <div class="moment-thumb">
+        <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="네번째 기록">
+      </div>
+      <div class="moment-body">
+        <span class="moment-date">2024.04.12</span>
+        <h3 class="moment-title">새 앨범 쇼케이스</h3>
+        <p class="moment-memo">새로운 도전, 새로운 목소리. 항상 기대 이상의 감동을 주는 우리 아티스트 고마워요.</p>
+        <span class="moment-tag">#열일포스</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- End Indicator -->
+  <div class="trunk-end">
+    <div class="trunk-line-short"></div>
+    <span class="trunk-end-text">오늘까지 4개의 순간</span>
+  </div>
+
+</main>
+
+<!-- Minimal Share CTA (Bottom of frame) -->
+<div class="mob-bottom-cta">
+  <button class="btn-share-ghost">러브트리 성장 기록 공유하기</button>
+</div>
+
+<!-- Tab Navigation -->
+<nav class="mob-tabs">
+  <span class="tab-ico">🌳</span>
+  <span class="tab-ico">🧭</span>
+  <span class="tab-ico">👤</span>
+</nav>
+
+</div>
 </body>
 </html>

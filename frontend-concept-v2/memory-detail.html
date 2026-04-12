@@ -1,70 +1,94 @@
+<!-- frontend-concept-v2/memory-detail.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>콘서트의 전율 - Lovetree</title>
     <base href="/frontend-concept-v2/">
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>메모리 상세 - Lovetree</title>
-    <link rel="stylesheet" href="css/app.css">
-    <link rel="stylesheet" href="css/memory-detail.css">
+    <link rel="stylesheet" href="css/app.css?v=20260412-7">
+    <link rel="stylesheet" href="css/memory-detail.css?v=20260412-7">
 </head>
-<body class="md-page">
-    <div class="md-frame">
-        <header class="md-header">
-            <button class="btn-ico">←</button>
-            <h2>Lovetree</h2>
-            <button class="btn-ico">•••</button>
+<body class="detail-page">
+    <div class="mob-frame">
+        <!-- Header -->
+        <header class="detail-header">
+            <button class="btn-icon" onclick="window.history.back()">←</button>
+            <span class="header-brand">Relovetree</span>
+            <button class="btn-icon">⋯</button>
         </header>
 
-        <main class="md-scroll">
-            <div class="md-video"></div>
-
-            <section class="md-title-sec">
-                <h3>첫 콘서트의 전율</h3>
-                <p class="date">2023.11.15</p>
+        <main class="detail-scroll">
+            <!-- Large Hero Player -->
+            <section class="hero-player">
+                <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=800&auto=format&fit=crop" alt="Memory Visual">
+                <div class="play-btn-large"></div>
             </section>
 
-            <div class="md-tags">
-                <span class="md-tag">설렘</span>
-                <span class="md-tag">감동</span>
-                <span class="md-tag">행복</span>
-            </div>
+            <!-- Metadata Area -->
+            <section class="detail-info">
+                <h2>첫 콘서트의 전율</h2>
+                <span class="detail-date">2023.11.15</span>
+                
+                <div class="detail-tags">
+                    <span class="detail-tag">설렘</span>
+                    <span class="detail-tag">감동</span>
+                    <span class="detail-tag">행복</span>
+                </div>
 
-            <div class="md-memo-card">
-                <b>Memo</b>
-                <p>
+                <!-- Memo Box -->
+                <div class="memo-box">
                     오늘 드디어 첫 콘서트에 갔다...!!! 현장 분위기가 정말 대박이었고 오프닝 곡 나올 때 온몸에 소름이 쫙 돋았다. 떼창할 때 그 전율은 평생 못 잊을 것 같다. 너무 행복했다 ㅠㅠ 다음에 또 가고 싶다.
-                </p>
-                <div class="memo-pen">✍️</div>
-            </div>
+                    <span class="memo-sig">✍️</span>
+                </div>
 
-            <section class="md-connected">
-                <h4>이 순간과 이어진 기억</h4>
-                <div class="md-conn-list">
-                    <div class="md-conn-item">
-                        <div class="mci-thumb"></div>
-                        <div class="mci-text">
-                            <h5>콘서트 티켓 수령</h5>
-                            <p>2023.11.15</p>
+                <!-- Pathway: Related Memories -->
+                <div class="related-section">
+                    <h3>이 순간과 이어진 기억</h3>
+                    <div class="related-scroll">
+                        <!-- Prev Node -->
+                        <div class="related-card">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="r-thumb"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=100&auto=format&fit=crop"></div>
+                                <div>
+                                    <span class="r-info">콘서트 티켓 수령</span>
+                                    <span class="r-date">2023.11.15</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="md-conn-item">
-                        <div class="mci-thumb" style="background:#d3c4bb;"></div>
-                        <div class="mci-text">
-                            <h5>굿즈 줄서기</h5>
-                            <p>2023.11.15</p>
+                        <!-- Next Node -->
+                        <div class="related-card">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="r-thumb"><img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=100&auto=format&fit=crop"></div>
+                                <div>
+                                    <span class="r-info">굿즈 줄서기</span>
+                                    <span class="r-date">2023.11.15</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <footer class="md-footer">
-            <div class="mf-btn"><span>❤️</span>125</div>
-            <div class="mf-btn muted"><span>💬</span>3</div>
-            <div class="mf-btn muted"><span>↗️</span>Share</div>
-            <div class="mf-btn muted"><span>✏️</span>Edit</div>
+        <!-- Fixed Action Bar -->
+        <footer class="bottom-bar">
+            <a href="#" class="bottom-item">
+                <span class="b-ico">❤️</span>
+                <span>125</span>
+            </a>
+            <a href="#" class="bottom-item">
+                <span class="b-ico">💬</span>
+                <span>3</span>
+            </a>
+            <a href="#" class="bottom-item">
+                <span class="b-ico">📤</span>
+                <span>공유</span>
+            </a>
+            <a href="mobile-add-memory.html" class="bottom-item">
+                <span class="b-ico">✏️</span>
+                <span>수정</span>
+            </a>
         </footer>
     </div>
 </body>

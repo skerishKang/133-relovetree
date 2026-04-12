@@ -5,111 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>테스트 러버 A의 러브트리 - Lovetree</title>
+    <title>BTS - Map of the Soul 7 Memories | Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/community-tree-detail.css">
 </head>
 <body class="ctd-page">
+    <!-- Header: Narrative focus -->
     <header class="ctd-top">
         <a href="community.html" class="back-link">
             <span class="back-ico">←</span>
+            <span>커뮤니티로 돌아가기</span>
         </a>
-        <div class="tree-info">
-            <h1>테스트 러버 A의 러브트리</h1>
-            <p>입덕의 시작부터 지금까지 이어진 사랑의 경로</p>
+        <div class="tree-header-main">
+            <h1>BTS - Map of the Soul 7 Memories</h1>
+            <p>"어떤 순간에 그들을 사랑하게 되었는지, 그 소중한 기록들"</p>
         </div>
-        <div class="user-sec">
-            <div class="user-text">
-                <b>테스트 러버 A</b>
+        <div class="user-profile-badge">
+            <div class="user-info-text">
+                <b>HappyARMY</b>
                 <span>@user.hanma</span>
             </div>
-            <div class="avatar"></div>
+            <div class="user-avatar-circle"></div>
         </div>
     </header>
 
     <main class="ctd-main">
-        <!-- Canvas Section (strictly reflecting community-tree-detail / shared-love-tree-view) -->
+        <!-- Canvas Area: Appreciation Gallery -->
         <section class="canvas-area">
-            <div class="tree-container">
-                <div class="timeline-line"></div>
+            <div class="tree-canvas-inner">
+                <div class="timeline-path"></div>
                 
-                <!-- Node 1 (Up) -->
+                <!-- Node 1 (Root/Up) -->
                 <div class="ctd-node n-up" style="left: 100px;">
-                    <div class="node-box">
-                        <div class="thumb vid"></div>
-                        <h4>첫 만남 - 무대 영상</h4>
-                        <span class="date">2023-09-28</span>
+                    <div class="node-card">
+                        <div class="card-visual">
+                            <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="첫 기억">
+                        </div>
+                        <div class="card-date">2023.09.28</div>
+                        <h4>처음 홀린 듯 본 ON 무대</h4>
+                        <p class="card-memo">이 전율을 어떻게 설명할까요. 칼군무 속에 담긴 그들의 땀방울을 보며 제 팬심이 시작되었습니다.</p>
+                        <div class="card-meta">
+                            <span class="card-tag">#입덕</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Node 2 (Down) -->
-                <div class="ctd-node n-down" style="left: 300px;">
-                    <div class="node-box">
-                        <div class="thumb"></div>
-                        <h4>첫 앨범 구매</h4>
-                        <span class="date">2023-09-21</span>
+                <!-- Node 2 (Growth/Down) -->
+                <div class="ctd-node n-down" style="left: 450px;">
+                    <div class="node-card">
+                        <div class="card-visual">
+                            <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기록 2">
+                        </div>
+                        <div class="card-date">2023.10.12</div>
+                        <h4>첫 앨범 구매의 설렘</h4>
+                        <p class="memo" style="display:none">손에 닿는 앨범의 감촉조차 소중했던 날. 포카를 확인하며 누굴까 기대하던 그 떨림이 아직도 선해요.</p>
+                        <p class="card-memo">손에 닿는 앨범의 감촉조차 소중했던 날. 포카를 확인하며 누굴까 기대하던 그 떨림이 아직도 선해요.</p>
+                        <div class="card-meta">
+                            <span class="card-tag">#설렘</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Node 3 (Up) -->
-                <div class="ctd-node n-up" style="left: 500px;">
-                    <div class="node-box" style="background: #fff4f4;">
-                        <div class="thumb" style="background: #ead3d3;"></div>
-                        <h4>콘서트 직관</h4>
-                        <span class="date">2022-07-20</span>
+                <!-- Node 3 (Peak/Up) -->
+                <div class="ctd-node n-up" style="left: 800px;">
+                    <div class="node-card">
+                        <div class="card-visual">
+                            <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=400&auto=format&fit=crop" alt="기록 3">
+                        </div>
+                        <div class="card-date">2023.11.15</div>
+                        <h4>데뷔 기념일 자축 파티</h4>
+                        <p class="card-memo">팬들과 함께 랜선으로 축하하며 느꼈던 유대감. 우리는 같은 방향을 보고 있다는 걸 다시 느꼈습니다.</p>
+                        <div class="card-meta">
+                            <span class="card-tag">#감동</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Node 4 (Down) -->
-                <div class="ctd-node n-down" style="left: 700px;">
-                    <div class="node-box">
-                        <div class="thumb"></div>
-                        <h4>최애 곡 발견</h4>
-                        <span class="date">2023-05-10</span>
-                    </div>
-                </div>
-
-                <!-- Node 5 (Up) -->
-                <div class="ctd-node n-up" style="left: 900px;">
-                    <div class="node-box">
-                        <div class="thumb"></div>
-                        <h4>입덕 1주년</h4>
-                        <span class="date">2023-12-17</span>
+                <!-- Node 4 (Recent/Down) -->
+                <div class="ctd-node n-down" style="left: 1150px;">
+                    <div class="node-card">
+                        <div class="card-visual">
+                            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기록 4">
+                        </div>
+                        <div class="card-date">2024.04.12</div>
+                        <h4>최애 곡 커버 무대</h4>
+                        <p class="card-memo">항상 새로운 모습을 보여주려는 노력에 또 한 번 반하게 된 날입니다.</p>
+                        <div class="card-meta">
+                            <span class="card-tag">#사랑해</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Right Side Panel -->
+        <!-- Right Side Panel: Social Engagement -->
         <aside class="side-panel">
-            <div class="stats-actions">
-                <button class="st-btn">❤️ 공감해요</button>
-                <button class="st-btn">💬 응원할게요</button>
-                <button class="st-btn">🔗 경로 공유</button>
+            <div class="participation-box">
+                <div class="engagement-btns">
+                    <button class="re-btn"><span>❤️</span>공감해요</button>
+                    <button class="re-btn"><span>✨</span>응원해요</button>
+                    <button class="re-btn"><span>🌳</span>내 트리에 저장</button>
+                </div>
+                <button class="action-cta-full">이 팬의 사랑 경로 공유하기</button>
             </div>
 
-            <button class="save-tree-btn">이 사랑의 경로를 내 트리에 보관하기</button>
-
-            <section class="comment-sec">
-                <h3>댓글</h3>
+            <section class="comments-area">
+                <h3>커뮤니티 응원 💬</h3>
                 <div class="comment-list">
-                    <div class="comm-item">
-                        <div class="ci-avatar"></div>
-                        <div class="ci-body">
+                    <div class="comment-item">
+                        <div class="c-ava"></div>
+                        <div class="c-content">
                             <b>마르타</b>
-                            <p>이 트리 너무 감동적이에요! ❤️</p>
+                            <p>ON 무대는 정말 레전드죠... 저도 그 영상 보고 입덕했어요! 감동적인 트리네요 ❤️</p>
                         </div>
                     </div>
-                    <div class="comm-item">
-                        <div class="ci-avatar" style="background:#d3e2ea;"></div>
-                        <div class="ci-body">
-                            <b>타이마</b>
-                            <p>최애 곡 부분 공감해요!!</p>
+                    <div class="comment-item">
+                        <div class="c-ava" style="background:#d3e2ea;"></div>
+                        <div class="c-content">
+                            <b>CARAT_fan</b>
+                            <p>다른 그룹 팬이지만, 사랑의 경로가 너무 예뻐서 한참 구경하다 가요. 응원합니다!</p>
                         </div>
                     </div>
                 </div>
-                <div class="comment-input">
-                    <input type="text" placeholder="댓글 달기...">
+                <div class="c-input-wrapper">
+                    <input type="text" placeholder="트리 주인에게 응원의 한마디...">
                 </div>
             </section>
         </aside>
