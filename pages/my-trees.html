@@ -47,6 +47,14 @@
     <p>나무를 불러오는 중...</p>
   </div>
 
+  <!-- Error State -->
+  <div id="error-state" class="error-state" style="display: none;">
+    <div class="error-icon">⚠️</div>
+    <h2>나무를 불러올 수 없습니다</h2>
+    <p id="error-message">데이터를 불러오는 중 오류가 발생했습니다.</p>
+    <button id="btn-retry-load" class="btn-retry">다시 시도</button>
+  </div>
+
   <!-- Content Area (tree list) -->
   <div id="content-area" class="trees-list" style="display: none;">
     <div id="tree-list"></div>
@@ -114,6 +122,35 @@
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+.error-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.error-state h2 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+.error-state p {
+  color: #666;
+  margin: 0 0 20px;
+}
+.btn-retry {
+  padding: 12px 24px;
+  background: #e85a4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-retry:hover {
+  background: #d44a3f;
 }
 .trees-list {
   display: grid;
@@ -195,21 +232,11 @@
 <!-- My Trees Page Logic -->
 <script src="/src/my-trees.js"></script>
 
-<!-- Auth Integration -->
+<!-- Auth Integration (handled by my-trees.js via FlowShared.requireAuth) -->
 <script>
-function updateMyTreesAuthUI(user) {
-  const authItem = document.getElementById('nav-auth-item');
-  if (user) {
-    authItem.textContent = '내 트리';
-    authItem.href = 'my-trees.html';
-    authItem.classList.add('active');
-  } else {
-  }
-}
-window.onAuthReady = function(user) { updateMyTreesAuthUI(user); };
-setTimeout(() => { if (window.firebase && firebase.auth().currentUser) updateMyTreesAuthUI(firebase.auth().currentUser); }, 1000);
-document.getElementById('nav-logout-btn').addEventListener('click', () => { if (window.signOut) window.signOut(); });
+document.getElementById('nav-logout-btn').addEventListener('click', function() {
+  if (window.signOut) window.signOut();
+});
 </script>
-<script src="/src/concept-state.js"></script>
 </body>
 </html>
