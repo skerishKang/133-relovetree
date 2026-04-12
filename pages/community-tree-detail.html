@@ -216,10 +216,103 @@
     <script src="/src/auth.js"></script>
 
     <script>
-        // Placeholder for tree detail logic
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Tree Detail Page Loaded');
-        });
+        (function() {
+            var F = window.FlowShared;
+            var treeId = F.getQueryParam('treeId');
+
+            function init() {
+                if (!treeId) {
+                    console.info('No treeId provided, showing demo data.');
+                    return;
+                }
+                loadTreeData();
+            }
+
+            function loadTreeData() {
+                // We'll keep the static UI as the 'loading' shell or update it
+                F.loadTree(treeId).then(function(tree) {
+                    if (!tree) {
+                        alert('트리를 찾을 수 없습니다.');
+                        return;
+                    }
+                    renderTreeDetail(tree);
+                }).catch(function(err) {
+                    console.error('Failed to load tree:', err);
+                });
+            }
+
+            function renderTreeDetail(tree) {
+                // Update Hero
+                var titleEl = document.querySelector('.hero-text-area h1');
+                var descEl = document.querySelector('.hero-text-area p');
+                var authorEl = document.querySelector('.user-info-text b');
+                var resCountEl = document.querySelector('.stat-item:nth-child(1) .stat-val');
+                var msgCountEl = document.querySelector('.stat-item:nth-child(2) .stat-val');
+
+                if (titleEl) titleEl.textContent = tree.name || '이름 없는 트리';
+                if (descEl) descEl.textContent = tree.description || '이 트리에 담긴 소중한 기억들의 경로를 감상해보세요.';
+                if (authorEl) authorEl.textContent = tree.ownerDisplayName || (tree.ownerId ? '@' + tree.ownerId.substring(0,6) : '@anonymous');
+                if (resCountEl) resCountEl.textContent = (tree.likeCount || 0).toLocaleString();
+                if (msgCountEl) msgCountEl.textContent = (tree.commentCount || 0).toLocaleString();
+
+                // Render Canvas Nodes
+                var canvasInner = document.querySelector('.tree-canvas-inner');
+                // Clear existing demo nodes but keep the decorations/curve if needed
+                // Actually, let's just clear the .ctd-node elements
+                var existingNodes = canvasInner.querySelectorAll('.ctd-node');
+                existingNodes.forEach(function(n) { n.remove(); });
+
+                var nodes = tree.nodes || [];
+                nodes.sort(function(a, b) { 
+                    return new Date(a.date || 0) - new Date(b.date || 0);
+                });
+
+                nodes.forEach(function(node, index) {
+                    var isUp = index % 2 === 0;
+                    var posClass = 'pos-' + (index + 1);
+                    var nodeEl = document.createElement('div');
+                    nodeEl.className = 'ctd-node ' + (isUp ? 'n-up ' : 'n-down ') + posClass;
+                    
+                    // Simple thumb logic
+                    var thumb = node.videoId ? 'https://img.youtube.com/vi/' + node.videoId + '/hqdefault.jpg' : 'https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop';
+                    var dateStr = F.formatKoreanDate(node.date);
+                    var emotion = node.moments && node.moments.length > 0 ? node.moments[0].feeling : 'love';
+                    var emoji = F.getEmotionEmoji(emotion);
+
+                    nodeEl.innerHTML = 
+                        '<div class="node-leaf-marker"></div>' +
+                        '<div class="node-card">' +
+                        '    <div class="card-visual">' +
+                        '        <img src="' + thumb + '" alt="" onload="this.classList.add(\'loaded\')">' +
+                        '        <div class="node-type-icon">' + emoji + '</div>' +
+                        '    </div>' +
+                        '    <div class="card-body">' +
+                        '        <span class="card-date">' + dateStr + '</span>' +
+                        '        <h4>' + escapeHtml(node.title) + '</h4>' +
+                        '        <p class="card-memo">' + escapeHtml(node.description || '') + '</p>' +
+                        '        <div class="card-footer">' +
+                        '            <span class="card-tag">#' + F.getEmotionLabel(emotion) + '</span>' +
+                        '            <div class="node-heart">❤️</div>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</div>';
+                    canvasInner.appendChild(nodeEl);
+                });
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                var div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
     </script>
 </body>
 </html>

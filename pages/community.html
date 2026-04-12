@@ -227,17 +227,9 @@
         document.getElementById('featured-spotlight-demo').style.display = 'none';
       }
 
-      function showContent() {
-        document.getElementById('community-loading').style.display = 'none';
-        document.getElementById('community-error').style.display = 'none';
-        document.getElementById('community-empty').style.display = 'none';
-        document.getElementById('discovery-grid').style.display = 'grid';
-        document.getElementById('discovery-grid-demo').style.display = 'none';
-        document.getElementById('featured-spotlight-demo').style.display = 'none';
-      }
-
       function renderPublicTrees(trees) {
         var grid = document.getElementById('discovery-grid');
+        var spotlightArea = document.getElementById('featured-spotlight-demo');
         grid.innerHTML = '';
 
         if (!trees || trees.length === 0) {
@@ -245,34 +237,37 @@
           return;
         }
 
-        trees.forEach(function(tree) {
-          var treeId = tree._id || tree.id || '';
-          if (!treeId) return;
+        // Highlight the first tree as the Featured Spotlight
+        var featuredTree = trees[0];
+        renderFeaturedSpotlight(featuredTree);
 
+        // Render the rest in the discovery grid
+        var remainder = trees.slice(1);
+        if (remainder.length === 0) {
+            // If only one tree, we still show the spotlight but grid stays empty or shows a hint
+            // For now, let's just show the grid anyway
+        }
+
+        remainder.forEach(function(tree) {
+          var treeId = tree._id || tree.id || '';
           var name = tree.name || '이름 없는 트리';
-          var nodeCount = (tree.nodes && tree.nodes.length) || 0;
           var likeCount = tree.likeCount || tree.likes || 0;
           var commentCount = tree.commentCount || 0;
-
-          var firstThumb = '';
-          if (tree.nodes && tree.nodes.length > 0 && tree.nodes[0].videoId) {
-            firstThumb = 'https://img.youtube.com/vi/' + tree.nodes[0].videoId + '/hqdefault.jpg';
-          } else {
-            firstThumb = 'https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop';
-          }
+          var thumb = getTreeThumb(tree);
+          var ownerName = tree.ownerDisplayName || (tree.ownerId ? '@' + tree.ownerId.substring(0, 6) : '@anonymous');
 
           var card = document.createElement('a');
           card.href = '/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId);
           card.className = 'disc-card';
           card.innerHTML =
             '<div class="dc-media">' +
-            '<img src="' + firstThumb + '" alt="트리 이미지" onload="this.classList.add(\'loaded\')">' +
+            '<img src="' + thumb + '" alt="" onload="this.classList.add(\'loaded\')">' +
             '</div>' +
             '<div class="dc-info">' +
             '<h3>' + escapeHtml(name) + '</h3>' +
             '<div class="dc-auth">' +
             '<div class="avatar-sm"></div>' +
-            '<span>@' + escapeHtml(tree.ownerId ? tree.ownerId.substring(0, 8) : 'anonymous') + '</span>' +
+            '<span>' + escapeHtml(ownerName) + '</span>' +
             '</div>' +
             '<div class="dc-stats">' +
             '<span>❤️ ' + likeCount + '</span>' +
@@ -282,8 +277,60 @@
           grid.appendChild(card);
         });
 
-        showContent();
+        document.getElementById('community-loading').style.display = 'none';
+        spotlightArea.style.display = 'block';
+        grid.style.display = 'grid';
         treesLoaded = true;
+      }
+
+      function renderFeaturedSpotlight(tree) {
+        var spotlightArea = document.getElementById('featured-spotlight-demo');
+        if (!tree) {
+            spotlightArea.style.display = 'none';
+            return;
+        }
+        var treeId = tree._id || tree.id || '';
+        var name = tree.name || '이름 없는 트리';
+        var thumb = getTreeThumb(tree);
+        var ownerName = tree.ownerDisplayName || (tree.ownerId ? '@' + tree.ownerId.substring(0, 6) : '@anonymous');
+        var summary = tree.description || '이 러브트리에 담긴 소중한 기억들의 경로를 확인해보세요.';
+
+        spotlightArea.innerHTML = 
+            '<div class="featured-card horizontal">' +
+            '    <div class="fc-visual">' +
+            '        <img src="' + thumb + '" alt="메인 추천" onload="this.classList.add(\'loaded\')">' +
+            '        <div class="fc-tree-visual">' +
+            '            <svg class="fc-tree-svg" viewBox="0 0 100 200">' +
+            '                <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />' +
+            '                <circle cx="50" cy="180" r="5" fill="#b56e6e" />' +
+            '                <circle cx="30" cy="50" r="4" fill="#b56e6e" />' +
+            '                <circle cx="70" cy="50" r="4" fill="#b56e6e" />' +
+            '            </svg>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="fc-content">' +
+            '        <div class="fc-meta">' +
+            '            <span class="fc-badge">Weekly Spotlight</span>' +
+            '            <span class="fc-author">' + escapeHtml(ownerName) + '</span>' +
+            '        </div>' +
+            '        <h3>' + escapeHtml(name) + '</h3>' +
+            '        <p>' + escapeHtml(summary) + '</p>' +
+            '        <div class="fc-footer">' +
+            '            <div class="fc-stats">' +
+            '                <span>❤️ ' + (tree.likeCount || 0) + ' 공감</span>' +
+            '                <span>💬 ' + (tree.commentCount || 0) + ' 응원</span>' +
+            '            </div>' +
+            '            <a href="/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId) + '" class="fc-btn">경로 감상하기</a>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>';
+      }
+
+      function getTreeThumb(tree) {
+        if (tree.nodes && tree.nodes.length > 0 && tree.nodes[0].videoId) {
+            return 'https://img.youtube.com/vi/' + tree.nodes[0].videoId + '/hqdefault.jpg';
+        }
+        return 'https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop';
       }
 
       function escapeHtml(str) {
@@ -294,6 +341,7 @@
       }
 
       function loadPublicTrees() {
+        if (treesLoaded) return; // Basic throttle
         showLoading();
         if (typeof window.FlowShared !== 'undefined' && typeof window.FlowShared.loadPublicTrees === 'function') {
           window.FlowShared.loadPublicTrees(currentSort).then(function(trees) {
@@ -303,7 +351,8 @@
             showError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
           });
         } else {
-          showError('데이터 로딩 기능이 준비되지 않았습니다.');
+          // Retry logic if FlowShared not yet ready
+          setTimeout(loadPublicTrees, 1000);
         }
       }
 
@@ -314,14 +363,18 @@
             filterBtns.forEach(function(b) { b.classList.remove('active'); });
             this.classList.add('active');
             currentSort = this.textContent.includes('최신') ? 'latest' : 'popular';
+            treesLoaded = false;
             loadPublicTrees();
           });
         });
 
         var retryBtn = document.getElementById('btn-retry-community');
-        if (retryBtn) retryBtn.addEventListener('click', loadPublicTrees);
+        if (retryBtn) retryBtn.addEventListener('click', function() {
+            treesLoaded = false;
+            loadPublicTrees();
+        });
 
-        setTimeout(loadPublicTrees, 500);
+        loadPublicTrees();
       });
     })();
     </script>
