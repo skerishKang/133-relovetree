@@ -151,6 +151,22 @@
         return window.EditorDetailHelpers.deleteNode(runtime());
     }
 
+    function startMomentEdit(index) {
+        return window.EditorDetailHelpers.startMomentEdit(runtime(), index);
+    }
+
+    function cancelMomentEdit() {
+        return window.EditorDetailHelpers.cancelMomentEdit(runtime());
+    }
+
+    function saveMomentEdit(index) {
+        return window.EditorDetailHelpers.saveMomentEdit(runtime(), index);
+    }
+
+    function deleteMoment(index) {
+        return window.EditorDetailHelpers.deleteMoment(runtime(), index);
+    }
+
     function closeModal(id) {
         return window.EditorDetailHelpers.closeModal(runtime(), id);
     }
@@ -196,6 +212,10 @@
     window.updateDetailMedia = updateDetailMedia;
     window.createNewNode = createNewNode;
     window.deleteNode = deleteNode;
+    window.startMomentEdit = startMomentEdit;
+    window.cancelMomentEdit = cancelMomentEdit;
+    window.saveMomentEdit = saveMomentEdit;
+    window.deleteMoment = deleteMoment;
     window.closeModal = closeModal;
     window.updateMinimap = updateMinimap;
 })();

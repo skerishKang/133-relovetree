@@ -195,7 +195,6 @@
     <script>
     (function() {
       var currentSort = 'popular';
-      var treesLoaded = false;
 
       function showLoading() {
         document.getElementById('community-loading').style.display = 'block';
@@ -274,13 +273,12 @@
         document.getElementById('community-loading').style.display = 'none';
         spotlightArea.style.display = 'block';
         grid.style.display = 'grid';
-        treesLoaded = true;
       }
 
       function renderFeaturedSpotlight(tree) {
-        var spotlightArea = document.getElementById('featured-spotlight-demo');
-        if (!tree) {
-            spotlightArea.style.display = 'none';
+        var spotlightArea = document.getElementById('featured-spotlight');
+        if (!tree || !spotlightArea) {
+            if (spotlightArea) spotlightArea.style.display = 'none';
             return;
         }
         var treeId = tree._id || tree.id || '';
@@ -335,7 +333,6 @@
       }
 
       function loadPublicTrees() {
-        if (treesLoaded) return; // Basic throttle
         showLoading();
         if (typeof window.FlowShared !== 'undefined' && typeof window.FlowShared.loadPublicTrees === 'function') {
           window.FlowShared.loadPublicTrees(currentSort).then(function(trees) {
@@ -345,8 +342,17 @@
             showError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
           });
         } else {
-          // Retry logic if FlowShared not yet ready
-          setTimeout(loadPublicTrees, 1000);
+          setTimeout(function() {
+            if (typeof window.FlowShared !== 'undefined' && typeof window.FlowShared.loadPublicTrees === 'function') {
+              window.FlowShared.loadPublicTrees(currentSort).then(function(trees) {
+                renderPublicTrees(trees);
+              }).catch(function(err) {
+                showError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+              });
+            } else {
+              showError('데이터 로딩 기능이 준비되지 않았습니다.');
+            }
+          }, 1000);
         }
       }
 
@@ -355,18 +361,14 @@
         filterBtns.forEach(function(btn) {
           btn.addEventListener('click', function() {
             filterBtns.forEach(function(b) { b.classList.remove('active'); });
-            this.classList.add('active');
-            currentSort = this.textContent.includes('최신') ? 'latest' : 'popular';
-            treesLoaded = false;
+            btn.classList.add('active');
+            currentSort = btn.textContent.includes('최신') ? 'latest' : 'popular';
             loadPublicTrees();
           });
         });
 
         var retryBtn = document.getElementById('btn-retry-community');
-        if (retryBtn) retryBtn.addEventListener('click', function() {
-            treesLoaded = false;
-            loadPublicTrees();
-        });
+        if (retryBtn) retryBtn.addEventListener('click', loadPublicTrees);
 
         loadPublicTrees();
       });

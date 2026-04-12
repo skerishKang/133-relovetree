@@ -147,25 +147,115 @@
             return;
         }
 
-        moments.forEach(function (m) {
+        const editingIndex = runtime.state.editingMomentIndex;
+
+        moments.forEach(function (m, idx) {
             const el = document.createElement('div');
             el.className = 'editor-moment-card';
-            el.innerHTML = `
-                <div class="editor-moment-avatar">
-                    ${getFeelingEmoji(m.feeling)}
-                </div>
-                <div class="editor-moment-bubble">
-                    <div class="editor-moment-head">
-                        <span class="editor-moment-time-chip" onclick="seekVideo('${m.time}')">
-                            ${m.time}
-                        </span>
-                        <span class="editor-moment-author">User</span>
+            
+            const isEditing = editingIndex === idx;
+
+            if (isEditing) {
+                el.innerHTML = `
+                    <div class="editor-moment-avatar">
+                        ${getFeelingEmoji(m.feeling)}
                     </div>
-                    <p class="editor-moment-copy">${m.text}</p>
-                </div>
-            `;
+                    <div class="editor-moment-bubble is-editing" style="width: 100%;">
+                        <div class="editor-moment-head">
+                            <span class="editor-moment-time-chip">${m.time}</span>
+                            <span class="editor-moment-author">Editing...</span>
+                        </div>
+                        <div class="editor-moment-edit-box" style="margin-top: 8px;">
+                            <input type="text" id="moment-edit-input-${idx}" 
+                                class="editor-input-sm" 
+                                style="width: 100%; margin-bottom: 8px;" 
+                                value="${escapeHtml(m.text)}">
+                            <div class="editor-moment-edit-actions" style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <button onclick="cancelMomentEdit()" class="editor-subtle-btn-xs" style="font-size: 0.75rem; padding: 4px 8px;">취소</button>
+                                <button onclick="saveMomentEdit(${idx})" class="editor-primary-btn-xs" style="font-size: 0.75rem; padding: 4px 8px;">저장</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                el.innerHTML = `
+                    <div class="editor-moment-avatar">
+                        ${getFeelingEmoji(m.feeling)}
+                    </div>
+                    <div class="editor-moment-bubble">
+                        <div class="editor-moment-head">
+                            <span class="editor-moment-time-chip" onclick="seekVideo('${m.time}')">
+                                ${m.time}
+                            </span>
+                            <span class="editor-moment-author">User</span>
+                            <div class="editor-moment-actions" style="margin-left: auto; display: flex; gap: 4px;">
+                                <button onclick="startMomentEdit(${idx})" class="editor-icon-btn-xs" title="수정">
+                                    <svg viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                </button>
+                                <button onclick="deleteMoment(${idx})" class="editor-icon-btn-xs" title="삭제">
+                                    <svg viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="editor-moment-copy">${escapeHtml(m.text)}</p>
+                    </div>
+                `;
+            }
             list.appendChild(el);
         });
+    }
+
+    function startMomentEdit(runtime, index) {
+        if (runtime.isReadOnly) return;
+        runtime.state.editingMomentIndex = index;
+        const node = runtime.state.nodes.find(function(n) { return n.id === runtime.state.activeNodeId; });
+        if (node) {
+            renderMomentsList(runtime, node.moments);
+            setTimeout(() => {
+                const input = document.getElementById('moment-edit-input-' + index);
+                if (input) input.focus();
+            }, 0);
+        }
+    }
+
+    function cancelMomentEdit(runtime) {
+        runtime.state.editingMomentIndex = null;
+        const node = runtime.state.nodes.find(function(n) { return n.id === runtime.state.activeNodeId; });
+        if (node) renderMomentsList(runtime, node.moments);
+    }
+
+    function saveMomentEdit(runtime, index) {
+        if (runtime.isReadOnly) return;
+        const input = document.getElementById('moment-edit-input-' + index);
+        if (!input) return;
+
+        const newText = input.value.trim();
+        if (!newText) return;
+
+        const node = runtime.state.nodes.find(function(n) { return n.id === runtime.state.activeNodeId; });
+        if (node && node.moments[index]) {
+            node.moments[index].text = newText;
+            runtime.state.editingMomentIndex = null;
+            renderMomentsList(runtime, node.moments);
+            saveDebounced(runtime);
+            showToast(runtime, getIsKorean(runtime) ? '순간이 수정되었습니다' : 'Moment updated');
+        }
+    }
+
+    function deleteMoment(runtime, index) {
+        if (runtime.isReadOnly) return;
+        const node = runtime.state.nodes.find(function(n) { return n.id === runtime.state.activeNodeId; });
+        if (!node || !node.moments[index]) return;
+
+        if (!confirm(getIsKorean(runtime) ? '이 순간을 삭제하시겠습니까?' : 'Delete this moment?')) {
+            return;
+        }
+
+        node.moments.splice(index, 1);
+        renderMomentsList(runtime, node.moments);
+        saveDebounced(runtime);
+        updateStats(runtime);
+        showToast(runtime, getIsKorean(runtime) ? '순간이 삭제되었습니다' : 'Moment deleted');
     }
 
     function updateDetailMedia(runtime, node) {
@@ -584,6 +674,10 @@
         updateDetailMedia: updateDetailMedia,
         createNewNode: createNewNode,
         deleteNode: deleteNode,
+        startMomentEdit: startMomentEdit,
+        cancelMomentEdit: cancelMomentEdit,
+        saveMomentEdit: saveMomentEdit,
+        deleteMoment: deleteMoment,
         closeModal: closeModal,
         bindDetailModalDismiss: bindDetailModalDismiss
     };
