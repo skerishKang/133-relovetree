@@ -1,13 +1,30 @@
 /* frontend-concept-v2/css/community.css */
-.comm-page { background: #f9f6f2; min-height: 100vh; padding-bottom: 120px; }
 
-/* Shell container aligned with page-container */
-.shell { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+/* Unified page container - match home's card-like feel */
+.comm-page { 
+    background: #fdfaf4; 
+    min-height: 100vh; 
+    padding-bottom: 60px;
+}
+
+/* Shell container - match home's container */
+.shell { 
+    max-width: 1200px; 
+    margin: 30px auto; 
+    padding: 0 48px;
+    background: white;
+    border-radius: 40px;
+    box-shadow: 0 40px 100px rgba(61, 43, 43, 0.08);
+    overflow: hidden;
+    min-height: calc(100vh - 60px);
+}
 
 /* Refined Brand Header - Remove duplicate logo, integrate with gnb */
 .comm-top {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 0; border-bottom: 1px solid rgba(181, 110, 110, 0.1); margin-bottom: 32px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(181, 110, 110, 0.1);
+    margin-bottom: 32px;
 }
 
 .top-left { display: none; } /* Hide duplicate logo - gnb-brand handles it */
@@ -41,49 +58,39 @@
 
 .disc-col { display: flex; flex-direction: column; gap: 32px; }
 
-/* Fan Memory Cards: Softer & More Individual */
+/* Fan Memory Cards: Use shared card-soft system */
 .disc-card { 
-    background: white; border-radius: 28px; overflow: hidden;
-    box-shadow: 0 12px 30px rgba(61, 43, 43, 0.05); 
-    border: 1px solid rgba(235, 220, 208, 0.4);
+    background: var(--color-white); border-radius: var(--radius-lg); overflow: hidden;
+    box-shadow: var(--shadow-soft); border: 1px solid var(--color-border);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.disc-card:hover { transform: translateY(-8px); box-shadow: 0 20px 48px rgba(61, 43, 43, 0.08); }
+.disc-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
 
 .dc-media { 
     width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; 
-    background: #fdfaf4;
+    background: var(--color-bg-ivory);
 }
 .dc-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
 
-/* Mini Tree Path Viz */
-.mini-tree-viz {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 40px; background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
-    display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.7;
-}
-.tree-node-dot { width: 5px; height: 5px; border-radius: 50%; background: white; }
-.tree-stem-line { width: 12px; height: 1.5px; background: white; opacity: 0.4; }
-
 .dc-info { padding: 22px 20px; }
-.dc-info h3 { font-size: 1rem; font-weight: 700; color: #3d2b2b; margin-bottom: 8px; line-height: 1.4; }
+.dc-info h3 { font-size: 1rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 8px; line-height: 1.4; }
 .dc-auth { font-size: 0.82rem; color: var(--color-text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.avatar-sm { width: 22px; height: 22px; border-radius: 50%; background: #ece4dd; border: 1.5px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.avatar-sm { width: 22px; height: 22px; border-radius: 50%; background: var(--color-border); border: 1.5px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
 .dc-tags { display: flex; gap: 6px; }
-.dc-tag { background: #fdf2f2; color: #b56e6e; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.7rem; }
+.dc-tag { background: #fdf2f2; color: var(--color-primary-brick); padding: 4px 10px; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.7rem; }
 
 .dc-stats { 
-    display: flex; gap: 12px; font-size: 0.75rem; font-weight: 600; color: #d3c4bb; 
-    margin-top: 18px; padding-top: 14px; border-top: 1px solid #fcfaf8;
+    display: flex; gap: 12px; font-size: 0.75rem; font-weight: 600; color: var(--color-text-muted); 
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--color-bg-surface);
 }
 
-/* Featured Tree: Soft yet powerful spotlight */
+/* Featured Tree: Use shared radius */
 .featured-col { grid-column: span 2; }
 .featured-card {
-    height: 100%; min-height: 480px; background: white; border-radius: 32px;
+    height: 100%; min-height: 480px; background: white; border-radius: var(--radius-lg);
     display: flex; flex-direction: column; overflow: hidden;
-    box-shadow: 0 30px 60px rgba(181, 110, 110, 0.08); border: 1.5px solid rgba(181, 110, 110, 0.15);
+    box-shadow: var(--shadow-md); border: 1.5px solid rgba(181, 110, 110, 0.15);
 }
 .fc-banner { background: #fdf2f2; color: #b56e6e; padding: 12px; font-size: 0.75rem; font-weight: 800; text-align: center; letter-spacing: 0.08em; }
 .fc-viz-area { flex: 1; position: relative; background: #faf8f5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
