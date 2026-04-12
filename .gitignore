@@ -6,14 +6,14 @@
 *.xlsx
 *.pptx
 
-# Fossil 공통 제외 - 이미지
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.webp
-*.svg
-*.ico
+# Fossil/Git 공통 제외 - 이미지 (GitHub 업로드를 위해 주석 처리)
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.webp
+# *.svg
+# *.ico
 !assets/favicon.svg
 !설문지/image/
 

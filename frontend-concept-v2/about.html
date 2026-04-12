@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovetree 소개 - 당신의 팬 스크랩북</title>
+    <base href="/frontend-concept-v2/">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/home.css">
+    <style>
+        .about-hero {
+            position: relative;
+            width: 100%;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #fdfaf4;
+            overflow: hidden;
+            border-radius: 48px;
+            margin-top: 20px;
+        }
+        .about-hero-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35; /* 사용자님이 뽑아주신 예쁜 이미지가 은은하게 깔림 */
+            z-index: 1;
+            mask-image: radial-gradient(circle, black 30%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle, black 30%, transparent 100%);
+        }
+        .about-content {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            padding: 40px;
+        }
+        .about-content h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.8rem;
+            font-weight: 900;
+            color: var(--color-text-main);
+            margin-bottom: 24px;
+            line-height: 1.2;
+            letter-spacing: -0.04em;
+        }
+        .about-content p {
+            font-size: 1.2rem;
+            color: var(--color-text-sub);
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body class="home-page" data-concept-page="about">
+    <div class="page-container" id="concept-main">
+        <!-- Global Navigation -->
+        <nav class="gnb">
+            <div class="gnb-brand"><a href="home.html">Lovetree</a></div>
+            <div class="nav-links">
+                <a href="about.html" class="active">소개</a>
+                <a href="lovetree.html">러브트리</a>
+                <a href="community.html">커뮤니티</a>
+                <div class="auth-box">
+                    <a href="login.html" id="nav-auth-item" class="nav-login">로그인</a>
+                    <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
+                </div>
+            </div>
+        </nav>
+
+        <main style="padding: 0 40px 60px;">
+            <section class="about-hero">
+                <!-- 제미나이로 생성하신 이미지가 배경으로 은은하게 깔립니다 -->
+                <img src="/asserts/about-hero.png" alt="Scrapbook Background" class="about-hero-bg" onerror="Math.random() > 0.5 ? this.src='https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=1200&auto=format&fit=crop' : this.src='https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=1200&auto=format&fit=crop'">
+                
+                <div class="about-content">
+                    <div class="hero-badge">📖 The Fan Scrapbook</div>
+                    <h1>사랑에 빠진 순간부터<br>하나의 책이 될 때까지.</h1>
+                    <p>
+                        누군가를 처음 좋아하게 된 그 반짝이는 순간을 기억하시나요?<br>
+                        Lovetree는 영상, 티켓, 사소한 감정의 메모들까지 엮어<br>
+                        마치 빈티지 스크랩북처럼 당신의 추억을 아름답게 이어줍니다.
+                    </p>
+                    <a href="login.html" class="btn-brick" style="font-size: 1.1rem; padding: 18px 40px;">나만의 스크랩북 펼치기</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Core App Modules -->
+    <script src="js/concept-state.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순간 저장하기 - Lovetree</title>
+    <title>?�간 ?�?�하�?- Lovetree</title>
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/app.css">
@@ -12,25 +12,25 @@
 <body class="add-memory-page">
     <!-- Header: Quiet Focus -->
     <nav class="add-header">
-        <button class="btn-back" onclick="window.history.back()">←</button>
-        <h1>순간 기록하기</h1>
+        <button class="btn-back" onclick="window.history.back()">??/button>
+        <h1>?�간 기록?�기</h1>
     </nav>
 
     <!-- Content: Emotional Journey -->
     <main class="add-container" id="concept-main">
         <!-- Step 1: Link Discovery -->
         <section class="journey-step">
-            <label class="step-label">소중한 순간의 주소</label>
-            <input type="text" id="video-url" name="videoUrl" class="input-minimal" placeholder="영상의 링크(YouTube 등)를 남겨주세요">
+            <label class="step-label">?�중???�간??주소</label>
+            <input type="text" id="video-url" name="videoUrl" class="input-minimal" placeholder="?�상??링크(YouTube ??�??�겨주세??>
         </section>
 
         <!-- Step 2: Visual Fragment Preview -->
         <section class="moment-preview-node" id="preview-node">
             <div class="preview-img-box" id="preview-thumb">
-                <span>🎬</span>
+                <span>?��</span>
             </div>
             <div class="preview-text-info">
-                <div class="preview-title" id="preview-title">기억의 제목</div>
+                <div class="preview-title" id="preview-title">기억???�목</div>
                 <div class="preview-date" id="preview-date">2023. 10. 26</div>
             </div>
         </section>
@@ -38,44 +38,44 @@
         <!-- Step 3: Emotional Details -->
         <form id="memory-form">
             <section class="journey-step">
-                <label class="step-label">그때의 마음은 어땠나요?</label>
+                <label class="step-label">그때??마음?� ?�땠?�요?</label>
                 
                 <div class="field-row">
                     <div class="field-item">
-                        <span class="input-small-label">제목</span>
-                        <input type="text" id="memory-title" name="title" class="input-soft" placeholder="기억의 이름을 지어주세요">
+                        <span class="input-small-label">?�목</span>
+                        <input type="text" id="memory-title" name="title" class="input-soft" placeholder="기억???�름??지?�주?�요">
                     </div>
                     <div class="field-item">
-                        <span class="input-small-label">날짜</span>
+                        <span class="input-small-label">?�짜</span>
                         <input type="date" id="memory-date" name="date" class="input-soft" value="2023-10-26">
                     </div>
                 </div>
 
                 <div class="emotion-field">
-                    <span class="input-small-label">어떤 기분이었나요?</span>
+                    <span class="input-small-label">?�떤 기분?�었?�요?</span>
                     <div class="emotion-tabs" id="emotion-tabs">
-                        <div class="emotion-chip" data-emotion="설렘">설렘</div>
+                        <div class="emotion-chip" data-emotion="?�렘">?�렘</div>
                         <div class="emotion-chip selected" data-emotion="감동">감동</div>
-                        <div class="emotion-chip" data-emotion="행복">행복</div>
-                        <div class="emotion-chip" data-emotion="입덕">입덕</div>
+                        <div class="emotion-chip" data-emotion="?�복">?�복</div>
+                        <div class="emotion-chip" data-emotion="?�덕">?�덕</div>
                         <div class="emotion-chip" data-emotion="치유">치유</div>
                     </div>
                 </div>
 
                 <div>
-                    <span class="input-small-label">나만의 감정 기록</span>
-                    <textarea id="memory-memo" name="memo" class="memo-journal" placeholder="이 순간이 특별했던 이유를 자유롭게 적어보세요..."></textarea>
+                    <span class="input-small-label">?�만??감정 기록</span>
+                    <textarea id="memory-memo" name="memo" class="memo-journal" placeholder="???�간???�별?�던 ?�유�??�유�?�� ?�어보세??.."></textarea>
                 </div>
             </section>
 
             <!-- Step 4: Connection Context -->
             <section class="journey-step">
-                <label class="step-label">이 기억을 어디에 심을까요?</label>
+                <label class="step-label">??기억???�디???�을까요?</label>
                 <div class="connection-flow">
                     <select id="tree-select" name="treeId" class="select-connection">
-                        <option value="">첫 번째 기록으로 시작하기</option>
-                        <option value="tree-1">나의 러브트리와 연결하기</option>
-                        <option value="tree-2">기존 트리에 붙여보기</option>
+                        <option value="">�?번째 기록?�로 ?�작?�기</option>
+                        <option value="tree-1">?�의 ?�브?�리?� ?�결?�기</option>
+                        <option value="tree-2">기존 ?�리??붙여보기</option>
                     </select>
                 </div>
             </section>
@@ -85,13 +85,13 @@
     <!-- Footer: Planting Action -->
     <footer class="planting-footer">
         <button class="btn-plant" id="btn-submit-memory">
-            <span class="state-idle">러브트리에 심기</span>
-            <span class="state-loading is-hidden">망각하기 전에 심는 중...</span>
+            <span class="state-idle">?�브?�리???�기</span>
+            <span class="state-loading is-hidden">망각?�기 ?�에 ?�는 �?..</span>
         </button>
     </footer>
 
     <script src="js/api.js"></script>
-    <script src="src/add-memory.js"></script>
+    <script src="js/add-memory.js"></script>
     <script>
         // Simple Interaction: Emotion chips
         document.querySelectorAll('.emotion-chip').forEach(chip => {
@@ -118,3 +118,4 @@
     </script>
 </body>
 </html>
+

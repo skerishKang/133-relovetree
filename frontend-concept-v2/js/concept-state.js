@@ -1,6 +1,6 @@
 (function () {
-  var SEL = {
-    home:            { authItem: '#nav-auth-item', logoutBtn: '#nav-logout-btn' },
+var SEL = {
+home: { authItem: '#nav-auth-item', logoutBtn: '#nav-logout-btn', lovtreeItem: '#nav-lovtree-item' },
     'editor-desktop': { canvas: '.canvas', node: '.ed-node',
                         panelTitle: '.pan-title span', panelMemo: '.memo-text',
                         panelDate: '.archive-item:nth-child(1) .archive-val',
@@ -51,28 +51,42 @@
     });
   }
 
-  async function onLogin(user) {
-    var page = detectPage();
-    if (!page) return;
-    if (page === 'home') applyHomeAuth(user);
-    if (page === 'settings') applySettingsProfile(user);
-    if (page === 'editor-desktop' || page === 'mobile-tree') await loadMoments(page, user);
-    if (page === 'my-trees' || page === 'album-view' || page === 'mobile-add-branch') await loadConceptData(page, user);
-  }
+async function onLogin(user) {
+var page = detectPage();
+if (!page) return;
+applyLovtreeNavAuth(user);
+if (page === 'home') applyHomeAuth(user);
+if (page === 'settings') applySettingsProfile(user);
+if (page === 'editor-desktop' || page === 'mobile-tree') await loadMoments(page, user);
+if (page === 'my-trees' || page === 'album-view' || page === 'mobile-add-branch') await loadConceptData(page, user);
+}
 
-  function onLogout() {
-    var page = detectPage();
-    if (page === 'home') {
-      var a = q(SEL.home.authItem), b = q(SEL.home.logoutBtn);
-      if (a) { a.textContent = '로그인'; a.href = 'login.html'; a.classList.remove('is-hidden'); }
-      if (b) b.classList.add('is-hidden');
-    }
-    var page2 = detectPage();
-    if (page2 && SEL[page2]) {
-      var target = q(SEL[page2].canvas || SEL[page2].grid || SEL[page2].container);
-      if (target) target.classList.add('needs-auth');
-    }
-  }
+function applyLovtreeNavAuth(user) {
+var lt = q(SEL.home.lovtreeItem);
+if (!lt) return;
+if (user) {
+lt.textContent = '내 트리 보드';
+lt.href = 'my-trees.html';
+} else {
+lt.textContent = '러브트리';
+lt.href = 'lovetree.html';
+}
+}
+
+function onLogout() {
+var page = detectPage();
+if (page === 'home') {
+var a = q(SEL.home.authItem), b = q(SEL.home.logoutBtn);
+if (a) { a.textContent = '로그인'; a.href = 'login.html'; a.classList.remove('is-hidden'); }
+if (b) b.classList.add('is-hidden');
+}
+applyLovtreeNavAuth(null);
+var page2 = detectPage();
+if (page2 && SEL[page2]) {
+var target = q(SEL[page2].canvas || SEL[page2].grid || SEL[page2].container);
+if (target) target.classList.add('needs-auth');
+}
+}
 
   function applyHomeAuth(user) {
     var a = q(SEL.home.authItem), b = q(SEL.home.logoutBtn);
