@@ -117,5 +117,108 @@
 </nav>
 
 </div>
+
+<!-- Loading State -->
+<div id="loading-state" class="loading-overlay is-hidden">
+  <div class="loading-spinner"></div>
+  <p>트리 불러오는 중...</p>
+</div>
+
+<!-- Error State -->
+<div id="error-state" class="error-overlay is-hidden">
+  <div class="error-icon">⚠️</div>
+  <h2>트리를 불러올 수 없습니다</h2>
+  <p id="error-message">데이터를 불러오는 중 오류가 발생했습니다.</p>
+  <button id="btn-retry-tree" class="btn-retry">다시 시도</button>
+</div>
+
+<!-- Empty State -->
+<div id="empty-state" class="empty-overlay is-hidden">
+  <div class="empty-visual">
+    <div class="seed-sprout">
+      <div class="sprout-leaf left"></div>
+      <div class="sprout-leaf right"></div>
+      <div class="sprout-stem"></div>
+    </div>
+  </div>
+  <h2>아직 기록이 없습니다</h2>
+  <p>첫 번째 순간을 추가해서<br>사랑의 트리를 키워보세요.</p>
+  <button id="btn-add-first" class="btn-add-first">첫 순간 추가하기</button>
+</div>
+
+<style>
+.loading-overlay, .error-overlay, .empty-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fdfaf4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  text-align: center;
+  padding: 20px;
+}
+.loading-overlay.is-hidden, .error-overlay.is-hidden, .empty-overlay.is-hidden {
+  display: none;
+}
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #eee;
+  border-top-color: #e85a4f;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-icon { font-size: 48px; margin-bottom: 16px; }
+.error-overlay h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.error-overlay p { color: #666; margin: 0 0 20px; }
+.btn-retry {
+  padding: 12px 24px;
+  background: #e85a4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.empty-visual { width: 80px; height: 80px; margin-bottom: 24px; position: relative; }
+.seed-sprout { width: 40px; height: 60px; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
+.sprout-stem { width: 2px; height: 30px; background: #d3c4bb; margin: 0 auto; border-radius: 2px; position: absolute; bottom: 0; left: 19px; }
+.sprout-leaf { width: 14px; height: 8px; background: #d3c4bb; border-radius: 14px 0; position: absolute; top: 28px; opacity: 0.8; }
+.sprout-leaf.left { left: 4px; transform-origin: right bottom; transform: rotate(-25deg); }
+.sprout-leaf.right { right: 4px; border-radius: 0 14px; transform-origin: left bottom; transform: rotate(25deg); }
+.empty-overlay h2 { font-size: 1.3rem; margin-bottom: 12px; }
+.empty-overlay p { color: #8a7a7a; margin-bottom: 24px; line-height: 1.6; }
+.btn-add-first {
+  background-color: #b56e6e;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+</style>
+
+<!-- Firebase + Data Layer Scripts -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="/src/postgres-client-browser.js"></script>
+<script src="/src/shared-utils.js"></script>
+<script src="/src/shared.js"></script>
+<script src="/src/auth.js"></script>
+<script src="/src/flow-shared.js"></script>
+<script src="/src/api.js"></script>
+
+<!-- Mobile Tree Page Logic -->
+<script src="/src/mobile-tree.js"></script>
+
 </body>
 </html>

@@ -1,147 +1,254 @@
 /**
  * Auth: Firebase / Data: Neon Postgres via compat layer
  * Lovetree Mobile Tree View
+ * 
+ * Works with existing mobile-tree.html structure:
+ * - .trunk container for moment cards
+ * - .moment-card for each moment
+ * - .mc-date, .mc-title, .mc-memo, .mc-tag for card content
  */
 (function () {
-    var F = window.FlowShared;
-    var currentUser = null;
-    var treeId = '';
-    var treeData = null;
+  var F = window.FlowShared;
+  var currentUser = null;
+  var treeId = '';
+  var treeData = null;
 
-    function init() {
-        treeId = F.getQueryParam('treeId');
+  function init() {
+    treeId = getTreeIdFromUrl();
 
-        if (!treeId) {
-            window.location.href = '/pages/my-trees.html';
-            return;
-        }
-
-        F.requireAuth(function (user) {
-            currentUser = user;
-            loadTree();
-            bindEvents();
-        });
+    if (!treeId) {
+      window.location.href = '/pages/my-trees.html';
+      return;
     }
 
-    function loadTree() {
-        F.loadTree(treeId).then(function (data) {
-            document.getElementById('loading-area').style.display = 'none';
+    showLoading();
 
-            if (!data) {
-                alert('트리를 찾을 수 없습니다.');
-                window.location.href = '/pages/my-trees.html';
-                return;
-            }
+    F.requireAuth(function (user) {
+      currentUser = user;
+      loadTree();
+    });
+  }
 
-            treeData = data;
-            document.getElementById('tree-title').textContent = data.name || '러브트리';
+  function getTreeIdFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get('treeId') || '';
+  }
 
-            var nodes = data.nodes || [];
-            if (nodes.length === 0) {
-                document.getElementById('tree-empty').style.display = 'block';
-                document.getElementById('tree-view').style.display = 'none';
-            } else {
-                document.getElementById('tree-empty').style.display = 'none';
-                document.getElementById('tree-view').style.display = 'block';
-                document.getElementById('tree-subtitle').textContent = nodes.length + '개의 순간이 이어져 있습니다';
-                renderNodeList(data);
-            }
-        });
+  function showLoading() {
+    var loading = document.getElementById('loading-state');
+    var error = document.getElementById('error-state');
+    var empty = document.getElementById('empty-state');
+    var trunk = document.querySelector('.trunk');
+    
+    if (loading) loading.classList.remove('is-hidden');
+    if (error) error.classList.add('is-hidden');
+    if (empty) empty.classList.add('is-hidden');
+    if (trunk) trunk.style.display = 'none';
+  }
+
+  function hideLoading() {
+    var loading = document.getElementById('loading-state');
+    if (loading) loading.classList.add('is-hidden');
+  }
+
+  function showError(message) {
+    var error = document.getElementById('error-state');
+    var msgEl = document.getElementById('error-message');
+    var loading = document.getElementById('loading-state');
+    var trunk = document.querySelector('.trunk');
+    
+    if (loading) loading.classList.add('is-hidden');
+    if (trunk) trunk.style.display = 'none';
+    if (error) {
+      error.classList.remove('is-hidden');
+      if (msgEl && message) {
+        msgEl.textContent = message;
+      }
+    }
+  }
+
+  function showEmpty() {
+    var empty = document.getElementById('empty-state');
+    var trunk = document.querySelector('.trunk');
+    var loading = document.getElementById('loading-state');
+    
+    if (loading) loading.classList.add('is-hidden');
+    if (trunk) trunk.style.display = 'none';
+    if (empty) empty.classList.remove('is-hidden');
+  }
+
+  function showContent() {
+    var trunk = document.querySelector('.trunk');
+    var loading = document.getElementById('loading-state');
+    var error = document.getElementById('error-state');
+    var empty = document.getElementById('empty-state');
+    
+    if (loading) loading.classList.add('is-hidden');
+    if (error) error.classList.add('is-hidden');
+    if (empty) empty.classList.add('is-hidden');
+    if (trunk) trunk.style.display = 'block';
+  }
+
+  function loadTree() {
+    F.loadTree(treeId).then(function (data) {
+      hideLoading();
+
+      if (!data) {
+        showError('트리를 찾을 수 없습니다.');
+        return;
+      }
+
+      treeData = data;
+      updateHeader(data);
+      
+      var nodes = data.nodes || [];
+      
+      if (nodes.length === 0) {
+        showEmpty();
+      } else {
+        showContent();
+        renderMoments(nodes);
+      }
+    }).catch(function (err) {
+      console.error('Failed to load tree:', err);
+      showError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+    });
+  }
+
+  function updateHeader(data) {
+    var titleEl = document.querySelector('.mob-top-title');
+    var subEl = document.querySelector('.mob-top-sub');
+    
+    if (titleEl) {
+      titleEl.textContent = data.name || '러브트리';
+    }
+    
+    if (subEl && data.createdAt) {
+      var date = F.formatKoreanDate(data.createdAt);
+      subEl.textContent = date + '부터 함께한 기록';
+    } else if (subEl) {
+      subEl.textContent = '사랑의 기록';
+    }
+  }
+
+  function renderMoments(nodes) {
+    var trunk = document.querySelector('.trunk');
+    if (!trunk) return;
+
+    // Remove existing moment cards (keep trunk-line)
+    var existingCards = trunk.querySelectorAll('.moment-card');
+    existingCards.forEach(function(card) {
+      card.remove();
+    });
+
+    // Remove existing trunk-end
+    var existingEnd = trunk.querySelector('.trunk-end');
+    if (existingEnd) {
+      existingEnd.remove();
     }
 
-    function renderNodeList(data) {
-        var nodes = data.nodes || [];
-        var container = document.getElementById('node-list');
-        container.innerHTML = '<div id="center-line" style="position:absolute;left:50%;top:16px;bottom:100px;width:2px;background:var(--color-border);transform:translateX(-50%);z-index:1;"></div>';
+    // Sort nodes by date
+    var sortedNodes = nodes.slice().sort(function(a, b) {
+      var dateA = a.date || '';
+      var dateB = b.date || '';
+      return dateA.localeCompare(dateB);
+    });
 
-        var root = F.getRootNode(data);
-        var ordered = root ? traverseBFS(data, root.id) : nodes;
+    // Render each moment
+    sortedNodes.forEach(function(node, index) {
+      var card = createMomentCard(node, index);
+      trunk.appendChild(card);
+    });
 
-        ordered.forEach(function (node, index) {
-            var row = document.createElement('div');
-            row.style.cssText = 'display:flex;justify-content:' + (index % 2 === 0 ? 'flex-start' : 'flex-end') + ';position:relative;z-index:2;margin-bottom:24px;';
+    // Add trunk end
+    var endDiv = document.createElement('div');
+    endDiv.className = 'trunk-end';
+    endDiv.innerHTML = 
+      '<span class="trunk-end-dot"></span>' +
+      '<span class="trunk-end-text">오늘까지 ' + nodes.length + '개의 순간</span>';
+    trunk.appendChild(endDiv);
+  }
 
-            var card = document.createElement('div');
-            card.className = 'card';
-            card.style.cssText = 'width:calc(50% - 16px);padding:10px;cursor:pointer;overflow:hidden;';
+  function createMomentCard(node, index) {
+    var card = document.createElement('article');
+    card.className = 'moment-card';
+    if (index % 2 === 1) card.classList.add('mc-alt');
 
-            var thumbUrl = node.videoId ? F.getYouTubeThumb(node.videoId) : '';
-            var emotionLabel = '';
-            if (node.moments && node.moments.length > 0) {
-                emotionLabel = F.feelingToTag(node.moments[0].feeling);
-            }
-
-            card.innerHTML =
-                (thumbUrl ?
-                    '<img src="' + thumbUrl + '" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:8px;">' :
-                    '<div style="width:100%;aspect-ratio:16/9;border-radius:10px;background:var(--color-bg-surface);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">🌱</div>'
-                ) +
-                '<h4 style="font-size:0.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;">' + escapeHtml(node.title || '순간') + '</h4>' +
-                '<span style="font-size:0.72rem;color:var(--color-text-muted);">' + F.formatKoreanDate(node.date) + '</span>' +
-                (emotionLabel ? '<div style="margin-top:4px;"><span style="font-size:0.7rem;background:rgba(181,110,110,0.1);color:var(--color-primary-brick);padding:2px 8px;border-radius:4px;font-weight:700;">#' + emotionLabel + '</span></div>' : '');
-
-            card.addEventListener('click', function () {
-                window.location.href = '/pages/memory-detail.html?treeId=' + encodeURIComponent(treeId) + '&nodeId=' + encodeURIComponent(node.id);
-            });
-
-            row.appendChild(card);
-            container.appendChild(row);
-        });
+    var dateStr = F.formatKoreanDate(node.date);
+    var title = escapeHtml(node.title || '순간');
+    var memo = escapeHtml(node.description || node.memo || '');
+    
+    // Get emotion tag
+    var emotionTag = '';
+    if (node.moments && node.moments.length > 0 && node.moments[0].feeling) {
+      emotionTag = F.feelingToTag(node.moments[0].feeling);
     }
 
-    function traverseBFS(data, startId) {
-        var result = [];
-        var visited = new Set();
-        var queue = [startId];
-
-        while (queue.length > 0) {
-            var currentId = queue.shift();
-            if (visited.has(currentId)) continue;
-            visited.add(currentId);
-
-            var node = (data.nodes || []).find(function (n) { return n.id === currentId; });
-            if (node) {
-                result.push(node);
-                var children = F.getChildrenOf(data, currentId);
-                children.forEach(function (c) { queue.push(c.id); });
-            }
-        }
-
-        (data.nodes || []).forEach(function (n) {
-            if (!visited.has(n.id)) result.push(n);
-        });
-
-        return result;
-    }
-
-    function escapeHtml(str) {
-        var div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-    }
-
-    function getAddMemoryUrl() {
-        return '/pages/mobile-add-memory.html?treeId=' + encodeURIComponent(treeId);
-    }
-
-    function bindEvents() {
-        document.getElementById('btn-add').addEventListener('click', function () {
-            window.location.href = getAddMemoryUrl();
-        });
-
-        document.getElementById('btn-first-memory').addEventListener('click', function () {
-            window.location.href = getAddMemoryUrl();
-        });
-
-        document.getElementById('nav-add').addEventListener('click', function (e) {
-            e.preventDefault();
-            window.location.href = getAddMemoryUrl();
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    // Get thumbnail
+    var thumbHtml = '';
+    if (node.videoId) {
+      var thumbUrl = F.getYouTubeThumb(node.videoId);
+      thumbHtml = '<img src="' + thumbUrl + '" alt="">';
     } else {
-        init();
+      thumbHtml = '<span>🎬</span>';
     }
+
+    card.innerHTML = 
+      '<div class="mc-branch">' +
+      '<span class="mc-node-dot"></span>' +
+      '<span class="mc-node-line"></span>' +
+      '</div>' +
+      '<div class="mc-body">' +
+      '<div class="mc-thumb">' +
+      thumbHtml +
+      '<div class="mc-thumb-veil"></div>' +
+      '</div>' +
+      '<span class="mc-date">' + dateStr + '</span>' +
+      '<h3 class="mc-title">' + title + '</h3>' +
+      (memo ? '<p class="mc-memo">' + memo + '</p>' : '') +
+      (emotionTag ? '<span class="mc-tag">#' + emotionTag + '</span>' : '') +
+      '</div>';
+
+    return card;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function getAddMemoryUrl() {
+    return '/pages/mobile-add-memory.html?treeId=' + encodeURIComponent(treeId);
+  }
+
+  function bindEvents() {
+    // Retry button
+    var retryBtn = document.getElementById('btn-retry-tree');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', function() {
+        loadTree();
+      });
+    }
+
+    // Add first button (in empty state)
+    var addFirstBtn = document.getElementById('btn-add-first');
+    if (addFirstBtn) {
+      addFirstBtn.addEventListener('click', function() {
+        window.location.href = getAddMemoryUrl();
+      });
+    }
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      init();
+      bindEvents();
+    });
+  } else {
+    init();
+    bindEvents();
+  }
 })();
