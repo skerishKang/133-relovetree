@@ -1,10 +1,22 @@
 /**
  * Lovetree - Add Memory Form Handler
  * mobile-add-memory.html의 폼 제출 로직
- * 
- * 사용법: HTML 하단에 추가
- * <script src="js/add-memory.js"></script>
+ *
+ * Canonical implementation: Uses createMoment() from api.js
+ * and properly handles treeId from URL params.
  */
+
+// Get treeId from URL params (passed from my-trees when creating new tree)
+function getTreeIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('treeId') || '';
+}
+
+// Get isNew flag from URL
+function getIsNewFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('isNew') === '1';
+}
 
 // 폼 데이터 수집
 function collectFormData() {
@@ -12,15 +24,18 @@ function collectFormData() {
   const selectedEmotionEl = document.querySelector('.emotion-chip.selected');
   const emotion = selectedEmotionEl ? selectedEmotionEl.dataset.emotion : '감동';
 
-  // 트리 ID (값이 없으면 새 트리 생성 모드)
-  const treeSelect = document.getElementById('tree-select');
-  const treeId = treeSelect?.value || '';
+  // 트리 ID: URL parameter takes priority, then dropdown
+  let treeId = getTreeIdFromUrl();
+  if (!treeId) {
+    const treeSelect = document.getElementById('tree-select');
+    treeId = treeSelect?.value || '';
+  }
 
   return {
     treeId: treeId,
     title: document.getElementById('memory-title')?.value || '',
     videoUrl: document.getElementById('video-url')?.value || '',
-    date: document.getElementById('memory-date')?.value || '',
+    date: document.getElementById('memory-date')?.value || new Date().toISOString().split('T')[0],
     emotion: emotion,
     memo: document.getElementById('memory-memo')?.value || ''
   };
@@ -29,6 +44,11 @@ function collectFormData() {
 // 폼 유효성 검사
 function validateFormData(data) {
   const errors = [];
+
+  // treeId must be provided
+  if (!data.treeId) {
+    errors.push('트리를 선택해 주세요');
+  }
 
   if (!data.videoUrl || data.videoUrl.trim().length < 5) {
     errors.push('영상 링크를 입력해 주세요');
@@ -50,20 +70,32 @@ function validateFormData(data) {
 
 // 폼 제출 핸들러
 async function handleMemorySubmit(event) {
-  event.preventDefault();
+  if (event) event.preventDefault();
 
   const submitBtn = document.getElementById('btn-submit-memory');
   if (!submitBtn) return;
 
+  // treeId validation - MUST have treeId from URL for this flow
+  const treeId = getTreeIdFromUrl();
+  if (!treeId) {
+    alert('트리를 찾을 수 없습니다. 다시 시도해 주세요.');
+    window.location.href = '/pages/my-trees.html';
+    return;
+  }
+
   // 로딩 상태
-  const originalText = submitBtn.textContent;
+  const idleSpan = submitBtn.querySelector('.state-idle');
+  const loadingSpan = submitBtn.querySelector('.state-loading');
+  const originalText = idleSpan ? idleSpan.textContent : submitBtn.textContent;
+  
   submitBtn.disabled = true;
-  submitBtn.textContent = '저장 중...';
-  document.body.classList.add('state-submitting');
+  if (idleSpan) idleSpan.classList.add('is-hidden');
+  if (loadingSpan) loadingSpan.classList.remove('is-hidden');
 
   try {
     // 1. 폼 데이터 수집
     const formData = collectFormData();
+    formData.treeId = treeId; // Ensure treeId from URL is used
 
     // 2. 유효성 검사
     const validation = validateFormData(formData);
@@ -78,7 +110,7 @@ async function handleMemorySubmit(event) {
     if (result && result.id) {
       // 성공: 트리 페이지로 이동
       alert('기억이 저장되었습니다!');
-      window.location.href = `my-trees.html?treeId=${result.treeId || ''}`;
+      window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
     } else {
       // 실패
       alert('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -86,12 +118,13 @@ async function handleMemorySubmit(event) {
 
   } catch (error) {
     console.error('Memory submit error:', error);
-    alert('저장 중 오류가 발생했습니다: ' + error.message);
+    alert('저장 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
   } finally {
     // 로딩 상태 해제
     submitBtn.disabled = false;
-    submitBtn.textContent = originalText;
-    document.body.classList.remove('state-submitting');
+    if (idleSpan) idleSpan.classList.remove('is-hidden');
+    if (loadingSpan) loadingSpan.classList.add('is-hidden');
+    if (idleSpan) idleSpan.textContent = originalText;
   }
 }
 

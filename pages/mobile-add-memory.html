@@ -89,42 +89,61 @@
         </button>
     </footer>
 
-    <script src="/src/api.js"></script>
-    <script src="/src/add-memory.js"></script>
-    <script>
-        // Simple Interaction: Emotion chips
-        document.querySelectorAll('.emotion-chip').forEach(chip => {
-            chip.addEventListener('click', function() {
-                this.parentElement.querySelectorAll('.emotion-chip').forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-            });
-        });
+<script src="/src/api.js"></script>
+<script src="/src/postgres-client-browser.js"></script>
+<script src="/src/shared-utils.js"></script>
+<script src="/src/shared.js"></script>
+<script src="/src/auth.js"></script>
+<script src="/src/flow-shared.js"></script>
+<script src="/src/add-memory.js"></script>
+<script>
+ // Initialize date to today
+ document.addEventListener('DOMContentLoaded', function() {
+   const dateInput = document.getElementById('memory-date');
+   if (dateInput && !dateInput.value) {
+     dateInput.value = new Date().toISOString().split('T')[0];
+   }
+   
+   // Check if treeId is provided in URL
+   const params = new URLSearchParams(window.location.search);
+   const treeId = params.get('treeId');
+   const isNew = params.get('isNew');
+   
+   if (!treeId) {
+     // No tree ID - redirect back to my-trees
+     console.warn('No treeId in URL, redirecting to my-trees');
+   }
+ });
 
-        // Submit button click handler - go to branch selection
-        document.getElementById('btn-submit-memory').addEventListener('click', function() {
-            // Validate and submit
-            const form = document.getElementById('memory-form');
-            if (form) {
-                // If valid, go to branch selection page
-                window.location.href = '/pages/mobile-add-branch.html';
-            }
-        });
+ // Simple Interaction: Emotion chips (keep existing behavior)
+ document.querySelectorAll('.emotion-chip').forEach(chip => {
+   chip.addEventListener('click', function() {
+     this.parentElement.querySelectorAll('.emotion-chip').forEach(c => c.classList.remove('selected'));
+     this.classList.add('selected');
+   });
+ });
 
-        // Simulating the "Vibe Shift" when video is recognized
-        const videoInput = document.getElementById('video-url');
-        const previewNode = document.getElementById('preview-node');
-        
-        if (videoInput && previewNode) {
-            videoInput.addEventListener('input', function(e) {
-                if (e.target.value.length > 10) {
-                    previewNode.style.transform = 'rotate(0deg) scale(1.05)';
-                    previewNode.style.borderColor = '#b56e6e';
-                    previewNode.querySelector('.preview-img-box').style.background = '#000';
-                    previewNode.querySelector('.preview-img-box').innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" class="preview-dynamic-img">';
+ // Submit button: use canonical add-memory.js handler
+ document.getElementById('btn-submit-memory').addEventListener('click', function(e) {
+   e.preventDefault();
+   handleMemorySubmit(e);
+ });
 
-                }
-            });
-        }
-    </script>
+ // Simulating the "Vibe Shift" when video is recognized
+ const videoInput = document.getElementById('video-url');
+ const previewNode = document.getElementById('preview-node');
+
+ if (videoInput && previewNode) {
+   videoInput.addEventListener('input', function(e) {
+     if (e.target.value.length > 10) {
+       previewNode.style.transform = 'rotate(0deg) scale(1.05)';
+       previewNode.style.borderColor = '#b56e6e';
+       previewNode.querySelector('.preview-img-box').style.background = '#000';
+       previewNode.querySelector('.preview-img-box').innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" class="preview-dynamic-img">';
+
+     }
+   });
+ }
+</script>
 </body>
 </html>
