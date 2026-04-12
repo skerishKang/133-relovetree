@@ -5,56 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>영상 검색 - Lovetree</title>
+    <title>영상 탐색 - Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/video-search.css">
 </head>
 <body class="vs-page">
     <header class="vs-header">
-        <div class="shell vs-nav">
-            <div class="logo">🌱 Lovetree</div>
-            <div class="vs-search-bar">
-                <span>🔍</span>
-                <input type="text" value="BTS Proof 라이브 다시보기">
+        <nav class="vs-nav">
+            <a href="home.html" class="logo-link">🌱 Lovetree</a>
+            <div class="vs-search-container">
+                <div class="vs-search-bar">
+                    <span>🔍</span>
+                    <input type="text" placeholder="기억하고 싶은 순간의 이름을 검색해보세요" value="BTS Proof 라이브 다시보기">
+                </div>
             </div>
-            <div class="avatar"></div>
-        </div>
+            <div class="vs-avatar">👤</div>
+        </nav>
     </header>
 
     <main class="vs-main">
-        <h2>검색 결과</h2>
-        
-        <div class="vs-list">
-            <!-- Item 1 -->
-            <div class="vs-item">
-                <div class="vs-thumb"></div>
-                <div class="vs-info">
+        <section class="vs-guide">
+            <h2>기억의 씨앗 찾기</h2>
+            <p>당신의 사랑을 증명할 소중한 기록의 후보들입니다.</p>
+        </section>
+
+        <div class="vs-grid">
+            <!-- Video Card 1 -->
+            <div class="vs-card">
+                <div class="card-thumb">
+                    <img src="https://img.youtube.com/vi/aqz-KE-bpKQ/mqdefault.jpg" alt="Video">
+                    <span class="duration">12:45</span>
+                </div>
+                <div class="card-content">
                     <h3>BTS (방탄소년단) 'Proof' Live Performance (feat. Anderson .Paak)</h3>
-                    <p class="vs-meta">BANGTANTV • 조회수 5.2M회 • 1년 전</p>
-                    <button class="btn-save-video"><span>🎥</span> 내 러브트리에 저장</button>
+                    <p class="card-meta">BANGTANTV • 5.2M Views</p>
+                    <a href="mobile-add-memory.html" class="btn-record-this">
+                        <span>✨</span> 이 순간 기록하기
+                    </a>
                 </div>
             </div>
 
-            <!-- Item 2 -->
-            <div class="vs-item">
-                <div class="vs-thumb" style="background:#d3c4bb;"></div>
-                <div class="vs-info">
+            <!-- Video Card 2 -->
+            <div class="vs-card">
+                <div class="card-thumb">
+                    <img src="https://img.youtube.com/vi/fS6_C_yL9Zc/mqdefault.jpg" alt="Video">
+                    <span class="duration">03:20</span>
+                </div>
+                <div class="card-content">
                     <h3>[CHOREOGRAPHY] BTS (방탄소년단) 'Yet To Come' Dance Practice</h3>
-                    <p class="vs-meta">BANGTANTV • 조회수 12M회 • 11개월 전</p>
-                    <button class="btn-save-video"><span>🎥</span> 내 러브트리에 저장</button>
+                    <p class="card-meta">BANGTANTV • 12M Views</p>
+                    <a href="mobile-add-memory.html" class="btn-record-this">
+                        <span>✨</span> 이 순간 기록하기
+                    </a>
                 </div>
             </div>
 
-            <!-- Item 3 -->
-            <div class="vs-item">
-                <div class="vs-thumb" style="background:#dfd6c4;"></div>
-                <div class="vs-info">
-                    <h3>BTS 'Proof' Album Showcase Special Stage</h3>
-                    <p class="vs-meta">HYBE LABELS • 조회수 843K회 • 1년 전</p>
-                    <button class="btn-save-video"><span>🎥</span> 내 러브트리에 저장</button>
+            <!-- Video Card 3 -->
+            <div class="vs-card">
+                <div class="card-thumb">
+                    <img src="https://img.youtube.com/vi/zS88e0x3vI4/mqdefault.jpg" alt="Video">
+                    <span class="duration">45:10</span>
+                </div>
+                <div class="card-content">
+                    <h3>BTS 'Proof' Album Showcase Special Stage Full Version</h3>
+                    <p class="card-meta">HYBE LABELS • 843K Views</p>
+                    <a href="mobile-add-memory.html" class="btn-record-this">
+                        <span>✨</span> 이 순간 기록하기
+                    </a>
+                </div>
+            </div>
+
+            <!-- Video Card 4 -->
+            <div class="vs-card">
+                <div class="card-thumb">
+                    <img src="https://img.youtube.com/vi/QU9c0053UAU/mqdefault.jpg" alt="Video">
+                    <span class="duration">03:52</span>
+                </div>
+                <div class="card-content">
+                    <h3>Jung Kook 'Seven (feat. Latto)' Official MV</h3>
+                    <p class="card-meta">HYBE LABELS • 300M Views</p>
+                    <a href="mobile-add-memory.html" class="btn-record-this">
+                        <span>✨</span> 이 순간 기록하기
+                    </a>
                 </div>
             </div>
         </div>
     </main>
+
+    <script>
+        // Simple search input interaction
+        const input = document.querySelector('.vs-search-bar input');
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                alert('검색 기능은 실제 API 연동 시 활성화됩니다.');
+            }
+        });
+    </script>
 </body>
 </html>
+
+

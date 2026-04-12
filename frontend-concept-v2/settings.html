@@ -10,73 +10,128 @@
     <link rel="stylesheet" href="css/settings.css">
 </head>
 <body class="settings-page">
-    <div class="settings-frame">
-        <header class="s-head">
-            <button class="btn-s-back">←</button>
-            <h2>공개 범위 설정</h2>
+    <div class="settings-container">
+        <!-- Header: Quiet Entry -->
+        <header class="settings-header">
+            <a href="home.html" class="btn-back-home">←</a>
+            <div>
+                <h1>설정</h1>
+                <p>내 기록과 계정을 관리하는 공간입니다.</p>
+            </div>
         </header>
 
-        <main class="s-scroll">
-            <section class="s-group">
-                <div class="opt-card active">
-                    <div class="opt-ico">👤🔒</div>
-                    <div class="opt-text">
-                        <h4>나만 보기</h4>
-                        <p>본인만 LoveTree를 볼 수 있습니다.</p>
+        <main>
+            <!-- Section 1: Memory Agent (Profile) -->
+            <section class="s-section">
+                <h2 class="s-section-title">나의 프로필</h2>
+                <div class="profile-minimal-card">
+                    <div class="profile-avatar">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky" alt="Avatar">
                     </div>
-                    <div class="radio-check"></div>
-                </div>
-
-                <div class="opt-card">
-                    <div class="opt-ico">🔗</div>
-                    <div class="opt-text">
-                        <h4>링크를 가진 사람만</h4>
-                        <p>링크를 알고 있는 사람에게만<br>LoveTree가 공개됩니다.</p>
+                    <div class="profile-info">
+                        <h3>러브트리 여행자</h3>
+                        <p>lovetree@example.com</p>
                     </div>
-                    <div class="radio-check"></div>
-                    <button class="btn-copy-link">Copy Link</button>
-                </div>
-
-                <div class="opt-card">
-                    <div class="opt-ico">🌐</div>
-                    <div class="opt-text">
-                        <h4>커뮤니티에 공개</h4>
-                        <p>모든 Lovetree 사용자가 커뮤니티에서<br>검색하고 볼 수 있습니다.</p>
-                    </div>
-                    <div class="radio-check"></div>
+                    <button class="btn-edit-profile">프로필 수정</button>
                 </div>
             </section>
 
-            <section class="s-group">
-                <div class="toggle-row">
-                    <div class="tr-text">
-                        <h5>댓글 허용</h5>
-                        <p>다른 사용자가 댓글을 남길 수 있습니다.</p>
+            <!-- Section 2: Love Temperature (Visibility) -->
+            <section class="s-section">
+                <h2 class="s-section-title">내 기록 공개 범위</h2>
+                <div class="visibility-grid">
+                    <div class="vis-card active">
+                        <span class="vis-icon">👤🔒</span>
+                        <h5>나만 보기</h5>
+                        <p>비밀스러운 나만의 기록장으로 남깁니다.</p>
                     </div>
-                    <div class="s-switch on"></div>
-                </div>
-                
-                <div class="toggle-row">
-                    <div class="tr-text">
-                        <h5>좋아요 허용</h5>
-                        <p>좋아요 표현을 받을 수 있습니다.</p>
+                    <div class="vis-card">
+                        <span class="vis-icon">🔗</span>
+                        <h5>링크 공개</h5>
+                        <p>링크의 온기를 아는 사람들과만 나눕니다.</p>
                     </div>
-                    <div class="s-switch on"></div>
+                    <div class="vis-card">
+                        <span class="vis-icon">🌐</span>
+                        <h5>커뮤니티 공개</h5>
+                        <p>광장에 심어 모든 팬과 함께 감상합니다.</p>
+                    </div>
                 </div>
+            </section>
 
-                <div class="toggle-row">
-                    <div class="tr-text">
-                        <h5>프로필 이름 공개</h5>
-                        <p>트리 옆에 표시 이름을 공개합니다.</p>
+            <!-- Section 3: Interaction & Quiet Mode -->
+            <section class="s-section">
+                <h2 class="s-section-title">알림 설정</h2>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>공감 받기</h4>
+                            <p>다른 팬이 내 기록에 공감할 수 있습니다.</p>
+                        </div>
+                        <div class="l-switch on"></div>
                     </div>
-                    <div class="s-switch on"></div>
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>댓글 받기</h4>
+                            <p>다른 팬이 내 기록에 댓글을 남길 수 있습니다.</p>
+                        </div>
+                        <div class="l-switch on"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>프로필 공개</h4>
+                            <p>내 활동명을 다른 팬에게 보여줍니다.</p>
+                        </div>
+                        <div class="l-switch"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Data & Account -->
+            <section class="s-section">
+                <h2 class="s-section-title">계정 관리</h2>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>내 기록 내보내기</h4>
+                            <p>내 트리 데이터를 파일로 백업합니다.</p>
+                        </div>
+                        <button class="btn-mini-action">내보내기</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="item-desc">
+                            <h4>서비스 알림 설정</h4>
+                            <p>새로운 댓글이나 소식을 전해드립니다.</p>
+                        </div>
+                        <div class="l-switch on"></div>
+                    </div>
                 </div>
             </section>
         </main>
 
-        <footer class="s-footer">
-            <button class="btn-save-settings">저장</button>
+        <!-- Footer: Quiet Save -->
+        <footer class="settings-footer">
+            <button class="btn-logout">로그아웃</button>
+            <button class="btn-quiet-save">설정 저장하기</button>
         </footer>
     </div>
+
+    <!-- Interaction Script -->
+    <script>
+        // Toggle switches
+        document.querySelectorAll('.l-switch').forEach(sw => {
+            sw.addEventListener('click', () => {
+                sw.classList.toggle('on');
+            });
+        });
+
+        // Visibility select
+        document.querySelectorAll('.vis-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.vis-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
+

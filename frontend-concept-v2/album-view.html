@@ -5,149 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>앨범 기억 - Lovetree</title>
+    <title>기억 보관함 - Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/album-view.css">
 </head>
 <body class="av-page">
     <div class="av-frame">
+        <!-- 감상 무드 헤더 -->
         <header class="av-header">
-            <button class="av-menu-ico">
-                <span></span><span></span><span></span>
-            </button>
-            <h2>앨범 기억</h2>
+            <h2>기억 보관함</h2>
+            <div class="av-close-ico">✕</div>
         </header>
 
         <main class="av-scroll">
             <div class="album-grid">
-                <!-- Generating enough elements to portray the dense grid shown in the mockup -->
-                <!-- Item 1 -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>첫 콘서트 엔딩 무대</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">행복</span></div>
+                
+                <!-- 기억 1 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="기억 1">
                     </div>
-                </div>
-                <!-- Item 2 -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
                     <div class="av-info">
-                        <h3>레전드 음악방송 직캠</h3>
-                        <div class="av-tags"><span class="av-tag at-sub">감동</span><span class="av-tag at-sub">감동</span></div>
+                        <span class="av-date">2023. 11. 15</span>
+                        <h3>첫 단독 콘서트 엔딩 무대, 우리가 공유한 눈물</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#콘서트</span>
+                            <span class="av-tag">#감동</span>
+                        </div>
                     </div>
-                </div>
-                <!-- Item 3 -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
+                </article>
+
+                <!-- 기억 2 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기억 2">
+                    </div>
                     <div class="av-info">
-                        <h3>앵콜 무대 떼창 순간</h3>
-                        <div class="av-tags"><span class="av-tag at-sub">감동</span><span class="av-tag at-sub">열광</span></div>
+                        <span class="av-date">2023. 12. 01</span>
+                        <h3>레전드 음악방송 직캠, 입덕의 결정적 순간</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#입덕</span>
+                        </div>
                     </div>
-                </div>
-                <!-- Row 2 -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
+                </article>
+
+                <!-- 기억 3 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=400&auto=format&fit=crop" alt="기억 3">
+                    </div>
                     <div class="av-info">
-                        <h3>팬미팅 첫 눈맞춤</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">행복</span></div>
+                        <span class="av-date">2024. 01. 20</span>
+                        <h3>앵콜 무대 떼창의 전율, 그 뜨거웠던 열기</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#열광</span>
+                            <span class="av-tag">#행복</span>
+                        </div>
                     </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
+                </article>
+
+                <!-- 기억 4 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기억 4">
+                    </div>
                     <div class="av-info">
-                        <h3>입덕 계기 무대 영상</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-main">입덕</span></div>
+                        <span class="av-date">2024. 04. 12</span>
+                        <h3>팬미팅 첫 눈맞춤, 심장이 멈추는 줄 알았던 날</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#설렘</span>
+                        </div>
                     </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
+                </article>
+
+                <!-- 기억 5 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="기억 5">
+                    </div>
                     <div class="av-info">
-                        <h3>울컥했던 수상 소감</h3>
-                        <div class="av-tags"><span class="av-tag at-main">감동</span><span class="av-tag at-sub">눈물</span></div>
+                        <span class="av-date">2024. 05. 05</span>
+                        <h3>가사에 울컥했던 라이브, 나를 위한 위로</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#위로</span>
+                        </div>
                     </div>
-                </div>
-                <!-- Row 3 -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
+                </article>
+
+                <!-- 기억 6 -->
+                <article class="av-item">
+                    <div class="av-thumb">
+                        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop" alt="기억 6">
+                    </div>
                     <div class="av-info">
-                        <h3>퇴근길에 다시 본 무대</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">행복</span></div>
+                        <span class="av-date">2024. 06. 12</span>
+                        <h3>티켓팅 대성공! 소리 지르며 뛰어다닌 오후</h3>
+                        <div class="av-tags">
+                            <span class="av-tag">#일상</span>
+                        </div>
                     </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>가사에 울컥한 라이브</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">감동</span></div>
-                    </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>다시 돌려본 안무 연습</h3>
-                        <div class="av-tags"><span class="av-tag at-sub">감동</span><span class="av-tag at-sub">행복</span></div>
-                    </div>
-                </div>
-                <!-- Row 4 -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>공연 전 떨리던 대기</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">행복</span></div>
-                    </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>첫 직캠 저장한 날</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">감동</span></div>
-                    </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>짧지만 강했던 엔딩</h3>
-                        <div class="av-tags"><span class="av-tag at-sub">감동</span><span class="av-tag at-sub">행복</span></div>
-                    </div>
-                </div>
-                <!-- Row 5 (Added for explicit density visibility on longer screens) -->
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>무한 반복한 앵콜 직캠</h3>
-                        <div class="av-tags"><span class="av-tag at-main">설렘</span><span class="av-tag at-sub">행복</span></div>
-                    </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>숨 참고 본 티저 영상</h3>
-                        <div class="av-tags"><span class="av-tag at-main">감동</span><span class="av-tag at-sub">행복</span></div>
-                    </div>
-                </div>
-                <div class="av-item">
-                    <div class="av-thumb"><div class="play-btn"></div></div>
-                    <div class="av-info">
-                        <h3>심장이 먼저 반응한 순간</h3>
-                        <div class="av-tags"><span class="av-tag at-sub">심쿵</span><span class="av-tag at-sub">열광</span></div>
-                    </div>
-                </div>
+                </article>
             </div>
         </main>
 
+        <!-- 정제된 내비게이션 바 -->
         <nav class="av-nav">
             <div class="an-item active">
-                <span class="an-ico">🏠</span><span class="an-text">홈</span>
+                <div class="an-dot"></div>
+                <span class="an-text">트리</span>
             </div>
             <div class="an-item">
-                <span class="an-ico">🎬</span><span class="an-text">둘러보기</span>
+                <div class="an-dot"></div>
+                <span class="an-text">탐색</span>
             </div>
             <div class="an-item">
-                <span class="an-ico">❤️</span><span class="an-text">기억</span>
-            </div>
-            <div class="an-item">
-                <span class="an-ico">👤</span><span class="an-text">내 정보</span>
+                <div class="an-dot"></div>
+                <span class="an-text">마이</span>
             </div>
         </nav>
     </div>
