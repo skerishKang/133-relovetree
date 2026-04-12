@@ -13,11 +13,17 @@
     <div class="av-frame">
         <!-- 감상 무드 헤더 -->
         <header class="av-header">
-            <h2>기억 보관함</h2>
-            <div class="av-close-ico">✕</div>
+            <h2>나의 기억</h2>
+            <button class="av-close-btn" aria-label="닫기">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
         </header>
 
         <main class="av-scroll">
+            <!-- 트리에서 열린 기록 -->
+            <p class="av-context-hint">오늘의 추억</p>
             <div class="album-grid">
                 
                 <!-- 기억 1 -->

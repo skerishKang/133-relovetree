@@ -10,147 +10,160 @@
     <link rel="stylesheet" href="css/editor-desktop.css">
 </head>
 <body class="ed-page">
+    <!-- Sidebar: Personal Archive -->
     <aside class="ed-sidebar">
         <div class="logo">🌿 Lovetree</div>
         <nav class="ed-nav">
+            <span class="nav-group-label">Library</span>
             <a href="home.html" class="ed-nav-item">
-                <span class="nav-ico">🏠</span> 홈
+                <span class="nav-circle"></span> 홈
             </a>
             <a href="my-trees.html" class="ed-nav-item active">
-                <span class="nav-ico">🌱</span> 내 러브트리
+                <span class="nav-circle"></span> 내 러브트리
             </a>
             <a href="community.html" class="ed-nav-item">
-                <span class="nav-ico">✨</span> 모아보기
+                <span class="nav-circle"></span> 커뮤니티
             </a>
             <a href="settings.html" class="ed-nav-item">
-                <span class="nav-ico">⚙️</span> 설정
+                <span class="nav-circle"></span> 설정
             </a>
         </nav>
-        <button class="side-btn">새 러브트리 만들기</button>
+        <button class="side-btn">새 러브트리 심기</button>
     </aside>
 
+    <!-- Workspace: The Love Tree Board -->
     <main class="ed-workspace">
         <header class="ws-top">
-            <div class="ws-search">
-                <span>🔍 검색 순간 추가</span>
-            </div>
-            <button class="add-mem-top">+ 순간 추가</button>
+            <div class="ws-search">기억하고 싶은 순간을 검색하세요...</div>
+            <a href="video-search.html" style="text-decoration: none;">
+                <button class="btn-primary-sm">+ 새 순간 추가</button>
+            </a>
         </header>
 
-        <section class="canvas">
-            <svg class="canvas-svg" width="100%" height="100%" viewBox="0 0 1200 800">
-                <!-- Main trunk (Organic with tapering feel) -->
-                <path class="branch-path main" d="M50,400 C150,400 200,400 350,400" />
-                
-                <!-- Major branches -->
-                <path class="branch-path sub" d="M350,400 C450,400 480,350 550,280" />
-                <path class="branch-path sub" d="M350,400 C450,400 480,450 630,550" />
-                
-                <!-- Minor sub-branches -->
-                <path class="branch-path leaf" d="M550,280 C620,210 650,180 750,150" />
-                <path class="branch-path leaf" d="M550,280 C600,280 640,300 680,340" />
-                <path class="branch-path leaf" d="M630,550 C700,550 750,580 820,620" />
-                <path class="branch-path leaf" d="M630,550 C680,620 720,680 780,720" />
-                
-                <!-- Secondary level branches -->
-                 <path class="branch-path leaf" d="M150,400 C150,300 180,250 250,200" />
+        <section class="canvas" id="zoom-canvas">
+            <!-- Organic Branches (SVG) -->
+            <svg class="canvas-svg" width="2000" height="2000" viewBox="0 0 2000 2000">
+                <path class="branch-path main" d="M100,600 L400,600" />
+                <path class="branch-path sub" d="M400,600 C500,600 550,450 700,350" />
+                <path class="branch-path sub" d="M400,600 C500,600 550,750 750,850" />
+                <path class="branch-path leaf" d="M700,350 L950,200" />
+                <path class="branch-path leaf" d="M700,350 L900,500" />
             </svg>
 
-            <!-- Active Node (mirrors editor-desktop-active.png) -->
-            <!-- High-fidelity Active Node centered -->
-            <div class="ed-node active" style="top: 250px; left: 450px;">
+            <!-- Memory Nodes (Moment Cards / Fragments) -->
+            <!-- Root Moment -->
+            <div class="ed-node" style="top: 540px; left: 100px;">
                 <div class="node-img">
-                    <div class="play-btn-mini"><span></span></div>
+                    <img src="https://img.youtube.com/vi/aqz-KE-bpKQ/mqdefault.jpg" alt="Moment">
                 </div>
                 <div class="node-info">
                     <h5>첫 만남의 떨림</h5>
                     <p class="node-meta">2023.10.15</p>
-                    <p class="node-memo-preview">팬들과 함께 감동받았던 날...</p>
                 </div>
             </div>
 
-            <!-- Target Nodes -->
-            <!-- Surrounding context nodes -->
-            <div class="ed-node" style="top: 100px; left: 700px;">
-                <div class="node-img" style="background: #eaddd3;"></div>
+            <!-- Active Moment -->
+            <div class="ed-node active" style="top: 290px; left: 630px;">
+                <div class="node-img">
+                    <img src="https://img.youtube.com/vi/fS6_C_yL9Zc/mqdefault.jpg" alt="Moment">
+                </div>
                 <div class="node-info">
-                    <h5>콘서트 앵콜 무대</h5>
-                    <p class="node-meta">2023.10.16</p>
+                    <h5>춤선이 예쁜 날</h5>
+                    <p class="node-meta">2023.10.20</p>
                 </div>
             </div>
 
-            <div class="ed-node" style="top: 280px; left: 630px;">
-                <div class="node-img" style="background: #dfd6c4;"></div>
+            <!-- Other Branches -->
+            <div class="ed-node" style="top: 790px; left: 740px;">
+                <div class="node-img">
+                    <img src="https://img.youtube.com/vi/zS88e0x3vI4/mqdefault.jpg" alt="Moment">
+                </div>
                 <div class="node-info">
-                    <h5>대기실 비하인드</h5>
-                    <p class="node-meta">2023.10.17</p>
+                    <h5>가사가 들린 순간</h5>
+                    <p class="node-meta">2023.11.02</p>
                 </div>
             </div>
 
-            <div class="ed-node" style="top: 550px; left: 730px;">
-                <div class="node-img"></div>
-                <div class="node-info">
-                    <h5>팬들의 슬로건 이벤트</h5>
-                    <p class="node-meta">2023.10.17</p>
+            <div class="ed-node" style="top: 130px; left: 920px;">
+                <div class="node-img">
+                    <img src="https://img.youtube.com/vi/QU9c0053UAU/mqdefault.jpg" alt="Moment">
                 </div>
-            </div>
-            
-            <div class="ed-node" style="top: 180px; left: 160px;">
-                <div class="node-img"></div>
                 <div class="node-info">
-                    <h5>무대로 향하는 길</h5>
-                    <p class="node-meta">2023.10.14</p>
+                    <h5>앵콜의 감동</h5>
+                    <p class="node-meta">2023.11.15</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Detail Panel (strictly mirror editor-desktop-active.png) -->
+    <!-- Detail Story Panel (The Archival Side) -->
     <aside class="ed-panel">
         <header class="pan-top">
             <div class="pan-title">
                 <span class="ico-back">←</span>
-                <span>첫 만남의 떨림</span>
+                <span>춤선이 예쁜 날</span>
             </div>
-            <button class="pan-close">✕</button>
+            <button class="close-minimal">✕</button>
         </header>
 
-        <div class="pan-video">
-            <div class="vid-ctrls">
-                <span>▶</span>
-                <div class="vid-bar"><div class="vid-fill"></div></div>
-                <span>🔊</span>
-                <span>⚙️</span>
-                <span>◽</span>
-            </div>
-        </div>
-
-        <div class="pan-meta">
-            <div class="pm-row"><b>날짜</b> <div class="pm-val">2023.10.15</div></div>
-            <div class="pm-row"><b>태그</b> 
-                <div class="pm-val">
-                    <span class="pm-tag">#기억</span>
-                    <span class="pm-tag">#감동</span>
-                    <span class="pm-tag">#설렘</span>
+        <div class="pan-video-container">
+            <div class="pan-video">
+                <div class="vid-placeholder">
+                    <div class="play-circle">▶</div>
+                    <span>이 순간의 기록을 불러오는 중...</span>
                 </div>
             </div>
-            <div class="pm-row"><b>메모</b> <div class="pm-val">팬들과 함께 감동받았던 날, 평생 잊지 못할 추억이 생겼어요!</div></div>
         </div>
 
-        <div class="pan-setting">
-            <div class="ps-row">
-                <div class="row-left">
-                    <p>연결 설정</p>
-                    <p class="sub">등록한 미디어가 현재 트리에 자동으로 이어집니다.</p>
+        <div class="pan-content">
+            <div class="story-card">
+                <h4>Sentiment / 감정 기록</h4>
+                <p class="memo-text">무대 위에서 손끝 하나하나 살아있는 느낌이 너무 좋았어요. 기록해두고 싶을 만큼 계속 돌려보게 되는 영상입니다.</p>
+            </div>
+
+            <div class="archival-meta">
+                <div class="archive-item">
+                    <span class="archive-label">DATE</span>
+                    <span class="archive-val">2023.10.20</span>
+                </div>
+                <div class="archive-item">
+                    <span class="archive-label">TAGS</span>
+                    <span class="archive-val tag">#감동 #설렘 #입덕</span>
+                </div>
+                <div class="archive-item">
+                    <span class="archive-label">SOURCE</span>
+                    <span class="archive-val">YouTube • BANGTANTV</span>
                 </div>
             </div>
-            <div class="ps-row" style="margin-top: 20px;">
-                <p>🔗 다음 메모리 자동 연결</p>
-                <div class="switch on"></div>
-            </div>
         </div>
 
-        <button class="btn-add-connect">+ 메모리 추가</button>
+        <div class="pan-footer">
+            <a href="video-search.html" class="btn-full-brick">이 뒤에 새 순간 연결하기</a>
+        </div>
     </aside>
+
+    <script>
+        // Simple Interaction: Switch nodes (concept only)
+        document.querySelectorAll('.ed-node').forEach(node => {
+            node.addEventListener('click', () => {
+                document.querySelectorAll('.ed-node').forEach(n => n.classList.remove('active'));
+                node.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
+
+
+    <script>
+        // Simple Interaction: Switch nodes (concept only)
+        document.querySelectorAll('.ed-node').forEach(node => {
+            node.addEventListener('click', () => {
+                document.querySelectorAll('.ed-node').forEach(n => n.classList.remove('active'));
+                node.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

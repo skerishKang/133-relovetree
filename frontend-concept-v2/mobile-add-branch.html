@@ -5,43 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>순간 연결 - Lovetree</title>
+    <title>연결 지점 선택 - Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/mobile-add-branch.css">
 </head>
 <body class="mab-page">
     <div class="mab-frame">
+        <!-- 감상 흐름 헤더 -->
         <header class="mab-header">
-            <button class="btn-back">←</button>
-            <h2>어느 순간과 연결할까요?</h2>
+            <span class="btn-cancel">취소</span>
+            <h2>새로운 이야기가<br>시작될 곳을 골라주세요</h2>
         </header>
 
         <main class="mab-scroll">
             <div class="branch-tree">
+                <!-- Center trunk -->
                 <div class="bt-line"></div>
                 
-                <div class="bt-node">
-                    <div class="thumb"></div>
+                <!-- Node 1 -->
+                <div class="bt-node-container">
+                    <div class="bt-node">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" alt="기억 1">
+                        </div>
+                        <span class="emotion">FIRST MOMENT</span>
+                        <h3>첫 단독 콘서트의 기록</h3>
+                        <span class="date">2023. 11. 15</span>
+                    </div>
                 </div>
 
-                <div class="bt-node active">
-                    <div class="thumb"></div>
+                <!-- Node 2 (Selected) -->
+                <div class="bt-node-container">
+                    <div class="bt-node active">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=200&auto=format&fit=crop" alt="기억 2">
+                        </div>
+                        <span class="emotion">EXCITEMENT</span>
+                        <h3>레전드 음악방송 직캠</h3>
+                        <span class="date">2023. 12. 01</span>
+                    </div>
+
+                    <!-- Sprout: Where the new story begins -->
+                    <div class="sprout-anchor">
+                        <div class="sprout-line"></div>
+                        <div class="sprout-dot">+</div>
+                    </div>
                 </div>
 
-                <div class="bt-node">
-                    <div class="thumb"></div>
+                <!-- Node 3 -->
+                <div class="bt-node-container">
+                    <div class="bt-node">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=200&auto=format&fit=crop" alt="기억 3">
+                        </div>
+                        <span class="emotion">HAPPINESS</span>
+                        <h3>앵콜 무대 떼창의 전율</h3>
+                        <span class="date">2024. 01. 20</span>
+                    </div>
                 </div>
 
-                <!-- Floating placeholder from mockup -->
-                <div class="add-placeholder">
-                    <span>+</span>
-                    <p>이 순간 뒤에 연결하기</p>
+                <!-- Node 4 -->
+                <div class="bt-node-container">
+                    <div class="bt-node">
+                        <div class="thumb">
+                            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=200&auto=format&fit=crop" alt="기억 4">
+                        </div>
+                        <span class="emotion">HEARTBEAT</span>
+                        <h3>팬미팅 첫 눈맞춤</h3>
+                        <span class="date">2024. 04. 12</span>
+                    </div>
                 </div>
             </div>
         </main>
 
         <footer class="mab-footer">
-            <button class="btn-connect">이 순간 뒤에 연결하기</button>
+            <button class="btn-connect">이 기억 뒤에 연결하기</button>
         </footer>
     </div>
 </body>
