@@ -34,40 +34,63 @@
       <h1>나의 러브트리</h1>
       <p class="dash-desc">당신이 심은 소중한 사랑의 기록들입니다.</p>
     </div>
-    <a href="#" class="btn-create-tree">
+    <button id="btn-new-tree" class="btn-create-tree">
       <span class="dash-btn-ico">+</span> 새 러브트리 만들기
-    </a>
+    </button>
   </header>
 
-  <!-- Trees Grid: Empty State Mode -->
-  <section class="trees-grid" id="trees-container">
-    <!-- Empty State (Shown when no trees exist) -->
-    <div class="empty-state" id="empty-state">
-        <div class="empty-visual">
-            <div class="seed-sprout">
-                <div class="sprout-leaf left"></div>
-                <div class="sprout-leaf right"></div>
-                <div class="sprout-stem"></div>
-            </div>
-        </div>
-        <h2>당신의 이야기가 피어날 준비가 되었습니다</h2>
-        <p>아무것도 없던 정원에<br>첫 번째 사랑의 기억을 심어보세요.</p>
-        
-        <div class="empty-actions">
-            <a href="/pages/video-search.html" class="btn-empty-cta">첫 번째 순간 심기</a>
-            
-            <div class="es-tags-group">
-                <span class="es-tag">#첫콘서트</span>
-                <span class="es-tag">#입덕의순간</span>
-                <span class="es-tag">#최애무대</span>
-            </div>
+<!-- Trees Grid: Empty State Mode -->
+<section class="trees-grid" id="trees-container">
+  <!-- Loading State -->
+  <div id="loading-area" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>나무를 불러오는 중...</p>
+  </div>
 
-            <div class="empty-helper">
-                <a href="/pages/community.html">다른 팬들의 정원 둘러보기</a>
-            </div>
-        </div>
+  <!-- Content Area (tree list) -->
+  <div id="content-area" class="trees-list" style="display: none;">
+    <div id="tree-list"></div>
+  </div>
+
+  <!-- Empty State (Shown when no trees exist) -->
+  <div class="empty-state" id="empty-state" style="display: none;">
+    <div class="empty-visual">
+      <div class="seed-sprout">
+        <div class="sprout-leaf left"></div>
+        <div class="sprout-leaf right"></div>
+        <div class="sprout-stem"></div>
+      </div>
     </div>
-  </section>
+    <h2>당신의 이야기가 피어날 준비가 되었습니다</h2>
+    <p>아무것도 없던 정원에<br>첫 번째 사랑의 기억을 심어보세요.</p>
+
+    <div class="empty-actions">
+      <button id="btn-first-tree" class="btn-empty-cta">첫 번째 트리 만들기</button>
+
+      <div class="es-tags-group">
+        <span class="es-tag">#첫콘서트</span>
+        <span class="es-tag">#입덕의순간</span>
+        <span class="es-tag">#최애무대</span>
+      </div>
+
+      <div class="empty-helper">
+        <a href="/pages/community.html">다른 팬들의 정원 둘러보기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- New Tree Modal -->
+<div id="new-tree-modal" class="modal-overlay is-hidden">
+  <div class="modal-content">
+    <h3>새 러브트리 만들기</h3>
+    <input type="text" id="new-tree-name" placeholder="트리 이름을 입력하세요" maxlength="50">
+    <div class="modal-actions">
+      <button id="btn-cancel-tree" class="btn-cancel">취소</button>
+      <button id="btn-create-tree" class="btn-confirm">만들기</button>
+    </div>
+  </div>
+</div>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -75,11 +98,102 @@
   </footer>
 </div>
 
+<style>
+.loading-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #eee;
+  border-top-color: #e85a4f;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.trees-list {
+  display: grid;
+  gap: 16px;
+}
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.is-hidden { display: none; }
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+}
+.modal-content h3 {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+}
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.btn-cancel, .btn-confirm {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-cancel {
+  background: #f5f5f5;
+  border: none;
+  color: #666;
+}
+.btn-confirm {
+  background: #e85a4f;
+  border: none;
+  color: white;
+}
+.btn-confirm:disabled {
+  background: #ccc;
+}
+</style>
+
 <!-- Core App Modules -->
+<script src="/src/postgres-client-browser.js"></script>
 <script src="/src/shared-utils.js"></script>
 <script src="/src/shared.js"></script>
 <script src="/src/auth.js"></script>
 <script src="/src/api.js"></script>
+<script src="/src/flow-shared.js"></script>
+
+<!-- My Trees Page Logic -->
+<script src="/src/my-trees.js"></script>
 
 <!-- Auth Integration -->
 <script>

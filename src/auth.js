@@ -76,39 +76,44 @@ function initAuth() {
         window[AUTH_INIT_FLAG] = true;
     }
 
-    // Auth State Observer
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            console.log('User signed in:', user.email);
-            try {
-                if (typeof user.reload === 'function') {
-                    await user.reload();
-                }
-            } catch (error) {
-                if (isInvalidAuthSessionError(error)) {
-                    console.warn('Invalid Firebase session detected. Signing out stale user.');
-                    await firebase.auth().signOut().catch(function () {});
-                    clearStaleFirebaseAuthState();
-                    return;
-                }
-                console.warn('User reload skipped:', error);
-            }
-updateLoginUI(user);
-await syncUserToDatabase(user); // Saves to Neon PostgreSQL via compat layer, NOT Firestore
-        } else {
-            console.log('User signed out');
-            updateLoginUI(null);
+// Auth State Observer
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      console.log('User signed in:', user.email);
+      try {
+        if (typeof user.reload === 'function') {
+          await user.reload();
         }
+      } catch (error) {
+        if (isInvalidAuthSessionError(error)) {
+          console.warn('Invalid Firebase session detected. Signing out stale user.');
+          await firebase.auth().signOut().catch(function () {});
+          clearStaleFirebaseAuthState();
+          return;
+        }
+        console.warn('User reload skipped:', error);
+      }
+      updateLoginUI(user);
+      await syncUserToDatabase(user); // Saves to Neon PostgreSQL via compat layer, NOT Firestore
 
-        // 각 페이지에 인증 완료 상태를 알려주기 위한 훅
-        try {
-            if (typeof window.onAuthReady === 'function') {
-                window.onAuthReady(user);
-            }
-        } catch (e) {
-            console.error('onAuthReady callback failed:', e);
-        }
-    });
+      // Handle redirect after successful login
+      if (typeof handleAuthSuccessRedirect === 'function') {
+        handleAuthSuccessRedirect();
+      }
+    } else {
+      console.log('User signed out');
+      updateLoginUI(null);
+    }
+
+    // 각 페이지에 인증 완료 상태를 알려주기 위한 훅
+    try {
+      if (typeof window.onAuthReady === 'function') {
+        window.onAuthReady(user);
+      }
+    } catch (e) {
+      console.error('onAuthReady callback failed:', e);
+    }
+  });
 
     // Attach Event Listeners
     const loginBtn = document.getElementById('login-btn');
@@ -124,21 +129,32 @@ await syncUserToDatabase(user); // Saves to Neon PostgreSQL via compat layer, NO
  * Sign In with Google
  */
 async function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    // 항상 계정 선택 창이 뜨도록 설정 (기존 로그인 계정이 있어도 선택 가능)
-    try {
-        if (typeof provider.setCustomParameters === 'function') {
-            provider.setCustomParameters({ prompt: 'select_account' });
-        }
-    } catch (e) {
-        console.warn('Google Provider custom parameters 설정 실패:', e);
+  const provider = new firebase.auth.GoogleAuthProvider();
+  // 항상 계정 선택 창이 뜨도록 설정 (기존 로그인 계정이 있어도 선택 가능)
+  try {
+    if (typeof provider.setCustomParameters === 'function') {
+      provider.setCustomParameters({ prompt: 'select_account' });
     }
-    try {
-        await firebase.auth().signInWithPopup(provider);
-    } catch (error) {
-        console.error('Login failed:', error);
-        alert('로그인에 실패했습니다: ' + error.message);
-    }
+  } catch (e) {
+    console.warn('Google Provider custom parameters 설정 실패:', e);
+  }
+  try {
+    await firebase.auth().signInWithPopup(provider);
+  } catch (error) {
+    console.error('Login failed:', error);
+    alert('로그인에 실패했습니다: ' + error.message);
+  }
+}
+
+/**
+ * Handle auth redirect after successful login
+ */
+function handleAuthSuccessRedirect() {
+  // Check if we should redirect (from login page)
+  var isLoginPage = document.body.classList.contains('login-page');
+  if (isLoginPage) {
+    window.location.href = '/pages/my-trees.html';
+  }
 }
 
 /**
@@ -268,6 +284,7 @@ window.signInWithGoogle = signInWithGoogle;
 window.signOut = signOut;
 window.waitForAuth = waitForAuth;
 window.clearStaleFirebaseAuthState = clearStaleFirebaseAuthState;
+window.handleAuthSuccessRedirect = handleAuthSuccessRedirect;
 
 /**
  * Wait for Auth State
@@ -341,14 +358,14 @@ function setupEmailAuthForm() {
         const originalText = submitBtn.textContent;
         submitBtn.textContent = EMAIL_AUTH_MODE === 'login' ? '로그인 중...' : '가입 중...';
 
-        try {
-            if (EMAIL_AUTH_MODE === 'login') {
-                await firebase.auth().signInWithEmailAndPassword(email, password);
-            } else {
-                await firebase.auth().createUserWithEmailAndPassword(email, password);
-            }
+try {
+    if (EMAIL_AUTH_MODE === 'login') {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+    } else {
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+    }
 
-            window.location.href = '/index.html';
+    window.location.href = '/pages/my-trees.html';
         } catch (error) {
             console.error('Email auth error:', error);
             if (isInvalidAuthSessionError(error)) {
