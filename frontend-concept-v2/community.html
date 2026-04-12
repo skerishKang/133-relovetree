@@ -5,146 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/frontend-concept-v2/">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>커뮤니티 - Lovetree</title>
+    <title>커뮤니티 광장 - Lovetree</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/community.css">
 </head>
 <body class="comm-page">
-    <header class="comm-top shell">
-        <div class="top-left">
-            <div class="logo">Lovetree</div>
-        </div>
-        <div class="search-area">
-            <div class="search-box">
-                <span>🔍 팬심 가득한 러브트리 검색... </span>
+    <div class="shell">
+        <!-- Brand Header: Consistent with whole app -->
+        <header class="comm-top">
+            <div class="top-left">
+                <div class="logo">Lovetree</div>
             </div>
-        </div>
-        <div class="filter-area">
-            <div class="filter-btns">
-                <button class="f-btn active">인기</button>
-                <button class="f-btn">최신</button>
-                <button class="f-btn">입덕</button>
-                <button class="f-btn">콘서트</button>
-                <button class="f-btn">직캠</button>
-                <button class="f-btn">컴백</button>
+            <div class="search-area">
+                <div class="search-box">
+                    <span>🔍 어떤 팬의 사랑 경로를 발견해볼까요?</span>
+                </div>
             </div>
-        </div>
-    </header>
+            <div class="filter-area">
+                <button class="f-btn active">인기순</button>
+                <button class="f-btn">최신순</button>
+                <button class="f-btn">입덕 스토리</button>
+            </div>
+        </header>
 
-    <main class="shell">
-        <div class="comm-title">
-            <h2>"다른 팬들의 러브트리 구경하기"</h2>
-        </div>
-
-        <div class="discovery-grid">
-            <!-- Left Col 1 -->
-            <div class="disc-col">
-                <div class="disc-card card">
-                    <div class="dc-media m-rose"><span class="type-tag">MEMORY</span></div>
-                    <div class="dc-info">
-                        <h3>BTS - Map of the Soul 7 Memories</h3>
-                        <p class="dc-auth">👤 @HappyARMY</p>
-                        <div class="dc-tags"><span class="dc-tag">#감동</span> <span class="dc-tag">#설렘</span></div>
-                        <div class="dc-stats"><span>❤️ 256</span> <span>💬 42</span></div>
-                    </div>
-                </div>
-                <div class="disc-card card">
-                    <div class="dc-media m-blue"><span class="type-tag">LOVE</span></div>
-                    <div class="dc-info">
-                        <h3>SEVENTEEN Fun Compilation</h3>
-                        <p class="dc-auth">👤 @CARAT_love</p>
-                        <div class="dc-tags"><span class="dc-tag">#웃음</span></div>
-                        <div class="dc-stats"><span>❤️ 198</span> <span>💬 40</span></div>
-                    </div>
-                </div>
+        <main>
+            <div class="comm-title">
+                <h2>"사랑이 모여 자라나는 광장"</h2>
+                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요.</p>
             </div>
 
-            <!-- Left Col 2 -->
-            <div class="disc-col">
-                <div class="disc-card card">
-                    <div class="dc-media m-kids"><span class="type-tag">MEMORY</span></div>
-                    <div class="dc-info">
-                        <h3>My First Stray Kids Concert</h3>
-                        <p class="dc-auth">👤 @StayGold</p>
-                        <div class="dc-tags"><span class="dc-tag">#설렘</span></div>
-                        <div class="dc-stats"><span>❤️ 189</span> <span>💬 35</span></div>
-                    </div>
-                </div>
-                <div class="disc-card card">
-                    <div class="dc-media m-nct"><span class="type-tag">LOVE</span></div>
-                    <div class="dc-info">
-                        <h3>NCT DREAM Debut Days</h3>
-                        <p class="dc-auth">👤 @NCTzen_dream</p>
-                        <div class="dc-tags"><span class="dc-tag">#설렘</span></div>
-                        <div class="dc-stats"><span>❤️ 175</span> <span>💬 31</span></div>
-                    </div>
-                </div>
-            </div>
+            <!-- Dynamic Discovery Plaza Grid -->
+            <div class="discovery-grid">
+                
+                <!-- Col 1 -->
+                <div class="disc-col">
+                    <a href="community-tree-detail.html" class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                            <div class="mini-tree-viz">
+                                <div class="tree-node-dot"></div>
+                                <div class="tree-stem-line"></div>
+                                <div class="tree-node-dot"></div>
+                                <div class="tree-stem-line"></div>
+                                <div class="tree-node-dot"></div>
+                            </div>
+                        </div>
+                        <div class="dc-info">
+                            <h3>나의 첫 단독 콘서트 감동의 기록</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm"></div>
+                                <span>@CARAT_love</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#입덕</span>
+                                <span class="dc-tag">#콘서트</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 1.2k 공감</span>
+                                <span>💬 42 응원</span>
+                            </div>
+                        </div>
+                    </a>
 
-            <!-- Featured (Center) -->
-            <div class="disc-col featured-col">
-                <div class="featured-card card">
-                    <div class="fc-banner">Featured LoveTree</div>
-                    <div class="fc-viz">
-                        <svg class="fc-tree-svg" viewBox="0 0 100 200">
-                             <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#fdfbf7" fill="none" stroke-width="2" />
-                             <circle cx="50" cy="180" r="4" fill="#fdfbf7" />
-                             <circle cx="30" cy="50" r="3" fill="#fdfbf7" />
-                             <circle cx="70" cy="50" r="3" fill="#fdfbf7" />
-                        </svg>
-                    </div>
-                    <div class="fc-text">
-                        <h3>OUR JOURNEY WITH RED VELVET</h3>
-                        <p>👤 @ReVeluv_Fan</p>
-                        <p class="fc-sub">연결된 미니 트리 미리보기</p>
+                    <div class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                        </div>
+                        <div class="dc-info">
+                            <h3>밤새 찾아본 레전드 무대들 모음</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm" style="background: #cfe6cf;"></div>
+                                <span>@Daily_Kpop</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#정주행</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 842 공감</span>
+                                <span>💬 15 응원</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Col 1 -->
-            <div class="disc-col">
-                <div class="disc-card card">
-                    <div class="dc-media m-peach"><span class="type-tag">TWICE</span></div>
-                    <div class="dc-info">
-                        <h3>TWICE Comeback Cheer</h3>
-                        <p class="dc-auth">👤 @ONCE_forever</p>
-                        <div class="dc-tags"><span class="dc-tag">#행복</span></div>
-                        <div class="dc-stats"><span>❤️ 210</span> <span>💬 39</span></div>
+                <!-- Featured Spotlight (Span 2) -->
+                <div class="featured-col">
+                    <div class="featured-card">
+                        <div class="fc-banner">이번 주 가장 따뜻했던 러브트리</div>
+                        <div class="fc-viz-area">
+                            <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천">
+                            <div class="fc-tree-overlay">
+                                <svg class="fc-tree-svg" viewBox="0 0 100 200">
+                                     <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />
+                                     <circle cx="50" cy="180" r="5" fill="#b56e6e" />
+                                     <circle cx="30" cy="50" r="4" fill="#b56e6e" />
+                                     <circle cx="70" cy="50" r="4" fill="#b56e6e" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="fc-text">
+                            <h3>BTS와 함께 걸어온 1000일의 시간</h3>
+                            <p>첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 따뜻한 사랑의 경로를 함께 확인해보세요.</p>
+                            <a href="community-tree-detail.html" class="fc-btn-view">사랑의 경로 감상하기</a>
+                        </div>
                     </div>
                 </div>
-                <div class="disc-card card">
-                    <div class="dc-media m-mon"><span class="type-tag">LOVE</span></div>
-                    <div class="dc-info">
-                        <h3>MONSTA X High Energy F...</h3>
-                        <p class="dc-auth">👤 @Monbebe_X</p>
-                        <div class="dc-tags"><span class="dc-tag">#박력</span></div>
-                        <div class="dc-stats"><span>❤️ 230</span> <span>💬 45</span></div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Right Col 2 -->
-            <div class="disc-col">
-                <div class="disc-card card">
-                    <div class="dc-media m-ateez"><span class="type-tag">ATEEZ</span></div>
-                    <div class="dc-info">
-                        <h3>ATEEZ Special Moments</h3>
-                        <p class="dc-auth">👤 @ATINY_star</p>
-                        <div class="dc-tags"><span class="dc-tag">#설렘</span></div>
-                        <div class="dc-stats"><span>❤️ 153</span> <span>💬 28</span></div>
+                <!-- Col 3 -->
+                <div class="disc-col">
+                    <div class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                        </div>
+                        <div class="dc-info">
+                            <h3>쇼케이스 1열 직관, 그 꿈같은 날</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm" style="background: #e3cfe6;"></div>
+                                <span>@HappyMood</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#직관후기</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 512 공감</span>
+                                <span>💬 28 응원</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="disc-card card">
-                    <div class="dc-media m-mint"><span class="type-tag">DITTO</span></div>
-                    <div class="dc-info">
-                        <h3>NewJeans 'Ditto' Vibes</h3>
-                        <p class="dc-auth">👤 @Bunnies_love</p>
-                        <div class="dc-tags"><span class="dc-tag">#설렘</span></div>
-                        <div class="dc-stats"><span>❤️ 201</span> <span>💬 37</span></div>
+
+                    <div class="disc-card">
+                        <div class="dc-media">
+                            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="기억 이미지">
+                            <div class="mini-tree-viz">
+                                <div class="tree-node-dot"></div>
+                                <div class="tree-stem-line"></div>
+                                <div class="tree-node-dot"></div>
+                            </div>
+                        </div>
+                        <div class="dc-info">
+                            <h3>앨범 언박싱, 드디어 풀셋 완성!</h3>
+                            <div class="dc-auth">
+                                <div class="avatar-sm" style="background: #cfe6e6;"></div>
+                                <span>@Album_Lover</span>
+                            </div>
+                            <div class="dc-tags">
+                                <span class="dc-tag">#행복기록</span>
+                            </div>
+                            <div class="dc-stats">
+                                <span>❤️ 320 공감</span>
+                                <span>💬 12 응원</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 </body>
 </html>
