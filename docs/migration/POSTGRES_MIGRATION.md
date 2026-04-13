@@ -2,10 +2,10 @@
 
 ## Added backend pieces
 
-- Postgres schema: [netlify/sql/001_initial_postgres_schema.sql](/mnt/g/Ddrive/BatangD/task/workdiary/133-relovetree/netlify/sql/001_initial_postgres_schema.sql)
-- Netlify function Firestore-compat API: [netlify/functions/firestore-api.js](/mnt/g/Ddrive/BatangD/task/workdiary/133-relovetree/netlify/functions/firestore-api.js)
-- Shared backend libs: [netlify/functions/_lib](/mnt/g/Ddrive/BatangD/task/workdiary/133-relovetree/netlify/functions/_lib)
-- Frontend Firestore compatibility layer: [src/firebase-firestore-compat.js](/mnt/g/Ddrive/BatangD/task/workdiary/133-relovetree/src/firebase-firestore-compat.js)
+- Postgres schema: [netlify/sql/001_initial_postgres_schema.sql](netlify/sql/001_initial_postgres_schema.sql)
+- Netlify function Firestore-compat API: [netlify/functions/firestore-api.js](netlify/functions/firestore-api.js)
+- Shared backend libs: [netlify/functions/_lib](netlify/functions/_lib)
+- Frontend Firestore compatibility layer: [src/firebase-firestore-compat.js](src/firebase-firestore-compat.js)
 
 ## Required environment variables
 

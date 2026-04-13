@@ -177,11 +177,40 @@
         }
     }
 
+    /**
+     * Centralized Auth UI Handler 
+     * Handles the GNB login/logout button states across all standard pages.
+     */
+    function updateLTAuthUI(user) {
+        const authItem = document.getElementById('nav-auth-item') || document.querySelector('.btn-pill-auth');
+        const logoutBtn = document.getElementById('nav-logout-btn');
+        if (!authItem) return;
+
+        if (user) {
+            authItem.textContent = '내 트리';
+            authItem.href = '/pages/my-trees.html';
+            authItem.classList.add('logged-in');
+            if (logoutBtn) logoutBtn.classList.remove('is-hidden');
+            
+            // For community page active state
+            const commItem = document.getElementById('nav-community-item');
+            if (commItem && window.location.pathname.includes('community')) {
+                commItem.classList.add('active');
+            }
+        } else {
+            authItem.textContent = '로그인';
+            authItem.href = '/pages/login.html';
+            authItem.classList.remove('logged-in');
+            if (logoutBtn) logoutBtn.classList.add('is-hidden');
+        }
+    }
+
     const api = {
         shouldInjectGlobalLayout: shouldInjectGlobalLayout,
         buildGlobalHeaderHTML: buildGlobalHeaderHTML,
         buildGlobalMyModalHTML: buildGlobalMyModalHTML,
-        ensureGlobalLayoutInjected: ensureGlobalLayoutInjected
+        ensureGlobalLayoutInjected: ensureGlobalLayoutInjected,
+        updateLTAuthUI: updateLTAuthUI
     };
 
     window.ReloveSharedLayout = api;
@@ -189,4 +218,5 @@
     window.buildGlobalHeaderHTML = buildGlobalHeaderHTML;
     window.buildGlobalMyModalHTML = buildGlobalMyModalHTML;
     window.ensureGlobalLayoutInjected = ensureGlobalLayoutInjected;
+    window.updateLTAuthUI = updateLTAuthUI;
 })();

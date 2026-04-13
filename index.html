@@ -143,8 +143,26 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/postgres-client-browser.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared-layout.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
     <script src="/src/concept-state.js"></script>
+
     <script>
+        // Auth State Integration
+        window.onAuthReady = function(user) { 
+            if (window.updateLTAuthUI) window.updateLTAuthUI(user); 
+        };
+        setTimeout(() => { 
+            if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
+                window.updateLTAuthUI(firebase.auth().currentUser); 
+            }
+        }, 1000);
+
         // Simple entry animation
         document.querySelectorAll('.memory-node').forEach((el, idx) => {
             el.style.opacity = '0';

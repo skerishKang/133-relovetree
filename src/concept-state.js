@@ -44,6 +44,13 @@ home: { authItem: '#nav-auth-item', logoutBtn: '#nav-logout-btn', lovtreeItem: '
 
   function initAuth() {
     if (typeof firebase === 'undefined' || !firebase.auth) return;
+    
+    // Safety check: Don't call auth service if no apps were initialized
+    if (!firebase.apps || !firebase.apps.length) {
+      console.warn('[concept-state] Firebase not initialized. Auth state subscription skipped.');
+      return;
+    }
+    
     firebase.auth().onAuthStateChanged(function (user) {
       document.body.classList.toggle('auth-logged-in', !!user);
       document.body.classList.toggle('auth-logged-out', !user);

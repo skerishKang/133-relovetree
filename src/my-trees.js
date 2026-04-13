@@ -10,21 +10,13 @@
   function init() {
     F.requireAuth(function (user) {
       currentUser = user;
-      updateNavAuthUI(user);
+      if (window.updateLTAuthUI) window.updateLTAuthUI(user);
       showUserAvatar(user);
       attachEventListeners();
       loadTrees();
     });
   }
 
-  function updateNavAuthUI(user) {
-    var authItem = document.getElementById('nav-auth-item');
-    if (authItem && user) {
-      authItem.textContent = '내 트리';
-      authItem.href = 'my-trees.html';
-      authItem.classList.add('active');
-    }
-  }
 
   function showUserAvatar(user) {
     var img = document.getElementById('user-avatar');

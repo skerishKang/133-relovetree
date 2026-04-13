@@ -110,7 +110,9 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
 
     async function getAuthToken() {
         try {
-            if (!firebase.auth || !firebase.auth()) return '';
+            if (!firebase.auth || !firebase.apps || !firebase.apps.length) return '';
+            const auth = firebase.auth();
+            if (!auth) return '';
             const user = firebase.auth().currentUser;
             if (!user || typeof user.getIdToken !== 'function') return '';
             return await user.getIdToken();
@@ -118,8 +120,9 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
             try {
                 const message = String((e && (e.message || e.code)) || '');
                 const invalidAuth = /USER_NOT_FOUND|user-not-found|invalid-user-token|token.*expired|user token/i.test(message);
-                if (invalidAuth && firebase.auth && firebase.auth()) {
-                    firebase.auth().signOut().catch(function () {});
+                if (invalidAuth && firebase.auth && firebase.apps && firebase.apps.length) {
+                    const auth = firebase.auth();
+                    if (auth) auth.signOut().catch(function () {});
                     if (typeof window !== 'undefined' && typeof window.clearStaleFirebaseAuthState === 'function') {
                         window.clearStaleFirebaseAuthState();
                     }

@@ -4,10 +4,10 @@
 
 이 저장소에서 제품/화면/기능 작업을 시작하기 전에 반드시 아래 문서를 먼저 읽는다.
 
-- [PRODUCT_IDENTITY.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/PRODUCT_IDENTITY.md)
-- [MVP_SCOPE.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/MVP_SCOPE.md)
-- [USER_FLOW.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/USER_FLOW.md)
-- [DATA_NAMING_RULE.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/DATA_NAMING_RULE.md)
+- [PRODUCT_IDENTITY.md](docs/product/PRODUCT_IDENTITY.md)
+- [MVP_SCOPE.md](docs/product/MVP_SCOPE.md)
+- [USER_FLOW.md](docs/product/USER_FLOW.md)
+- [DATA_NAMING_RULE.md](docs/product/DATA_NAMING_RULE.md)
 
 ## Product Rule
 

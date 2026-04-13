@@ -13,6 +13,11 @@
   force = true
 
 [[redirects]]
+  from = "/index.js"
+  to = "/src/entries/index.js"
+  status = 200
+
+[[redirects]]
   from = "/home.html"
   to = "/index.html"
   status = 301
@@ -116,11 +121,6 @@
 [[redirects]]
   from = "/owner.html"
   to = "/pages/owner.html"
-  status = 301
-
-[[redirects]]
-  from = "/index.js"
-  to = "/src/entries/index.js"
   status = 301
 
 [[redirects]]

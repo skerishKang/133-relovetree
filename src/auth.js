@@ -143,7 +143,14 @@ async function signInWithGoogle() {
   }
   
   if (!firebase.apps || !firebase.apps.length) {
-    alert('Firebase가 초기화되지 않았습니다. 페이지를 새로고침해 주세요.');
+    console.error('Firebase not initialized before signInWithGoogle');
+    alert('Firebase가 초기화되지 않았습니다. 잠시 후 다시 시도하거나 페이지를 새로고침해 주세요.');
+    return;
+  }
+
+  // Ensure auth service is available
+  if (typeof firebase.auth !== 'function') {
+    alert('인증 서비스를 사용할 수 없습니다.');
     return;
   }
 
@@ -180,11 +187,18 @@ function handleAuthSuccessRedirect() {
  */
 async function signOut() {
     try {
+        if (!firebase.apps || !firebase.apps.length || typeof firebase.auth !== 'function') {
+            clearStaleFirebaseAuthState();
+            window.location.reload();
+            return;
+        }
         await firebase.auth().signOut();
         clearStaleFirebaseAuthState();
         window.location.reload();
     } catch (error) {
         console.error('Logout failed:', error);
+        clearStaleFirebaseAuthState();
+        window.location.reload();
     }
 }
 
@@ -310,6 +324,11 @@ window.handleAuthSuccessRedirect = handleAuthSuccessRedirect;
  */
 function waitForAuth() {
     return new Promise((resolve) => {
+        if (!firebase.apps || !firebase.apps.length || typeof firebase.auth !== 'function') {
+            console.warn('waitForAuth called but Firebase not initialized');
+            resolve(null);
+            return;
+        }
         const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
             unsubscribe();
             resolve(user);

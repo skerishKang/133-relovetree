@@ -59,7 +59,7 @@ function initFirebase() {
         return false;
     }
 
-    if (!firebase.apps.length) {
+    if (!firebase.apps || !firebase.apps.length) {
         try {
             // Priority: window.APP_CONFIG (most reliable in browser) > APP_CONFIG variable
             const config = (window.APP_CONFIG ? window.APP_CONFIG.firebase : null) || (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.firebase : null);
@@ -73,6 +73,9 @@ function initFirebase() {
             console.log('Firebase initialized successfully');
             return true;
         } catch (error) {
+            if (error.code === 'app/duplicate-app') {
+                return true;
+            }
             console.error('Firebase initialization failed:', error);
             return false;
         }
@@ -88,7 +91,10 @@ if (typeof window !== 'undefined') {
 function initFirebaseAppCheck() {
     try {
         if (typeof window === 'undefined' || typeof firebase === 'undefined') return false;
-        if (!firebase.apps || !firebase.apps.length) return false;
+        if (!firebase.apps || !firebase.apps.length) {
+            // Do not call firebase.appCheck() if no apps initialized, it throws No App error
+            return false;
+        }
 
         const config = window.RELOVETREE_APP_CHECK_CONFIG || {};
         const siteKey = String(config.siteKey || '').trim();
@@ -96,7 +102,6 @@ function initFirebaseAppCheck() {
 
         if (!siteKey) return false;
         if (typeof firebase.appCheck !== 'function') {
-            console.warn('Firebase App Check SDK not loaded');
             return false;
         }
 

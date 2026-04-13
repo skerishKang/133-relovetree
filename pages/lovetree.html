@@ -178,28 +178,20 @@
 
     <!-- Core App Modules -->
     <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared-layout.js"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
 
     <!-- Auth State Integration -->
     <script>
-        function updateLTAuthUI(user) {
-            const authItem = document.getElementById('nav-auth-item');
-            const logoutBtn = document.getElementById('nav-logout-btn');
-            if (user) {
-                authItem.textContent = '내 트리';
-                authItem.href = 'my-trees.html';
-                authItem.classList.add('logged-in');
-                logoutBtn.classList.remove('is-hidden');
-            } else {
-                authItem.textContent = '로그인';
-                authItem.href = 'login.html';
-                authItem.classList.remove('logged-in');
-                logoutBtn.classList.add('is-hidden');
+        window.onAuthReady = function(user) { 
+            if (window.updateLTAuthUI) window.updateLTAuthUI(user); 
+        };
+        setTimeout(() => { 
+            if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
+                window.updateLTAuthUI(firebase.auth().currentUser); 
             }
-        }
-        window.onAuthReady = function(user) { updateLTAuthUI(user); };
-        setTimeout(() => { if (window.firebase && firebase.auth().currentUser) updateLTAuthUI(firebase.auth().currentUser); }, 1000);
+        }, 1000);
         document.getElementById('nav-logout-btn').addEventListener('click', () => { if (window.signOut) window.signOut(); });
     </script>
 </body>

@@ -6,11 +6,11 @@
 
 이 저장소에서 기능/화면/디자인 작업을 시작하기 전에 아래 문서를 먼저 보는 것을 권장합니다.
 
-- 제품 기준 문서: [docs/product/PRODUCT_IDENTITY.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/PRODUCT_IDENTITY.md)
-- MVP 범위: [docs/product/MVP_SCOPE.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/MVP_SCOPE.md)
-- 핵심 사용자 흐름: [docs/product/USER_FLOW.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/USER_FLOW.md)
-- 데이터 명칭 규칙: [docs/product/DATA_NAMING_RULE.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/product/DATA_NAMING_RULE.md)
-- 작업자 규칙: [AGENTS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/AGENTS.md)
+- 제품 기준 문서: [docs/product/PRODUCT_IDENTITY.md](docs/product/PRODUCT_IDENTITY.md)
+- MVP 범위: [docs/product/MVP_SCOPE.md](docs/product/MVP_SCOPE.md)
+- 핵심 사용자 흐름: [docs/product/USER_FLOW.md](docs/product/USER_FLOW.md)
+- 데이터 명칭 규칙: [docs/product/DATA_NAMING_RULE.md](docs/product/DATA_NAMING_RULE.md)
+- 작업자 규칙: [AGENTS.md](AGENTS.md)
 
 핵심 문장:
 
@@ -53,23 +53,24 @@
 
 ```text
 133-relovetree/
-├── index.html
-├── netlify.toml
+├── index.html              # 랜딩 페이지 (V2)
+├── netlify.toml            # 라우팅 및 리다이렉트 설정
 ├── package.json
-├── assets/
-│   └── css/
-├── pages/
-├── src/
-│   ├── entries/
+├── css/                    # 페이지별 주요 CSS (home, comm, my-trees 등)
+├── assets/                 # 공통 자산 (favicon, 에디터 전용 CSS 등)
+├── pages/                  # 실제 HTML 소스 파일들
+│   ├── lovetree.html       # 제품 소개
+│   ├── community.html      # 탐색 광장
+│   ├── login.html          # 인증
+│   ├── my-trees.html       # 대시보드
+│   └── editor.html         # 트리 에디터
+├── src/                    # 비즈니스 로직 및 라이브러리
+│   ├── entries/            # 페이지별 진입점 스크립트
+│   ├── shared-layout.js    # 공통 레이어 (GNB, Auth UI)
+│   ├── postgres-client.js  # 데이터 액세스 (Standard)
 │   └── ...
 ├── netlify/
-│   └── functions/
-├── scripts/
-├── docs/
-│   ├── ops/
-│   ├── plans/
-│   ├── analysis/
-│   └── migration/
+│   └── functions/          # 서버리스 API (PostgreSQL 연동)
 └── README.md
 ```
 
@@ -129,8 +130,8 @@ npx playwright test --config ./config/playwright.config.js
 
 ## 운영 문서
 
-- 운영 가이드: [docs/ops/OPERATIONS.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/OPERATIONS.md)
-- 연결/배포/버전관리 런북: [docs/ops/RUNBOOK.md](/mnt/g/ddrive/batangd/task/workdiary/133-relovetree/docs/ops/RUNBOOK.md)
+- 운영 가이드: [docs/ops/OPERATIONS.md](docs/ops/OPERATIONS.md)
+- 연결/배포/버전관리 런북: [docs/ops/RUNBOOK.md](docs/ops/RUNBOOK.md)
 - 마이그레이션/분석 문서: `docs/migration`, `docs/analysis`
 
 ## 주의
@@ -139,89 +140,3 @@ npx playwright test --config ./config/playwright.config.js
 - App Check는 `window.RELOVETREE_APP_CHECK_CONFIG.siteKey`가 실제로 주입될 때만 활성화됩니다.
 - 서버 환경변수는 Netlify Dashboard의 Environment variables가 source of truth입니다.
 
-```html
-<title>Lovetree - 나의 덕질 기록 | K-pop 팬을 위한 타임라인</title>
-<meta name="description" content="...">
-<meta name="keywords" content="러브트리, 덕질, K-pop, 타임라인">
-```
-
-### 🌐 소셜 미디어 최적화
-
-- **Open Graph**: Facebook, LinkedIn 미리보기
-- **Twitter Card**: Twitter 미리보기 카드
-- **구조화된 데이터**: JSON-LD 마크업 (향후 지원 예정)
-
-## 🐛 버그 수정사항
-
-### 🛠 주요 수정
-
-- **HTML 구조 손상**: editor.html 태그 에러 수정
-- **접근성 누락**: ARIA 라벨, 키보드 이벤트 추가
-- **에러 처리**: 전역 에러 핸들러, 사용자 친화적 메시지
-- **성능 최적화**: 불필요한 리플로우 방지, 이미지 최적화
-
-## 🚀 향후 계획
-
-### 🔄 v1.2.0 개발 중
-
-- [ ] **PWA 지원**: 오프라인 기능, 앱 설치
-- [ ] **다크 모드**: 시스템 설정 감지, 토글 기능
-- [ ] **다국어 확장**: 일본어, 중국어 지원
-- [ ] **데이터 백업**: 클라우드 저장소 동기화
-
-### 📈 성능 목표
-
-- [ ] **LCP (Largest Contentful Paint)**: < 2.5초
-- [ ] **FID (First Input Delay)**: < 100ms
-- [ ] **CLS (Cumulative Layout Shift)**: < 0.1
-
-### 🎯 새로운 기능
-
-- [ ] **AI 추천**: 러브모먼트 자동 태깅
-- [ ] **공유 기능**: SNS 공유, 링크 생성
-- [ ] **통계 대시보드**: 활동 분석, 인사이트
-
-## 🤝 기여하기
-
-### 🐛 버그 리포팅
-
-```bash
-# GitHub Issues 사용
-https://github.com/skerishKang/133-relovetree/issues
-```
-
-### 💡 기능 제안
-
-- 기존 이슈 확인 후 새로운 이슈 생성
-- 명확한 사용 사례와 기대 결과 작성
-
-### 🔧 개발 참여
-
-1. Fork该项目
-2. 브랜치 생성 (`git checkout -b feature/AmazingFeature`)
-3. 변경사항 커밋 (`git commit -m 'Add some AmazingFeature'`)
-4. 브랜치 푸시 (`git push origin feature/AmazingFeature`)
-5. Pull Request 생성
-
-## 📞 지원
-
-### 📧 연락처
-
-- **이메일**: <skerishKang@example.com>
-- **GitHub**: [@skerishKang](https://github.com/skerishKang)
-
-### 🆘 도움말
-
-- **문서**: `README.md`, `docs/ops/OPERATIONS.md`, `docs/guides/TUTORIAL.md`
-- **FAQ**: GitHub Wiki 확인
-- **커뮤니티**: GitHub Discussions
-
-## 📄 라이선스
-
-이 프로젝트는 ISC 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
-
----
-
-**Made with ❤️ for K-pop fans worldwide**
-
-*당신의 덕질 여정이 더욱 아름다워지길 바랍니다! ✨*
