@@ -153,8 +153,8 @@
 | 파일 | 상태 | 설명 |
 |------|------|------|
 | `src/mobile-tree.js` | ✅ 활성 | mobile-tree.html에서 사용 |
-| `src/mobile-add-memory.js` | 🗑️ 삭제 완료 | 고아 파일 (삭제됨) |
-| `src/mobile-add-branch.js` | 🗑️ 삭제 완료 | 고아 파일 (삭제됨) |
+| `src/mobile-add-memory.js` | 🗑️ 복구됨 | archive/recovered-legacy/로 이동 |
+| `src/mobile-add-branch.js` | 🗑️ 복구됨 | archive/recovered-legacy/로 이동 |
 
 ### 2.2 src/editor - 에디터 모듈 (별도 트랙)
 
@@ -216,6 +216,7 @@
 | `archive/prototype-snapshots-20260413/` | 프로토타입 스냅샷 | 보류 |
 | `archive/root-cleanup-20260413/` | 클린업 산출물 | 보류 |
 | `archive/simple-prototype/` | 심플 프로토타입 | 보류 |
+| `archive/recovered-legacy/` | 최근 복구 파일 | 보류 |
 
 > **삭제 후보**: archive 폴더 전체 (100+ 파일, 실제 운영 미사용)
 
