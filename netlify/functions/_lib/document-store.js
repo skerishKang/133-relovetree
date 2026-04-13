@@ -1,8 +1,27 @@
 /**
  * ⚠️ CORE DATA LAYER - Lovetree PostgreSQL Document Store
  * 
- * This handles the actual SQL mapping to Neon/PostgreSQL.
- * All Firestore-style transforms (increment, serverTimestamp, etc.) are processed here.
+ * This is the ONLY file that writes SQL to Neon/PostgreSQL.
+ * All Firestore-style transforms (increment, serverTimestamp, arrayUnion, delete)
+ * are processed HERE into actual SQL values before persisting.
+ * 
+ * Architecture (full data path):
+ *   Browser → postgres-client-browser.js → firebase-firestore-compat.js (shim)
+ *     → /api/firestore → firestore-api.js → [THIS FILE] → Neon/PostgreSQL
+ * 
+ * Transform flow:
+ *   Client calls FieldValue.increment(1)
+ *     → shim converts to {__firestoreTransform: true, type: 'increment', operand: 1}
+ *     → this file's applyTransform() converts to: currentValue + operand
+ *   Client calls FieldValue.serverTimestamp()
+ *     → shim converts to {__firestoreTransform: true, type: 'serverTimestamp'}
+ *     → this file's applyTransform() converts to: nowIso (current server time)
+ * 
+ * For new server code, use the official entry point:
+ *   const { queryPostgresCollection, getPostgresDoc } = require('./db-api');
+ * 
+ * DO NOT reference this file directly from Netlify Functions.
+ * Use db-api.js as the public interface.
  */
 const crypto = require('crypto');
 const { query, withTransaction } = require('./db');

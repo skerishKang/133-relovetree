@@ -80,11 +80,12 @@ test.describe('Editor FieldValue Shim Verification', () => {
      * File: src/editor-data.js — uses FieldValue.increment(1)
      * Scope: source code string pattern only, not runtime transform output
      */
-    test('viewCount increment - FieldValue.increment(1) call exists in editor-data.js', async ({ page }) => {
-        // Read the source file to verify the pattern exists
-        const response = await page.request.get('/src/editor-data.js');
+    test('viewCount increment - FieldValue.increment(1) call exists in editor-data.js', async ({ page, baseURL }) => {
+        // Use absolute URL from baseURL to ensure file is found on dev server
+        const response = await page.request.get(baseURL + '/src/editor-data.js');
+        expect(response.status(), 'Failed to fetch /src/editor-data.js').toBe(200);
+        
         const sourceCode = await response.text();
-
         const hasViewCountIncrement = sourceCode.includes('viewCount') && 
             sourceCode.includes('FieldValue.increment(1)');
         expect(hasViewCountIncrement, 'editor-data.js should contain FieldValue.increment(1) for viewCount').toBeTruthy();
@@ -92,13 +93,12 @@ test.describe('Editor FieldValue Shim Verification', () => {
 
     /**
      * [Source Pattern] Test 2: lastOpened serverTimestamp on editor load
-     * File: src/editor-data.js — uses FieldValue.serverTimestamp()
-     * Scope: source code string pattern only
      */
-    test('lastOpened serverTimestamp - FieldValue.serverTimestamp() call exists in editor-data.js', async ({ page }) => {
-        const response = await page.request.get('/src/editor-data.js');
+    test('lastOpened serverTimestamp - FieldValue.serverTimestamp() call exists in editor-data.js', async ({ page, baseURL }) => {
+        const response = await page.request.get(baseURL + '/src/editor-data.js');
+        expect(response.status()).toBe(200);
+        
         const sourceCode = await response.text();
-
         const hasLastOpenedTimestamp = sourceCode.includes('lastOpened') && 
             sourceCode.includes('FieldValue.serverTimestamp()');
         expect(hasLastOpenedTimestamp, 'editor-data.js should contain FieldValue.serverTimestamp() for lastOpened').toBeTruthy();
@@ -106,26 +106,24 @@ test.describe('Editor FieldValue Shim Verification', () => {
 
     /**
      * [Source Pattern] Test 3: Comment createdAt serverTimestamp
-     * File: src/editor-comments.js — uses FieldValue.serverTimestamp()
-     * Scope: source code string pattern only
      */
-    test('Comment createdAt - FieldValue.serverTimestamp() call exists in editor-comments.js', async ({ page }) => {
-        const response = await page.request.get('/src/editor-comments.js');
+    test('Comment createdAt - FieldValue.serverTimestamp() call exists in editor-comments.js', async ({ page, baseURL }) => {
+        const response = await page.request.get(baseURL + '/src/editor-comments.js');
+        expect(response.status()).toBe(200);
+        
         const sourceCode = await response.text();
-
         const hasServerTimestamp = sourceCode.includes('FieldValue.serverTimestamp()');
         expect(hasServerTimestamp, 'editor-comments.js should contain FieldValue.serverTimestamp()').toBeTruthy();
     });
 
     /**
      * [Source Pattern] Test 4: shareCount increment
-     * File: src/editor-actions.js — uses FieldValue.increment(1)
-     * Scope: source code string pattern only
      */
-    test('shareCount increment - FieldValue.increment call exists in editor-actions.js', async ({ page }) => {
-        const response = await page.request.get('/src/editor-actions.js');
+    test('shareCount increment - FieldValue.increment call exists in editor-actions.js', async ({ page, baseURL }) => {
+        const response = await page.request.get(baseURL + '/src/editor-actions.js');
+        expect(response.status()).toBe(200);
+        
         const sourceCode = await response.text();
-
         const hasShareCountIncrement = sourceCode.includes('shareCount') && 
             sourceCode.includes('FieldValue.increment');
         expect(hasShareCountIncrement, 'editor-actions.js should contain FieldValue.increment for shareCount').toBeTruthy();
@@ -133,14 +131,21 @@ test.describe('Editor FieldValue Shim Verification', () => {
 
     /**
      * [Network Payload] Test 5: Verify runtime network payload for increment
-     * Scope: Intercepts the actual POST request and verifies __firestoreTransform
      */
     test('Network Payload: updateTree should send __firestoreTransform for increment', async ({ page }) => {
+        const firestoreRequests = [];
+        page.on('request', request => {
+            if (request.url().includes('api/firestore') && request.method() === 'POST') {
+                try {
+                    firestoreRequests.push(JSON.parse(request.postData() || '{}'));
+                } catch (e) {}
+            }
+        });
+
         await page.goto('/pages/editor.html?id=test-tree');
         await page.waitForLoadState('networkidle');
 
         // Trigger an action that causes a tree update with increment
-        // In this case, we'll manually call a function that increments viewCount
         await page.evaluate(async () => {
             if (window.postgresDB) {
                 await window.postgresDB.collection('trees').doc('test-tree').update({
@@ -149,22 +154,36 @@ test.describe('Editor FieldValue Shim Verification', () => {
             }
         });
 
-        const updateReq = firestoreRequests.find(r => 
-            r.method === 'update' && 
-            r.path === 'trees/test-tree' &&
-            r.data && r.data.viewCount
-        );
+        // Poll for the captured request to avoid race conditions
+        let updateData = null;
+        for (let i = 0; i < 20; i++) {
+            const req = firestoreRequests.find(r => r.method === 'update' && r.path === 'trees/test-tree');
+            if (req && req.data && req.data.viewCount) {
+                updateData = req.data;
+                break;
+            }
+            await page.waitForTimeout(250);
+        }
 
-        expect(updateReq, 'An update request for trees/test-tree must be sent').toBeDefined();
-        expect(updateReq.data.viewCount.__firestoreTransform).toBe(true);
-        expect(updateReq.data.viewCount.type).toBe('increment');
-        expect(updateReq.data.viewCount.operand).toBe(1);
+        expect(updateData, 'Request for trees/test-tree update with viewCount must be captured').not.toBeNull();
+        expect(updateData.viewCount.__firestoreTransform).toBe(true);
+        expect(updateData.viewCount.type).toBe('increment');
+        expect(updateData.viewCount.operand).toBe(1);
     });
 
     /**
      * [Network Payload] Test 6: Verify runtime network payload for serverTimestamp
      */
     test('Network Payload: updateTree should send __firestoreTransform for serverTimestamp', async ({ page }) => {
+        const firestoreRequests = [];
+        page.on('request', request => {
+            if (request.url().includes('api/firestore') && request.method() === 'POST') {
+                try {
+                    firestoreRequests.push(JSON.parse(request.postData() || '{}'));
+                } catch (e) {}
+            }
+        });
+
         await page.goto('/pages/editor.html?id=test-tree');
         await page.waitForLoadState('networkidle');
 
@@ -176,15 +195,19 @@ test.describe('Editor FieldValue Shim Verification', () => {
             }
         });
 
-        const updateReq = firestoreRequests.find(r => 
-            r.method === 'update' && 
-            r.path === 'trees/test-tree' &&
-            r.data && r.data.lastOpened
-        );
+        let updateData = null;
+        for (let i = 0; i < 20; i++) {
+            const req = firestoreRequests.find(r => r.method === 'update' && r.path === 'trees/test-tree');
+            if (req && req.data && req.data.lastOpened) {
+                updateData = req.data;
+                break;
+            }
+            await page.waitForTimeout(250);
+        }
 
-        expect(updateReq, 'An update request for trees/test-tree must be sent').toBeDefined();
-        expect(updateReq.data.lastOpened.__firestoreTransform).toBe(true);
-        expect(updateReq.data.lastOpened.type).toBe('serverTimestamp');
+        expect(updateData, 'Request for trees/test-tree update with lastOpened must be captured').not.toBeNull();
+        expect(updateData.lastOpened.__firestoreTransform).toBe(true);
+        expect(updateData.lastOpened.type).toBe('serverTimestamp');
     });
 
     /**
@@ -284,3 +307,4 @@ test.describe('Editor FieldValue Shim Verification', () => {
         expect(result.__firestoreTransform).toBe(true);
         expect(result.type).toBe('delete');
     });
+});

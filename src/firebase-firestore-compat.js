@@ -23,7 +23,16 @@
  * Auth note: Firebase Auth IS used for login/session (real Firebase).
  * But database operations go through this layer to PostgreSQL.
  * 
+ * Why this file is NOT renamed:
+ *   - 37+ editor scripts depend on the Firestore-style API
+ *   - /api/firestore endpoint must remain for backward compatibility
+ *   - Renaming would break all existing code with no functional benefit
+ *   - New code should use postgres-client-browser.js instead
+ * 
  * For new code, use: /src/postgres-client-browser.js (browser) or /src/postgres-client.js (ES modules)
+ * 
+ * @see docs/product/DATA_NAMING_RULE.md
+ * @see docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md
  */
 (function () {
 if (typeof window === 'undefined' || typeof firebase === 'undefined') {

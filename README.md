@@ -72,25 +72,50 @@ const db = window.postgresDB;
 const snapshot = await db.collection('trees').where('isPublic', '==', true).get();
 
 // ✅ 작동함: firebase.firestore()를 shim이 가로채어 PostgreSQL로 연결
-const db = window.firebase.firestore(); // shim이 가로채어 라우팅
+//    단, 신규 코드에서는 이 방식을 쓰지 마세요
+const db = window.firebase.firestore(); // shim이 가로채어 라우팅 (legacy)
 
-// ❌ 주의: firebase.firestore.FieldValue는 shim의 구현임
-//         실제 Firestore SDK가 아님
+// ❌ 금지: firebase-firestore-compat.js 직접 참조
+// <script src="/src/firebase-firestore-compat.js"></script>
+
+// ❌ 금지: firebase.firestore.FieldValue 직접 호출 (에디터 기존 코드만 허용)
+firebase.firestore.FieldValue.increment(1);
 ```
 
 - ✅ `src/postgres-client-browser.js` 로드 후 `window.postgresDB` 사용
-- ⚠️ 레거시: `firebase.firestore()`는 shim이 가로채어 PostgreSQL로 연결 (작동은 함)
-- ❌ 함수명/주석에 "Firestore" 추가 금지
+- ⚠️ 레거시: `firebase.firestore()`는 shim이 가로채어 PostgreSQL로 연결 (작동은 함, 신규 코드에서 사용 금지)
+- ❌ `src/firebase-firestore-compat.js` 직접 참조 금지
+- ❌ 신규 코드에서 함수명/주석에 "Firestore" 추가 금지
+
+**서버 측 (Netlify Functions)**:
+
+```javascript
+// ✅ 권장: db-api.js를 공식 진입점으로 사용
+const { queryPostgresCollection, getPostgresDoc } = require('./_lib/db-api');
+
+// ❌ 금지: firestore-api.js 직접 참조
+const { queryCollection, getDoc } = require('./_lib/firestore-api'); // 내부 구현
+```
 
 ### 5 Rules for New Developers
 
-1. **Don't trust the name "Firestore"**: In this repo, "Firestore" often means "PostgreSQL using a Firestore-like API".
-2. **Use official entry points**: 
-   - Browser: `<script src="/src/postgres-client-browser.js"></script>` -> `window.postgresDB`
-   - Server: `const db = require('./_lib/db-api');`
-3. **No direct shim imports**: Never import `firebase-firestore-compat.js` directly in new modules.
-4. **Follow the Naming Rule**: Use `id`, `createdAt`, `updatedAt` for data fields. Avoid prefixing new database-related functions with "Firestore".
-5. **Check before you code**: Refer to `docs/product/DATA_NAMING_RULE.md` and `docs/ops/FILE_BASELINE.md` before adding new data models.
+1. **"Firestore"라는 이름을 믿지 마세요**: 이 저장소에서 "Firestore"는 "Firestore API를 쓰는 PostgreSQL"이라는 뜻입니다. 실제 Firestore 데이터베이스는 존재하지 않습니다.
+2. **공식 진입점만 사용하세요**:
+   - 브라우저: `<script src="/src/postgres-client-browser.js"></script>` → `window.postgresDB`
+   - 서버(Netlify Functions): `const { queryPostgresCollection, getPostgresDoc } = require('./_lib/db-api');`
+3. **Legacy shim을 직접 참조하지 마세요**: `firebase-firestore-compat.js`와 `firestore-api.js`는 내부 구현입니다. 신규 코드에서 직접 import/require 금지.
+4. **새 코드에 "Firestore"라는 단어를 추가하지 마세요**: 함수명, 변수명, 주석에 "Firestore"를 붙이면 legacy shim과 구분이 불가능해집니다. `DATA_NAMING_RULE.md`를 따르세요.
+5. **코딩 전에 확인하세요**: 새 데이터 모델 추가 전 `docs/product/DATA_NAMING_RULE.md`와 `docs/ops/FILE_BASELINE.md`를 먼저 읽으세요.
+
+### 왜 rename하지 않고 문서화로 해결하는가
+
+이 저장소에서 "Firestore"라는 이름을 그대로 두는 이유는 **기존 코드 보호**입니다.
+
+1. `editor.html`만 37개 스크립트가 Firestore 스타일 API에 의존
+2. `/api/firestore` 엔드포인트는 하위 호환을 위해 유지해야 함
+3. 전역 rename 시 기존 코드 전체가 깨지며, 기능 구현이 정체됨
+4. 문서화 + alias 진입점(`postgres-client-browser.js`, `db-api.js`)으로 신규 코드는 안전하게 분리 가능
+5. 기능 안정화 이후 점진적 마이그레이션 계획: `docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md`
 
 ## 프로젝트 구조
 

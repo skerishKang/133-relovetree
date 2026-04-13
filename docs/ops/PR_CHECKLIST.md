@@ -113,12 +113,14 @@ npx playwright test tests/editor-fieldvalue.spec.js
 - ❌ `editor-smoke.spec.js` - shell initialization 실패
 - ❌ `editor-smoke.spec.js` - permission/read-only badge 실패
 - ❌ `editor-smoke.spec.js` - navigation 실패
-- ❌ `smoke.spec.js` - auth-flow 실패
+- ❌ `smoke.spec.js` - UI element presence 실패 (선택자가 실제 HTML과 불일치)
+- ❌ `architecture-v2.spec.js` - app-loaded 플래그 미설정
+- ❌ `architecture-v2.spec.js` - auth UI 텍스트不正确 (로그인→내 트리 전환 안 됨)
 - ❌ console.error 또는 pageerror 발생
 
 #### 수동 확인 후 진행 가능 (조건부)
 - ⚠️ `smoke.spec.js` - 시각적 표시 실패 (captured screenshot 확인 후 Approve)
-- ⚠️ `editor-fieldvalue.spec.js` - source pattern 변경 확인 (실제 동작은 smoke로 검증)
+- ⚠️ `editor-fieldvalue.spec.js` - 소스 패턴만 변경되고 shim runtime 정상 동작 시 (network payload 검증으로 확인)
 - ⚠️ Flaky 판단: 같은 테스트가 2회 연속 실패 시 재진행 후 재평가
 
 ### Merge Gate 명령어
@@ -141,17 +143,25 @@ npx playwright test tests/architecture-v2.spec.js
 
 ---
 
-## 5. 테스트 우선순위
+## 5. 테스트 종류별 역할 구분
 
-| 우선순위 | 테스트 | 통과 기준 | mergeGate |
-|----------|--------|-----------|-----------|
-| 1 | editor-shell-init | 필수 | ❌ blocking |
-| 2 | editor-permission | 필수 | ❌ blocking |
-| 3 | standard-auth-flow | 필수 | ❌ blocking |
-| 4 | editor-navigation | 필수 | ❌ blocking |
-| 5 | FieldValue-pattern | 권장 | ⚠️ 확인 후 진행 |
-| 6 | architecture-v2 | 권장 | ⚠️ 확인 후 진행 |
-| 7 | visual-render | 선택 | ✅ 수동 확인 |
+> ⚠️ smoke.spec.js와 architecture-v2.spec.js는 서로 다른 것을 검증합니다. 혼동하지 마세요.
+
+| 파일 | 검증 대상 | 통과 기준 | mergeGate |
+|------|-----------|-----------|-----------|
+| `smoke.spec.js` | **표준 페이지 UI 요소 presence** (버튼, 그리드, 모달 존재 여부) | 모든 선택자가 실제 HTML 구조와 일치 | ❌ blocking |
+| `architecture-v2.spec.js` | **아키텍처 준수** (app-loaded 플래그, auth UI 텍스트, Firestore 에러 마스킹, 인증 안 된 상태 shell 안정성) | app-loaded + auth 텍스트 + 에러 마스킹 검증 | ❌ blocking |
+| `editor-smoke.spec.js` | **에디터 쉘 무결성** (초기화, 읽기전용 배지, 내비게이션) | shell 로드 + 에디터 요소可见 | ❌ blocking |
+| `editor-fieldvalue.spec.js` | **FieldValue shim 변환** (소스 패턴 존재 + 런타임 네트워크 payload) | 소스 패턴 존재 + shim output 구조 + network __firestoreTransform 검증 | ⚠️ 확인 후 진행 |
+
+### 테스트 실행 시나리오별 분류
+
+| 시나리오 | 실행할 테스트 | 확인 내용 |
+|----------|---------------|-----------|
+| Shared/표준 페이지 수정 | `smoke.spec.js` + `architecture-v2.spec.js` | UI presence + 아키텍처 준수 |
+| Editor 공통 의존성 수정 | `smoke.spec.js` + `architecture-v2.spec.js` + `editor-smoke.spec.js` | 표준 페이지 + 에디터 쉘 모두 |
+| FieldValue 코드 수정 | `editor-fieldvalue.spec.js` | shim 변환 정상 동작 |
+| Shared + FieldValue 동시 수정 | 위 4개 모두 | 전체 무결성 |
 
 ---
 

@@ -10,6 +10,35 @@
 - [DATA_NAMING_RULE.md](docs/product/DATA_NAMING_RULE.md)
 - **PR 작성 시**: [docs/ops/PR_CHECKLIST.md](docs/ops/PR_CHECKLIST.md) 참조
 
+## Data Access Rules (신규 개발자 필독)
+
+이 저장소에서 "Firestore"라는 이름이 코드에 남아 있지만, 실제 데이터는 **Neon/PostgreSQL**에 저장된다.
+코드를 작성하기 전에 이 규칙을 먼저 읽는다.
+
+### 뭘 쓰면 되는가 (공식 진입점)
+
+| 환경 | 공식 진입점 | 사용법 |
+|------|------------|--------|
+| 브라우저 | `src/postgres-client-browser.js` | `<script src="/src/postgres-client-browser.js">` 후 `window.postgresDB` |
+| 서버 | `netlify/functions/_lib/db-api.js` | `const { queryPostgresCollection, getPostgresDoc } = require('./db-api');` |
+
+### 뭘 쓰면 안 되는가 (금지)
+
+| 금지 항목 | 이유 |
+|-----------|------|
+| `src/firebase-firestore-compat.js` 직접 참조 | Legacy shim. `postgres-client-browser.js`가 내부적으로 로드함 |
+| `netlify/functions/_lib/firestore-api.js` 직접 참조 | 내부 구현. `db-api.js`를 통해서만 접근 |
+| 신규 코드에서 함수명/주석에 "Firestore" 추가 | Legacy shim과 구분 불가능해짐 |
+| `firebase.firestore.FieldValue` 직접 호출 | Shim의 변환 객체. 에디터 기존 코드만 허용 |
+
+### 왜 rename하지 않고 문서화로 해결하는가
+
+1. 기존 클라이언트 코드가 Firestore 스타일 API에 의존 (editor.html만 37개 스크립트)
+2. `/api/firestore` 엔드포인트는 하위 호환을 위해 유지해야 함
+3. Rename하면 기존 코드 전체가 깨지며, 기능 구현이 정체됨
+4. 문서화 + alias 진입점으로 신규 코드는 안전하게 분리 가능
+5. 기능 안정화 이후 점진적 마이그레이션은 `docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md` 참조
+
 ## Product Rule
 
 Lovetree는 단순 저장 앱이 아니다.

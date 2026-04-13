@@ -206,45 +206,56 @@
 
 ## 3. 레거시/보류 파일 (Legacy/Pending Files)
 
-### 3.1 archive/ - 아카이브 (Reorganized)
+### 3.1 Archive 4분류 (아카이브 폴더 구조)
 
-| 폴더 | 내용 | 역할 |
-|------|------|------|
-| `archive/recovered-legacy/` | 최근 복구된 레거시 파일 | 보관 유지 |
-| `archive/old-ui/` | 이전 UI 디자인 컨셉 | 삭제 후보 |
-| `archive/prototype/` | 초기 개발 프로토타입 | 참조용 |
-| `archive/reference-only/` | 기술 문서 및 데이터 | 참조용 |
+| 폴더 | 내용 | archive 정책 | 정리 주기 |
+|------|------|--------------|-----------|
+| `archive/recovered-legacy/` | 복구된 레거시 파일, css/ 이동본 | **유지** - 복구된 소스이므로 삭제 금지 | 수동 검토 |
+| `archive/old-ui/` | 이전 UI 디자인 컨셉 | **삭제 후보** - 주기적으로 정리 검토 | 3개월마다 |
+| `archive/prototype/` | 초기 개발 프로토타입 | **참조용** - 운영 미사용 | 수동 검토 |
+| `archive/reference-only/` | 기술 문서 및 참고용 데이터 | **참조용** - 운영 미사용 | 수동 검토 |
 
-> **정책**: 운영에 영향을 주지 않는 범위에서 보관을 우선하되, `old-ui` 등은 주기적으로 정리 검토.
+> **Archive 정책**: 삭제보다 archive 우선. 단, `old-ui`는 정리 대상이며 정기적으로 검토.
 
-### 3.2 css/ - 레거시 CSS (이미 ARCHIVE로 이동)
+### 3.2 상태 용어 정의 (Archive vs 비활성 vs 레거시 구분)
+
+| 용어 | 기준 | 실제 파일 예시 |
+|------|------|---------------|
+| **운영 (Active)** | 현재 프로덕션에서 사용 중 | `index.html`, `pages/community.html`, `src/shared.js` |
+| **비활성 (Inactive)** | 파일은 존재하지만 리다이렉트/미사용 상태 | `pages/editor-desktop.html`, `pages/mobile-add-memory.html` |
+| **레거시 (Legacy)** | 과거 버전, 새 코드에서 참조 안 함 | `src/add-memory.js`, `src/postgres-client.js` |
+| **Archive** | 파일系统中移动, 참조 불가 | `archive/recovered-legacy/` |
+
+> **핵심 구분**: 비활성은 "파일은 있지만谁来도 안 씀", 레거시는 "새 코드에서 참조 안 함 but 파일系统中 있음", Archive는 "파일系统中移动됨".
+
+### 3.3 css/ - 레거시 CSS (이미 ARCHIVE로 이동)
 
 | 파일 | 상태 |
 |------|------|
 | `css/` 폴더 전체 | 📦 ARCHIVE (archive/recovered-legacy/css/로 이동됨) |
 
-### 3.3 pages/ - 비활성 페이지
+### 3.4 pages/ - 비활성/Inactive 페이지
 
-| 파일 | 상태 |
-|------|------|
-| `pages/home.html` | ⚠️ minimal animation only |
-| `pages/about.html` | ⚠️ 정적 페이지 |
-| `pages/settings.html` | ⚠️ 설정 페이지 |
-| `pages/video-search.html` | ⚠️ 비디오 검색 |
-| `pages/story-view.html` | ⚠️ 스토리 뷰 |
-| `pages/empty-state.html` | ⚠️ 빈 상태 |
-| `pages/album-view.html` | ⚠️ 앨범 뷰 |
-| `pages/memory-detail.html` | ⚠️ 메모리 상세 (mobile로 리다이렉트) |
-| `pages/mobile-add-memory.html` | ⚠️ [Legacy] 리다이렉트 전용 (mobile-tree.html로 연결) |
-| `pages/mobile-add-branch.html` | ⚠️ [Legacy] 리다이렉트 전용 |
-| `pages/editor-desktop.html` | ⚠️ 에디터 데스크톱 (editor.html로 리다이렉트) |
-| `pages/editor-desktop-empty.html` | ⚠️ 에디터 데스크톱 빈 |
+| 파일 | 상태 | 현재 동작 |
+|------|------|----------|
+| `pages/home.html` | ⚠️ INACTIVE | 리다이렉트 가능성 확인 필요 |
+| `pages/about.html` | ⚠️ INACTIVE | 정적 페이지, 운영 미사용 |
+| `pages/settings.html` | ⚠️ INACTIVE | 설정 페이지, 운영 미사용 |
+| `pages/video-search.html` | ⚠️ INACTIVE | 비디오 검색, 운영 미사용 |
+| `pages/story-view.html` | ⚠️ INACTIVE | 스토리 뷰, 운영 미사용 |
+| `pages/empty-state.html` | ⚠️ INACTIVE | 빈 상태, 운영 미사용 |
+| `pages/album-view.html` | ⚠️ INACTIVE | 앨범 뷰, 운영 미사용 |
+| `pages/memory-detail.html` | ⚠️ INACTIVE | `mobile-tree.html`로 리다이렉트 |
+| `pages/mobile-add-memory.html` | ⚠️ INACTIVE | `mobile-tree.html`로 리다이렉트 |
+| `pages/mobile-add-branch.html` | ⚠️ INACTIVE | 리다이렉트 전용 |
+| `pages/editor-desktop.html` | ⚠️ INACTIVE | `editor.html`로 리다이렉트 |
+| `pages/editor-desktop-empty.html` | ⚠️ INACTIVE | 에디터 데스크톱 빈, 미사용 |
 
-### 3.4 src/ - DEPRECATED / PENDING 모듈
+### 3.5 src/ - DEPRECATED / PENDING 모듈
 
 | 파일 | 상태 | 설명 |
 |------|------|------|
-| `src/add-memory.js` | ⏳ PENDING | mobile로 리다이렉트 (사용 여부 확인 필요) |
+| `src/add-memory.js` | ⏳ PENDING | mobile로 리다이렉트, 사용 여부 확인 필요 |
 | `src/payment.js` | ⏳ PENDING | payment config 있을 때만 활성화 (조건부) |
 | `src/postgres-client.js` | 🗑️ DEPRECATED | 서버 전용, 브라우저는 postgres-client-browser.js 사용 |
 
@@ -402,25 +413,33 @@
 
 ## 8. 분류 기준
 
-| 용어 | 정의 |
-|------|------|
-| ✅ KEEP | 핵심 운영 파일, 절대 삭제 금지 |
-| 🗑️ DEPRECATED | 사용 권장 안 함, 향후 삭제 검토 |
-| 📦 ARCHIVE | 운영 미사용, 백업으로 보관됨 |
-| ⏳ PENDING | 판단 보류, 사용 여부 확인 필요 |
-| 🗑️ DELETE LATER | 향후 삭제 검토 대상 |
+| 용어 | 정의 | 예시 |
+|------|------|------|
+| ✅ KEEP | 핵심 운영 파일, 절대 삭제 금지 | `src/shared.js`, `pages/community.html` |
+| ⚠️ INACTIVE | 파일은 존재하지만 리다이렉트/미사용 | `pages/editor-desktop.html` |
+| 🗑️ DEPRECATED | 사용 권장 안 함 (코드에서 참조 안 함) | `src/postgres-client.js` |
+| 📦 ARCHIVE | 파일系统中移动, 백업으로 보관됨 | `archive/recovered-legacy/` |
+| ⏳ PENDING | 판단 보류, 사용 여부 확인 필요 | `src/payment.js` |
+| 🗑️ DELETE LATER | 향후 삭제 검토 대상 | `archive/old-ui/` 일부 |
 
 ---
 
 ## 9. 다음 작업 전 확인 체크리스트
 
-- [ ]shared-* 수정 → smoke.spec.js 실행
-- [ ]editor-* 수정 → editor-smoke.spec.js 실행
-- [ ]FieldValue 관련 → editor-fieldvalue.spec.js 실행
-- [ ]archive/recovered-legacy/ 정리 (이미 이동됨)
-- [ ]src/add-memory.js 사용 여부 확인 필요 (PENDING)
-- [ ]src/payment.js 조건부 사용 여부 확인 필요 (PENDING)
-- [ ]pages/ 정적 페이지 정리 검토 (PENDING)
+### Shared/Standard 페이지 수정 시 (필수)
+- [ ] `smoke.spec.js` 실행 → UI element presence 통과
+- [ ] `architecture-v2.spec.js` 실행 → app-loaded + auth UI + 에러 마스킹 통과
+- [ ] `editor-smoke.spec.js` 실행 → 에디터 쉘 무결성 확인
+
+### Editor 수정 시 (필수)
+- [ ] `editor-smoke.spec.js` 실행 → shell 무결성
+- [ ] FieldValue 관련 수정 시: `editor-fieldvalue.spec.js` 실행 → shim 변환 검증 (소스 패턴 + network payload)
+
+### Archive/비활성 파일 정리 시 (선택)
+- [ ] `archive/old-ui/` 정리 검토 (3개월마다)
+- [ ] pages/ INACTIVE 페이지 리다이렉트 동작 확인
+- [ ] `src/add-memory.js` 사용 여부 확인 필요 (PENDING)
+- [ ] `src/payment.js` 조건부 사용 여부 확인 필요 (PENDING)
 
 ---
 

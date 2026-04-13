@@ -271,8 +271,27 @@ editor-data.js: saveData(runtime)
 | 상황 | 실행 테스트 | 확인 내용 |
 |------|-------------|-----------|
 | **Shared 로직 수정 시** | `npx playwright test tests/editor-smoke.spec.js` | 에디터 shell 무결성 |
-| **FieldValue 관련 코드 수정 시** | `npx playwright test tests/editor-fieldvalue.spec.js` | shim 변환 검증 |
+| **FieldValue 관련 코드 수정 시** | `npx playwright test tests/editor-fieldvalue.spec.js` | shim 변환 검증 (아래 2개 레이어) |
 | **에디터 초기화 변경 시** | `npx playwright test tests/editor-smoke.spec.js` + `tests/editor-fieldvalue.spec.js` | 전체 무결성 |
+
+#### editor-fieldvalue.spec.js 검증 레이어 (2개)
+
+> ⚠️ 이 테스트 파일은 단일 목적 테스트가 아니라 **2개 레이어**를 검증합니다.
+
+| 레이어 | 테스트 번호 | 검증 내용 | 범위 |
+|--------|-------------|-----------|------|
+| **A) 소스 패턴 존재** | Test 1-4 | FieldValue.increment/serverTimestamp 호출이 editor-*.js 소스에 실제로 존재하는지 확인 | 소스 코드 문자열 패턴 (리팩터링 중 실수 방지) |
+| **B) Shim 런타임 변환** | Test 5-9 | shim이 `__firestoreTransform: true, type: "increment", operand: N` 형태의 객체를 생성하는지, network payload에 포함되는지 확인 | 브라우저 런타임 + 네트워크 요청 |
+
+**보증 범위:**
+- ✅ 소스에서 FieldValue 호출 존재 확인 (리팩터링 중 제거 방지)
+- ✅ shim이 올바른 transform 객체를 생성하는지 확인
+- ✅ POST /api/firestore 요청에 __firestoreTransform이 포함되는지 확인
+- ❌ server-side applyTransform() in document-store.js는 검증하지 않음 (별도 테스트 필요)
+
+**예시: FieldValue.increment(1) 제거 시**
+- 레이어 A(Test 1): ❌ FAIL - 소스에서 패턴을 찾을 수 없음
+- 레이어 B(Test 5-9): ❌ FAIL - transform 객체가 생성되지 않음
 
 ### 7.2 핵심 명령어
 
@@ -284,7 +303,7 @@ editor-data.js: saveData(runtime)
 | `window.EditorDataHelpers.loadData()` | editor-data.js | 트리 데이터 로드 |
 | `window.EditorDataHelpers.saveData()` | editor-data.js | 트리 데이터 저장 |
 
-### 7.2 디버깅 포인트
+### 7.3 디버깅 포인트
 
 | 포인트 | 파일 | 확인 방법 |
 |--------|------|-----------|
