@@ -1,121 +1,33 @@
-/* Community Discovery Cards & Spotlight (V2) */
+/* Community Discovery Cards - Image 1 Artistic Realization */
 
-/* Spotlight / Featured Card */
-.featured-spotlight-area {
-  margin-bottom: 50px;
-}
-
-.featured-card {
-  background: #fff;
-  border-radius: 32px;
-  overflow: hidden;
-  display: flex;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.fc-visual {
-  flex: 1.2;
-  position: relative;
-  min-height: 320px;
-}
-
-.fc-visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.fc-content {
-  flex: 1;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.fc-badge {
-  display: inline-block;
-  background: #fff1f2;
-  color: #e11d48;
-  padding: 6px 14px;
-  border-radius: 99px;
-  font-size: 0.8rem;
-  font-weight: 800;
-  margin-bottom: 16px;
-}
-
-.fc-author {
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-left: 10px;
-}
-
-.fc-content h3 {
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: #0f172a;
-  margin-bottom: 16px;
-  line-height: 1.3;
-}
-
-.fc-content p {
-  color: #475569;
-  line-height: 1.7;
-  margin-bottom: 24px;
-}
-
-.fc-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-}
-
-.fc-stats {
-  font-weight: 700;
-  color: #64748b;
-  font-size: 0.9rem;
-  display: flex;
-  gap: 15px;
-}
-
-.fc-btn {
-  background: #e11d48;
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 700;
-  transition: opacity 0.2s ease;
-}
-
-/* Grid & Cards */
+/* General Grid Configuration */
 .discovery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(5, 1fr); /* 5 columns like Image 1 */
+  gap: 24px;
 }
 
+/* Base Card Style (Album Artwork Style) */
 .disc-card {
   background: #fff;
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
-  text-decoration: none;
-  border: 1px solid #f1f5f9;
-  transition: all 0.3s ease;
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .disc-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
 }
 
 .dc-media {
   width: 100%;
-  aspect-ratio: 16/9;
-  background: #eee;
+  aspect-ratio: 4/3; /* Standard album cover ratio */
+  background: #f1f5f9;
   overflow: hidden;
 }
 
@@ -126,51 +38,131 @@
 }
 
 .dc-info {
-  padding: 20px;
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .dc-info h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 15px;
-  line-height: 1.4;
-  height: 2.8em;
-  overflow: hidden;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .dc-auth {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.avatar-sm {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #f1f5f9;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .dc-auth span {
-  font-size: 0.85rem;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.dc-stats {
-  border-top: 1px solid #f1f5f9;
-  padding-top: 15px;
-  display: flex;
-  gap: 15px;
-  color: #94a3b8;
   font-size: 0.8rem;
+  color: #64748b;
   font-weight: 700;
 }
 
-@media (max-width: 768px) {
-  .featured-card { flex-direction: column; }
-  .fc-visual { min-height: 240px; }
-  .fc-content { padding: 24px; }
+.dc-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dc-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.dc-tag {
+  background: #f8fafc;
+  color: #94a3b8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.dc-stats {
+  display: flex;
+  gap: 12px;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* 🌟 Image 1 Central: FEATURED VERTICAL CARD */
+.featured-vertical {
+  grid-column: 3; /* Always in the 3rd column */
+  grid-row: span 2; /* Spans 2 rows down */
+  background: #2c2a2a; /* Dark theme from Image 1 */
+  color: #fff;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  position: relative;
+}
+
+.fv-badge {
+  color: #b56e6e;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.fv-tree-canvas {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Visualization placeholder */
+.fv-tree-canvas svg {
+  width: 80%;
+  height: 80%;
+}
+
+.fv-content {
+  text-align: center;
+}
+
+.fv-content h3 {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: #fff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fv-author {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.fv-view-btn {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Responsive adjustment */
+@media (max-width: 900px) {
+  .featured-vertical {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
 }

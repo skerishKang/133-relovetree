@@ -1,0 +1,184 @@
+/* Community Tree Detail V2 - Image 2 Realization */
+
+.ctd-page {
+  background: linear-gradient(135deg, #fce7f3 0%, #fef3c7 100%); /* Warm pink/orange gradient from Image 2 */
+  margin: 0;
+  font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+  color: #2c1a1a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header - Slim & Transparent */
+.ctd-header {
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.back-link {
+  text-decoration: none;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #b56e6e;
+}
+
+/* Main Layout - 2 Columns (Canvas + Sidebar) */
+.ctd-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden; /* Scroll handled in canvas and sidebar */
+}
+
+/* 🎨 THE CANVAS AREA (Horizontal Scrolling) */
+.canvas-area {
+  flex: 1;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 100px;
+  background-image: 
+    radial-gradient(rgba(181, 110, 110, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.tree-canvas-inner {
+  position: relative;
+  height: 500px;
+  min-width: 1600px; /* Long enough for horizontal nodes */
+  display: flex;
+  align-items: center;
+}
+
+/* Glowing Path Line */
+.journey-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+
+/* Nodes & Polaroid Cards */
+.ctd-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.node-dot {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #fff;
+  margin-bottom: 20px;
+}
+
+.n-up { bottom: 50%; padding-bottom: 30px; }
+.n-down { top: 50%; padding-top: 30px; flex-direction: column-reverse; }
+.n-down .node-dot { margin-top: 20px; margin-bottom: 0; }
+
+.node-card {
+  width: 240px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transform: rotate(-1deg);
+  transition: transform 0.3s ease;
+}
+
+.node-card:hover { transform: rotate(1deg) scale(1.05); }
+
+.card-img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+.ctd-node h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 6px; }
+.ctd-node p { font-size: 0.8rem; color: #64748b; line-height: 1.5; }
+
+/* 🗳️ SIDE PANEL (Image 2) */
+.side-panel {
+  width: 400px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(226, 232, 240, 0.5);
+  padding: 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar-lg { width: 56px; height: 56px; border-radius: 50%; background: #fdf2f8; border: 2px solid #fff; }
+
+.engagement-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: #e11d48;
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+}
+
+/* Comments Section */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+}
+
+.c-ava { width: 32px; height: 32px; border-radius: 50%; background: #eee; flex-shrink: 0; }
+.c-text b { font-size: 0.85rem; }
+.c-text p { font-size: 0.85rem; color: #475569; margin: 4px 0; }
+
+/* Positions for 5-node demo */
+.pos-1 { left: 100px; }
+.pos-2 { left: 400px; }
+.pos-3 { left: 700px; }
+.pos-4 { left: 1000px; }
+.pos-5 { left: 1300px; }

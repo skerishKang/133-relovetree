@@ -1,99 +1,110 @@
-/* Discovery Square Layout (Community V2) */
+/* Discovery Square Layout (Community V2) - Image 1 Realization */
 
 .comm-page {
-  background-color: #f8fafc;
+  background: #fdfaf4; /* Warm neutral background from Image 1 */
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(181, 110, 110, 0.05) 0px, transparent 50%);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background Tree Ornaments */
+.comm-page::before {
+  content: "";
+  position: absolute;
+  top: 100px;
+  left: -100px;
+  width: 400px;
+  height: 600px;
+  background: url('/assets/image/bg-tree-soft.png') no-repeat;
+  background-size: contain;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .shell {
-  max-width: 1200px;
+  max-width: 1400px; /* Wider for 5-column layout */
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 40px;
+  position: relative;
+  z-index: 1;
 }
 
-/* Discovery Hero Section */
+/* Discovery Hero Section - Centered & Artistic */
 .discovery-hero {
-  background: linear-gradient(135deg, #fdfaf4 0%, #fff1f2 100%);
-  padding: 60px 0 40px;
+  padding: 80px 0 60px;
   text-align: center;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
 }
 
-.hero-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-}
-
-.comm-title h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
+.hero-inner h1 {
+  font-size: 2.2rem;
   font-weight: 900;
-  color: #0f172a;
-  margin-bottom: 12px;
-  letter-spacing: -0.03em;
+  color: #2c1a1a;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
 }
 
-.comm-title p {
-  font-size: 1.1rem;
-  color: #64748b;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
+.hero-inner h1::before,
+.hero-inner h1::after {
+  content: '"';
+  color: #b56e6e;
+  opacity: 0.5;
 }
 
-/* Search Area */
+/* Search Area - Styled like Image 1 */
 .search-area {
-  width: 100%;
-  max-width: 580px;
-  margin-top: 20px;
+  max-width: 500px;
+  margin: 0 auto 40px;
 }
 
 .search-box {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  padding: 16px 24px;
   border-radius: 999px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-  cursor: text;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.03);
+  border: 1px solid #eee;
 }
 
-.search-icon { font-size: 1.2rem; }
-.search-placeholder { color: #94a3b8; font-weight: 500; }
+.search-icon { color: #b56e6e; opacity: 0.6; }
+.search-placeholder { color: #94a3b8; font-weight: 600; font-size: 0.95rem; }
 
-/* Filter Buttons */
+/* Filter Tags Area */
 .filter-area {
   display: flex;
+  justify-content: flex-end; /* Align right like image 1 */
   gap: 12px;
-  margin-top: 10px;
-  overflow-x: auto;
-  padding: 5px;
-  max-width: 100%;
+  margin-bottom: 32px;
 }
 
 .f-btn {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  padding: 8px 20px;
+  background: transparent;
+  padding: 8px 18px;
   border-radius: 99px;
   font-weight: 700;
-  color: #64748b;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
+  color: #475569;
+  font-size: 0.9rem;
 }
 
 .f-btn.active {
-  background: #0f172a;
+  background: #b56e6e;
   color: #fff;
-  border-color: #0f172a;
 }
 
-/* Common Section Shell */
-.comm-main {
-  padding-top: 40px;
-  padding-bottom: 80px;
+/* Grid System - 5 Columns with Featured Span */
+.discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  padding-bottom: 100px;
 }
+
+/* Responsive Grid */
+@media (max-width: 1200px) { .discovery-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 900px) { .discovery-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .discovery-grid { grid-template-columns: 1fr; } }

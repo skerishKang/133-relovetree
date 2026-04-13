@@ -1,129 +1,119 @@
-/* Responsive V2 Styles - Landing Page */
+/* Lovetree Mobile Optimized View - Image 3 Realization */
 
-/* Tablet & Smaller Desktops */
-@media (max-width: 1100px) {
-  .hero-v2 {
-    gap: 30px;
-  }
-  
-  .hero-left h1 {
-    font-size: 3.2rem;
-  }
-
-  .features-v2 {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-/* Mobile & Small Tablets */
-@media (max-width: 991px) {
-  .hero-v2 {
+@media (max-width: 768px) {
+  /* 🎨 VERTICAL ZIGZAG PATH (Image 3) */
+  .ctd-main {
     flex-direction: column;
-    text-align: center;
-    padding-top: 20px; /* Reduced from 40px */
-    padding-bottom: 20px; /* Reduced from 40px */
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
-  .hero-left {
-    max-width: 100%;
-    order: 1;
-  }
-
-  .hero-right {
+  .canvas-area {
     width: 100%;
-    height: 340px; /* Reduced from 380px */
-    order: 2;
-    margin-top: 10px; /* Reduced from 20px */
+    min-height: 1000px;
+    padding: 60px 20px;
+    background: #fdfaf4;
+    overflow-x: hidden;
   }
 
-  .hero-btns {
+  .tree-canvas-inner {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-bottom: 100px;
+  }
+
+  /* Vertical Trunk Line */
+  .journey-line {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    transform: translateX(-50%);
+    background: rgba(181, 110, 110, 0.2);
+    box-shadow: none;
+  }
+
+  /* Zigzag Nodes */
+  .ctd-node {
+    position: relative;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 100%;
+    margin-bottom: 60px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
   }
 
-  .tree-svg {
-    transform: scale(0.85);
-    transform-origin: center;
+  .node-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    z-index: 30;
   }
 
-  /* Memory nodes scale down slightly on mobile */
-  .memory-node {
-    width: 125px;
+  .node-card {
+    width: 42%;
+    font-size: 0.8rem;
+    padding: 8px;
   }
+
+  /* Alternate Left/Right */
+  .ctd-node:nth-child(even) { justify-content: flex-end; padding-right: 5%; }
+  .ctd-node:nth-child(odd) { justify-content: flex-start; padding-left: 5%; }
   
-  .features-v2 {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 40px 0;
+  .ctd-node:nth-child(even) .node-card { transform: rotate(1deg); }
+  .ctd-node:nth-child(odd) .node-card { transform: rotate(-1deg); }
+
+  /* Side panel becomes bottom section */
+  .side-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #eee;
   }
 
-  .feat-card {
-    padding: 24px 20px;
-    gap: 16px;
+  /* 📱 MOBILE NAVIGATION BAR (Image 3 Bottom) */
+  .mobile-nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: #fff;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
   }
 
-  .feat-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
-    border-radius: 14px;
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 700;
   }
 
-  .feat-text h3 {
-    font-size: 1.05rem;
-  }
+  .nav-item.active { color: #e11d48; }
 
-  .feat-text p {
-    font-size: 0.85rem;
-  }
+  .nav-icon { font-size: 1.4rem; }
 }
 
-/* Small Mobile */
-@media (max-width: 640px) {
-  .gnb-v2 {
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px 0;
-  }
-
-  .gnb-v2 .logo {
-    font-size: 1.6rem;
-  }
-
-  .gnb-v2 .nav-links {
-    gap: 15px;
-    font-size: 0.95rem;
-  }
-
-  .hero-left h1 {
-    font-size: 2.4rem;
-  }
-  
-  .hero-left p {
-    font-size: 1.1rem;
-  }
-
-  .hero-right {
-    height: 320px;
-  }
-  
-  .memory-node {
-    width: 110px;
-    padding: 6px;
-  }
-  
-  .node-meta {
-    font-size: 0.7rem;
-  }
-
-  .features-v2 {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 32px 0;
-  }
-
-  .feat-card {
-    padding: 20px;
-    gap: 14px;
-  }
+/* Fix for desktop grid in image 1 */
+@media (min-width: 1201px) {
+  .discovery-grid { grid-template-columns: repeat(5, 1fr); }
 }
