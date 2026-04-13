@@ -1,3 +1,13 @@
+/**
+ * =============================================================================
+ * Lovetree Editor Bootstrap (INTERNAL CORE)
+ * =============================================================================
+ * ⚠️ WARNING: DO NOT MODIFY DB ASSIGNMENT WITHOUT SENIOR REVIEW
+ * This file is the primary entry point for injecting the PostgreSQL DB into 
+ * the editor's standalone shell. Direct modification to runtime.db assignment
+ * will break all editor data persistence.
+ * =============================================================================
+ */
 (function () {
     function bindRuntime(callback) {
         return function () {
@@ -16,7 +26,8 @@
 
         if (typeof firebase !== 'undefined' && firebase.apps.length) {
             // ⚠️ CRITICAL: 이 할당은 editor 전체 데이터 접근의 근원입니다.
-            // 변경 시 모든 editor 데이터 읽기/쓰기가 즉시 실패합니다.
+            // ⚠️ CRITICAL: 이 할당은 editor 전체 데이터 접근의 근원입니다.
+            // NEVER CHANGE THIS TO DIRECT Firestore OBJECT.
             // 상세: docs/ops/EDITOR_ARCHITECTURE.md §5.1 위험도 순위 1위
             runtime.db = window.postgresDB;
             runtime.auth = firebase.auth();

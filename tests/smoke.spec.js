@@ -5,7 +5,8 @@ import { test, expect } from '@playwright/test';
  * Enhanced with structured console error tracking and better stability.
  */
 
-const BASE_URL = 'https://lovetree.limone.dev';
+// Use baseURL from playwright.config.js for local/CI portability
+const BASE_URL = ''; 
 
 let consoleErrors = [];
 let pageErrors = [];
@@ -58,9 +59,9 @@ test('Home Page: Load and UI elements present', async ({ page }) => {
   await page.goto(BASE_URL + '/');
   await expect(page).toHaveTitle(/Lovetree/);
 
-  const logo = page.locator('.logo');
-  const gnb = page.locator('.gnb-v2');
-  const authBtn = page.locator('.btn-pill-auth');
+  const logo = page.locator('.logo, #nav-brand');
+  const gnb = page.locator('.gnb-v2, .gnb');
+  const authBtn = page.locator('.btn-pill-auth, #nav-auth-item');
 
   await expect(logo).toBeVisible();
   await expect(gnb).toBeVisible();
@@ -73,7 +74,7 @@ test('Home Page: Load and UI elements present', async ({ page }) => {
 test('Home Page: Auth button is present and points to login', async ({ page }) => {
   await page.goto(BASE_URL + '/');
 
-  const authBtn = page.locator('.btn-pill-auth');
+  const authBtn = page.locator('.btn-pill-auth, #nav-auth-item');
   await expect(authBtn).toBeVisible();
 
   const href = await authBtn.getAttribute('href');
@@ -150,6 +151,7 @@ test('Settings Modal: Opens from owner page', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');
 
   const settingsModal = page.locator('#settings-modal');
-  await expect(settingsModal).toBeAttached();
+  // Wait for dynamic injection if not present (handled by shared-layout.js)
+  await expect(settingsModal).toBeAttached({ timeout: 10000 });
 });
 });

@@ -132,6 +132,62 @@ test.describe('Editor FieldValue Shim Verification', () => {
     });
 
     /**
+     * [Network Payload] Test 5: Verify runtime network payload for increment
+     * Scope: Intercepts the actual POST request and verifies __firestoreTransform
+     */
+    test('Network Payload: updateTree should send __firestoreTransform for increment', async ({ page }) => {
+        await page.goto('/pages/editor.html?id=test-tree');
+        await page.waitForLoadState('networkidle');
+
+        // Trigger an action that causes a tree update with increment
+        // In this case, we'll manually call a function that increments viewCount
+        await page.evaluate(async () => {
+            if (window.postgresDB) {
+                await window.postgresDB.collection('trees').doc('test-tree').update({
+                    viewCount: firebase.firestore.FieldValue.increment(1)
+                });
+            }
+        });
+
+        const updateReq = firestoreRequests.find(r => 
+            r.method === 'update' && 
+            r.path === 'trees/test-tree' &&
+            r.data && r.data.viewCount
+        );
+
+        expect(updateReq, 'An update request for trees/test-tree must be sent').toBeDefined();
+        expect(updateReq.data.viewCount.__firestoreTransform).toBe(true);
+        expect(updateReq.data.viewCount.type).toBe('increment');
+        expect(updateReq.data.viewCount.operand).toBe(1);
+    });
+
+    /**
+     * [Network Payload] Test 6: Verify runtime network payload for serverTimestamp
+     */
+    test('Network Payload: updateTree should send __firestoreTransform for serverTimestamp', async ({ page }) => {
+        await page.goto('/pages/editor.html?id=test-tree');
+        await page.waitForLoadState('networkidle');
+
+        await page.evaluate(async () => {
+            if (window.postgresDB) {
+                await window.postgresDB.collection('trees').doc('test-tree').update({
+                    lastOpened: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        });
+
+        const updateReq = firestoreRequests.find(r => 
+            r.method === 'update' && 
+            r.path === 'trees/test-tree' &&
+            r.data && r.data.lastOpened
+        );
+
+        expect(updateReq, 'An update request for trees/test-tree must be sent').toBeDefined();
+        expect(updateReq.data.lastOpened.__firestoreTransform).toBe(true);
+        expect(updateReq.data.lastOpened.type).toBe('serverTimestamp');
+    });
+
+    /**
      * [Shim Load] Test 5: Verify compat layer is loaded in editor page
      * Dependency: shared layer (firebase-firestore-compat.js)
      * Scope: confirms firebase.firestore function exists at runtime
