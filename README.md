@@ -34,8 +34,8 @@
        │                              │
        ▼                              ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ PostgreSQL 클라이언트 (postgres-client.js)                                 │
-│ - 클라이언트 코드는 Firestore API처럼 사용 가능 (하위 호환)                 │
+│ PostgreSQL 클라이언트 (postgres-client-browser.js)                             │
+│ - 브라우저는 이 파일을 로드하여 window.postgresDB 사용                          │
 │ - 실제 데이터는 Netlify Functions → Postgres 로 전달됨                    │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -43,11 +43,11 @@
 | 구성 요소 | 용도 | 실제 저장소 / 진입점 |
 |-----------|------|-------------|
 | **Firebase Auth** | 로그인/세션 관리 | Firebase (Auth만) |
-| **PostgreSQL 클라이언트** | 프론트엔드 데이터 접근 | `postgres-client.js` |
+| **PostgreSQL 클라이언트** | 브라우저 데이터 접근 | `postgres-client-browser.js` |
 | **Netlify Functions** | API 엔드포인트/권한 | `db-api.js` |
 | **Neon/PostgreSQL** | 실제 앱 데이터 저장 | ✅ `trees`, `users`, `posts` 등 |
 
-**핵심**: 클라이언트는 Firestore와 유사한 API를 호출하지만, 모든 데이터는 **Neon PostgreSQL**에 저장됩니다. 신규 코드는 반드시 `postgres-client.js`와 `db-api.js`를 사용해야 합니다.
+**핵심**: 브라우저는 `postgres-client-browser.js`를 로드하여 `window.postgresDB`를 사용합니다. 모든 데이터는 **Neon PostgreSQL**에 저장됩니다. 신규 코드는 반드시 `postgres-client-browser.js`와 `db-api.js`를 사용해야 합니다.
 
 ### 데이터 저장소 정책 (중요)
 
@@ -100,7 +100,8 @@ const db = firebase.firestore(); // window.firebase.firestore() 사용
 ├── src/                    # 비즈니스 로직 및 라이브러리
 │   ├── entries/            # 페이지별 진입점 스크립트
 │   ├── shared-layout.js    # 공통 레이어 (GNB, Auth UI)
-│   ├── postgres-client.js  # 데이터 액세스 (Standard)
+│   ├── postgres-client-browser.js  # 브라우저용 데이터 클라이언트
+│   ├── postgres-client.js  # ES 모듈용 데이터 클라이언트
 │   └── ...
 ├── netlify/
 │   └── functions/          # 서버리스 API (PostgreSQL 연동)

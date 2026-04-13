@@ -47,7 +47,7 @@ Lovetree는 단순 저장 앱이 아니다.
 - 데이터 명칭이 헷갈리면 `docs/product/DATA_NAMING_RULE.md`를 본다.
 - README는 입구 문서다. 제품 판단 기준은 README보다 PRODUCT_IDENTITY가 우선이다.
 - 신규 데이터 액세스 코드는 반드시 아래 파일을 진입점으로 사용한다.
-  - 클라이언트: `src/postgres-client.js`
+  - 브라우저: `src/postgres-client-browser.js`
   - 서버(Netlify Functions): `netlify/functions/_lib/db-api.js`
 - ⚠️ 신규 코드에서 `firebase-firestore-compat.js`나 `firestore-api.js`를 직접 참조하는 것을 금지한다.
 - 새 페이지나 새 기능을 만들 때는 “이게 첫 순간 기록과 사랑의 경로 연결에 실제 도움이 되나”를 먼저 따진다.
@@ -58,3 +58,4 @@ Lovetree는 단순 저장 앱이 아니다.
 - Firebase Auth는 로그인/세션 전용
 - 실제 앱 데이터는 Netlify Functions를 거쳐 Neon/Postgres에 저장
 - Firestore 스타일 API 명칭은 호환 레이어일 뿐, 실제 저장소는 Postgres다
+- ⚠️ 신규 코드에서 함수명/주석에 "Firestore" 추가 금지 (legacy shim과 구분)
