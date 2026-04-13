@@ -72,7 +72,7 @@ const db = window.postgresDB;
 const snapshot = await db.collection('trees').where('isPublic', '==', true).get();
 
 // ✅ 작동함: firebase.firestore()를 shim이 가로채어 PostgreSQL로 연결
-const db = firebase.firestore(); // shim을 통과하므로 작동
+const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 
 // ❌ 주의: firebase.firestore.FieldValue는 shim의 구현임
 //         실제 Firestore SDK가 아님
@@ -101,7 +101,6 @@ const db = firebase.firestore(); // shim을 통과하므로 작동
 │   ├── entries/            # 페이지별 진입점 스크립트
 │   ├── shared-layout.js    # 공통 레이어 (GNB, Auth UI)
 │   ├── postgres-client-browser.js  # 브라우저용 (<script> 로드, window.postgresDB)
-│   ├── postgres-client.js  # ES 모듈용 (import 문법, 빌드 환경)
 │   └── ...
 ├── netlify/
 │   └── functions/          # 서버리스 API (PostgreSQL 연동)
