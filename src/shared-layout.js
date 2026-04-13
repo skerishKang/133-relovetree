@@ -1,4 +1,43 @@
+/**
+ * =============================================================================
+ * Lovetree Shared Layout Module
+ * =============================================================================
+ * 
+ * This module provides TWO DISTINCT responsibilities:
+ * 
+ * 1. GLOBAL LAYOUT INJECTION (lines 1-178)
+ *    - Injects top navigation header and settings modal into specific pages
+ *    - Currently applies ONLY to pages with data-page="community" or "owner"
+ *    - Uses LAYOUT_PAGE_ALLOWLIST to control which pages get the injected layout
+ *    - This is separate from the GNB used in most standard pages
+ * 
+ * 2. STANDARD AUTH UI INITIALIZATION (lines 180-246)
+ *    - Centralized auth state management for all standard pages
+ *    - Used by: index.html, lovetree.html, community.html, my-trees.html
+ *    - NOT used by editor pages (editor has its own auth handling)
+ * 
+ * IMPORTANT: Editor pages do NOT use initStandardAuthUI.
+ * They have their own runtime/auth flow in editor-runtime.js and editor-data.js.
+ * =============================================================================
+ */
+
 (function () {
+    /**
+     * =============================================================================
+     * PART 1: GLOBAL LAYOUT INJECTION
+     * =============================================================================
+     * 
+     * This section handles dynamic injection of top navigation and settings modal
+     * into pages that request it via data-page attribute.
+     * 
+     * Currently affected pages:
+     * - Pages with data-page="community" → gets community-style header
+     * - Pages with data-page="owner" → gets owner-style header
+     * 
+     * This is DIFFERENT from the standard GNB (global navigation bar) used in
+     * most pages like lovetree.html, community.html, my-trees.html.
+     */
+
     const LAYOUT_PAGE_ALLOWLIST = new Set(['community', 'owner']);
 
     function shouldInjectGlobalLayout() {
@@ -178,8 +217,32 @@
     }
 
     /**
-     * Centralized Auth UI Handler 
-     * Handles the GNB login/logout button states across all standard pages.
+     * =============================================================================
+     * PART 2: STANDARD AUTH UI
+     * =============================================================================
+     * 
+     * Centralized Auth UI Handler for STANDARD PAGES ONLY.
+     * 
+     * Which pages use this:
+     * - index.html (landing/home page)
+     * - pages/lovetree.html (product intro)
+     * - pages/community.html (discovery)
+     * - pages/my-trees.html (dashboard)
+     * 
+     * Which pages DO NOT use this:
+     * - pages/editor.html, pages/editor-desktop.html (editor has own auth handling)
+     * - pages/login.html (has separate auth logic)
+     * 
+     * What this function does:
+     * - Updates GNB (global navigation bar) based on auth state
+     * - Changes "로그인" → "내 트리" when logged in
+     * - Shows/hides logout button
+     * - Updates link href to point to /pages/my-trees.html when logged in
+     * 
+     * DOM Elements expected:
+     * - #nav-auth-item: The login/my-tree link in GNB
+     * - #nav-logout-btn: The logout button in GNB
+     * - .btn-pill-auth: Alternative selector for auth link (fallback)
      */
     function updateLTAuthUI(user) {
         const authItem = document.getElementById('nav-auth-item') || document.querySelector('.btn-pill-auth');
@@ -207,13 +270,31 @@
 
     /**
      * Standard Auth UI Initialization
-     * Consolidates auth wiring from all standard pages.
-     * Handles: onAuthReady callback, currentUser check, logout button binding
      * 
-     * @param {Object} options - Configuration options
-     * @param {boolean} options.skipOnAuthReady - Skip onAuthReady callback registration
-     * @param {boolean} options.skipCurrentUserCheck - Skip setTimeout currentUser check
-     * @param {boolean} options.skipLogoutBinding - Skip nav-logout-btn click binding
+     * Centralizes auth wiring for all standard (non-editor) pages.
+     * This replaces the old pattern of having duplicate auth code in each HTML file.
+     * 
+     * WHAT THIS FUNCTION DOES:
+     * 1. Registers window.onAuthReady callback → calls updateLTAuthUI(user) when auth state changes
+     * 2. Checks currentUser after 1s timeout (fallback for page load race condition)
+     * 3. Binds click handler for #nav-logout-btn → calls window.signOut()
+     * 
+     * OPTIONS:
+     * - options.skipOnAuthReady: true → skip registering onAuthReady callback
+     *   (Use when page has its own onAuthReady handler, like my-trees.js via FlowShared)
+     * - options.skipCurrentUserCheck: true → skip the 1s timeout check
+     *   (Use when page handles initial auth state differently)
+     * - options.skipLogoutBinding: true → skip binding logout click handler
+     *   (Use when page has no logout button, like index.html)
+     * 
+     * USAGE BY PAGE:
+     * - index.html: initStandardAuthUI({ skipLogoutBinding: true }) // no logout btn
+     * - lovetree.html: initStandardAuthUI() // standard flow
+     * - community.html: initStandardAuthUI() // standard flow
+     * - my-trees.js calls: initStandardAuthUI({ skipOnAuthReady: true, skipCurrentUserCheck: true })
+     *                      // FlowShared.requireAuth handles primary auth
+     * 
+     * @param {Object} options - Configuration options (all optional)
      */
     function initStandardAuthUI(options) {
         options = options || {};
