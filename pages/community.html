@@ -24,10 +24,8 @@
     <header class="discovery-hero">
         <div class="shell hero-inner">
             <div class="hero-badge">Discovery Square</div>
-            <div class="comm-title">
-                <h1>사랑이 모여 자라나는 광장</h1>
-                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요</p>
-            </div>
+                <h1>당신의 사랑이<br>숲이 되는 광장</h1>
+                <p>다른 팬들이 정성껏 키워낸 러브트리를 만나보세요</p>
             
             <div class="search-area">
                 <div class="search-box">
@@ -97,21 +95,12 @@
             <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
         </div>
 
-        <!-- Dynamic Discovery Plaza Grid -->
-        <div id="discovery-grid" class="discovery-grid" style="display: none;">
-            <!-- Cards will be rendered here dynamically -->
-        </div>
-
-        <!-- Fallback static demo (curated gallery) -->
-        <div id="discovery-grid-demo" class="discovery-grid">
+        <!-- Discovery Plaza Grid: Show demo content by default to avoid blank screen -->
+        <div id="discovery-grid" class="discovery-grid active">
+            <!-- Static Mockup Cards (Will be replaced by live data if available) -->
             <a href="/pages/community-tree-detail.html" class="disc-card">
                 <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
-                    <div class="mini-tree-viz">
-                        <div class="tree-node-dot"></div>
-                        <div class="tree-stem-line"></div>
-                        <div class="tree-node-dot"></div>
-                    </div>
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="" class="loaded">
                 </div>
                 <div class="dc-info">
                     <h3>나의 첫 단독 콘서트 감동의 기록</h3>
@@ -125,10 +114,9 @@
                     </div>
                 </div>
             </a>
-            
-            <div class="disc-card">
+            <a href="/pages/community-tree-detail.html" class="disc-card">
                 <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
+                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="" class="loaded">
                 </div>
                 <div class="dc-info">
                     <h3>밤새 찾아본 레전드 무대들 모음</h3>
@@ -141,11 +129,10 @@
                         <span>💬 15</span>
                     </div>
                 </div>
-            </div>
-
-            <div class="disc-card">
+            </a>
+            <a href="/pages/community-tree-detail.html" class="disc-card">
                 <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
+                    <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="" class="loaded">
                 </div>
                 <div class="dc-info">
                     <h3>쇼케이스 1열 직관, 그 꿈같은 날</h3>
@@ -158,25 +145,10 @@
                         <span>💬 28</span>
                     </div>
                 </div>
-            </div>
-
-            <div class="disc-card">
-                <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="" onload="this.classList.add('loaded')">
-                </div>
-                <div class="dc-info">
-                    <h3>앨범 언박싱, 드디어 풀셋 완성!</h3>
-                    <div class="dc-auth">
-                        <div class="avatar-sm" style="background: #cfe6e6;"></div>
-                        <span>@Album_Lover</span>
-                    </div>
-                    <div class="dc-stats">
-                        <span>❤️ 320</span>
-                        <span>💬 12</span>
-                    </div>
-                </div>
-            </div>
+            </a>
         </div>
+
+        <!-- Removed Static Mockup Template (Now integrated above) -->
     </main>
 
     <!-- Core App Modules -->
