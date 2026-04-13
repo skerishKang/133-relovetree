@@ -57,12 +57,23 @@
         return null;
     }
 
+    /**
+     * Share the current tree link and increment shareCount.
+     * 
+     * [Architectural Flow: shareCount Increment]
+     * 1. Trigger: User clicks Share, logic executes in EditorActionHelpers.
+     * 2. Component: FieldValue.increment(1) is used as an atomic update.
+     * 3. Shim Layer: firebase-firestore-compat.js intercepts the update().
+     * 4. Transformation: The increment is converted to a server-side transform object.
+     * 5. Execution: Netlify Functions (Postgres API) translates this into "shareCount = shareCount + 1".
+     */
     function shareTree(runtime) {
         const url = window.location.href;
         navigator.clipboard.writeText(url).then(async function () {
             showToast(runtime, '링크가 복사되었습니다! 친구에게 공유하세요.');
 
             try {
+                // runtime.db is an alias for window.postgresDB (initialized in shared layer)
                 if (runtime.db && typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
                     await runtime.db.collection('trees').doc(runtime.treeId).update({
                         shareCount: firebase.firestore.FieldValue.increment(1)
