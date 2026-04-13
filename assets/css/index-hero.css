@@ -17,7 +17,7 @@ body.home-v2-active {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px 0;
+  padding: 15px 0; /* Reduced from 30px */
 }
 
 .gnb-v2 .logo {
@@ -50,10 +50,10 @@ body.home-v2-active {
 /* Hero V2 */
 .hero-v2 {
   display: flex;
-  min-height: 80vh;
+  /* Removed min-height: 80vh */
   align-items: center;
   gap: 40px;
-  padding-bottom: 60px;
+  padding: 20px 0 40px; /* Reduced from padding-bottom: 60px */
 }
 
 .hero-left {
@@ -66,14 +66,14 @@ body.home-v2-active {
   font-weight: 900;
   line-height: 1.1;
   color: #0f172a;
-  margin-bottom: 24px;
+  margin-bottom: 20px; /* Reduced from 24px */
 }
 
 .hero-left p {
   font-size: 1.25rem;
   color: #475569;
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 28px; /* Reduced from 40px */
 }
 
 .hero-btns {
@@ -104,7 +104,7 @@ body.home-v2-active {
 .hero-right {
   flex: 1.2;
   position: relative;
-  height: 500px;
+  height: 420px; /* Reduced from 500px */
 }
 
 .tree-container {
