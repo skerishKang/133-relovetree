@@ -148,13 +148,13 @@
 
 ## 2. 보조 파일 (Supporting Files)
 
-### 2.1 src/mobile - 모바일 (1 활성, 2 고아)
+### 2.1 src/mobile - 모바일 (1 활성, 2 ARCHIVE)
 
 | 파일 | 상태 | 설명 |
 |------|------|------|
-| `src/mobile-tree.js` | ✅ 활성 | mobile-tree.html에서 사용 |
-| `src/mobile-add-memory.js` | 🗑️ 복구됨 | archive/recovered-legacy/로 이동 |
-| `src/mobile-add-branch.js` | 🗑️ 복구됨 | archive/recovered-legacy/로 이동 |
+| `src/mobile-tree.js` | ✅ KEEP | mobile-tree.html에서 사용 |
+| `src/mobile-add-memory.js` | 📦 ARCHIVE | archive/recovered-legacy/로 이동 |
+| `src/mobile-add-branch.js` | 📦 ARCHIVE | archive/recovered-legacy/로 이동 |
 
 ### 2.2 src/editor - 에디터 모듈 (별도 트랙)
 
@@ -220,16 +220,11 @@
 
 > **삭제 후보**: archive 폴더 전체 (100+ 파일, 실제 운영 미사용)
 
-### 3.2 css/ - 레거시 CSS (루트)
+### 3.2 css/ - 레거시 CSS (이미 ARCHIVE로 이동)
 
 | 파일 | 상태 |
 |------|------|
-| `css/app.css` | ❌ 미사용 (assets/css 사용) |
-| `css/home.css` | ❌ 미사용 |
-| `css/community.css` | ❌ 미사용 |
-| `css/my-trees.css` | ❌ 미사용 |
-| `css/editor-desktop.css` | ❌ 미사용 |
-| `css/*.css` (18개) | ❌ 미사용 |
+| `css/` 폴더 전체 | 📦 ARCHIVE (archive/recovered-legacy/css/로 이동됨) |
 
 ### 3.3 pages/ - 비활성 페이지
 
@@ -248,13 +243,13 @@
 | `pages/editor-desktop.html` | ⚠️ 에디터 데스크톱 (editor.html로 리다이렉트) |
 | `pages/editor-desktop-empty.html` | ⚠️ 에디터 데스크톱 빈 |
 
-### 3.4 src/ - 비활성 모듈
+### 3.4 src/ - DEPRECATED / PENDING 모듈
 
-| 파일 | 상태 |
-|------|------|
-| `src/add-memory.js` | ⚠️ mobile로 리다이렉트 |
-| `src/payment.js` | ⚠️ payment config 있을 때만 활성화 |
-| `src/postgres-client.js` | ❌ 서버专用 (브라우저는 postgres-client-browser.js 사용) |
+| 파일 | 상태 | 설명 |
+|------|------|------|
+| `src/add-memory.js` | ⏳ PENDING | mobile로 리다이렉트 (사용 여부 확인 필요) |
+| `src/payment.js` | ⏳ PENDING | payment config 있을 때만 활성화 (조건부) |
+| `src/postgres-client.js` | 🗑️ DEPRECATED | 서버 전용, 브라우저는 postgres-client-browser.js 사용 |
 
 ---
 
@@ -293,28 +288,61 @@
 
 ---
 
-## 6. 삭제 후보와 보호 대상
+## 6. 파일 분류표 (KEEP / DEPRECATED / ARCHIVE / PENDING / DELETE LATER)
 
-### 6.1 삭제 후보 (Delete Candidates)
-
-| 파일/폴더 | 크기 | 이유 |
-|-----------|------|------|
-| `archive/` | 100+ 파일 | 운영 미사용, 백업만 있음 |
-| `css/*.css` (18개) | - | assets/css로 대체됨 |
-| `src/mobile-add-memory.js` | - | 고아 파일, 참조 없음 |
-| `src/mobile-add-branch.js` | - | 고아 파일, 참조 없음 |
-| `src/postgres-client.js` | - | 서버 전용, 브라우저는 다른 파일 사용 |
-
-### 6.2 보호 대상 (Protected)
+### 6.1 KEEP - 핵심 운영 파일 (절대 삭제 금지)
 
 | 파일/폴더 | 이유 |
 |----------|------|
+| `src/shared.js`, `src/shared-layout.js`, `src/auth.js` | 핵심 공유/인증 |
 | `src/firebase-firestore-compat.js` | 브라우저 shim 핵심 |
 | `src/postgres-client-browser.js` | 브라우저 PostgreSQL 클라이언트 |
-| `netlify/functions/_lib/db-api.js` | 서버 API 권장 진입점 |
+| `src/runtime-config.js` | 런타임 설정 |
+| `src/concept-state.js`, `src/flow-shared.js` | 페이지 상태/탐색 |
+| `src/entries/*.js` | 페이지 진입점 |
+| `src/index-*.js` | 메인 페이지 모듈 |
+| `src/owner-*.js` | 오너 콘솔 모듈 |
+| `src/admin-*.js` | 관리자 모듈 |
+| `src/editor-*.js` | 에디터 전체 (별도 트랙) |
 | `pages/editor.html` | 에디터 핵심 |
-| `src/editor-*.js` | 에디터 전체 |
-| `tests/editor-*.spec.js` | 에디터 테스트 |
+| `pages/community.html`, `pages/my-trees.html`, `pages/login.html` | 주요 페이지 |
+| `netlify/functions/_lib/db-api.js` | 서버 API 권장 진입점 |
+| `netlify/functions/_lib/document-store.js` | PostgreSQL store |
+| `tests/editor-*.spec.js`, `tests/smoke.spec.js` | 테스트 |
+| `assets/css/*` | 운영 CSS |
+
+### 6.2 DEPRECATED - 사용 권장 안 함
+
+| 파일/폴더 | 이유 |
+|----------|------|
+| `src/postgres-client.js` | 서버 전용, 브라우저는 postgres-client-browser.js |
+| `src/api.js` | netlify/functions로 대체됨 |
+
+### 6.3 ARCHIVE - 보관됨 (이미 이동됨)
+
+| 파일/폴더 | 이유 |
+|----------|------|
+| `archive/recovered-legacy/` | ✅ 이동 완료 - 복구된 레거시 파일 |
+| `archive/pages-old-20260413/` | 이전 페이지 백업 |
+| `archive/legacy-ui-20260413/` | 레거시 UI 컨셉 |
+| `archive/prototype-snapshots-20260413/` | 프로토타입 스냅샷 |
+
+### 6.4 PENDING - 판단 보류
+
+| 파일/폴더 | 이유 |
+|----------|------|
+| `src/add-memory.js` | mobile로 리다이렉트, 사용 여부 확인 필요 |
+| `src/payment.js` | payment config 있을 때만 활성화 |
+| `pages/home.html` | minimal animation only |
+| `pages/about.html` | 정적 페이지 |
+| `pages/settings.html` | 설정 페이지 |
+| `netlify/functions/payment-verify.js` | 조건부 사용 |
+
+### 6.5 DELETE LATER - 향후 삭제 검토
+
+| 파일/폴더 | 이유 |
+|----------|------|
+| `archive/` (recovered-legacy 제외) | 운영 미사용, 백업만 있음 |
 
 ---
 
@@ -375,14 +403,27 @@
 
 ---
 
-## 8. 다음 작업 전 확인 체크리스트
+## 8. 분류 기준
+
+| 용어 | 정의 |
+|------|------|
+| ✅ KEEP | 핵심 운영 파일, 절대 삭제 금지 |
+| 🗑️ DEPRECATED | 사용 권장 안 함, 향후 삭제 검토 |
+| 📦 ARCHIVE | 운영 미사용, 백업으로 보관됨 |
+| ⏳ PENDING | 판단 보류, 사용 여부 확인 필요 |
+| 🗑️ DELETE LATER | 향후 삭제 검토 대상 |
+
+---
+
+## 9. 다음 작업 전 확인 체크리스트
 
 - [ ]shared-* 수정 → smoke.spec.js 실행
 - [ ]editor-* 수정 → editor-smoke.spec.js 실행
 - [ ]FieldValue 관련 → editor-fieldvalue.spec.js 실행
-- [ ]archive 폴더 정리 필요
-- [ ]mobile-add-*.js 고아 파일 확인
-- [ ]css/ 폴더 미사용 확인
+- [ ]archive/recovered-legacy/ 정리 (이미 이동됨)
+- [ ]src/add-memory.js 사용 여부 확인 필요 (PENDING)
+- [ ]src/payment.js 조건부 사용 여부 확인 필요 (PENDING)
+- [ ]pages/ 정적 페이지 정리 검토 (PENDING)
 
 ---
 
