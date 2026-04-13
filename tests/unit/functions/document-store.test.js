@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { applyTransform, applyPatch } = require('../../../netlify/functions/_lib/db-api');
+const { applyTransform, applyPatch, DELETE_SENTINEL } = require('../../../netlify/functions/_lib/db-api');
 
 /**
  * Backend Unit Test for document-store.js Transform Logic
@@ -33,6 +33,12 @@ async function runTests() {
     assert.strictEqual(result, 15);
   });
 
+  test('increment transform with negative operand', () => {
+    const transform = { __firestoreTransform: true, type: 'increment', operand: -3 };
+    const result = applyTransform(transform, 10, nowIso);
+    assert.strictEqual(result, 7);
+  });
+
   // 3. arrayUnion
   test('arrayUnion transform (unique merge)', () => {
     const transform = { __firestoreTransform: true, type: 'arrayUnion', values: [2, 3, 4] };
@@ -40,12 +46,28 @@ async function runTests() {
     assert.deepStrictEqual(result, [1, 2, 3, 4]);
   });
 
-  // 4. delete (Symbol) - Internal check
-  test('delete transform', () => {
-    // Note: applyTransform returns a Symbol for delete
+  test('arrayUnion transform with duplicates (should dedupe)', () => {
+    const transform = { __firestoreTransform: true, type: 'arrayUnion', values: [2, 3, 2] };
+    const result = applyTransform(transform, [1, 2], nowIso);
+    assert.ok(result.includes(1));
+    assert.ok(result.includes(2));
+    assert.ok(result.includes(3));
+    assert.strictEqual(result.length, 3);
+  });
+
+  test('arrayUnion transform with objects (deep equality)', () => {
+    const obj1 = { id: 1, name: 'Alice' };
+    const obj2 = { id: 2, name: 'Bob' };
+    const transform = { __firestoreTransform: true, type: 'arrayUnion', values: [obj2] };
+    const result = applyTransform(transform, [obj1], nowIso);
+    assert.deepStrictEqual(result, [obj1, obj2]);
+  });
+
+  // 4. delete transform
+  test('delete transform should return DELETE_SENTINEL symbol', () => {
     const transform = { __firestoreTransform: true, type: 'delete' };
     const result = applyTransform(transform, 'oldValue', nowIso);
-    assert.strictEqual(typeof result, 'symbol');
+    assert.strictEqual(result, DELETE_SENTINEL);
   });
 
   // 5. applyPatch with delete
@@ -56,6 +78,17 @@ async function runTests() {
     assert.deepStrictEqual(result, { a: 1, c: 3 });
   });
 
+  test('applyPatch with multiple deletes', () => {
+    const base = { a: 1, b: 2, c: 3 };
+    const patch = { 
+      a: { __firestoreTransform: true, type: 'delete' }, 
+      c: { __firestoreTransform: true, type: 'delete' },
+      d: 4 
+    };
+    const result = applyPatch(base, patch, nowIso);
+    assert.deepStrictEqual(result, { b: 2, d: 4 });
+  });
+
   // 6. Nested patch merge
   test('nested patch merge', () => {
     const base = { profile: { name: 'Alice', age: 25 } };
@@ -63,6 +96,36 @@ async function runTests() {
     const result = applyPatch(base, patch, nowIso);
     assert.deepStrictEqual(result, {
       profile: { name: 'Alice', age: 26, location: 'Seoul' }
+    });
+  });
+
+  test('deep nested patch merge with transform', () => {
+    const base = { 
+      user: { 
+        profile: { 
+          name: 'Alice', 
+          age: 25,
+          stats: { views: 10 }
+        } 
+      } 
+    };
+    const patch = { 
+      user: { 
+        profile: { 
+          age: 26, 
+          stats: { views: { __firestoreTransform: true, type: 'increment', operand: 5 } }
+        } 
+      } 
+    };
+    const result = applyPatch(base, patch, nowIso);
+    assert.deepStrictEqual(result, {
+      user: {
+        profile: {
+          name: 'Alice',
+          age: 26,
+          stats: { views: 15 }
+        }
+      }
     });
   });
 
@@ -78,6 +141,38 @@ async function runTests() {
     assert.strictEqual(result.stats.views, 11);
     assert.deepStrictEqual(result.tags, ['old', 'new']);
     assert.strictEqual(result.updated, nowIso);
+  });
+
+  // 8. Edge cases
+  test('applyPatch with undefined base', () => {
+    const patch = { a: 1, b: { __firestoreTransform: true, type: 'delete' } };
+    const result = applyPatch(undefined, patch, nowIso);
+    assert.deepStrictEqual(result, { a: 1 });
+  });
+
+  test('applyPatch with null values', () => {
+    const base = { a: null, b: 2 };
+    const patch = { a: 1, b: { __firestoreTransform: true, type: 'delete' } };
+    const result = applyPatch(base, patch, nowIso);
+    assert.deepStrictEqual(result, { a: 1 });
+  });
+
+  test('applyTransform with unknown transform type', () => {
+    const transform = { __firestoreTransform: true, type: 'unknown' };
+    const result = applyTransform(transform, 'test', nowIso);
+    assert.strictEqual(result, 'test');
+  });
+
+  test('arrayUnion with non-array values', () => {
+    const transform = { __firestoreTransform: true, type: 'arrayUnion', values: 'not an array' };
+    const result = applyTransform(transform, [1, 2], nowIso);
+    assert.deepStrictEqual(result, [1, 2]);
+  });
+
+  test('increment with non-numeric operand', () => {
+    const transform = { __firestoreTransform: true, type: 'increment', operand: '5' };
+    const result = applyTransform(transform, 10, nowIso);
+    assert.strictEqual(result, 15);
   });
 
   // Run all
@@ -99,10 +194,9 @@ async function runTests() {
 
   console.log('--------------------------------------------------');
   console.log(`Summary: ${passed} passed, ${failed} failed`);
-  
+
   if (failed > 0) process.exit(1);
 }
-
 runTests().catch(err => {
   console.error(err);
   process.exit(1);

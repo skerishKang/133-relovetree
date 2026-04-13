@@ -29,6 +29,12 @@ const { httpError } = require('./http');
 
 const DELETE_SENTINEL = Symbol('delete_field');
 
+// Export DELETE_SENTINEL for testing
+Object.defineProperty(module.exports, 'DELETE_SENTINEL', {
+  value: DELETE_SENTINEL,
+  enumerable: true
+});
+
 const TABLE_CONFIG = {
   users: {
     table: 'users',

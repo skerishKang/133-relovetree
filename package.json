@@ -9,6 +9,7 @@
     "serve": "python -m http.server 3133",
     "clean": "node -e \"console.log('Nothing to clean. assets/css/app.css is committed.')\"",
     "test": "npx playwright test --config ./config/playwright.config.js",
+    "test:unit": "node tests/unit/functions/document-store.test.js",
     "test-report": "npx playwright show-report",
     "test-debug": "npx playwright test --config ./config/playwright.config.js --debug"
   },
