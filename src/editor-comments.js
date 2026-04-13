@@ -1,4 +1,19 @@
 (function () {
+    /**
+     * Editor Comments Module
+     * 
+     * Data Flow:
+     * - Comments are stored in Neon/PostgreSQL (not Firestore)
+     * - runtime.firebase.firestore.FieldValue.serverTimestamp() is actually the shim's implementation
+     * - The shim transforms it to {__firestoreTransform: true, type: 'serverTimestamp'}
+     * - document-store.js converts it to ISO timestamp on the server side
+     * - When reading back, comment.createdAt?.toDate() handles both:
+     *   - Firestore Timestamp (from legacy systems)
+     *   - Plain ISO string (from shim → PostgreSQL)
+     * 
+     * This file does NOT directly use window.postgresDB - it goes through the shim via runtime.db
+     */
+
     function loadComments(runtime) {
         if (!runtime.db) return;
         if (runtime.commentsUnsubscribe) runtime.commentsUnsubscribe();
@@ -85,6 +100,9 @@
         }
 
         try {
+            // Note: runtime.firebase.firestore.FieldValue is actually the shim's implementation
+            // It gets transformed to {__firestoreTransform: true, type: 'serverTimestamp'}
+            // and document-store.js converts it to ISO timestamp on the server
             await runtime.db.collection('trees').doc(runtime.treeId).collection('comments').add({
                 text: text,
                 userId: runtime.currentUser.uid,
