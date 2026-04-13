@@ -154,15 +154,11 @@
     <script src="/src/concept-state.js"></script>
 
     <script>
-        // Auth State Integration
-        window.onAuthReady = function(user) { 
-            if (window.updateLTAuthUI) window.updateLTAuthUI(user); 
-        };
-        setTimeout(() => { 
-            if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
-                window.updateLTAuthUI(firebase.auth().currentUser); 
-            }
-        }, 1000);
+        // Auth State Integration (Common)
+        // index.html has no nav-logout-btn, so skip logout binding
+        if (window.initStandardAuthUI) window.initStandardAuthUI({
+            skipLogoutBinding: true
+        });
 
         // Simple entry animation
         document.querySelectorAll('.memory-node').forEach((el, idx) => {

@@ -49,6 +49,39 @@
 
 **핵심**: 클라이언트는 Firestore와 유사한 API를 호출하지만, 모든 데이터는 **Neon PostgreSQL**에 저장됩니다. 신규 코드는 반드시 `postgres-client.js`와 `db-api.js`를 사용해야 합니다.
 
+### 데이터 저장소 정책 (중요)
+
+> **Firebase Firestore는 사용하지 않습니다.**
+
+| 서비스 | 용도 | 실제 저장소 |
+|--------|------|-----------|
+| **Firebase Auth** | 로그인/세션 관리 | ✅ 사용 (Firebase) |
+| **Firebase Firestore** | 데이터 저장 | ❌ 사용 안 함 (2024년 이전 레거시) |
+| **Neon/PostgreSQL** | 앱 데이터 저장 | ✅ 사용 (실제 데이터) |
+
+**왜 "Firestore"라는 이름이 남아 있는가?**
+
+기존 클라이언트 코드가 Firestore 스타일 API (`collection().get()`, `doc().set()` 등)를 사용하고 있어, 하위 호환을 위해 `src/firebase-firestore-compat.js` shim이 이를 PostgreSQL로 라우팅합니다. 이 shim의 엔드포인트 이름이 `/api/firestore`로 남아있는 것은 이러한 역사적 이유 때문입니다.
+
+**신규 코드 작성 규칙**
+
+```javascript
+// ✅ 권장: postgres-client-browser.js 로드 후 사용
+const db = window.postgresDB;
+const snapshot = await db.collection('trees').where('isPublic', '==', true).get();
+
+// ✅ 작동함 (레거시): firebase.firestore()는 shim을 통과하여 PostgreSQL로 연결
+const db = firebase.firestore(); // window.firebase.firestore() 사용
+
+// ❌ 금지: firebase.firestore.FieldValue는 shim이 제공하는 호환 레이어
+//         실제 Firestore SDK가 아니라 shim의 구현을 사용합니다
+```
+
+- ✅ `src/postgres-client-browser.js` 로드
+- ✅ `window.postgresDB` 사용
+- ❌ 함수명/주석에 "Firestore" 추가 금지 (legacy shim과 구분하기 위해)
+- ⚠️ `/api/firestore` 엔드포인트는 하위 호환을 위해 유지 (즉시 제거 대상 아님)
+
 ## 프로젝트 구조
 
 ```text
