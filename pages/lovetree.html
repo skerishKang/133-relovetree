@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>러브트리 소개 - Lovetree</title>
-        <link rel="stylesheet" href="/assets/css/app-base.css">
-    <link rel="stylesheet" href="/assets/css/index.css">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260413_v2">
+    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260413_v2">
+    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260413_v2">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260413_v2">
     <!-- Firebase SDK (External) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -14,23 +16,21 @@
 <body class="home-page lovetree-page">
     <div class="page-container">
         <!-- Navigation -->
-        <nav class="gnb">
-            <a href="/" class="gnb-brand">Lovetree</a>
+        <!-- Navigation: 3개 메뉴 체계 (V2 Alignment) -->
+        <nav class="gnb-v2">
+            <a href="/" class="logo" style="text-decoration: none;">Lovetree</a>
             <div class="nav-links">
-                <a href="/pages/lovetree.html" id="nav-lovtree-item" class="active">러브트리</a>
+                <a href="/pages/lovetree.html" class="active">러브트리</a>
                 <a href="/pages/community.html">커뮤니티</a>
-                <div class="auth-box">
-                    <a href="/pages/login.html" id="nav-auth-item" class="nav-login">로그인</a>
-                    <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
-                </div>
+                <a href="/pages/login.html" class="btn-pill-auth">로그인</a>
             </div>
         </nav>
 
         <!-- Hero Section -->
         <header class="lt-hero">
             <div class="hero-badge">🌿 사랑이 자라나는 기록</div>
-            <h1>러브트리는 사랑에 빠진<br>모든 순간들이 자라난 기록입니다.</h1>
-            <p>우리가 좋아하는 아티스트와 함께한 시간들이 흩어지지 않도록,<br>영상과 감정의 실을 엮어 하나의 줄기로 만들어 보세요.</p>
+            <h1>러브트리는 사랑에 빠진<br>모든 순간들이 자라난 기록입니다</h1>
+            <p>우리가 좋아하는 아티스트와 함께한 시간들이 흩어지지 않도록,<br>영상과 감정의 실을 엮어 하나의 줄기로 만들어 보세요</p>
             <div class="lt-hero-btns">
                 <a href="/pages/login.html" class="btn-brick">내 러브트리 시작하기</a>
                 <a href="#examples" class="btn-outline">다른 트리 둘러보기</a>
@@ -47,22 +47,22 @@
                 <div class="concept-card">
                     <div class="lt-icon-box"><span>📷</span></div>
                     <h3>순간 포착</h3>
-                    <p>기억하고 싶은 영상과 그날의 감정을 메모로 남깁니다.</p>
+                    <p>기억하고 싶은 영상과 그날의 감정을 메모로 남깁니다</p>
                 </div>
                 <div class="concept-card">
                     <div class="lt-icon-box"><span>🔗</span></div>
                     <h3>경로 연결</h3>
-                    <p>기록들이 시간 순서대로 이어져 하나의 줄기가 됩니다.</p>
+                    <p>기록들이 시간 순서대로 이어져 하나의 줄기가 됩니다</p>
                 </div>
                 <div class="concept-card">
                     <div class="lt-icon-box"><span>🌳</span></div>
                     <h3>트리 완성</h3>
-                    <p>모인 순간들이 자라나 당신만의 러브트리가 됩니다.</p>
+                    <p>모인 순간들이 자라나 당신만의 러브트리가 됩니다</p>
                 </div>
                 <div class="concept-card">
                     <div class="lt-icon-box"><span>✨</span></div>
                     <h3>감동 공유</h3>
-                    <p>완성된 추억의 경로를 다른 팬들과 함께 나눕니다.</p>
+                    <p>완성된 추억의 경로를 다른 팬들과 함께 나눕니다</p>
                 </div>
             </div>
         </section>
@@ -73,7 +73,7 @@
                 <div class="path-info">
                     <div class="hero-badge badge-no-margin">러브트리 미리보기</div>
                     <h2>감정의 흐름을<br>한눈에 보세요</h2>
-                    <p>러브트리는 단순한 목록이 아닙니다. <br>어떤 영상에서 시작해 어떤 감정으로 깊어졌는지, <br>사랑의 경로가 줄기가 되어 한눈에 펼쳐집니다.</p>
+                    <p>러브트리는 단순한 목록이 아닙니다 <br>어떤 영상에서 시작해 어떤 감정으로 깊어졌는지, <br>사랑의 경로가 줄기가 되어 한눈에 펼쳐집니다</p>
                     <a href="/pages/community.html" class="btn-outline">실제 트리 탐색하기</a>
                 </div>
                 <div class="path-visual">
@@ -164,14 +164,14 @@
         <!-- Final CTA -->
         <section class="lt-footer-cta">
             <h2>이제 당신의 러브트리를<br>심어볼 차례입니다.</h2>
-            <p>기록되지 않은 순간은 사라지지만, 연결된 추억은 나무가 됩니다.</p>
+            <p>기록되지 않은 순간은 사라지지만, 연결된 추억은 나무가 됩니다</p>
             <a href="/pages/login.html" class="btn-brick btn-brick-xl">첫 시작하기</a>
         </section>
 
         <!-- Footer -->
         <footer class="lovetree-footer">
-            <p class="footer-title">Lovetree와 함께 사랑의 순간을 기록하세요.</p>
-            <p class="footer-copy">&copy; 2026 Lovetree. 사랑의 모든 순간을 연결합니다.</p>
+            <p class="footer-title">Lovetree와 함께 사랑의 순간을 기록하세요</p>
+            <p class="footer-copy">&copy; 2026 Lovetree. 사랑의 모든 순간을 연결합니다</p>
         </footer>
     </div>
 
