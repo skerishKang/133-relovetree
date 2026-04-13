@@ -115,11 +115,7 @@ window.IndexUtils.onDomReady(handleDomReady);
 
 // Handle page visibility change for performance
 document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        console.log('Page hidden - pausing operations');
-    } else {
-        console.log('Page visible - resuming operations');
-    }
+  // Pause/resume page operations on visibility change
 });
 
 /**

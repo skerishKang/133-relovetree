@@ -32,23 +32,16 @@
         if (typeof window.initTreeManager === 'function') window.initTreeManager(user);
     }
 
-    function setupNavigation() {
-        const navItems = document.querySelectorAll('.nav-item');
-        const sections = document.querySelectorAll('.content-section');
+function setupNavigation() {
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.content-section');
 
-        console.log('[Admin] setupNavigation called:', {
-            navCount: navItems.length,
-            sectionCount: sections.length
-        });
+  navItems.forEach(item => {
+    const target = item.dataset.target;
 
-        navItems.forEach(item => {
-            const target = item.dataset.target;
-            console.log('[Admin] nav item found:', target);
-
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = item.dataset.target;
-                console.log('[Admin] nav click:', targetId);
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = item.dataset.target;
 
                 navItems.forEach(nav => {
                     nav.classList.remove('active', 'bg-slate-800', 'text-white');

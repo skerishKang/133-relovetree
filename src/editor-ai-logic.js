@@ -109,16 +109,14 @@ async function createAiTreeSkeleton(prompt, count) {
 
     try {
         // 각 노드에 대해 YouTube 검색 (첫 번째 노드만 검색하여 API 할당량 절약)
-        const searchQuery = base + ' 무대 공연';
-        console.log('[AI] Searching YouTube for:', searchQuery);
+const searchQuery = base + ' 무대 공연';
 
         const result = await searchYouTubeVideo(searchQuery);
-        if (result && result.videoId) {
-            // 첫 번째 노드에 영상 적용
-            list[0].videoId = result.videoId;
-            list[0].description = result.description ? result.description.substring(0, 100) : '';
-            console.log('[AI] Found video:', result.videoId);
-        }
+if (result && result.videoId) {
+      // 첫 번째 노드에 영상 적용
+      list[0].videoId = result.videoId;
+      list[0].description = result.description ? result.description.substring(0, 100) : '';
+    }
     } catch (error) {
         console.warn('[AI] YouTube search failed:', error);
     }

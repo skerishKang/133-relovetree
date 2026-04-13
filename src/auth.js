@@ -107,10 +107,9 @@ if (user) {
       if (typeof handleAuthSuccessRedirect === 'function') {
         handleAuthSuccessRedirect();
       }
-    } else {
-      console.log('User signed out');
-      updateLoginUI(null);
-    }
+} else {
+    updateLoginUI(null);
+  }
 
     // 각 페이지에 인증 완료 상태를 알려주기 위한 훅
     try {
@@ -237,7 +236,7 @@ async function syncUserToDatabase(user, retryCount = 0, maxRetries = 2) {
     console.error('Error saving user (attempt ' + (retryCount + 1) + '):', error.message);
 
     if (retryCount < maxRetries && (error.message.includes('Failed to fetch') || error.message.includes('network') || error.message.includes('500'))) {
-      console.log('Retrying user save... (' + (retryCount + 1) + '/' + maxRetries + ')');
+      
       await new Promise(r => setTimeout(r, 500 * (retryCount + 1)));
       return syncUserToDatabase(user, retryCount + 1, maxRetries);
     }

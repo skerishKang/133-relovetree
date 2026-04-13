@@ -1,4 +1,5 @@
 /* Lovetree - Shared Application Styles */
+@import "index-vars.css";
 @import "app-base.css";
 @import "app-nav.css";
 @import "app-buttons.css";

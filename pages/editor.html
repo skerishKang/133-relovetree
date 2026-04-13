@@ -56,21 +56,21 @@
         </div>
         <div class="editor-topbar-actions">
             <div class="editor-toggle-group">
-                <button id="mode-tree-btn" onclick="setEditorMode('tree')"
-                    class="editor-toggle-btn is-active">
+<button id="mode-tree-btn"
+    class="editor-toggle-btn is-active">
                     트리
                 </button>
-                <button id="mode-timeline-btn" onclick="setEditorMode('timeline')"
-                    class="editor-toggle-btn">
+<button id="mode-timeline-btn"
+    class="editor-toggle-btn">
                     리스트
                 </button>
             </div>
             <div class="editor-toggle-group">
-                <button id="orientation-portrait-btn" onclick="setOrientationMode('portrait')"
-                    class="editor-toggle-btn is-active">
+<button id="orientation-portrait-btn"
+    class="editor-toggle-btn is-active">
                     세로
                 </button>
-                <button id="orientation-landscape-btn" onclick="setOrientationMode('landscape')"
+                <button id="orientation-landscape-btn" 
                     class="editor-toggle-btn">
                     가로
                 </button>
@@ -82,37 +82,37 @@
             <div id="tree-stats-banner" class="editor-stats-chip">
                 <span id="tree-stats-text">노드 0 · 순간 0 · 조회 0 · 좋아요 0 · 공유 0</span>
             </div>
-            <button onclick="zoomOut()" title="줌 아웃"
-                class="editor-tool-btn">
+<button id="btn-zoom-out" title="줌 아웃"
+    class="editor-tool-btn">
                 <svg class="editor-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                 </svg>
             </button>
-            <button onclick="zoomIn()" title="줌 인"
-                class="editor-tool-btn">
+<button id="btn-zoom-in" title="줌 인"
+    class="editor-tool-btn">
                 <svg class="editor-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
             </button>
             <div class="editor-separator"></div>
-            <button id="btn-auto-connect" onclick="autoConnectTimeline()"
+            <button id="btn-auto-connect" 
                 class="editor-action-btn">
                 자동 연결
             </button>
-            <button id="btn-clear-connections" onclick="clearAllConnections()"
+            <button id="btn-clear-connections" 
                 class="editor-action-btn">
                 연결선 초기화
             </button>
-            <button id="btn-reset" onclick="resetLayout()"
+            <button id="btn-reset" 
                 class="editor-action-btn editor-action-btn-danger">
                 초기화
             </button>
-            <button id="ai-helper-btn" type="button" onclick="openAiHelper()"
+            <button id="ai-helper-btn" type="button" 
                 class="editor-action-btn editor-action-btn-dark">
                 AI 도우미
             </button>
             <div class="editor-separator"></div>
-            <button id="like-btn" onclick="toggleLike()"
+            <button id="like-btn" 
                 class="editor-counter-btn is-like">
                 <svg class="editor-icon-sm" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -120,7 +120,7 @@
                 </svg>
                 <span id="like-count">0</span>
             </button>
-            <button id="comment-btn" onclick="openCommentsModal()"
+            <button id="comment-btn" 
                 class="editor-counter-btn is-comment">
                 <svg class="editor-icon-sm" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -128,11 +128,11 @@
                 </svg>
                 <span id="comment-count">0</span>
             </button>
-            <button id="fork-btn" onclick="forkTreeToMyAccount()" type="button"
+            <button id="fork-btn"  type="button"
                 class="editor-counter-btn is-fork is-hidden">
                 내 트리로 가져오기
             </button>
-            <button id="share-btn" onclick="shareTree()"
+            <button id="share-btn" 
                 class="editor-share-btn">
                 <svg class="editor-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -141,7 +141,7 @@
                 </svg>
                 Share
             </button>
-            <button id="lang-btn" onclick="toggleLanguage()"
+            <button id="lang-btn" 
                 class="editor-lang-btn">
                 English
             </button>
@@ -157,8 +157,8 @@
             <!-- Nodes injected here -->
         </div>
 
-        <button onclick="createNewNode()"
-            class="editor-fab">
+<button id="btn-create-node"
+    class="editor-fab">
             <svg class="editor-fab-icon" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -212,7 +212,7 @@
                 </a>
 
                 <div class="editor-floating-close">
-                    <button onclick="closeModal('detail-modal')"
+                    <button 
                         class="editor-mobile-close editor-mobile-only">
                         <svg class="editor-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -231,7 +231,7 @@
                         <p id="detail-date" class="editor-detail-date">Date</p>
                     </div>
                     <div class="editor-icon-actions">
-                        <button onclick="openNodeAiHelperFromDetail()"
+                        <button 
                             class="editor-icon-btn editor-icon-btn-indigo"
                             title="AI로 이 노드 다듬기">
                             <svg class="editor-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,7 +239,7 @@
                                     d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364-6.364l-2.121 2.121M8.757 15.243l-2.121 2.121m0-12.728l2.121 2.121m8.486 8.486l2.121 2.121" />
                             </svg>
                         </button>
-                        <button onclick="enableEditMode()"
+                        <button 
                             class="editor-icon-btn editor-icon-btn-brand"
                             title="수정">
                             <svg class="editor-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +248,7 @@
                                 </path>
                             </svg>
                         </button>
-                        <button onclick="deleteNode()"
+                        <button 
                             class="editor-icon-btn editor-icon-btn-danger"
                             title="삭제">
                             <svg class="editor-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,7 +257,7 @@
                                 </path>
                             </svg>
                         </button>
-                        <button onclick="closeModal('detail-modal')"
+                        <button 
                             class="editor-icon-btn editor-desktop-close editor-desktop-block is-hidden"
                             title="닫기">
                             <svg class="editor-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +300,7 @@
                                         <a id="edit-video-preview-link" href="#" target="_blank"
                                             class="editor-inline-link">YouTube에서 열기</a>
                                     </div>
-                                    <button type="button" onclick="clearDetailVideoInput()"
+                                    <button type="button" 
                                         class="editor-inline-btn">제거</button>
                                 </div>
                             </div>
@@ -308,9 +308,9 @@
                                 <div class="editor-search-actions">
                                     <input type="text" id="edit-video-search" placeholder="키워드로 검색 (예: 아이돌 무대)"
                                         class="editor-input-sm editor-search-input" />
-                                    <button type="button" onclick="searchYouTubeForDetail()"
+                                    <button type="button" 
                                         class="editor-dark-btn">검색</button>
-                                    <button type="button" onclick="recommendYouTubeForDetail()"
+                                    <button type="button" 
                                         class="editor-action-btn">추천 3개</button>
                                 </div>
                                 <div id="edit-video-search-result" class="editor-search-result"></div>
@@ -323,14 +323,14 @@
                             <div id="image-preview-container" class="editor-image-preview-wrap is-hidden">
                                 <img id="image-preview" src="" alt="Preview"
                                     class="editor-image-preview" />
-                                <button type="button" onclick="removeImage()"
+                                <button type="button" 
                                     class="editor-inline-btn editor-inline-btn-danger">이미지 삭제</button>
                             </div>
                         </div>
                         <div class="editor-form-actions">
-                            <button type="button" onclick="disableEditMode()"
+                            <button type="button" 
                                 class="editor-subtle-btn">취소</button>
-                            <button type="button" id="ai-draft-apply-btn" onclick="applyAiTreeDraftFromDetail()"
+                            <button type="button" id="ai-draft-apply-btn" 
                                 class="editor-dark-btn is-hidden">이 노드만 적용</button>
                             <button type="submit" id="edit-save-btn"
                                 class="editor-primary-btn">저장</button>
@@ -351,14 +351,14 @@
                                 <div class="editor-time-row">
                                     <input type="text" id="new-moment-time" placeholder="0:00"
                                         class="editor-time-input">
-                                    <button type="button" onclick="setCurrentMomentTime()"
+                                    <button type="button" 
                                         class="editor-chip-btn">현재
                                         시간</button>
                                 </div>
                                 <div class="editor-moment-row">
                                     <input type="text" id="new-moment-text" placeholder="이 순간에 대한 코멘트..."
                                         class="editor-moment-input">
-                                    <button type="button" onclick="openMomentAiHelper()"
+                                    <button type="button" 
                                         class="editor-dark-btn">AI</button>
                                 </div>
                             </div>
@@ -393,7 +393,7 @@
         <form id="ai-helper-form" method="dialog" class="editor-ai-shell">
             <div class="editor-ai-header">
                 <h3 class="editor-ai-title">AI 도우미</h3>
-                <button type="button" onclick="closeAiHelper()"
+                <button type="button" 
                     class="editor-close-btn-round">
                     <svg class="editor-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -402,11 +402,11 @@
                 </button>
             </div>
             <div class="editor-tab-row">
-                <button type="button" id="ai-mode-tree-btn" onclick="setAiHelperMode('tree')"
+                <button type="button" id="ai-mode-tree-btn" 
                     class="editor-tab-btn is-active">트리 뼈대</button>
-                <button type="button" id="ai-mode-comment-btn" onclick="setAiHelperMode('qa')"
+                <button type="button" id="ai-mode-comment-btn" 
                     class="editor-tab-btn">질문·도움말</button>
-                <button type="button" id="ai-mode-node-btn" onclick="setAiHelperMode('node')"
+                <button type="button" id="ai-mode-node-btn" 
                     class="editor-tab-btn">노드 수정</button>
             </div>
             <div class="editor-ai-body" id="ai-helper-body">
@@ -448,7 +448,7 @@
                 <div id="ai-result" class="editor-ai-panel"></div>
             </div>
             <div class="editor-ai-actions">
-                <button id="ai-helper-cancel" type="button" onclick="onAiHelperCancel()"
+                <button id="ai-helper-cancel" type="button" 
                     class="editor-subtle-btn">닫기</button>
                 <button id="ai-helper-submit" type="submit"
                     class="editor-primary-btn">생성</button>
@@ -463,7 +463,7 @@
             <div class="editor-comments-header">
                 <h3 class="editor-comments-title">댓글 <span id="modal-comment-count"
                         class="editor-comment-count">0</span></h3>
-                <button onclick="closeModal('comments-modal')"
+                <button 
                     class="editor-close-btn-round">
                     <svg class="editor-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -488,7 +488,7 @@
                 <form onsubmit="addComment(event)" class="editor-comments-form">
                     <input type="text" id="new-comment-input" placeholder="댓글을 입력하세요..."
                         class="editor-moment-input">
-                    <button type="button" onclick="openCommentAiHelper()"
+                    <button type="button" 
                         class="editor-dark-btn editor-comments-ai-btn is-hidden">
                         AI
                     </button>
@@ -533,6 +533,78 @@
     <script src="/src/editor-render-main.js"></script>
     <script src="/src/editor-runtime.js"></script>
     <script src="/src/editor-page-init.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var e = document.querySelector.bind(document);
+  var on = function(el, ev, fn) { if (el) el.addEventListener(ev, fn); };
+
+  // Topbar mode toggles
+  on(e('#mode-tree-btn'), 'click', function() { setEditorMode('tree'); });
+  on(e('#mode-timeline-btn'), 'click', function() { setEditorMode('timeline'); });
+  on(e('#orientation-portrait-btn'), 'click', function() { setOrientationMode('portrait'); });
+  on(e('#orientation-landscape-btn'), 'click', function() { setOrientationMode('landscape'); });
+
+  // Zoom
+  on(e('#btn-zoom-out'), 'click', zoomOut);
+  on(e('#btn-zoom-in'), 'click', zoomIn);
+
+  // Toolbar
+  on(e('#btn-auto-connect'), 'click', autoConnectTimeline);
+  on(e('#btn-clear-connections'), 'click', clearAllConnections);
+  on(e('#btn-reset'), 'click', resetLayout);
+  on(e('#ai-helper-btn'), 'click', openAiHelper);
+
+  // Counter/actions
+  on(e('#like-btn'), 'click', toggleLike);
+  on(e('#comment-btn'), 'click', openCommentsModal);
+  on(e('#fork-btn'), 'click', forkTreeToMyAccount);
+  on(e('#share-btn'), 'click', shareTree);
+  on(e('#lang-btn'), 'click', toggleLanguage);
+
+  // FAB
+  on(e('#btn-create-node'), 'click', createNewNode);
+
+  // Detail modal - icon buttons in header
+  var detailHeader = e('.editor-detail-header');
+  if (detailHeader) {
+    var iconBtns = detailHeader.querySelectorAll('.editor-icon-btn');
+    iconBtns.forEach(function(btn) {
+      var title = (btn.title || '').toLowerCase();
+      if (title.indexOf('ai') > -1) btn.addEventListener('click', openNodeAiHelperFromDetail);
+      else if (title.indexOf('수정') > -1) btn.addEventListener('click', enableEditMode);
+      else if (title.indexOf('삭제') > -1) btn.addEventListener('click', deleteNode);
+      else if (title.indexOf('닫기') > -1) btn.addEventListener('click', function() { closeModal('detail-modal'); });
+    });
+  }
+
+  // Detail modal - close buttons
+  on(e('.editor-mobile-close'), 'click', function() { closeModal('detail-modal'); });
+  on(e('.editor-desktop-close'), 'click', function() { closeModal('detail-modal'); });
+
+  // Detail form - video buttons
+  on(e('[data-action="clear-video"]'), 'click', clearDetailVideoInput);
+  on(e('[data-action="search-youtube"]'), 'click', searchYouTubeForDetail);
+  on(e('[data-action="recommend-youtube"]'), 'click', recommendYouTubeForDetail);
+  on(e('[data-action="remove-image"]'), 'click', removeImage);
+  on(e('[data-action="disable-edit"]'), 'click', disableEditMode);
+  on(e('#ai-draft-apply-btn'), 'click', applyAiTreeDraftFromDetail);
+
+  // Moment controls
+  on(e('[data-action="set-moment-time"]'), 'click', setCurrentMomentTime);
+  on(e('[data-action="open-moment-ai"]'), 'click', openMomentAiHelper);
+
+  // AI Helper panel
+  on(e('#ai-mode-tree-btn'), 'click', function() { setAiHelperMode('tree'); });
+  on(e('#ai-mode-comment-btn'), 'click', function() { setAiHelperMode('qa'); });
+  on(e('#ai-mode-node-btn'), 'click', function() { setAiHelperMode('node'); });
+  on(e('#ai-helper-cancel'), 'click', onAiHelperCancel);
+  on(e('[data-action="close-ai-helper"]'), 'click', closeAiHelper);
+
+  // Comments modal
+  on(e('.editor-mobile-only[data-action="close-comments"]'), 'click', function() { closeModal('comments-modal'); });
+  on(e('[data-action="open-comment-ai"]'), 'click', openCommentAiHelper);
+});
+</script>
 </body>
 
 </html>

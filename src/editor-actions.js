@@ -263,9 +263,7 @@
         localStorage.removeItem(runtime.STORAGE_KEY);
 
         if (runtime.db) {
-            runtime.db.collection('trees').doc(runtime.treeId).delete().then(function () {
-                console.log('Firebase document deleted');
-            }).catch(function (error) {
+runtime.db.collection('trees').doc(runtime.treeId).delete().catch(function (error) {
                 console.error('Error removing document: ', error);
             });
         }

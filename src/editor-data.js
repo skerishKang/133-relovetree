@@ -42,9 +42,8 @@
                 const docSnap = await docRef.get();
 
                 if (docSnap.exists) {
-                    const data = docSnap.data();
-                    console.log('Document data from Firebase:', data);
-                    runtime.currentTreeDocData = data;
+const data = docSnap.data();
+    runtime.currentTreeDocData = data;
 
                     const baseView = typeof data.viewCount === 'number' ? data.viewCount : 0;
                     const baseShare = typeof data.shareCount === 'number' ? data.shareCount : 0;
@@ -90,9 +89,8 @@
             if (localData) {
                 try {
                     const parsed = JSON.parse(localData);
-                    if (parsed.nodes && parsed.edges) {
-                        console.log('Loaded from LocalStorage');
-                        loadedData = parsed;
+if (parsed.nodes && parsed.edges) {
+      loadedData = parsed;
                     }
                 } catch (e) {
                     console.error('LocalStorage parse error', e);
@@ -101,13 +99,13 @@
         }
 
         if (!loadedData && runtime.dummyData[runtime.treeId]) {
-            console.log('Loaded from Dummy Data');
+            
             loadedData = runtime.dummyData[runtime.treeId];
             runtime.isReadOnly = true;
         }
 
         if (!loadedData) {
-            console.log('New tree created for ID:', runtime.treeId);
+            
             let defaultTreeName = '나의 러브트리';
             if (currentTreeId) {
                 const decoded = decodeURIComponent(currentTreeId);
@@ -309,7 +307,7 @@
     async function saveDataImmediate(runtime, showToastOnSuccess) {
         const shouldToast = showToastOnSuccess !== false;
         if (runtime.isReadOnly) {
-            console.log('Read-only mode. Save skipped.');
+            
             return;
         }
 
@@ -339,7 +337,7 @@
 
             try {
                 await runtime.db.collection('trees').doc(runtime.treeId).set(dataToSave, { merge: true });
-                console.log('Data saved to Firebase');
+                
                 if (shouldToast) {
                     runtime.showToast('저장되었습니다');
                 }

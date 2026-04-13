@@ -88,7 +88,6 @@ if (typeof window !== 'undefined') {
 }
 
 function applyAiTreeSkeleton() {
-    console.log('[AI] applyAiTreeSkeleton called', { aiTreeSuggestions, state: typeof state });
 
     if (typeof state === 'undefined' || !state) {
         console.error('[AI] state is not defined');

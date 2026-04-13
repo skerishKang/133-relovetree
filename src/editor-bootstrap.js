@@ -17,8 +17,7 @@
     }
 
     async function initApp(runtime) {
-        runtime.currentUser = await waitForAuth();
-        console.log("Current User:", runtime.currentUser ? runtime.currentUser.email : "Guest");
+runtime.currentUser = await waitForAuth();
 
         if (!runtime.currentUser) {
             runtime.isReadOnly = true;
