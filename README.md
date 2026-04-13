@@ -63,7 +63,7 @@
 │   ├── community.html      # 탐색 광장
 │   ├── login.html          # 인증
 │   ├── my-trees.html       # 대시보드
-│   └── editor.html         # 트리 에디터
+│   └── editor.html         # 트리 에디터 (예외 관리 영역)
 ├── src/                    # 비즈니스 로직 및 라이브러리
 │   ├── entries/            # 페이지별 진입점 스크립트
 │   ├── shared-layout.js    # 공통 레이어 (GNB, Auth UI)
@@ -73,6 +73,8 @@
 │   └── functions/          # 서버리스 API (PostgreSQL 연동)
 └── README.md
 ```
+
+**주의**: `editor.html`과 관련 파일들은 복잡성과 의존성으로 인해 별도 정리 트랙으로 관리됩니다. 일반 페이지 구조 정리 시 editor 영역은 제외됩니다.
 
 ## 로컬 실행
 

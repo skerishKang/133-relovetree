@@ -236,10 +236,11 @@
 <!-- My Trees Page Logic -->
 <script src="/src/my-trees.js"></script>
 
-<!-- Auth Integration (handled by my-trees.js via FlowShared.requireAuth) -->
+<!-- Auth Integration (Common - FlowShared.requireAuth handles primary auth) -->
 <script>
-document.getElementById('nav-logout-btn').addEventListener('click', function() {
-  if (window.signOut) window.signOut();
+if (window.initStandardAuthUI) window.initStandardAuthUI({
+  skipOnAuthReady: true,
+  skipCurrentUserCheck: true
 });
 </script>
 </body>

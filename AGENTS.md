@@ -51,6 +51,7 @@ Lovetree는 단순 저장 앱이 아니다.
   - 서버(Netlify Functions): `netlify/functions/_lib/db-api.js`
 - ⚠️ 신규 코드에서 `firebase-firestore-compat.js`나 `firestore-api.js`를 직접 참조하는 것을 금지한다.
 - 새 페이지나 새 기능을 만들 때는 “이게 첫 순간 기록과 사랑의 경로 연결에 실제 도움이 되나”를 먼저 따진다.
+- **editor 영역은 별도 정리 트랙으로 관리됩니다. editor.html과 관련 파일들은 복잡성과 의존성으로 인해 일반 페이지 구조 정리 대상에서 제외됩니다.**
 
 ## Data / Architecture Reminder
 
