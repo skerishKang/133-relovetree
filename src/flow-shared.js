@@ -76,11 +76,11 @@
         });
     }
 
-    /**
-     * Returns the Postgres-backed database proxy
-     * Note: Uses official postgres-client-browser.js entry point
-     *       which provides Firestore-compatible API but routes to Neon PostgreSQL
-     */
+/**
+ * Returns the Postgres-backed database proxy
+ * Note: Uses official postgres-client-browser.js entry point
+ *       which provides PostgreSQL-compatible API
+ */
     function getDb() {
         return window.postgresDB;
     }
