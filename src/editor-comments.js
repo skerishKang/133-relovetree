@@ -7,12 +7,29 @@
      * - runtime.firebase.firestore.FieldValue.serverTimestamp() is actually the shim's implementation
      * - The shim transforms it to {__firestoreTransform: true, type: 'serverTimestamp'}
      * - document-store.js converts it to ISO timestamp on the server side
-     * - When reading back, comment.createdAt?.toDate() handles both:
-     *   - Firestore Timestamp (from legacy systems)
-     *   - Plain ISO string (from shim → PostgreSQL)
+     * - When reading back, createdAt can be:
+     *   - Firestore Timestamp (from legacy systems) - has .toDate() method
+     *   - Plain ISO string (from shim → PostgreSQL) - needs new Date() directly
+     *   - undefined (new comment being created)
      * 
      * This file does NOT directly use window.postgresDB - it goes through the shim via runtime.db
      */
+
+    /**
+     * Safe date formatter for comment timestamps
+     * Handles multiple input formats: Firestore Timestamp, ISO string, undefined
+     */
+    function formatCommentDate(dateValue) {
+        if (!dateValue) return '';
+        try {
+            // Firestore Timestamp has .toDate() method
+            const dateObj = typeof dateValue.toDate === 'function' ? dateValue.toDate() : new Date(dateValue);
+            if (isNaN(dateObj.getTime())) return '';
+            return dateObj.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+        } catch (e) {
+            return '';
+        }
+    }
 
     function loadComments(runtime) {
         if (!runtime.db) return;
@@ -56,7 +73,7 @@
                 '                                    <span>' + (comment.userName || '익명') + '</span>\n' +
                 '                                    ' + (comment.isAiBot ? '<span class="editor-comment-ai-badge">AI</span>' : '') + '\n' +
                 '                                </span>\n' +
-                '                                <span class="editor-comment-date">' + new Date(comment.createdAt?.toDate()).toLocaleDateString() + '</span>\n' +
+                '                                <span class="editor-comment-date">' + formatCommentDate(comment.createdAt) + '</span>\n' +
                 '                            </div>\n' +
                 '                            <p class="editor-comment-copy">' + comment.text + '</p>\n' +
                 '                        </div>\n' +
