@@ -6,6 +6,9 @@ import { test, expect } from '@playwright/test';
  */
 
 // Use baseURL from playwright.config.js for local/CI portability
+// Use Playwright's built‑in baseURL (configured in playwright.config.js)
+// Empty string was previously used and caused flaky relative navigation.
+// By leaving it empty we rely on page.goto('/') which respects the baseURL.
 const BASE_URL = ''; 
 
 let consoleErrors = [];
@@ -106,7 +109,7 @@ test('Home Page: Load and UI elements present', async ({ page }) => {
   await page.goto(BASE_URL + '/');
   await expect(page.locator('body')).toHaveClass(/app-loaded/, { timeout: 10000 });
 
-  const logo = page.locator('.logo, #nav-brand, .gnb-brand');
+  const logo = page.locator('.logo, .gnb-v2');
   const gnb = page.locator('.gnb-v2, .gnb');
   const authBtn = page.locator('.btn-pill-auth, #nav-auth-item, .nav-login');
 

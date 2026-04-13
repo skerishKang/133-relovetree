@@ -567,4 +567,7 @@ module.exports = {
   getUserRole,
   TABLE_CONFIG,
   getConfigByTableName,
+  // ⚠️ Internal functions exported for backend unit testing
+  applyTransform,
+  applyPatch,
 };
