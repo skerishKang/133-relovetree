@@ -61,14 +61,16 @@ function initFirebase() {
 
     if (!firebase.apps.length) {
         try {
-            // APP_CONFIG is now from shared-utils.js
-            const config = (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.firebase : null) || (window.APP_CONFIG ? window.APP_CONFIG.firebase : null);
+            // Priority: window.APP_CONFIG (most reliable in browser) > APP_CONFIG variable
+            const config = (window.APP_CONFIG ? window.APP_CONFIG.firebase : null) || (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.firebase : null);
+            
             if (!config || !config.apiKey) {
-                console.error('Firebase config missing or invalid');
+                console.error('Firebase config missing or invalid in shared.js');
                 return false;
             }
+            
             firebase.initializeApp(config);
-            console.log('Firebase initialized via shared.js');
+            console.log('Firebase initialized successfully');
             return true;
         } catch (error) {
             console.error('Firebase initialization failed:', error);
@@ -76,6 +78,11 @@ function initFirebase() {
         }
     }
     return true;
+}
+
+// Export for explicit calls if needed
+if (typeof window !== 'undefined') {
+    window.initFirebase = initFirebase;
 }
 
 function initFirebaseAppCheck() {

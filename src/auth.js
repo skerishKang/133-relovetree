@@ -61,8 +61,16 @@ function initAuth() {
     
     // Safety check: ensure Firebase is initialized before calling services
     if (!firebase.apps || !firebase.apps.length) {
-        console.warn('Auth waiting for Firebase initialization...');
-        return;
+        console.warn('Auth waiting for Firebase initialization... attempting re-init');
+        if (typeof window.initFirebase === 'function') {
+            window.initFirebase();
+        }
+        
+        // If still not initialized, we cannot proceed
+        if (!firebase.apps || !firebase.apps.length) {
+            console.error('Firebase not initialized. Auth setup aborted.');
+            return;
+        }
     }
 
     if (typeof window !== 'undefined' && window[AUTH_INIT_FLAG]) {
@@ -129,6 +137,16 @@ function initAuth() {
  * Sign In with Google
  */
 async function signInWithGoogle() {
+  // Final safety check before auth call
+  if (!firebase.apps || !firebase.apps.length) {
+    if (typeof window.initFirebase === 'function') window.initFirebase();
+  }
+  
+  if (!firebase.apps || !firebase.apps.length) {
+    alert('Firebase가 초기화되지 않았습니다. 페이지를 새로고침해 주세요.');
+    return;
+  }
+
   const provider = new firebase.auth.GoogleAuthProvider();
   // 항상 계정 선택 창이 뜨도록 설정 (기존 로그인 계정이 있어도 선택 가능)
   try {
@@ -357,6 +375,18 @@ function setupEmailAuthForm() {
         submitBtn.disabled = true;
         const originalText = submitBtn.textContent;
         submitBtn.textContent = EMAIL_AUTH_MODE === 'login' ? '로그인 중...' : '가입 중...';
+
+        // Final safety check before auth call
+        if (!firebase.apps || !firebase.apps.length) {
+          if (typeof window.initFirebase === 'function') window.initFirebase();
+        }
+
+        if (!firebase.apps || !firebase.apps.length) {
+          alert('Firebase가 초기화되지 않았습니다. 페이지를 새로고침해 주세요.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          return;
+        }
 
 try {
     if (EMAIL_AUTH_MODE === 'login') {
