@@ -7,7 +7,7 @@
     }
 
     /**
-     * Create tree data structure for Firestore
+     * Create tree data structure for PostgreSQL
      */
     function buildAiTreePayload(uid, name, suggestions) {
         const nodes = [];
@@ -58,7 +58,7 @@
     }
 
     /**
-     * Save AI tree to Firestore
+     * Save AI tree to PostgreSQL
      */
     async function saveAiTree(uid, treeId, payload) {
         try {

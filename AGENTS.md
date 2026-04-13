@@ -46,6 +46,10 @@ Lovetree는 단순 저장 앱이 아니다.
 - 화면보다 흐름이 중요하면 `docs/product/USER_FLOW.md`를 본다.
 - 데이터 명칭이 헷갈리면 `docs/product/DATA_NAMING_RULE.md`를 본다.
 - README는 입구 문서다. 제품 판단 기준은 README보다 PRODUCT_IDENTITY가 우선이다.
+- 신규 데이터 액세스 코드는 반드시 아래 파일을 진입점으로 사용한다.
+  - 클라이언트: `src/postgres-client.js`
+  - 서버(Netlify Functions): `netlify/functions/_lib/db-api.js`
+- ⚠️ 신규 코드에서 `firebase-firestore-compat.js`나 `firestore-api.js`를 직접 참조하는 것을 금지한다.
 - 새 페이지나 새 기능을 만들 때는 “이게 첫 순간 기록과 사랑의 경로 연결에 실제 도움이 되나”를 먼저 따진다.
 
 ## Data / Architecture Reminder

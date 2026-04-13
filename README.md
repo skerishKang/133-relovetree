@@ -28,26 +28,26 @@
 ```
 클라이언트                    Netlify Functions              저장소
 ┌──────────────┐             ┌──────────────────┐          ┌──────────────┐
-│ Firebase Auth│ ─────────── │ firestore-api.js │ ──────── │ Neon/Postgres│
-│ (로그인/세션)│   ID Token  │                  │   SQL    │ (실제 데이터)│
+│ Firebase Auth│ ─────────── │ db-api.js        │ ──────── │ Neon/Postgres│
+│ (로그인/세션)│   ID Token  │ (Postgres API)   │   SQL    │ (실제 데이터)│
 └──────────────┘             └──────────────────┘          └──────────────┘
        │                              │
        ▼                              ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ Firestore 호환 레이어 (firebase-firestore-compat.js)                      │
-│ - 클라이언트 코드는 Firestore API처럼 보이지만                            │
-│   실제로는 Netlify Functions → Postgres 로 전환됨                        │
+│ PostgreSQL 클라이언트 (postgres-client.js)                                 │
+│ - 클라이언트 코드는 Firestore API처럼 사용 가능 (하위 호환)                 │
+│ - 실제 데이터는 Netlify Functions → Postgres 로 전달됨                    │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-| 구성 요소 | 용도 | 실제 저장소 |
+| 구성 요소 | 용도 | 실제 저장소 / 진입점 |
 |-----------|------|-------------|
 | **Firebase Auth** | 로그인/세션 관리 | Firebase (Auth만) |
-| **Firestore 호환 레이어** | 프론트엔드 코드 호환성 | ❌ 실제 데이터 없음 |
-| **Netlify Functions** | API 엔드포인트, 권한 검증 | - |
+| **PostgreSQL 클라이언트** | 프론트엔드 데이터 접근 | `postgres-client.js` |
+| **Netlify Functions** | API 엔드포인트/권한 | `db-api.js` |
 | **Neon/PostgreSQL** | 실제 앱 데이터 저장 | ✅ `trees`, `users`, `posts` 등 |
 
-**핵심**: 클라이언트는 Firestore API를 호출하는 것처럼 보이지만, 모든 데이터는 **Neon PostgreSQL**에 저장됩니다.
+**핵심**: 클라이언트는 Firestore와 유사한 API를 호출하지만, 모든 데이터는 **Neon PostgreSQL**에 저장됩니다. 신규 코드는 반드시 `postgres-client.js`와 `db-api.js`를 사용해야 합니다.
 
 ## 프로젝트 구조
 
