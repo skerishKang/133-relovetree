@@ -82,53 +82,46 @@ const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 - ⚠️ 레거시: `firebase.firestore()`는 shim이 가로채어 PostgreSQL로 연결 (작동은 함)
 - ❌ 함수명/주석에 "Firestore" 추가 금지
 
+### 5 Rules for New Developers
+
+1. **Don't trust the name "Firestore"**: In this repo, "Firestore" often means "PostgreSQL using a Firestore-like API".
+2. **Use official entry points**: 
+   - Browser: `<script src="/src/postgres-client-browser.js"></script>` -> `window.postgresDB`
+   - Server: `const db = require('./_lib/db-api');`
+3. **No direct shim imports**: Never import `firebase-firestore-compat.js` directly in new modules.
+4. **Follow the Naming Rule**: Use `id`, `createdAt`, `updatedAt` for data fields. Avoid prefixing new database-related functions with "Firestore".
+5. **Check before you code**: Refer to `docs/product/DATA_NAMING_RULE.md` and `docs/ops/FILE_BASELINE.md` before adding new data models.
+
 ## 프로젝트 구조
 
 ```text
 133-relovetree/
-├── index.html              # 메인 랜딩 페이지
+├── index.html              # 메인 랜딩 페이지 (V2)
 ├── netlify.toml            # 라우팅 및 리다이렉트 설정
 ├── package.json
-├── css/                    # 페이지별 주요 스타일시트 (app, home, lovetree, community, login, my-trees 등)
+├── archive/                # 보관된 레거시 및 프로토타입
+│   ├── recovered-legacy/   # 복구된 레거시 소스 및 리소스
+│   ├── old-ui/             # 이전 UI 컨셉 (삭제 예정 후보)
+│   ├── prototype/          # 초기 개발 프로토타입
+│   └── reference-only/     # 기술 문서 및 참고용 데이터
 ├── assets/                 # 공통 자산 (favicon, 이미지, admin 전용 CSS)
-│   ├── favicon.svg
-│   ├── css/
-│   │   └── admin.css       # Admin 페이지 전용 스타일
-│   └── image/...           # 슬라이드, 쇼케이스 이미지 등
-├── pages/                  # 서비스의 모든 HTML 페이지
-│   ├── about.html
-│   ├── admin.html
-│   ├── album-view.html
-│   ├── community-tree-detail.html
-│   ├── community.html
-│   ├── editor-desktop-empty.html
-│   ├── editor-desktop.html
-│   ├── editor.html
-│   ├── empty-state.html
-│   ├── home.html
-│   ├── login.html
-│   ├── lovetree.html
-│   ├── memory-detail.html
-│   ├── mobile-add-branch.html
-│   ├── mobile-add-memory.html
-│   ├── mobile-tree.html
-│   ├── my-trees.html
-│   ├── owner.html
-│   ├── settings.html
-│   ├── story-view.html
-│   └── video-search.html
-├── src/                    # 클라이언트 측 비즈니스 로직 및 라이브러리
-│   ├── entries/            # 페이지별 주요 진입점 스크립트 (admin, community, editor_ai, index, owner)
-│   │   ├── admin.js
-│   │   ├── community.js
-│   │   ├── editor_ai.js
-│   │   ├── index.js
-│   │   └── owner.js
-│   ├── postgres-client-browser.js  # PostgreSQL 호환 클라이언트 (브라우저용)
-│   ├── shared-layout.js    # 공통 레이아웃 관련 스크립트 (GNB, Auth UI)
-│   └── ...                 # 기타 공유 유틸리티 및 모듈
-├── netlify/
-│   └── functions/          # Netlify 서버리스 함수 (PostgreSQL 연동 API)
+│   └── css/                # 운영용 전용 스타일 (admin.css 등)
+├── docs/                   # 프로젝트 문서
+│   ├── product/            # 제품 철학 및 기획 문서
+│   └── ops/                # 운영 기준 및 체크리스트
+├── netlify/                # Netlify Functions (Serverless API)
+│   └── functions/          # PostgreSQL 연동 API (_lib 내부에 핵심 로직 위치)
+├── pages/                  # 표준 HTML 페이지
+│   ├── lovetree.html       # 제품 소개 (랜딩)
+│   ├── community.html      # 탐색 광장
+│   ├── my-trees.html       # 마이 트리 대시보드
+│   ├── editor.html         # 트리 에디터 (핵심 도구)
+│   └── mobile-add-*.html   # [Legacy] 모바일 추가 (현 mobile-tree.html로 리다이렉트)
+├── src/                    # 프론트엔드 JavaScript 소스
+│   ├── entries/            # 페이지별 주요 진입점 스크립트
+│   ├── postgres-client-browser.js # 핵심 DB 진입점
+│   ├── shared.js           # 공통 비즈니스 로직
+│   └── shared-layout.js    # GNB 및 레이아웃 관리
 └── README.md
 ```
 
@@ -180,7 +173,7 @@ npm run test
 
 ### CSS 운영 방식
 
-- 앱은 `assets/css/*.css`를 직접 사용합니다.
+- 사용자에게 직접 제공되는 앱 스타일은 `assets/css/*.css`에 위치하며, 이 파일들을 직접 수정하여 디자인을 반영합니다. (루트 `css/` 폴더는 사용되지 않으며 아카이브로 이동되었습니다.)
 - Tailwind/PostCSS 빌드 체인은 제거됐습니다.
 - `npm run build`는 실질적인 CSS 컴파일을 하지 않습니다.
 

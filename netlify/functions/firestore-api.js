@@ -1,6 +1,7 @@
 /**
  * ⚠️ LEGACY ENDPOINT NAME - Firestore API Endpoint (Netlify Function)
  * 
+ * Routing to PostgreSQL via _lib/firestore-api.js and document-store.js.
  * DO NOT USE for new server code reference.
  * Use: /netlify/functions/_lib/db-api.js for server-side code
  * 

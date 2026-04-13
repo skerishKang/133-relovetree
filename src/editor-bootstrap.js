@@ -15,7 +15,10 @@
         }
 
         if (typeof firebase !== 'undefined' && firebase.apps.length) {
-            runtime.db = window.postgresDB; // alias 전환
+            // ⚠️ CRITICAL: 이 할당은 editor 전체 데이터 접근의 근원입니다.
+            // 변경 시 모든 editor 데이터 읽기/쓰기가 즉시 실패합니다.
+            // 상세: docs/ops/EDITOR_ARCHITECTURE.md §5.1 위험도 순위 1위
+            runtime.db = window.postgresDB;
             runtime.auth = firebase.auth();
             runtime.storage = firebase.storage();
         }

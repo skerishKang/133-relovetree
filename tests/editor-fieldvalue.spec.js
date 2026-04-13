@@ -3,14 +3,23 @@ import { test, expect } from '@playwright/test';
 /**
  * Editor FieldValue Verification Tests
  * 
- * Verifies that:
- * 1. viewCount uses increment(1) transform
- * 2. lastOpened uses serverTimestamp transform
- * 3. shareCount uses increment(1) transform
- * 4. Comment createdAt uses serverTimestamp transform
+ * Two layers of verification:
  * 
- * These tests validate the compat layer correctly transforms
- * firebase.firestore.FieldValue operations to PostgreSQL-equivalent.
+ * A) Source pattern presence (Tests 1-4):
+ *    - Confirms FieldValue.increment / serverTimestamp calls exist in source.
+ *    - Does NOT verify runtime transformation or server-side processing.
+ *    - Purpose: catch accidental removal of FieldValue usage during refactoring.
+ * 
+ * B) Shim runtime transform (Tests 6-9):
+ *    - Loads firebase-firestore-compat.js in the editor page context.
+ *    - Calls FieldValue factory methods and inspects return values.
+ *    - Verifies the shim produces {__firestoreTransform: true, ...} objects.
+ *    - Does NOT verify server-side applyTransform() in document-store.js.
+ * 
+ * Shared dependency:
+ *    - All tests depend on shared layer: firebase-firestore-compat.js
+ *    - If shared layer is modified, both editor-smoke.spec.js and this file
+ *      must be re-run (per EDITOR_ARCHITECTURE.md §7.1).
  */
 
 test.describe('Editor FieldValue Shim Verification', () => {
@@ -67,63 +76,65 @@ test.describe('Editor FieldValue Shim Verification', () => {
     });
 
     /**
-     * Test 1: viewCount increment on editor load
-     * Location: src/editor-data.js:38
-     * 
-     * Note: This test verifies the FieldValue pattern exists in source code
-     * since actual API call may not trigger in smoke test environment
+     * [Source Pattern] Test 1: viewCount increment on editor load
+     * File: src/editor-data.js — uses FieldValue.increment(1)
+     * Scope: source code string pattern only, not runtime transform output
      */
-    test('viewCount increment - should use increment transform in source code', async ({ page }) => {
+    test('viewCount increment - FieldValue.increment(1) call exists in editor-data.js', async ({ page }) => {
         // Read the source file to verify the pattern exists
         const response = await page.request.get('/src/editor-data.js');
         const sourceCode = await response.text();
 
         const hasViewCountIncrement = sourceCode.includes('viewCount') && 
             sourceCode.includes('FieldValue.increment(1)');
-        expect(hasViewCountIncrement, 'editor-data.js should use FieldValue.increment(1) for viewCount').toBeTruthy();
+        expect(hasViewCountIncrement, 'editor-data.js should contain FieldValue.increment(1) for viewCount').toBeTruthy();
     });
 
     /**
-     * Test 2: lastOpened serverTimestamp on editor load
-     * Location: src/editor-data.js:39
+     * [Source Pattern] Test 2: lastOpened serverTimestamp on editor load
+     * File: src/editor-data.js — uses FieldValue.serverTimestamp()
+     * Scope: source code string pattern only
      */
-    test('lastOpened serverTimestamp - should use serverTimestamp in source code', async ({ page }) => {
+    test('lastOpened serverTimestamp - FieldValue.serverTimestamp() call exists in editor-data.js', async ({ page }) => {
         const response = await page.request.get('/src/editor-data.js');
         const sourceCode = await response.text();
 
         const hasLastOpenedTimestamp = sourceCode.includes('lastOpened') && 
             sourceCode.includes('FieldValue.serverTimestamp()');
-        expect(hasLastOpenedTimestamp, 'editor-data.js should use serverTimestamp for lastOpened').toBeTruthy();
+        expect(hasLastOpenedTimestamp, 'editor-data.js should contain FieldValue.serverTimestamp() for lastOpened').toBeTruthy();
     });
 
     /**
-     * Test 3: Comment createdAt serverTimestamp
-     * Location: src/editor-comments.js:92
+     * [Source Pattern] Test 3: Comment createdAt serverTimestamp
+     * File: src/editor-comments.js — uses FieldValue.serverTimestamp()
+     * Scope: source code string pattern only
      */
-    test('Comment createdAt - should use serverTimestamp in source code', async ({ page }) => {
+    test('Comment createdAt - FieldValue.serverTimestamp() call exists in editor-comments.js', async ({ page }) => {
         const response = await page.request.get('/src/editor-comments.js');
         const sourceCode = await response.text();
 
         const hasServerTimestamp = sourceCode.includes('FieldValue.serverTimestamp()');
-        expect(hasServerTimestamp, 'editor-comments.js should use FieldValue.serverTimestamp()').toBeTruthy();
+        expect(hasServerTimestamp, 'editor-comments.js should contain FieldValue.serverTimestamp()').toBeTruthy();
     });
 
     /**
-     * Test 4: shareCount increment
-     * Location: src/editor-actions.js:68
+     * [Source Pattern] Test 4: shareCount increment
+     * File: src/editor-actions.js — uses FieldValue.increment(1)
+     * Scope: source code string pattern only
      */
-    test('shareCount increment - should use increment transform in source code', async ({ page }) => {
+    test('shareCount increment - FieldValue.increment call exists in editor-actions.js', async ({ page }) => {
         const response = await page.request.get('/src/editor-actions.js');
         const sourceCode = await response.text();
 
         const hasShareCountIncrement = sourceCode.includes('shareCount') && 
             sourceCode.includes('FieldValue.increment');
-        expect(hasShareCountIncrement, 'editor-actions.js should use increment for shareCount').toBeTruthy();
+        expect(hasShareCountIncrement, 'editor-actions.js should contain FieldValue.increment for shareCount').toBeTruthy();
     });
 
     /**
-     * Test 5: Verify compat layer transforms FieldValue correctly
-     * This test checks that the firebase-firestore-compat.js is loaded
+     * [Shim Load] Test 5: Verify compat layer is loaded in editor page
+     * Dependency: shared layer (firebase-firestore-compat.js)
+     * Scope: confirms firebase.firestore function exists at runtime
      */
     test('Compat layer should be loaded for FieldValue transformation', async ({ page }) => {
         await page.goto('/pages/editor.html?id=test-tree');
@@ -138,4 +149,82 @@ test.describe('Editor FieldValue Shim Verification', () => {
         expect(hasFirestore, 'Firebase SDK should be loaded').toBeTruthy();
     });
 
-});
+    /**
+     * [Shim Runtime] Test 6: FieldValue.increment produces correct transform object
+     * Dependency: shared layer (firebase-firestore-compat.js)
+     * Scope: verifies runtime output of FieldValue.increment(1) in the browser context.
+     *        Does NOT verify server-side applyTransform() processing.
+     */
+    test('FieldValue.increment(1) should produce {__firestoreTransform: true, type: "increment", operand: 1}', async ({ page }) => {
+        await page.goto('/pages/editor.html?id=test-tree');
+        await page.waitForLoadState('networkidle');
+
+        const result = await page.evaluate(() => {
+            if (typeof firebase === 'undefined' || typeof firebase.firestore !== 'function') return null;
+            return firebase.firestore.FieldValue.increment(1);
+        });
+
+        expect(result, 'firebase.firestore.FieldValue.increment(1) must return a value').not.toBeNull();
+        expect(result.__firestoreTransform).toBe(true);
+        expect(result.type).toBe('increment');
+        expect(result.operand).toBe(1);
+    });
+
+    /**
+     * [Shim Runtime] Test 7: FieldValue.serverTimestamp produces correct transform object
+     * Dependency: shared layer (firebase-firestore-compat.js)
+     * Scope: verifies runtime output of FieldValue.serverTimestamp() in the browser context.
+     */
+    test('FieldValue.serverTimestamp() should produce {__firestoreTransform: true, type: "serverTimestamp"}', async ({ page }) => {
+        await page.goto('/pages/editor.html?id=test-tree');
+        await page.waitForLoadState('networkidle');
+
+        const result = await page.evaluate(() => {
+            if (typeof firebase === 'undefined' || typeof firebase.firestore !== 'function') return null;
+            return firebase.firestore.FieldValue.serverTimestamp();
+        });
+
+        expect(result, 'firebase.firestore.FieldValue.serverTimestamp() must return a value').not.toBeNull();
+        expect(result.__firestoreTransform).toBe(true);
+        expect(result.type).toBe('serverTimestamp');
+    });
+
+    /**
+     * [Shim Runtime] Test 8: FieldValue.increment with custom operand
+     * Dependency: shared layer (firebase-firestore-compat.js)
+     * Scope: verifies operand is correctly converted to Number.
+     */
+    test('FieldValue.increment(n) should pass numeric operand through', async ({ page }) => {
+        await page.goto('/pages/editor.html?id=test-tree');
+        await page.waitForLoadState('networkidle');
+
+        const result = await page.evaluate(() => {
+            if (typeof firebase === 'undefined' || typeof firebase.firestore !== 'function') return null;
+            return firebase.firestore.FieldValue.increment(5);
+        });
+
+        expect(result).not.toBeNull();
+        expect(result.__firestoreTransform).toBe(true);
+        expect(result.type).toBe('increment');
+        expect(result.operand).toBe(5);
+    });
+
+    /**
+     * [Shim Runtime] Test 9: FieldValue.delete produces correct transform object
+     * Dependency: shared layer (firebase-firestore-compat.js)
+     * Scope: verifies FieldValue.delete() transform structure (not currently used
+     *        in editor-*.js but defined in the shim for completeness).
+     */
+    test('FieldValue.delete() should produce {__firestoreTransform: true, type: "delete"}', async ({ page }) => {
+        await page.goto('/pages/editor.html?id=test-tree');
+        await page.waitForLoadState('networkidle');
+
+        const result = await page.evaluate(() => {
+            if (typeof firebase === 'undefined' || typeof firebase.firestore !== 'function') return null;
+            return firebase.firestore.FieldValue.delete();
+        });
+
+        expect(result).not.toBeNull();
+        expect(result.__firestoreTransform).toBe(true);
+        expect(result.type).toBe('delete');
+    });

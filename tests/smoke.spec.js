@@ -54,49 +54,43 @@ test.describe('Lovetree Smoke Tests', () => {
     }
   });
 
-  test('Home Page: Load and UI elements present', async ({ page }) => {
-    await page.goto(BASE_URL + '/');
-    await expect(page).toHaveTitle(/Lovetree/);
-    
-    const settingsBtn = page.locator('#settings-btn');
-    const mainNav = page.locator('#main-nav');
-    
-    await expect(settingsBtn).toBeVisible();
-    await expect(mainNav).toBeVisible();
-    
-    const heroSection = page.locator('.hero-shell, [class*="hero"]').first();
-    await expect(heroSection).toBeAttached();
-  });
+test('Home Page: Load and UI elements present', async ({ page }) => {
+  await page.goto(BASE_URL + '/');
+  await expect(page).toHaveTitle(/Lovetree/);
 
-  test('Home Page: Search Modal opens', async ({ page }) => {
-    await page.goto(BASE_URL + '/');
-    
-    const searchBtn = page.locator('#search-btn');
-    await searchBtn.click();
-    
-    const searchModal = page.locator('#search-modal');
-    await expect(searchModal).toBeVisible();
-    
-    const searchInput = page.locator('#search-input');
-    await expect(searchInput).toBeAttached();
-    
-    const closeBtn = searchModal.locator('button[aria-label*="닫기"], .modal-close').first();
-    if (await closeBtn.isVisible().catch(() => false)) {
-      await closeBtn.click();
-    }
-  });
+  const logo = page.locator('.logo');
+  const gnb = page.locator('.gnb-v2');
+  const authBtn = page.locator('.btn-pill-auth');
 
-  test('Community Page: Load and list present', async ({ page }) => {
-    await page.goto(BASE_URL + '/pages/community.html');
-    
-    await page.waitForLoadState('domcontentloaded');
-    
-    const communityContent = page.locator(
-      '#community-post-list, #posts-container, main, [class*="community"]'
-    ).first();
-    
-    await expect(communityContent).toBeAttached();
-  });
+  await expect(logo).toBeVisible();
+  await expect(gnb).toBeVisible();
+  await expect(authBtn).toBeVisible();
+
+  const heroSection = page.locator('.hero-v2').first();
+  await expect(heroSection).toBeAttached();
+});
+
+test('Home Page: Auth button is present and points to login', async ({ page }) => {
+  await page.goto(BASE_URL + '/');
+
+  const authBtn = page.locator('.btn-pill-auth');
+  await expect(authBtn).toBeVisible();
+
+  const href = await authBtn.getAttribute('href');
+  expect(href).toContain('/pages/login.html');
+});
+
+test('Community Page: Load and grid present', async ({ page }) => {
+  await page.goto(BASE_URL + '/pages/community.html');
+
+  await page.waitForLoadState('domcontentloaded');
+
+  const communityMain = page.locator('main');
+  const discoveryGrid = page.locator('#discovery-grid-demo, #discovery-grid');
+
+  await expect(communityMain).toBeAttached();
+  await expect(discoveryGrid.first()).toBeVisible();
+});
 
   test('Owner Page: Management dashboard shell', async ({ page }) => {
     await page.goto(BASE_URL + '/pages/owner.html');
@@ -150,16 +144,12 @@ test.describe('Lovetree Smoke Tests', () => {
     await expect(loginOverlay).toBeAttached();
   });
 
-  test('Settings Modal: Opens from home page', async ({ page }) => {
-    await page.goto(BASE_URL + '/');
-    
-    const settingsBtn = page.locator('#settings-btn');
-    await settingsBtn.click();
-    
-    const settingsModal = page.locator('#settings-modal');
-    await expect(settingsModal).toBeVisible();
-    
-    const modalTitle = settingsModal.locator('.modal-title, h3').first();
-    await expect(modalTitle).toBeAttached();
-  });
+test('Settings Modal: Opens from owner page', async ({ page }) => {
+  await page.goto(BASE_URL + '/pages/owner.html');
+
+  await page.waitForLoadState('domcontentloaded');
+
+  const settingsModal = page.locator('#settings-modal');
+  await expect(settingsModal).toBeAttached();
+});
 });

@@ -1,6 +1,7 @@
 /**
  * ⚠️ LEGACY SHIM - Lovetree Firestore Compatibility Layer
  * 
+ * This redirects Firestore-style API calls to Neon/PostgreSQL via Netlify Functions.
  * DO NOT USE as primary entry point for new code.
  * 
  * This module intercepts firebase.firestore() calls and redirects them to

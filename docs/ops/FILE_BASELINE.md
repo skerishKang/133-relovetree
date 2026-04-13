@@ -206,19 +206,16 @@
 
 ## 3. 레거시/보류 파일 (Legacy/Pending Files)
 
-### 3.1 archive/ - 아카이브 (100+ 파일)
+### 3.1 archive/ - 아카이브 (Reorganized)
 
-| 폴더 | 내용 | 상태 |
+| 폴더 | 내용 | 역할 |
 |------|------|------|
-| `archive/pages-old-20260413/` | 이전 pages 백업 | 보류 |
-| `archive/legacy-ui-20260413/` | 레거시 UI 컨셉 | 보류 |
-| `archive/frontend-concept-v2-src-old-20260413/` | 이전 소스 | 보류 |
-| `archive/prototype-snapshots-20260413/` | 프로토타입 스냅샷 | 보류 |
-| `archive/root-cleanup-20260413/` | 클린업 산출물 | 보류 |
-| `archive/simple-prototype/` | 심플 프로토타입 | 보류 |
-| `archive/recovered-legacy/` | 최근 복구 파일 | 보류 |
+| `archive/recovered-legacy/` | 최근 복구된 레거시 파일 | 보관 유지 |
+| `archive/old-ui/` | 이전 UI 디자인 컨셉 | 삭제 후보 |
+| `archive/prototype/` | 초기 개발 프로토타입 | 참조용 |
+| `archive/reference-only/` | 기술 문서 및 데이터 | 참조용 |
 
-> **삭제 후보**: archive 폴더 전체 (100+ 파일, 실제 운영 미사용)
+> **정책**: 운영에 영향을 주지 않는 범위에서 보관을 우선하되, `old-ui` 등은 주기적으로 정리 검토.
 
 ### 3.2 css/ - 레거시 CSS (이미 ARCHIVE로 이동)
 
@@ -238,8 +235,8 @@
 | `pages/empty-state.html` | ⚠️ 빈 상태 |
 | `pages/album-view.html` | ⚠️ 앨범 뷰 |
 | `pages/memory-detail.html` | ⚠️ 메모리 상세 (mobile로 리다이렉트) |
-| `pages/mobile-add-memory.html` | ⚠️ 모바일 add memory (mobile-tree.html로 리다이렉트) |
-| `pages/mobile-add-branch.html` | ⚠️ 모바일 add branch |
+| `pages/mobile-add-memory.html` | ⚠️ [Legacy] 리다이렉트 전용 (mobile-tree.html로 연결) |
+| `pages/mobile-add-branch.html` | ⚠️ [Legacy] 리다이렉트 전용 |
 | `pages/editor-desktop.html` | ⚠️ 에디터 데스크톱 (editor.html로 리다이렉트) |
 | `pages/editor-desktop-empty.html` | ⚠️ 에디터 데스크톱 빈 |
 

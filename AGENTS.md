@@ -70,3 +70,6 @@ Lovetree는 단순 저장 앱이 아니다.
 - 실제 앱 데이터는 Netlify Functions를 거쳐 Neon/Postgres에 저장
 - Firestore 스타일 API 명칭은 호환 레이어일 뿐, 실제 저장소는 Postgres다
 - ⚠️ 신규 코드에서 함수명/주석에 "Firestore" 추가 금지 (legacy shim과 구분)
+- **데이터 진입점 가이드**:
+  - 브라우저: `src/postgres-client-browser.js` -> `window.postgresDB`
+  - 서버: `netlify/functions/_lib/db-api.js`

@@ -1,6 +1,7 @@
 /**
  * ⚠️ OFFICIAL SERVER ENTRY - PostgreSQL Database API (Server-side Alias)
  * 
+ * Use these functions for all server-side PostgreSQL data operations.
  * IMPORTANT: This is the PRIMARY entry point for new server code.
  * 
  * Background:

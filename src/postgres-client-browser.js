@@ -1,5 +1,8 @@
 /**
- * ⚠️ OFFICIAL BROWSER ENTRY - Auth: Firebase / Data: Neon Postgres via compat layer
+ * ⚠️ OFFICIAL BROWSER ENTRY point.
+ * This initializes window.postgresDB which maps to Neon PostgreSQL via a compat layer.
+ * 
+ * Auth: Firebase / Data: Neon Postgres via compat layer
  * 
  * IMPORTANT: This is the PRIMARY entry point for browser (non-module) code.
  * 

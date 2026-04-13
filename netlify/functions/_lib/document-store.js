@@ -1,3 +1,9 @@
+/**
+ * ⚠️ CORE DATA LAYER - Lovetree PostgreSQL Document Store
+ * 
+ * This handles the actual SQL mapping to Neon/PostgreSQL.
+ * All Firestore-style transforms (increment, serverTimestamp, etc.) are processed here.
+ */
 const crypto = require('crypto');
 const { query, withTransaction } = require('./db');
 const { httpError } = require('./http');
