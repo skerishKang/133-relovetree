@@ -153,8 +153,8 @@
 | 파일 | 상태 | 설명 |
 |------|------|------|
 | `src/mobile-tree.js` | ✅ 활성 | mobile-tree.html에서 사용 |
-| `src/mobile-add-memory.js` | ❌ 고아 | 어떤 페이지에서도 참조 안 됨 |
-| `src/mobile-add-branch.js` | ❌ 고아 | 어떤 페이지에서도 참조 안 됨 |
+| `src/mobile-add-memory.js` | 🗑️ 삭제 완료 | 고아 파일 (삭제됨) |
+| `src/mobile-add-branch.js` | 🗑️ 삭제 완료 | 고아 파일 (삭제됨) |
 
 ### 2.2 src/editor - 에디터 모듈 (별도 트랙)
 
