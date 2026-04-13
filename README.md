@@ -28,7 +28,7 @@
 ```
 클라이언트                    Netlify Functions              저장소
 ┌──────────────┐             ┌──────────────────┐          ┌──────────────┐
-│ Firebase Auth│ ─────────── │ db-api.js        │ ──────── │ Neon/Postgres│
+│ Firebase Auth│ ─────────── │ firestore-api.js │ ──────── │ Neon/Postgres│
 │ (로그인/세션)│   ID Token  │ (Postgres API)   │   SQL    │ (실제 데이터)│
 └──────────────┘             └──────────────────┘          └──────────────┘
        │                              │
@@ -44,10 +44,10 @@
 |-----------|------|-------------|
 | **Firebase Auth** | 로그인/세션 관리 | Firebase (Auth만) |
 | **PostgreSQL 클라이언트** | 브라우저 데이터 접근 | `postgres-client-browser.js` |
-| **Netlify Functions** | API 엔드포인트/권한 | `db-api.js` |
+| **Netlify Functions** | API 엔드포인트 | `/api/firestore` → `firestore-api.js` |
 | **Neon/PostgreSQL** | 실제 앱 데이터 저장 | ✅ `trees`, `users`, `posts` 등 |
 
-**핵심**: 브라우저는 `postgres-client-browser.js`를 로드하여 `window.postgresDB`를 사용합니다. 모든 데이터는 **Neon PostgreSQL**에 저장됩니다. 신규 코드는 반드시 `postgres-client-browser.js`와 `db-api.js`를 사용해야 합니다.
+**핵심**: 브라우저는 `postgres-client-browser.js`를 로드하여 `window.postgresDB`를 사용합니다. 모든 데이터는 **Neon PostgreSQL**에 저장됩니다. 실제 API 엔드포인트는 `/api/firestore`입니다.
 
 ### 데이터 저장소 정책 (중요)
 
