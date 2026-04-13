@@ -86,12 +86,18 @@
 
     function renderTags() {
         var container = document.getElementById('detail-tags');
+        if (!container) return;
         container.innerHTML = '';
 
-        if (currentNode.moments && currentNode.moments.length > 0) {
+        if (currentNode.emotionTag) {
+            var tag = document.createElement('span');
+            tag.className = 'mem-tag-v3';
+            tag.textContent = currentNode.emotionTag;
+            container.appendChild(tag);
+        } else if (currentNode.moments && currentNode.moments.length > 0) {
             currentNode.moments.forEach(function (m) {
                 var tag = document.createElement('span');
-                tag.style.cssText = 'background:rgba(181,110,110,0.1);color:var(--color-text-sub);padding:4px 12px;border-radius:12px;font-size:0.8rem;font-weight:700;';
+                tag.className = 'mem-tag-v3';
                 var label = F.feelingToTag(m.feeling);
                 var emoji = F.getEmotionEmoji(m.feeling);
                 tag.textContent = (emoji ? emoji + ' ' : '') + label;
@@ -102,11 +108,12 @@
 
     function renderMemo() {
         var memoCard = document.getElementById('memo-card');
-        var memoText = '';
+        var memoEl = document.getElementById('detail-memo');
+        if (!memoCard || !memoEl) return;
+        
+        var memoText = currentNode.memo || currentNode.description || '';
 
-        if (currentNode.description) {
-            memoText = currentNode.description;
-        } else if (currentNode.moments && currentNode.moments.length > 0) {
+        if (!memoText && currentNode.moments && currentNode.moments.length > 0) {
             var allTexts = currentNode.moments
                 .map(function (m) { return m.text; })
                 .filter(function (t) { return t && t.trim(); });
@@ -114,40 +121,38 @@
         }
 
         if (memoText) {
-            memoCard.style.display = 'block';
-            document.getElementById('detail-memo').textContent = memoText;
+            memoEl.textContent = memoText;
+        } else {
+            memoEl.textContent = '기록된 감정 메모가 없습니다.';
         }
     }
 
     function renderConnected() {
         var container = document.getElementById('connected-list');
+        if (!container) return;
         container.innerHTML = '';
 
         var connected = F.getConnectedNodes(treeData, currentNode.id);
 
         if (connected.length === 0) {
-            var empty = document.createElement('p');
-            empty.style.cssText = 'font-size:0.85rem;color:var(--color-text-muted);';
-            empty.textContent = '아직 연결된 순간이 없습니다';
-            container.appendChild(empty);
+            container.innerHTML = '<p style="font-size:0.85rem;color:#64748b;padding:20px;">이어진 다른 기억이 아직 없습니다.</p>';
             return;
         }
 
         connected.forEach(function (node) {
-            var item = document.createElement('div');
-            item.className = 'card';
-            item.style.cssText = 'min-width:180px;padding:8px;display:flex;gap:12px;align-items:center;cursor:pointer;';
+            var item = document.createElement('a');
+            item.href = 'javascript:void(0)';
+            item.className = 'rel-item-v3';
 
             var thumbUrl = node.videoId ? F.getYouTubeThumb(node.videoId) : '';
 
             item.innerHTML =
-                (thumbUrl ?
-                    '<img src="' + thumbUrl + '" style="width:44px;height:44px;border-radius:8px;object-fit:cover;">' :
-                    '<div style="width:44px;height:44px;border-radius:8px;background:var(--color-bg-surface);display:flex;align-items:center;justify-content:center;">🌱</div>'
-                ) +
-                '<div>' +
-                    '<h5 style="font-size:0.8rem;font-weight:700;margin-bottom:2px;">' + escapeHtml(node.title || '순간') + '</h5>' +
-                    '<p style="font-size:0.7rem;color:var(--color-text-muted);">' + F.formatKoreanDate(node.date) + '</p>' +
+                '<div class="rel-thumb-v3">' +
+                (thumbUrl ? '<img src="' + thumbUrl + '" style="width:100%;height:100%;object-fit:cover;">' : '🌱') +
+                '</div>' +
+                '<div class="rel-text-v3">' +
+                '    <h5>' + escapeHtml(node.title || '이전/다음 기억') + '</h5>' +
+                '    <span>' + F.formatKoreanDate(node.date) + '</span>' +
                 '</div>';
 
             item.addEventListener('click', function () {
@@ -160,37 +165,49 @@
 
     function timeToSeconds(timeString) {
         if (!timeString) return 0;
-        var parts = timeString.split(':').map(Number);
+        if (typeof timeString === 'number') return timeString;
+        var parts = String(timeString).split(':').map(Number);
+        if (parts.length === 1) return parts[0];
         if (parts.length === 2) return parts[0] * 60 + parts[1];
         if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
         return 0;
     }
 
     function escapeHtml(str) {
+        if (!str) return '';
         var div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
     }
 
     function bindEvents() {
-        document.getElementById('btn-back').addEventListener('click', function () {
-            window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
-        });
+        var btnBack = document.getElementById('btn-back');
+        if (btnBack) {
+            btnBack.addEventListener('click', function () {
+                window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
+            });
+        }
 
-        document.getElementById('footer-edit').addEventListener('click', function () {
-            window.location.href = '/pages/editor.html?id=' + encodeURIComponent(treeId);
-        });
+        var btnEdit = document.getElementById('footer-edit');
+        if (btnEdit) {
+            btnEdit.addEventListener('click', function () {
+                window.location.href = '/pages/mobile-add-memory.html?treeId=' + encodeURIComponent(treeId) + '&editNodeId=' + encodeURIComponent(nodeId);
+            });
+        }
 
-        document.getElementById('footer-share').addEventListener('click', function () {
-            var url = window.location.origin + '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
-            if (navigator.share) {
-                navigator.share({ title: treeData ? treeData.name : '러브트리', url: url }).catch(function () {});
-            } else {
-                navigator.clipboard.writeText(url).then(function () {
-                    showToast('링크가 복사되었습니다');
-                });
-            }
-        });
+        var btnShare = document.getElementById('footer-share');
+        if (btnShare) {
+            btnShare.addEventListener('click', function () {
+                var url = window.location.href;
+                if (navigator.share) {
+                    navigator.share({ title: (currentNode ? currentNode.title : '러브트리 기억'), url: url }).catch(function () {});
+                } else {
+                    navigator.clipboard.writeText(url).then(function () {
+                        alert('링크가 복사되었습니다');
+                    });
+                }
+            });
+        }
     }
 
     function showToast(msg) {

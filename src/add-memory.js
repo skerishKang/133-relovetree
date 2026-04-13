@@ -20,9 +20,9 @@ function getIsNewFromUrl() {
 
 // 폼 데이터 수집
 function collectFormData() {
-  // 선택된 감정 chips
-  const selectedEmotionEl = document.querySelector('.emotion-chip.selected');
-  const emotion = selectedEmotionEl ? selectedEmotionEl.dataset.emotion : '감동';
+  // 선택된 감정 chips (V3 대응: .emotion-chip-v3.active 또는 .emotion-chip.selected)
+  const selectedEmotionEl = document.querySelector('.emotion-chip-v3.active, .emotion-chip.selected');
+  const emotion = selectedEmotionEl ? (selectedEmotionEl.textContent || selectedEmotionEl.dataset.emotion) : '감동';
 
   // 트리 ID: URL parameter takes priority, then dropdown
   let treeId = getTreeIdFromUrl();
@@ -36,7 +36,7 @@ function collectFormData() {
     title: document.getElementById('memory-title')?.value || '',
     videoUrl: document.getElementById('video-url')?.value || '',
     date: document.getElementById('memory-date')?.value || new Date().toISOString().split('T')[0],
-    emotion: emotion,
+    emotion: emotion.trim(),
     memo: document.getElementById('memory-memo')?.value || ''
   };
 }
@@ -47,7 +47,7 @@ function validateFormData(data) {
 
   // treeId must be provided
   if (!data.treeId) {
-    errors.push('트리를 선택해 주세요');
+    errors.push('트리를 지정해 주세요 (URL 파라미터 필요)');
   }
 
   if (!data.videoUrl || data.videoUrl.trim().length < 5) {
@@ -56,10 +56,6 @@ function validateFormData(data) {
 
   if (!data.title || data.title.trim().length < 1) {
     errors.push('기억의 제목을 입력해 주세요');
-  }
-
-  if (!data.date) {
-    errors.push('날짜를 선택해 주세요');
   }
 
   return {
@@ -72,48 +68,38 @@ function validateFormData(data) {
 async function handleMemorySubmit(event) {
   if (event) event.preventDefault();
 
-  const submitBtn = document.getElementById('btn-submit-memory');
+  // V3 ID: btn-submit, Legacy ID: btn-submit-memory
+  const submitBtn = document.getElementById('btn-submit') || document.getElementById('btn-submit-memory');
   if (!submitBtn) return;
 
-  // treeId validation - MUST have treeId from URL for this flow
   const treeId = getTreeIdFromUrl();
   if (!treeId) {
-    alert('트리를 찾을 수 없습니다. 다시 시도해 주세요.');
+    alert('트리 정보를 찾을 수 없습니다. 대시보드에서 시작해 주세요.');
     window.location.href = '/pages/my-trees.html';
     return;
   }
 
-  // 로딩 상태
-  const idleSpan = submitBtn.querySelector('.state-idle');
-  const loadingSpan = submitBtn.querySelector('.state-loading');
-  const originalText = idleSpan ? idleSpan.textContent : submitBtn.textContent;
-  
+  // 로딩 상태 처리
+  const originalText = submitBtn.textContent;
   submitBtn.disabled = true;
-  if (idleSpan) idleSpan.classList.add('is-hidden');
-  if (loadingSpan) loadingSpan.classList.remove('is-hidden');
+  submitBtn.textContent = '기억을 심는 중...';
 
   try {
-    // 1. 폼 데이터 수집
     const formData = collectFormData();
-    formData.treeId = treeId; // Ensure treeId from URL is used
+    formData.treeId = treeId;
 
-    // 2. 유효성 검사
     const validation = validateFormData(formData);
     if (!validation.isValid) {
       alert(validation.errors.join('\n'));
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
       return;
     }
 
-    // 3. FlowShared를 사용하여 트리에 순간 추가
     const F = window.FlowShared;
-    
-    // 3a. 트리 데이터 로드
     const treeData = await F.loadTree(treeId);
-    if (!treeData) {
-      throw new Error('트리를 찾을 수 없습니다.');
-    }
+    if (!treeData) throw new Error('트리 데이터를 불러올 수 없습니다.');
 
-    // 3b. 메모리 데이터 포맷팅
     const memoryData = {
       title: formData.title,
       date: formData.date,
@@ -123,111 +109,59 @@ async function handleMemorySubmit(event) {
       emotionTag: formData.emotion
     };
 
-    // 3c. 트리에 순간 추가
+    // DB 저장 (FlowShared 인터페이스 활용)
     await F.addMemoryToTree(treeId, treeData, null, memoryData);
 
-    // 4. 성공: 트리 페이지로 이동
-    alert('기억이 저장되었습니다!');
+    alert('당신의 소중한 기억이 러브트리에 심어졌습니다! 🌱');
     window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
 
   } catch (error) {
     console.error('Memory submit error:', error);
-    alert('저장 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
-  } finally {
-    // 로딩 상태 해제
+    alert('저장 오류: ' + (error.message || '알 수 없는 오류'));
     submitBtn.disabled = false;
-    if (idleSpan) idleSpan.classList.remove('is-hidden');
-    if (loadingSpan) loadingSpan.classList.add('is-hidden');
-    if (idleSpan) idleSpan.textContent = originalText;
+    submitBtn.textContent = originalText;
   }
 }
 
-// 비디오 URL 변경 시 프리뷰 업데이트
+// 비디오 URL 변경 시 프리뷰 업데이트 (V3 대응)
 function setupVideoPreview() {
   const videoInput = document.getElementById('video-url');
-  const previewNode = document.getElementById('preview-node');
+  const previewArea = document.getElementById('preview-area') || document.getElementById('preview-node');
   const previewTitle = document.getElementById('preview-title');
-  const previewDate = document.getElementById('preview-date');
+  const thumbBox = document.getElementById('preview-thumb');
 
-  if (!videoInput || !previewNode) return;
+  if (!videoInput || !previewArea) return;
 
   videoInput.addEventListener('input', function(e) {
-    const url = e.target.value;
+    const url = e.target.value.trim();
+    const F = window.FlowShared;
+    const videoId = F ? F.parseYouTubeId(url) : null;
 
-    if (url.length > 10) {
-      // 프리뷰 활성화
-      previewNode.style.transform = 'rotate(0deg) scale(1.05)';
-      previewNode.style.borderColor = '#b56e6e';
-
-      const thumbBox = document.getElementById('preview-thumb');
+    if (videoId) {
+      previewArea.style.borderColor = '#b56e6e';
       if (thumbBox) {
-        thumbBox.style.background = '#000';
-        // 실제 구현 시 YouTube 썸네일 API 연동
-        thumbBox.innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" class="preview-dynamic-img">';
+        const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        thumbBox.innerHTML = `<img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;">`;
       }
-
-      // URL에서 제목 추출 시도
-      if (previewTitle) {
-        previewTitle.textContent = extractTitleFromUrl(url) || '새로운 기억';
+      if (previewTitle && previewTitle.textContent.includes('감지')) {
+        previewTitle.textContent = '영상이 인식되었습니다';
       }
     } else {
-      // 초기화
-      previewNode.style.transform = '';
-      previewNode.style.borderColor = '';
-
-      const thumbBox = document.getElementById('preview-thumb');
-      if (thumbBox) {
-        thumbBox.style.background = '';
-        thumbBox.innerHTML = '<span>🎬</span>';
-      }
+      previewArea.style.borderColor = '';
+      if (thumbBox) thumbBox.innerHTML = '🎬';
     }
-  });
-}
-
-// 제목 자동 추출 (간이 구현)
-function extractTitleFromUrl(url) {
-  // 실제 구현 시 YouTube Data API 연동 필요
-  // 여기서는 URL을 기반으로 간단히 처리
-  try {
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      return '유튜브 영상';
-    }
-  } catch (e) {
-    // 무시
-  }
-  return null;
-}
-
-// 감정 chips 선택 핸들러
-function setupEmotionTabs() {
-  const tabs = document.getElementById('emotion-tabs');
-  if (!tabs) return;
-
-  tabs.addEventListener('click', function(e) {
-    const chip = e.target.closest('.emotion-chip');
-    if (!chip) return;
-
-    tabs.querySelectorAll('.emotion-chip').forEach(c => c.classList.remove('selected'));
-    chip.classList.add('selected');
   });
 }
 
 // 초기화
 function initAddMemory() {
-  // 폼 제출 리스너
-  const form = document.getElementById('memory-form');
-  if (form) {
-    form.addEventListener('submit', handleMemorySubmit);
+  const submitBtn = document.getElementById('btn-submit') || document.getElementById('btn-submit-memory');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', handleMemorySubmit);
   }
-
-  // 비디오 프리뷰
   setupVideoPreview();
-
-  // 감정 tabs
-  setupEmotionTabs();
 }
 
-// DOM 로드 후 실행
 document.addEventListener('DOMContentLoaded', initAddMemory);
 
 // 전역 노출

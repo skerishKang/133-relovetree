@@ -19,82 +19,65 @@
     <!-- Slim Sub-page Header -->
     <nav class="gnb-v2" style="background: transparent; border: none;">
         <div class="gnb-inner shell" style="max-width: 500px;">
-            <a href="javascript:history.back()" style="font-weight: 800; color: #b56e6e; text-decoration: none; font-size: 1.2rem;">‹</a>
+            <a href="javascript:void(0)" id="btn-back" style="font-weight: 800; color: #b56e6e; text-decoration: none; font-size: 1.2rem;">‹</a>
             <a href="/" class="gnb-logo" style="margin: 0 auto;">Relovetree</a>
             <button style="background: none; border: none; font-size: 1.2rem; color: #64748b;">···</button>
         </div>
     </nav>
 
-    <main class="mem-detail-shell">
-        <!-- Main Video Container (Image 1 top) -->
+    <!-- Loading State -->
+    <div id="loading-area" style="text-align: center; padding: 100px 0;">
+        <p>기억의 조각을 맞추는 중...</p>
+    </div>
+
+    <main class="mem-detail-shell" id="detail-content" style="display: none;">
+        <!-- Main Video Container -->
         <section class="mem-video-container">
-            <div id="player" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; color: #fff;">
-                <span style="font-size: 3rem;">▶</span>
+            <div id="player-container" style="width: 100%; height: 100%; background: #000; overflow: hidden;">
+                <div id="video-area" style="width: 100%; height: 100%;"></div>
             </div>
         </section>
 
         <!-- Memory Content Information -->
         <section class="mem-info-v3">
-            <h1>첫 콘서트의 전율</h1>
-            <div class="mem-date-v3">2026.04.14</div>
+            <h1 id="detail-title">기억을 불러오는 중</h1>
+            <div class="mem-date-v3" id="detail-date">----.--.--</div>
             
-            <div class="mem-tags-v3">
-                <span class="mem-tag-v3">설렘</span>
-                <span class="mem-tag-v3">감동</span>
-                <span class="mem-tag-v3">행복</span>
+            <div class="mem-tags-v3" id="detail-tags">
+                <!-- Rendered by JS -->
             </div>
 
             <div style="font-size: 0.85rem; font-weight: 800; margin-bottom: 12px; color: #64748b;">Memo</div>
-            <!-- Handwriting Style Memo Box (Image 1 targets) -->
-            <div class="mem-memo-v3">
-                오늘 드디어 첫 콘서트에 갔다...!!! 현장 분위기가 정말 대박이었고 오프닝 곡 나올 때 온몸에 소름이 쫙 돋았다. 떼창할 때 그 전율은 평생 못 잊을 것 같다. 너무 행복했다 ㅠㅠ 다음에 또 가고 싶다.
+            <!-- Handwriting Style Memo Box -->
+            <div class="mem-memo-v3" id="memo-card">
+                <p id="detail-memo" style="white-space: pre-wrap;">기록된 내용이 없습니다.</p>
             </div>
         </section>
 
-        <!-- Related Memories (Image 1 Bottom) -->
+        <!-- Related Memories -->
         <section class="related-section-v3">
             <h3 class="related-title">이 순간과 이어진 기억</h3>
-            <div class="related-scroll-v3" id="related-memories">
-                <a href="#" class="rel-item-v3">
-                    <div class="rel-thumb-v3">🖼️</div>
-                    <div class="rel-text-v3">
-                        <h5>콘서트 티켓 수령</h5>
-                        <span>2026.04.14</span>
-                    </div>
-                </a>
-                <a href="#" class="rel-item-v3">
-                    <div class="rel-thumb-v3">🎬</div>
-                    <div class="rel-text-v3">
-                        <h5>굿즈 줄서기</h5>
-                        <span>2026.04.14</span>
-                    </div>
-                </a>
-                <a href="#" class="rel-item-v3">
-                    <div class="rel-thumb-v3">📸</div>
-                    <div class="rel-text-v3">
-                        <h5>나눔 포카 인증</h5>
-                        <span>2026.04.14</span>
-                    </div>
-                </a>
+            <div class="related-scroll-v3" id="connected-list">
+                <!-- Rendered by JS -->
             </div>
         </section>
     </main>
 
-    <!-- Emotional Bottom Bar (Image 1 Bottom Fixed) -->
+    <!-- Emotional Bottom Bar -->
     <footer class="mem-bottom-bar">
         <a href="#" class="m-action-item">
             <span class="m-action-icon">❤️</span>
-            <span>125</span>
+            <span id="like-count">0</span>
         </a>
         <a href="#" class="m-action-item">
             <span class="m-action-icon">💬</span>
-            <span>3</span>
+            <span id="comment-count">0</span>
         </a>
-        <a href="#" class="m-action-item">
+        <a href="javascript:void(0)" class="m-action-item" id="footer-share">
             <span class="m-action-icon">↗️</span>
             <span>Share</span>
         </a>
-        <a href="#" class="m-action-item">
+        <a href="javascript:void(0)" class="m-action-item" id="footer-edit">
             <span class="m-action-icon">✎</span>
             <span>Edit</span>
         </a>
@@ -107,5 +90,10 @@
     <script src="/src/shared-utils.js"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
+    <script src="/src/api.js"></script>
+    <script src="/src/flow-shared.js"></script>
+    <script src="/src/memory-detail.js"></script>
+</body>
+</html>
 </body>
 </html>

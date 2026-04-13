@@ -32,7 +32,7 @@
         </div>
     </nav>
 
-    <main class="shell dash-shell">
+    <main class="shell dash-shell" id="content-area">
         <!-- Main Dashboard Area (Left) -->
         <div class="dash-main">
             <header class="dash-header">
@@ -43,27 +43,6 @@
             <!-- Trees Grid (Rendered by JS) -->
             <section class="trees-grid-v3" id="tree-list">
                 <!-- Example Card for immediate visual feedback (Will be replaced by JS) -->
-                <div class="tree-card-v3">
-                    <div class="tc-header">
-                        <div class="tc-title">
-                            <h3>나의 러브트리</h3>
-                            <span class="tc-meta">마지막 업데이트 2026.04.14</span>
-                        </div>
-                        <span class="tc-badge public">Public</span>
-                    </div>
-                    <div style="font-size: 0.85rem; color: #64748b;">128 순간들</div>
-                    <div class="tc-thumbs">
-                        <div class="tc-thumb-item">🖼️</div>
-                        <div class="tc-thumb-item">🎬</div>
-                        <div class="tc-thumb-item">📝</div>
-                    </div>
-                    <div class="tc-actions">
-                        <button class="btn-tc-action"><span>✎</span>편집</button>
-                        <button class="btn-tc-action"><span>↗</span>공유</button>
-                        <button class="btn-tc-action"><span>❐</span>복제</button>
-                        <button class="btn-tc-action"><span>🗑</span>삭제</button>
-                    </div>
-                </div>
             </section>
 
             <!-- Loading/Empty State Managed by JS -->
@@ -75,7 +54,11 @@
                 <div style="font-size: 4rem; margin-bottom: 24px;">🌱</div>
                 <h2 style="font-weight: 900; margin-bottom: 12px;">아직 정원이 비어있네요</h2>
                 <p style="color: #64748b; margin-bottom: 32px;">첫 번째 사랑의 기억을 심어보시겠어요?</p>
-                <button class="btn-create-tree">첫 트리 만들기</button>
+                <button id="btn-first-tree" class="btn-create-tree">첫 트리 만들기</button>
+            </div>
+            <div id="error-state" style="display: none; text-align: center; padding: 100px 0; color: #b56e6e;">
+                <p id="error-message">데이터를 불러오지 못했습니다.</p>
+                <button id="btn-retry-load" style="margin-top: 20px; text-decoration: underline;">다시 시도</button>
             </div>
         </div>
 
@@ -84,27 +67,7 @@
             <h3 class="side-title">최근 수정한 순간</h3>
             <div class="recent-moments-list" id="recent-moments">
                 <!-- Mock Recent Items -->
-                <a href="#" class="moment-item-mini">
-                    <div class="mini-thumb"></div>
-                    <div class="mini-text">
-                        <h4>첫 단독 콘서트 감동</h4>
-                        <span>2시간 전</span>
-                    </div>
-                </a>
-                <a href="#" class="moment-item-mini">
-                    <div class="mini-thumb"></div>
-                    <div class="mini-text">
-                        <h4>최애 생일 기부 기념</h4>
-                        <span>어제</span>
-                    </div>
-                </a>
-                <a href="#" class="moment-item-mini">
-                    <div class="mini-thumb"></div>
-                    <div class="mini-text">
-                        <h4>첫 앨범 언박싱</h4>
-                        <span>3일 전</span>
-                    </div>
-                </a>
+                <div class="moment-item-mini" style="opacity: 0.5; font-size: 0.8rem; padding: 20px 0;">최근 활동이 없습니다.</div>
             </div>
         </aside>
     </main>

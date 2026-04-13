@@ -176,13 +176,20 @@
     if (index % 2 === 1) card.classList.add('mc-alt');
     if (isLast) card.classList.add('mc-bloom');
 
+    // Add click event for navigation
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', function() {
+      window.location.href = '/pages/memory-detail.html?treeId=' + encodeURIComponent(treeId) + '&nodeId=' + encodeURIComponent(node.id || node._id);
+    });
+
     var dateStr = F.formatKoreanDate(node.date);
     var title = escapeHtml(node.title || '순간');
-    var memo = escapeHtml(node.description || node.memo || '');
+    var memo = escapeHtml(node.memo || node.description || '');
     
-    var emotionTag = '';
+    var emotionTag = node.emotionTag || '';
     var emotionEmoji = '';
-    if (node.moments && node.moments.length > 0 && node.moments[0].feeling) {
+    
+    if (!emotionTag && node.moments && node.moments.length > 0 && node.moments[0].feeling) {
       emotionTag = F.feelingToTag(node.moments[0].feeling);
       emotionEmoji = F.getEmotionEmoji(node.moments[0].feeling);
     }
@@ -199,7 +206,7 @@
       thumbHtml = '<img src="' + thumbUrl + '" alt="" onload="this.classList.add(\'loaded\')">' +
         '<div class="' + veilClass + '"></div>' +
         '<div class="mc-play-indicator"></div>' +
-        (emotionTag ? '<span class="mc-emotion-badge">' + emotionEmoji + ' ' + emotionTag + '</span>' : '');
+        (emotionTag ? '<span class="mc-emotion-badge">' + (emotionEmoji || '🌱') + ' ' + emotionTag + '</span>' : '');
     } else {
       thumbHtml = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0ebe3;border-radius:10px;">🎬</div>';
     }

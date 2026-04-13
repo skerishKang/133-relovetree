@@ -108,31 +108,7 @@
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
     <script src="/src/api.js"></script>
+    <script src="/src/flow-shared.js"></script>
     <script src="/src/add-memory.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Emotion toggle
-            const chips = document.querySelectorAll('.emotion-chip-v3');
-            chips.forEach(chip => {
-                chip.addEventListener('click', () => {
-                    chips.forEach(c => c.classList.remove('active'));
-                    chip.classList.add('active');
-                });
-            });
-
-            // Video Preview Sim
-            document.getElementById('video-url').addEventListener('input', function(e) {
-                if (e.target.value.includes('v=')) {
-                    document.getElementById('preview-thumb').innerHTML = '📽️';
-                    document.getElementById('preview-title').textContent = '영상이 인식되었습니다';
-                    document.getElementById('preview-area').style.borderColor = '#b56e6e';
-                }
-            });
-
-            // Default date
-            document.getElementById('memory-date').value = new Date().toISOString().split('T')[0];
-        });
-    </script>
 </body>
 </html>

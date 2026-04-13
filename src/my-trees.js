@@ -118,24 +118,33 @@
 
     list.innerHTML = '';
 
+    // Collect all nodes for sidebar
+    var allNodes = [];
+
     trees.forEach(function (tree) {
       var treeId = getTreeId(tree);
       if (!treeId) return;
 
-      var nodeCount = getNodeCount(tree);
+      var nodes = tree.nodes || [];
+      var nodeCount = nodes.length;
       var lastUpdated = tree.updatedAt || tree.createdAt || '';
       var dateStr = F.formatKoreanDate(lastUpdated);
       var treeName = tree.name || '이름 없는 트리';
       var visibility = getTreeVisibility(tree);
       var isPublic = visibility === 'public';
 
+      // Store nodes for sidebar sorting
+      nodes.forEach(function(n) { 
+        n.treeId = treeId;
+        n.treeName = treeName;
+        allNodes.push(n); 
+      });
+
       // Get up to 3 thumbnails
       var thumbs = [];
-      if (tree.nodes && Array.isArray(tree.nodes)) {
-        tree.nodes.slice(0, 3).forEach(function(node) {
-          if (node.videoId) thumbs.push(F.getYouTubeThumb(node.videoId));
-        });
-      }
+      nodes.slice(0, 3).forEach(function(node) {
+        if (node.videoId) thumbs.push(F.getYouTubeThumb(node.videoId));
+      });
 
       var card = document.createElement('div');
       card.className = 'tree-card-v3';
@@ -143,7 +152,7 @@
       var thumbsHtml = '';
       for (var i = 0; i < 3; i++) {
         thumbsHtml += '<div class="tc-thumb-item">' + 
-          (thumbs[i] ? '<img src="' + escapeHtml(thumbs[i]) + '" alt="">' : '🌱') + 
+          (thumbs[i] ? '<img src="' + escapeHtml(thumbs[i]) + '" alt="">' : '<span>🌱</span>') + 
           '</div>';
       }
 
@@ -167,10 +176,42 @@
       list.appendChild(card);
     });
 
+    renderRecentMoments(allNodes);
+
     if (!listenersAttached) {
       list.addEventListener('click', handleTreeActionClick);
       listenersAttached = true;
     }
+  }
+
+  function renderRecentMoments(nodes) {
+    var sidebarList = document.getElementById('recent-moments');
+    if (!sidebarList) return;
+
+    // Sort nodes by date desc
+    nodes.sort(function(a, b) {
+      return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
+    });
+
+    var recent = nodes.slice(0, 5);
+    if (recent.length === 0) return;
+
+    sidebarList.innerHTML = '';
+    recent.forEach(function(node) {
+      var thumb = node.videoId ? F.getYouTubeThumb(node.videoId) : '';
+      var timeAgo = F.formatKoreanDate(node.updatedAt || node.createdAt);
+      
+      var item = document.createElement('a');
+      item.href = '/pages/memory-detail.html?id=' + encodeURIComponent(node.id || node._id) + '&treeId=' + encodeURIComponent(node.treeId);
+      item.className = 'moment-item-mini';
+      item.innerHTML = 
+        '<div class="mini-thumb">' + (thumb ? '<img src="' + thumb + '" style="width:100%; height:100%; object-fit:cover;">' : '🎬') + '</div>' +
+        '<div class="mini-text">' +
+        '    <h4>' + escapeHtml(node.title || '새로운 기억') + '</h4>' +
+        '    <span>' + timeAgo + '</span>' +
+        '</div>';
+      sidebarList.appendChild(item);
+    });
   }
 
   function handleTreeActionClick(e) {
@@ -183,10 +224,8 @@
     if (!treeId) return;
 
     if (action === 'edit') {
-      // Editor for this tree
-      window.location.href = '/pages/mobile-add-memory.html?treeId=' + encodeURIComponent(treeId);
+      window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
     } else if (action === 'share') {
-      // Direct link to the tree detail
       var shareUrl = window.location.origin + '/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId);
       if (navigator.share) {
         navigator.share({ title: '나의 러브트리', url: shareUrl });
@@ -222,16 +261,11 @@
   function showNewTreeModal() {
     var modal = document.getElementById('new-tree-modal');
     var nameInput = document.getElementById('new-tree-name');
-    var createBtn = document.getElementById('btn-create-tree');
     
     if (modal) modal.classList.remove('is-hidden');
     if (nameInput) {
       nameInput.value = '';
       nameInput.focus();
-    }
-    if (createBtn) {
-      createBtn.disabled = false;
-      createBtn.textContent = '만들기';
     }
   }
 
@@ -242,7 +276,7 @@
 
   function createNewTree() {
     var nameInput = document.getElementById('new-tree-name');
-    var btn = document.getElementById('btn-create-tree');
+    var btn = document.getElementById('btn-create-confirm');
     
     if (!nameInput || !btn) return;
     
@@ -263,7 +297,7 @@
       console.error('Failed to create tree:', err);
       if (btn) {
         btn.disabled = false;
-        btn.textContent = '만들기';
+        btn.textContent = '트리 생성';
       }
       alert('트리 생성에 실패했습니다: ' + (err.message || '알 수 없는 오류'));
     });
@@ -275,7 +309,7 @@
     var newTreeBtn = document.getElementById('btn-new-tree');
     var firstTreeBtn = document.getElementById('btn-first-tree');
     var cancelBtn = document.getElementById('btn-cancel-tree');
-    var createBtn = document.getElementById('btn-create-tree');
+    var confirmBtn = document.getElementById('btn-create-confirm');
     var modalOverlay = document.getElementById('new-tree-modal');
     var nameInput = document.getElementById('new-tree-name');
     var retryBtn = document.getElementById('btn-retry-load');
@@ -283,7 +317,7 @@
     if (newTreeBtn) newTreeBtn.addEventListener('click', showNewTreeModal);
     if (firstTreeBtn) firstTreeBtn.addEventListener('click', showNewTreeModal);
     if (cancelBtn) cancelBtn.addEventListener('click', hideNewTreeModal);
-    if (createBtn) createBtn.addEventListener('click', createNewTree);
+    if (confirmBtn) confirmBtn.addEventListener('click', createNewTree);
     if (modalOverlay) {
       modalOverlay.addEventListener('click', function (e) {
         if (e.target === modalOverlay) hideNewTreeModal();

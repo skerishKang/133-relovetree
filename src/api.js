@@ -9,7 +9,7 @@
 const API_BASE = '/.netlify/functions';
 
 /**
- * 트리 목록 조회
+ * 트리 목록 조회 (특정 사용자)
  * @param {string} userId - Firebase Auth user ID
  * @returns {Promise<Array>} 트리 배열
  */
@@ -21,6 +21,25 @@ async function fetchUserTrees(userId) {
     return data.trees || [];
   } catch (error) {
     console.error('fetchUserTrees error:', error);
+    return [];
+  }
+}
+
+/**
+ * 공개 트리 목록 조회 (커뮤니티용)
+ * @param {Object} options - { limit, offset, sort }
+ * @returns {Promise<Array>} 공개 트리 배열
+ */
+async function fetchPublicTrees(options = {}) {
+  try {
+    const limit = options.limit || 20;
+    const sort = options.sort || 'recent';
+    const response = await fetch(`${API_BASE}/get-public-trees?limit=${limit}&sort=${sort}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return data.trees || [];
+  } catch (error) {
+    console.error('fetchPublicTrees error:', error);
     return [];
   }
 }
@@ -162,6 +181,7 @@ async function syncUserProfile(userId) {
 
 // 전역 노출
 window.fetchUserTrees = fetchUserTrees;
+window.fetchPublicTrees = fetchPublicTrees;
 window.fetchMoments = fetchMoments;
 window.fetchMomentDetail = fetchMomentDetail;
 window.createTree = createTree;
