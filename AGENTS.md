@@ -8,6 +8,7 @@
 - [MVP_SCOPE.md](docs/product/MVP_SCOPE.md)
 - [USER_FLOW.md](docs/product/USER_FLOW.md)
 - [DATA_NAMING_RULE.md](docs/product/DATA_NAMING_RULE.md)
+- **PR 작성 시**: [docs/ops/PR_CHECKLIST.md](docs/ops/PR_CHECKLIST.md) 참조
 
 ## Product Rule
 

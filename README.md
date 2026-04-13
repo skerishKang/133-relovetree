@@ -113,6 +113,7 @@ const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 > - 아키텍처 및 위험 파일 가이드: [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)
 > - **Shared 로직 수정 시** 반드시 `tests/editor-smoke.spec.js`를 실행하여 에디터 무결성을 확인해야 합니다.
 > - **FieldValue 관련 코드 수정 시** `tests/editor-fieldvalue.spec.js`를 실행하여 shim 변환을 검증해야 합니다.
+> - **PR 작성 시**: [docs/ops/PR_CHECKLIST.md](docs/ops/PR_CHECKLIST.md)를 참조하세요.
 
 ## 로컬 실행
 

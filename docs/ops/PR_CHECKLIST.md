@@ -16,34 +16,54 @@
 - src/xxx.js
 - pages/xxx.html
 
-## 테스트
-- [ ] smoke 테스트 통과 확인
-- [ ] 로컬에서 수동 테스트 완료 (해당 시)
+## 영향 범위
+- 표준 페이지 (index, community, my-trees, lovetree)
+- 에디터 (editor.html)
+- shared 계층
+
+## 실행한 테스트
+- [ ] tests/smoke.spec.js 통과
+- [ ] tests/editor-smoke.spec.js 통과
+- [ ] tests/editor-fieldvalue.spec.js 통과
+
+## 남은 리스크
+- 예상되는 문제점 (있다면)
 ```
 
 ---
 
 ## 2. Editor 변경 시 체크리스트
 
+### 사전 준비
+- [ ] [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md) 숙독
+- [ ] 변경할 파일이 위험 파일 목록에 있는지 확인
+  - `src/editor-bootstrap.js` (DB 할당) - 가장 위험
+  - `src/editor-data.js` (FieldValue 사용)
+  - `src/editor-comments.js` (FieldValue 사용)
+  - `src/editor-actions.js` (FieldValue 사용)
+  - `src/editor-runtime.js` (DB 인터페이스)
+
 ### 필수 테스트 실행
 ```bash
-npm run test -- --grep "Editor"
-```
-**통과 기준**: 10개 이상 테스트 통과
+# Editor smoke 테스트
+npx playwright test tests/editor-smoke.spec.js
 
-### 테스트 파일 상태 확인
-- `tests/editor-smoke.spec.js` - shell init, permission, navigation
-- `tests/editor-fieldvalue.spec.js` - FieldValue 패턴 검증
+# FieldValue 패턴 검증
+npx playwright test tests/editor-fieldvalue.spec.js
+
+# 두 테스트 모두 통과 시에만 merge 권장
+```
 
 ### Editor 변경 시 주의사항
-- ⚠️ editor-runtime.js, editor-data.js 변경 시 반드시 smoke 테스트 통과 확인
-- ⚠️ FieldValue 관련 변경 시 editor-fieldvalue.spec.js 테스트 확인
-- ⚠️ shared-layout.js 의존 시 shared 변경 체크리스트도 확인
+- ⚠️ editor-bootstrap.js 변경 시: 절대-runtime.db 할당 변경 금지
+- ⚠️ FieldValue 관련 변경 시: editor-fieldvalue.spec.js 테스트 확인
+- ⚠️ shared-layout.js 의존 시: shared 변경 체크리스트도 확인
 
 ### 검수 포인트
-- [ ] editor-shell 초기화 정상 동작 확인
-- [ ] 로그인/비로그인 시 권한 동작 확인
+- [ ] editor-shell 초기화 정상 동작 확인 (app-loaded class)
+- [ ] 로그인/비로그인 시 권한 동작 확인 (읽기 전용 배지)
 - [ ] 에디터 내비게이션 (home/back) 정상 동작 확인
+- [ ] console error 없는지 확인
 
 ---
 
@@ -51,19 +71,25 @@ npm run test -- --grep "Editor"
 
 ### 필수 테스트 실행
 ```bash
-npm run test -- --grep "Lovetree"
-```
-**통과 기준**: smoke.spec.js 핵심 시나리오 통과
+# 표준 페이지 smoke 테스트
+npx playwright test tests/smoke.spec.js
 
-### 테스트 파일 상태 확인
-- `tests/smoke.spec.js` - home, community, my-trees, login
-- `tests/editor-smoke.spec.js` - editor shell (공용 의존성 확인용)
+# 에디터 shell 무결성 확인 (공용 의존성 확인)
+npx playwright test tests/editor-smoke.spec.js
+
+# 아키텍처 검증
+npx playwright test tests/architecture-v2.spec.js
+
+# FieldValue 패턴 검증 (shared 변경이 editor에 영향을 미칠 경우)
+npx playwright test tests/editor-fieldvalue.spec.js
+```
 
 ### 영향받는 페이지
 - index.html
 - pages/lovetree.html
 - pages/community.html
 - pages/my-trees.html
+- pages/editor.html (공용 의존성)
 
 ### 검수 포인트
 - [ ] 모든 표준 페이지에서 auth UI 정상 동작
@@ -81,36 +107,51 @@ npm run test -- --grep "Lovetree"
 3. ✅ 최소 1명 Approve 획득
 4. ✅ 테스트 실패 관련 코멘트 해결 완료
 
-### Smoke 테스트 실패 시 처리 원칙
-1. **Flaky 판단**: 같은 테스트가 2회 연속 실패 시 재진행
-2. **핵심 테스트**: editor-shell, auth-flow 실패 시 merge 차단
-3. **UI 테스트**: 시각적 표시 실패는 수동 확인 후 Approve 가능
-4. **백로그**: 실패 시 이슈로 등록하고 우선순위 판단
+### 테스트 실패 시 처리 원칙
+
+#### Merge 차단 (항상)
+- ❌ `editor-smoke.spec.js` - shell initialization 실패
+- ❌ `editor-smoke.spec.js` - permission/read-only badge 실패
+- ❌ `editor-smoke.spec.js` - navigation 실패
+- ❌ `smoke.spec.js` - auth-flow 실패
+- ❌ console.error 또는 pageerror 발생
+
+#### 수동 확인 후 진행 가능 (조건부)
+- ⚠️ `smoke.spec.js` - 시각적 표시 실패 (captured screenshot 확인 후 Approve)
+- ⚠️ `editor-fieldvalue.spec.js` - source pattern 변경 확인 (실제 동작은 smoke로 검증)
+- ⚠️ Flaky 판단: 같은 테스트가 2회 연속 실패 시 재진행 후 재평가
 
 ### Merge Gate 명령어
 ```bash
 # 전체 테스트
 npm run test
 
-# Editor 전용
-npm run test -- --grep "Editor"
+# Editor 전용 smoke
+npx playwright test tests/editor-smoke.spec.js
 
-# Smoke 전용  
-npm run test -- --grep "Smoke"
+# Editor FieldValue 검증
+npx playwright test tests/editor-fieldvalue.spec.js
+
+# 표준 페이지 smoke
+npx playwright test tests/smoke.spec.js
+
+# 아키텍처 검증
+npx playwright test tests/architecture-v2.spec.js
 ```
 
 ---
 
 ## 5. 테스트 우선순위
 
-| 우선순위 | 테스트 | 통과 기준 |
-|----------|--------|-----------|
-| 1 | editor-shell-init | 필수 |
-| 2 | editor-permission | 필수 |
-| 3 | auth-flow-정상 | 필수 |
-| 4 | standard-page-load | 필수 |
-| 5 | FieldValue-pattern | 권장 |
-| 6 | visual-render | 선택 |
+| 우선순위 | 테스트 | 통과 기준 | mergeGate |
+|----------|--------|-----------|-----------|
+| 1 | editor-shell-init | 필수 | ❌ blocking |
+| 2 | editor-permission | 필수 | ❌ blocking |
+| 3 | standard-auth-flow | 필수 | ❌ blocking |
+| 4 | editor-navigation | 필수 | ❌ blocking |
+| 5 | FieldValue-pattern | 권장 | ⚠️ 확인 후 진행 |
+| 6 | architecture-v2 | 권장 | ⚠️ 확인 후 진행 |
+| 7 | visual-render | 선택 | ✅ 수동 확인 |
 
 ---
 
@@ -120,12 +161,13 @@ npm run test -- --grep "Smoke"
 # 전체 테스트
 npm run test
 
-# Editor 테스트
-npm run test -- --grep "Editor"
+# Editor 전용
+npx playwright test tests/editor-smoke.spec.js
+npx playwright test tests/editor-fieldvalue.spec.js
 
-# Standard Page 테스트
-npm run test -- --grep "Lovetree"
+# Standard Page 전용
+npx playwright test tests/smoke.spec.js
 
-# FieldValue 검증
-npm run test -- --grep "FieldValue"
+# 아키텍처 검증
+npx playwright test tests/architecture-v2.spec.js
 ```
