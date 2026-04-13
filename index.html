@@ -22,7 +22,12 @@
             <div class="gnb-links">
                 <a href="/pages/lovetree.html">러브트리</a>
                 <a href="/pages/community.html">커뮤니티</a>
-                <a href="/pages/login.html" class="btn-pill-auth">로그인</a>
+                <!-- Auth State UI -->
+                <a href="/pages/login.html" class="btn-pill-auth" id="login-btn">로그인</a>
+                <div id="user-menu" class="is-hidden" style="display: flex; align-items: center; gap: 12px;">
+                    <a href="/pages/my-trees.html" style="font-weight: 800; color: #e11d48;">내 트리</a>
+                    <button id="logout-btn" style="font-size: 0.8rem; color: #64748b;">로그아웃</button>
+                </div>
             </div>
         </div>
     </nav>

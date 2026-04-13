@@ -178,7 +178,8 @@ function handleAuthSuccessRedirect() {
   // Check if we should redirect (from login page)
   var isLoginPage = document.body.classList.contains('login-page');
   if (isLoginPage) {
-    window.location.href = '/pages/my-trees.html';
+    // Redirect to home page (/) as per user request for "natural first screen"
+    window.location.href = '/';
   }
 }
 

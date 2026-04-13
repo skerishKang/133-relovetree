@@ -107,6 +107,15 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Proactive redirect if already logged in
+  if (typeof firebase !== 'undefined') {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        window.location.href = '/';
+      }
+    });
+  }
+
   var googleBtn = document.getElementById('login-btn');
   var emailBtn = document.getElementById('login-btn-email');
   var emailModal = document.getElementById('email-auth-modal');
