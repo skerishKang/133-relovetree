@@ -8,10 +8,22 @@
 ### 1.1 스크립트 로드 단계
 
 ```
-editor.html (총 33개 스크립트 로드)
+editor.html (총 37개 스크립트 - 5개 Firebase SDK + 32개 src 파일)
 │
-├─ [1단계] shared-* (공통 유틸리티)
-│   ├─ runtime-config.js
+├─ [1단계] Firebase SDK (4개, CDN)
+│   ├─ firebase-app-compat.js
+│   ├─ firebase-auth-compat.js
+│   ├─ firebase-storage-compat.js
+│   └─ firebase-app-check-compat.js
+│
+├─ [2단계] postgres-client (가장 먼저 로드됨, line 33)
+│   └─ postgres-client-browser.js → window.postgresDB 초기화
+│
+├─ [3단계] youtube + runtime-config (2개)
+│   ├─ youtube iframe_api
+│   └─ runtime-config.js
+│
+├─ [4단계] shared-* (6개)
 │   ├─ shared-storage.js
 │   ├─ shared-dom.js
 │   ├─ shared-theme.js
@@ -19,11 +31,10 @@ editor.html (총 33개 스크립트 로드)
 │   ├─ shared-utils.js
 │   └─ shared.js
 │
-├─ [2단계] auth + postgres-client
-│   ├─ auth.js
-│   └─ postgres-client-browser.js → window.postgresDB 초기화
+├─ [5단계] auth
+│   └─ auth.js
 │
-├─ [3단계] editor-ai-* (AI 관련)
+├─ [6단계] editor-ai-* (6개)
 │   ├─ editor-ai-utils.js
 │   ├─ editor-ai-ui.js
 │   ├─ editor-ai-logic.js
@@ -31,24 +42,24 @@ editor.html (총 33개 스크립트 로드)
 │   ├─ editor-ai-actions.js
 │   └─ entries/editor_ai.js
 │
-├─ [4단계] editor-ui + editor-data + editor-comments
+├─ [7단계] editor-core (5개)
 │   ├─ editor-header.js
 │   ├─ editor-ui.js
 │   ├─ editor-data.js
 │   ├─ editor-comments.js
 │   └─ editor-pointer.js
 │
-├─ [5단계] editor-detail + editor-actions
+├─ [8단계] editor-detail + actions (3개)
 │   ├─ editor-detail-media.js
 │   ├─ editor-detail.js
 │   └─ editor-actions.js
 │
-├─ [6단계] editor-visualization
+├─ [9단계] editor-visualization (3개)
 │   ├─ editor-minimap.js
 │   ├─ editor-tree-view.js
 │   └─ editor-timeline.js
 │
-└─ [7단계] editor-bootstrap + runtime
+└─ [10단계] editor-bootstrap + runtime (6개)
     ├─ editor-bootstrap.js
     ├─ editor-orchestration.js
     ├─ editor-render-ui.js
@@ -56,6 +67,9 @@ editor.html (총 33개 스크립트 로드)
     ├─ editor-runtime.js
     └─ editor-page-init.js
 ```
+
+> **참고**: postgres-client-browser.js는 line 33에 위치하여 Firebase SDK 직후 가장 먼저 로드됩니다.
+> 이 파일이 `window.postgresDB`를 초기화하므로 editor 전체의 데이터 접근 가능성을担합니다.
 
 ### 1.2 초기화 단계
 
