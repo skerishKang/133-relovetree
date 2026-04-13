@@ -266,7 +266,15 @@ editor-data.js: saveData(runtime)
 
 ## 7. 빠른 참조
 
-### 7.1 핵심 명령어
+### 7.1 필수 테스트 (Editor 작업 시)
+
+| 상황 | 실행 테스트 | 확인 내용 |
+|------|-------------|-----------|
+| **Shared 로직 수정 시** | `npx playwright test tests/editor-smoke.spec.js` | 에디터 shell 무결성 |
+| **FieldValue 관련 코드 수정 시** | `npx playwright test tests/editor-fieldvalue.spec.js` | shim 변환 검증 |
+| **에디터 초기화 변경 시** | `npx playwright test tests/editor-smoke.spec.js` + `tests/editor-fieldvalue.spec.js` | 전체 무결성 |
+
+### 7.2 핵심 명령어
 
 | 명령어 | 위치 | 용도 |
 |--------|------|------|

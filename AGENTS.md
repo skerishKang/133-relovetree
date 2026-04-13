@@ -55,6 +55,7 @@ Lovetree는 단순 저장 앱이 아니다.
   - 작업을 시작하기 전 반드시 [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)를 숙독한다.
   - **editor 영역**은 복잡성과 의존성으로 인해 일반 페이지 구조 정리 트랙에서 **제외**되어 관리된다.
   - `shared.js`, `runtime-config.js` 등 공통(shared) 로직 수정 시, 반드시 `tests/editor-smoke.spec.js`를 실행하여 에디터 쉘의 무결성을 검증해야 한다.
+  - **FieldValue 관련 코드** (increment, serverTimestamp 등) 수정 시 `tests/editor-fieldvalue.spec.js`를 실행하여 shim 변환을 검증해야 한다.
   - 다음 핵심 파일들은 에디터의 근간이므로 수정 시 극도로 주의한다:
     - `src/editor-bootstrap.js` (DB 할당)
     - `src/editor-data.js` (FieldValue 사용)

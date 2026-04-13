@@ -112,6 +112,7 @@ const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 > - `editor.html`과 관련 파일들은 별도 정리 트랙으로 관리됩니다. (일반 페이지 리팩터링 대상에서 제외)
 > - 아키텍처 및 위험 파일 가이드: [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)
 > - **Shared 로직 수정 시** 반드시 `tests/editor-smoke.spec.js`를 실행하여 에디터 무결성을 확인해야 합니다.
+> - **FieldValue 관련 코드 수정 시** `tests/editor-fieldvalue.spec.js`를 실행하여 shim 변환을 검증해야 합니다.
 
 ## 로컬 실행
 
