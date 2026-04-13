@@ -86,9 +86,8 @@ function initAuth() {
 
 // Auth State Observer
   firebase.auth().onAuthStateChanged(async (user) => {
-    if (user) {
-      console.log('User signed in:', user.email);
-      try {
+if (user) {
+    try {
         if (typeof user.reload === 'function') {
           await user.reload();
         }

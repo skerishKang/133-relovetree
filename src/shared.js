@@ -146,9 +146,8 @@ function initApp() {
     // Add loaded class to body for CSS
     document.body.classList.add('app-loaded');
 
-    const appName = (window.APP_CONFIG && window.APP_CONFIG.appName) || 'Lovetree';
-    const appVersion = (window.APP_CONFIG && window.APP_CONFIG.version) || '1.0.0';
-    console.log(`${appName} v${appVersion} initialized`);
+const appName = (window.APP_CONFIG && window.APP_CONFIG.appName) || 'Lovetree';
+  const appVersion = (window.APP_CONFIG && window.APP_CONFIG.version) || '1.0.0';
 }
 
 async function forkTreeToMyAccountBySourceTreeId(sourceTreeId) {

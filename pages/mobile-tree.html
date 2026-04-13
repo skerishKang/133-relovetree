@@ -1,178 +1,89 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<title>사랑의 흐름 - Lovetree</title>
-<link rel="stylesheet" href="/assets/css/app.css?v=20260412b">
-<link rel="stylesheet" href="/assets/css/mobile-tree.css?v=20260412b">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>사랑의 흐름 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/community-tree-detail.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v3">
+    <style>
+        .mob-layout { background: #fdfaf4; min-height: 100vh; padding-bottom: 80px; }
+        .trunk-container { width: 100%; position: relative; padding: 40px 0; }
+        .trunk-line-v3 { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: rgba(181, 110, 110, 0.2); transform: translateX(-50%); }
+    </style>
 </head>
-<body class="mob-page">
-<div class="mob-frame">
+<body class="ctd-page mob-layout">
+    
+    <!-- Slim Header (Branding Optimized) -->
+    <header class="ctd-header" style="background: rgba(253, 250, 244, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0;">
+        <a href="/pages/my-trees.html" class="back-link">‹</a>
+        <div class="header-center-info">
+            <h1 style="font-size: 1.1rem; font-weight: 900;">테스트 러버 A의 러브트리</h1>
+            <p style="font-size: 0.75rem; color: #b56e6e;">사랑의 성장 기록</p>
+        </div>
+        <div class="header-logo" style="margin-left: 0;">
+            <a href="/" style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">Relovetree</a>
+        </div>
+    </header>
 
-<header class="mob-top">
-  <h2 class="mob-top-title">사랑의 흐름</h2>
-  <p class="mob-top-sub">2023.11.15부터 함께한 기록</p>
-</header>
+    <main class="trunk-container">
+        <!-- Vertical Trunk (Image 3) -->
+        <div class="trunk-line-v3"></div>
 
-<main class="mob-scroll">
+        <section class="tree-canvas-inner">
+            <!-- Zigzag Nodes will be rendered here by JS. 
+                 Below are Mock Nodes for immediate visual alignment check -->
+            
+            <!-- Left Branch -->
+            <div class="ctd-node pos-1" style="position: relative; margin-bottom: 40px; justify-content: flex-start; padding-left: 5%;">
+                <div class="node-card" style="width: 42%; transform: rotate(-1deg);">
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" style="width: 100%; border-radius: 8px;">
+                    <h4 style="font-size: 0.8rem; margin-top: 8px;">첫 만남의 기록</h4>
+                </div>
+                <div class="node-dot" style="left: 50%; top: 50%;"></div>
+            </div>
 
-<div class="trunk">
-  <div class="trunk-line"></div>
+            <!-- Right Branch -->
+            <div class="ctd-node pos-2" style="position: relative; margin-bottom: 40px; justify-content: flex-end; padding-right: 5%;">
+                <div class="node-dot" style="left: 50%; top: 50%;"></div>
+                <div class="node-card" style="width: 42%; transform: rotate(1deg);">
+                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=200&auto=format&fit=crop" style="width: 100%; border-radius: 8px;">
+                    <h4 style="font-size: 0.8rem; margin-top: 8px;">첫 앨범 언박싱</h4>
+                </div>
+            </div>
 
-  <!-- Demo Skeleton (Will be replaced by JS) -->
-  <article class="moment-card">
-    <div class="mc-branch">
-      <span class="mc-node-dot"></span>
-      <span class="mc-node-line"></span>
-    </div>
-    <div class="mc-body">
-      <div class="mc-thumb"></div>
-      <span class="mc-date">...</span>
-      <h3 class="mc-title">Loading...</h3>
-    </div>
-  </article>
+            <!-- Left Branch -->
+            <div class="ctd-node pos-3" style="position: relative; margin-bottom: 60px; justify-content: flex-start; padding-left: 5%;">
+                <div class="node-card" style="width: 42%; transform: rotate(-2deg);">
+                    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=200&auto=format&fit=crop" style="width: 100%; border-radius: 8px;">
+                    <h4 style="font-size: 0.8rem; margin-top: 8px;">콘서트의 전율</h4>
+                </div>
+                <div class="node-dot" style="left: 50%; top: 50%;"></div>
+            </div>
 
-  <article class="moment-card mc-alt">
-    <div class="mc-branch">
-      <span class="mc-node-dot"></span>
-      <span class="mc-node-line"></span>
-    </div>
-    <div class="mc-body">
-      <div class="mc-thumb"></div>
-      <span class="mc-date">...</span>
-      <h3 class="mc-title">Loading...</h3>
-    </div>
-  </article>
-</div>
+            <!-- Share CTA at bottom -->
+            <div style="display: flex; justify-content: center; padding: 40px 20px;">
+                <button style="width: 100%; max-width: 320px; height: 56px; background: #b56e6e; color: #fff; border-radius: 12px; font-weight: 800; border: none;">이 러브트리 성장 기록 공유하기</button>
+            </div>
+        </section>
+    </main>
 
-</main>
-
-<div class="mob-bottom-cta">
-  <button class="btn-add-moment" id="btn-add-moment">순간 추가하기</button>
-  <button class="btn-edit-tree" id="btn-edit-tree">계속 편집하기</button>
-  <button class="btn-share-ghost">러브트리 성장 기록 공유하기</button>
-</div>
-
-<nav class="mob-tabs">
-  <span class="tab-sym active" aria-label="러브트리">
-    <i class="tab-ico-tree"></i>
-    <span class="tab-lbl">트리</span>
-  </span>
-  <span class="tab-sym" aria-label="탐색">
-    <i class="tab-ico-compass"></i>
-    <span class="tab-lbl">탐색</span>
-  </span>
-  <span class="tab-sym" aria-label="내 프로필">
-    <i class="tab-ico-user"></i>
-    <span class="tab-lbl">나</span>
-  </span>
-</nav>
-
-</div>
-
-<!-- Loading State -->
-<div id="loading-state" class="loading-overlay is-hidden">
-  <div class="loading-spinner"></div>
-  <p>트리 불러오는 중...</p>
-</div>
-
-<!-- Error State -->
-<div id="error-state" class="error-overlay is-hidden">
-  <div class="error-icon">⚠️</div>
-  <h2>트리를 불러올 수 없습니다</h2>
-  <p id="error-message">데이터를 불러오는 중 오류가 발생했습니다.</p>
-  <button id="btn-retry-tree" class="btn-retry">다시 시도</button>
-</div>
-
-<!-- Empty State -->
-<div id="empty-state" class="empty-overlay is-hidden">
-  <div class="empty-visual">
-    <div class="seed-sprout">
-      <div class="sprout-leaf left"></div>
-      <div class="sprout-leaf right"></div>
-      <div class="sprout-stem"></div>
-    </div>
-  </div>
-  <h2>아직 기록이 없습니다</h2>
-  <p>첫 번째 순간을 추가해서<br>사랑의 트리를 키워보세요.</p>
-  <button id="btn-add-first" class="btn-add-first">첫 순간 추가하기</button>
-</div>
-
-<style>
-.loading-overlay, .error-overlay, .empty-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #fdfaf4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  text-align: center;
-  padding: 20px;
-}
-.loading-overlay.is-hidden, .error-overlay.is-hidden, .empty-overlay.is-hidden {
-  display: none;
-}
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #eee;
-  border-top-color: #e85a4f;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.error-icon { font-size: 48px; margin-bottom: 16px; }
-.error-overlay h2 { margin: 0 0 8px; font-size: 1.2rem; }
-.error-overlay p { color: #666; margin: 0 0 20px; }
-.btn-retry {
-  padding: 12px 24px;
-  background: #e85a4f;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.empty-visual { width: 80px; height: 80px; margin-bottom: 24px; position: relative; }
-.seed-sprout { width: 40px; height: 60px; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
-.sprout-stem { width: 2px; height: 30px; background: #d3c4bb; margin: 0 auto; border-radius: 2px; position: absolute; bottom: 0; left: 19px; }
-.sprout-leaf { width: 14px; height: 8px; background: #d3c4bb; border-radius: 14px 0; position: absolute; top: 28px; opacity: 0.8; }
-.sprout-leaf.left { left: 4px; transform-origin: right bottom; transform: rotate(-25deg); }
-.sprout-leaf.right { right: 4px; border-radius: 0 14px; transform-origin: left bottom; transform: rotate(25deg); }
-.empty-overlay h2 { font-size: 1.3rem; margin-bottom: 12px; }
-.empty-overlay p { color: #8a7a7a; margin-bottom: 24px; line-height: 1.6; }
-.btn-add-first {
-  background-color: #b56e6e;
-  color: white;
-  border: none;
-  padding: 14px 28px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-}
-</style>
-
-<!-- Firebase + Data Layer Scripts -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="/src/postgres-client-browser.js"></script>
-<script src="/src/shared-utils.js"></script>
-<script src="/src/shared.js"></script>
-<script src="/src/auth.js"></script>
-<script src="/src/flow-shared.js"></script>
-<script src="/src/api.js"></script>
-
-<!-- Mobile Tree Page Logic -->
-<script src="/src/mobile-tree.js"></script>
-
+    <!-- Navigation Guard & App Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/api.js"></script>
+    <script src="/src/mobile-tree.js"></script>
 </body>
 </html>

@@ -3,104 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>영상 탐색 - Lovetree</title>
-<link rel="stylesheet" href="/assets/css/app.css">
-<link rel="stylesheet" href="/assets/css/video-search.css">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>비디오 검색 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/search-v3.css?v=20260414_v3">
 </head>
-<body class="vs-page">
-    <header class="vs-header">
-        <nav class="vs-nav">
-            <a href="/" class="logo-link">Lovetree</a>
-            <div class="vs-search-container">
-                <div class="vs-search-bar">
-                    <span>🔍</span>
-                    <input type="text" placeholder="기억하고 싶은 순간의 이름을 검색해보세요" value="BTS Proof 라이브 다시보기">
-                </div>
-            </div>
-            <div class="vs-avatar">👤</div>
-        </nav>
+<body class="search-page">
+    
+    <!-- Header with Branding -->
+    <header style="padding: 40px 20px 20px; text-align: center;">
+        <a href="/" style="font-size: 1.5rem; font-weight: 900; color: #2c1a1a; text-decoration: none;">Relovetree</a>
     </header>
 
-    <main class="vs-main">
-        <section class="vs-guide">
-            <h2>기억의 씨앗 찾기</h2>
-            <p>당신의 사랑을 증명할 소중한 기록의 후보들입니다.</p>
+    <main class="search-shell">
+        <!-- Integrated Search Bar (Image 4 targets) -->
+        <div class="search-bar-v3">
+            <span style="font-size: 1.2rem; opacity: 0.3;">🔍</span>
+            <input type="text" id="youtube-query" placeholder="무대, 직캠, 영상 링크 검색" aria-label="검색어 입력">
+            <button id="btn-search-trigger" style="background: none; border: none; font-weight: 800; color: #b56e6e; cursor: pointer;">검색</button>
+        </div>
+
+        <!-- Filter Chips (Image 4 targets) -->
+        <div class="filter-chips-v3">
+            <button class="chip-v3 active">전체</button>
+            <button class="chip-v3">무대</button>
+            <button class="chip-v3">직캠</button>
+            <button class="chip-v3">컴백</button>
+            <button class="chip-v3">콘서트</button>
+        </div>
+
+        <!-- Search Results List -->
+        <section class="search-results-v3" id="search-results">
+            <!-- Mock Result 1 (Image-aligned) -->
+            <div class="sr-card-v3">
+                <div class="sr-thumb-v3">
+                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" alt="">
+                </div>
+                <div class="sr-info-v3">
+                    <h4>[Focus Cam] MY_STARLINE - 'Shooting Star' 240520</h4>
+                    <p>2026.04.14 · StarArchive</p>
+                </div>
+                <button class="btn-add-tree">러브트리에 추가</button>
+            </div>
+
+            <!-- Mock Result 2 -->
+            <div class="sr-card-v3">
+                <div class="sr-thumb-v3">
+                    <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=200&auto=format&fit=crop" alt="">
+                </div>
+                <div class="sr-info-v3">
+                    <h4>[Unboxing] New Album Showcase Full Ver.</h4>
+                    <p>2026.04.13 · K-Pop Central</p>
+                </div>
+                <button class="btn-add-tree">러브트리에 추가</button>
+            </div>
         </section>
 
-        <div class="vs-grid">
-            <!-- Video Card 1 -->
-            <div class="vs-card">
-                <div class="card-thumb">
-                    <img src="https://img.youtube.com/vi/aqz-KE-bpKQ/mqdefault.jpg" alt="Video">
-                    <span class="duration">12:45</span>
-                </div>
-                <div class="card-content">
-                    <h3>BTS (방탄소년단) 'Proof' Live Performance (feat. Anderson .Paak)</h3>
-                    <p class="card-meta">BANGTANTV • 520만회</p>
-                    <a href="/pages/mobile-add-memory.html" class="btn-record-this">
-                        <span>✨</span> 이 순간 기록하기
-                    </a>
-                </div>
-            </div>
-
-            <!-- Video Card 2 -->
-            <div class="vs-card">
-                <div class="card-thumb">
-                    <img src="https://img.youtube.com/vi/fS6_C_yL9Zc/mqdefault.jpg" alt="Video">
-                    <span class="duration">03:20</span>
-                </div>
-                <div class="card-content">
-                    <h3>[CHOREOGRAPHY] BTS (방탄소년단) 'Yet To Come' Dance Practice</h3>
-                    <p class="card-meta">BANGTANTV • 1,200만회</p>
-                    <a href="/pages/mobile-add-memory.html" class="btn-record-this">
-                        <span>✨</span> 이 순간 기록하기
-                    </a>
-                </div>
-            </div>
-
-            <!-- Video Card 3 -->
-            <div class="vs-card">
-                <div class="card-thumb">
-                    <img src="https://img.youtube.com/vi/zS88e0x3vI4/mqdefault.jpg" alt="Video">
-                    <span class="duration">45:10</span>
-                </div>
-                <div class="card-content">
-                    <h3>BTS 'Proof' Album Showcase Special Stage Full Version</h3>
-                    <p class="card-meta">HYBE LABELS • 84만회</p>
-                    <a href="/pages/mobile-add-memory.html" class="btn-record-this">
-                        <span>✨</span> 이 순간 기록하기
-                    </a>
-                </div>
-            </div>
-
-            <!-- Video Card 4 -->
-            <div class="vs-card">
-                <div class="card-thumb">
-                    <img src="https://img.youtube.com/vi/QU9c0053UAU/mqdefault.jpg" alt="Video">
-                    <span class="duration">03:52</span>
-                </div>
-                <div class="card-content">
-                    <h3>Jung Kook 'Seven (feat. Latto)' Official MV</h3>
-                    <p class="card-meta">HYBE LABELS • 3억회</p>
-                    <a href="/pages/mobile-add-memory.html" class="btn-record-this">
-                        <span>✨</span> 이 순간 기록하기
-                    </a>
-                </div>
-            </div>
+        <!-- Loading State -->
+        <div id="search-loading" style="display: none; text-align: center; padding: 40px;">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 16px; font-weight: 700; color: #64748b;">관심 있는 영상을 찾는 중...</p>
         </div>
     </main>
 
+    <!-- Navigation Guard & App Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/api.js"></script>
+
     <script>
-        // Simple search input interaction
-        const input = document.querySelector('.vs-search-bar input');
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                alert('검색 기능은 실제 API 연동 시 활성화됩니다.');
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chips interaction
+            const chips = document.querySelectorAll('.chip-v3');
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                });
+            });
+
+            // Demo add action
+            document.querySelectorAll('.btn-add-tree').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    alert('성공적으로 러브트리에 추가되었습니다!');
+                });
+            });
         });
     </script>
 </body>
 </html>
-
-

@@ -1,153 +1,138 @@
 <!DOCTYPE html>
-<!-- Archived legacy page: mobile-add-memory -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순간 기록하기 - Lovetree</title>
-  <meta http-equiv="refresh" content="0; url=/pages/mobile-tree.html">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <meta http-equiv="refresh" content="0; url=/pages/mobile-tree.html">
-<link rel="stylesheet" href="/assets/css/app.css">
-<!-- Archived legacy page: CSS file not present -->
-<!-- <link rel="stylesheet" href="/assets/css/mobile-add-memory.css"> -->
+    <title>기억 심기 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/settings-v3.css?v=20260414_v3">
+    <style>
+        .add-page { background: #fdfaf4; min-height: 100vh; padding-bottom: 100px; }
+        .step-container { max-width: 500px; margin: 0 auto; padding: 40px 20px; }
+        .step-header { margin-bottom: 32px; }
+        .step-header h2 { font-weight: 900; font-size: 1.5rem; margin-bottom: 8px; }
+        .step-header p { color: #64748b; font-size: 0.9rem; }
+
+        .input-group { background: #fff; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-bottom: 24px; }
+        .input-label { font-size: 0.8rem; font-weight: 800; color: #b56e6e; margin-bottom: 12px; display: block; }
+        .input-v3 { width: 100%; border: none; border-bottom: 2px solid #f1f5f9; padding: 12px 0; font-size: 1rem; font-weight: 700; outline: none; transition: border-color 0.3s; }
+        .input-v3:focus { border-color: #b56e6e; }
+
+        .emotion-selection { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .emotion-chip-v3 { padding: 10px 18px; border-radius: 99px; background: #fff; border: 1px solid #e2e8f0; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .emotion-chip-v3.active { background: #b56e6e; color: #fff; border-color: #b56e6e; }
+
+        .preview-node-v3 { display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 24px; border: 1px dashed #e2e8f0; }
+        .preview-thumb-v3 { width: 64px; height: 64px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; }
+        .preview-thumb-v3 img { width: 100%; height: 100%; object-fit: cover; }
+
+        .btn-plant-v3 { width: 100%; height: 64px; background: #b56e6e; color: #fff; border: none; border-radius: 16px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(181, 110, 110, 0.2); cursor: pointer; }
+    </style>
 </head>
-<body class="add-memory-page">
-    <!-- Header: Quiet Focus -->
-    <nav class="add-header">
-        <button class="btn-back" onclick="window.history.back()">←</button>
-        <h1>순간 기록하기</h1>
+<body class="add-page">
+    
+    <nav class="gnb-v2" style="background: transparent; border: none;">
+        <div class="gnb-inner shell" style="max-width: 500px;">
+            <a href="javascript:history.back()" style="font-weight: 800; color: #b56e6e; text-decoration: none;">‹ 취소</a>
+            <span style="font-weight: 900; font-size: 1.1rem; margin-right: auto; margin-left: 20px;">기억 심기</span>
+        </div>
     </nav>
 
-    <!-- Content: Emotional Journey -->
-    <main class="add-container" id="concept-main">
-        <!-- Step 1: Link Discovery -->
-        <section class="journey-step">
-            <label class="step-label">어떤 영상인가요?</label>
-            <input type="text" id="video-url" name="videoUrl" class="input-minimal" placeholder="유튜브 링크를 알려주세요">
+    <main class="step-container">
+        <!-- Step 1: Video Discovery -->
+        <section class="step-header">
+            <h2>어떤 영상인가요?</h2>
+            <p>기록하고 싶은 유튜브 영상 링크를 넣어주세요.</p>
         </section>
 
-        <!-- Step 2: Visual Fragment Preview -->
-        <section class="moment-preview-node" id="preview-node">
-            <div class="preview-img-box" id="preview-thumb">
-                <span>🎬</span>
+        <div class="input-group">
+            <span class="input-label">Video URL</span>
+            <input type="text" id="video-url" class="input-v3" placeholder="https://youtube.com/...">
+        </div>
+
+        <div class="preview-node-v3" id="preview-area">
+            <div class="preview-thumb-v3" id="preview-thumb">🎬</div>
+            <div>
+                <h4 id="preview-title" style="font-size: 0.9rem; font-weight: 800; margin: 0;">영상을 감지하고 있습니다</h4>
+                <p id="preview-date" style="font-size: 0.75rem; color: #94a3b8; margin: 0;">URL을 입력하면 미리보기가 나타납니다.</p>
             </div>
-            <div class="preview-text-info">
-                <div class="preview-title" id="preview-title">새로운 기억</div>
-                <div class="preview-date" id="preview-date">2023. 10. 26</div>
-            </div>
+        </div>
+
+        <!-- Step 2: Emotional Details -->
+        <section class="step-header">
+            <h2>그때의 마음은 어땠나요?</h2>
+            <p>잊고 싶지 않은 소중한 기억의 조각을 기록하세요.</p>
         </section>
 
-        <!-- Step 3: Emotional Details -->
-        <form id="memory-form">
-            <section class="journey-step">
-                <label class="step-label">그때의 마음은 어땠나요?</label>
-                
-                <div class="field-row">
-                    <div class="field-item">
-                        <span class="input-small-label">제목</span>
-                        <input type="text" id="memory-title" name="title" class="input-soft" placeholder="기억의 이름을 지어주세요">
-                    </div>
-                    <div class="field-item">
-                        <span class="input-small-label">날짜</span>
-                        <input type="date" id="memory-date" name="date" class="input-soft" value="2023-10-26">
-                    </div>
-                </div>
+        <div class="input-group">
+            <span class="input-label">기억의 이름</span>
+            <input type="text" id="memory-title" class="input-v3" placeholder="예: 첫 콘서트의 전율">
+            
+            <div style="margin-top: 24px;">
+                <span class="input-label">날짜</span>
+                <input type="date" id="memory-date" class="input-v3">
+            </div>
 
-                <div class="emotion-field">
-                    <span class="input-small-label">어떤 기분이었나요?</span>
-                    <div class="emotion-tabs" id="emotion-tabs">
-                        <div class="emotion-chip" data-emotion="설렘">설렘</div>
-                        <div class="emotion-chip selected" data-emotion="감동">감동</div>
-                        <div class="emotion-chip" data-emotion="감복">감복</div>
-                        <div class="emotion-chip" data-emotion="응원">응원</div>
-                        <div class="emotion-chip" data-emotion="치유">치유</div>
-                    </div>
+            <div style="margin-top: 24px;">
+                <span class="input-label">어떤 기분이었나요?</span>
+                <div class="emotion-selection">
+                    <button class="emotion-chip-v3 active">설렘</button>
+                    <button class="emotion-chip-v3">감동</button>
+                    <button class="emotion-chip-v3">응원</button>
+                    <button class="emotion-chip-v3">행복</button>
+                    <button class="emotion-chip-v3">입덕</button>
                 </div>
+            </div>
+        </div>
 
-                <div>
-                    <span class="input-small-label">나만의 감정 기록</span>
-                    <textarea id="memory-memo" name="memo" class="memo-journal" placeholder="그날이 얼마나 특별했던지 이야기해 보세요.."></textarea>
-                </div>
-            </section>
+        <div class="input-group">
+            <span class="input-label">나만의 감정 기록 (Memo)</span>
+            <textarea id="memory-memo" class="input-v3" placeholder="그날이 얼마나 특별했는지 이야기해 보세요..." style="height: 120px; resize: none; border: 1px solid #f1f5f9; padding: 12px; border-radius: 12px;"></textarea>
+        </div>
 
-            <!-- Step 4: Connection Context -->
-            <section class="journey-step">
-                <label class="step-label">어떤 기억과 연결할까요?</label>
-                <div class="connection-flow">
-                    <select id="tree-select" name="treeId" class="select-connection">
-                        <option value="">첫 번째 기록으로 시작하기</option>
-                        <option value="tree-1">내 러브트리에 연결하기</option>
-                        <option value="tree-2">기존 트리에 붙여보기</option>
-                    </select>
-                </div>
-            </section>
-        </form>
+        <button class="btn-plant-v3" id="btn-submit">러브트리에 기억 심기</button>
     </main>
 
-    <!-- Footer: Planting Action -->
-    <footer class="planting-footer">
-        <button class="btn-plant" id="btn-submit-memory">
-            <span class="state-idle">러브트리에 심기</span>
-            <span class="state-loading is-hidden">기억을 심는 중...</span>
-        </button>
-    </footer>
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
+    <script src="/src/api.js"></script>
+    <script src="/src/add-memory.js"></script>
 
-<script src="/src/api.js"></script>
-<script src="/src/postgres-client-browser.js"></script>
-<script src="/src/shared-utils.js"></script>
-<script src="/src/shared.js"></script>
-<script src="/src/auth.js"></script>
-<script src="/src/flow-shared.js"></script>
-<script src="/src/add-memory.js"></script>
-<script>
- // Initialize date to today
- document.addEventListener('DOMContentLoaded', function() {
-   const dateInput = document.getElementById('memory-date');
-   if (dateInput && !dateInput.value) {
-     dateInput.value = new Date().toISOString().split('T')[0];
-   }
-   
-   // Check if treeId is provided in URL
-   const params = new URLSearchParams(window.location.search);
-   const treeId = params.get('treeId');
-   const isNew = params.get('isNew');
-   
-   if (!treeId) {
-     // No tree ID - redirect back to my-trees
-     console.warn('No treeId in URL, redirecting to my-trees');
-   }
- });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Emotion toggle
+            const chips = document.querySelectorAll('.emotion-chip-v3');
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                });
+            });
 
- // Simple Interaction: Emotion chips (keep existing behavior)
- document.querySelectorAll('.emotion-chip').forEach(chip => {
-   chip.addEventListener('click', function() {
-     this.parentElement.querySelectorAll('.emotion-chip').forEach(c => c.classList.remove('selected'));
-     this.classList.add('selected');
-   });
- });
+            // Video Preview Sim
+            document.getElementById('video-url').addEventListener('input', function(e) {
+                if (e.target.value.includes('v=')) {
+                    document.getElementById('preview-thumb').innerHTML = '📽️';
+                    document.getElementById('preview-title').textContent = '영상이 인식되었습니다';
+                    document.getElementById('preview-area').style.borderColor = '#b56e6e';
+                }
+            });
 
- // Submit button: use canonical add-memory.js handler
- document.getElementById('btn-submit-memory').addEventListener('click', function(e) {
-   e.preventDefault();
-   handleMemorySubmit(e);
- });
-
- // Simulating the "Vibe Shift" when video is recognized
- const videoInput = document.getElementById('video-url');
- const previewNode = document.getElementById('preview-node');
-
- if (videoInput && previewNode) {
-   videoInput.addEventListener('input', function(e) {
-     if (e.target.value.length > 10) {
-       previewNode.style.transform = 'rotate(0deg) scale(1.05)';
-       previewNode.style.borderColor = '#b56e6e';
-       previewNode.querySelector('.preview-img-box').style.background = '#000';
-       previewNode.querySelector('.preview-img-box').innerHTML = '<img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=300&auto=format&fit=crop" class="preview-dynamic-img">';
-
-     }
-   });
- }
-</script>
+            // Default date
+            document.getElementById('memory-date').value = new Date().toISOString().split('T')[0];
+        });
+    </script>
 </body>
 </html>

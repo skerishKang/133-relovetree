@@ -1,0 +1,119 @@
+/* Relovetree Search & Save V3 (Image-aligned) */
+
+.search-page {
+  background-color: #fdfaf4;
+  min-height: 100vh;
+  font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+  color: #2c1a1a;
+}
+
+.search-shell {
+  max-width: 600px; /* Focused mobile/tablet width */
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Integrated Search Bar */
+.search-bar-v3 {
+  background: #fff;
+  border-radius: 99px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  border: 1px solid rgba(181, 110, 110, 0.1);
+  margin-bottom: 24px;
+}
+
+.search-bar-v3 input {
+  flex: 1;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  background: transparent;
+}
+
+.search-bar-v3 input::placeholder { color: #cbd5e1; }
+
+/* Filter Chips */
+.filter-chips-v3 {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 32px;
+  padding-bottom: 8px;
+}
+
+.chip-v3 {
+  padding: 8px 20px;
+  border-radius: 99px;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip-v3.active {
+  background: #b56e6e;
+  color: #fff;
+  border-color: #b56e6e;
+}
+
+/* Horizontal Search Result Cards */
+.search-results-v3 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sr-card-v3 {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  transition: transform 0.2s;
+}
+
+.sr-card-v3:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+
+.sr-thumb-v3 {
+  width: 100px;
+  aspect-ratio: 16/9;
+  background: #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sr-thumb-v3 img { width: 100%; height: 100%; object-fit: cover; }
+
+.sr-info-v3 { flex: 1; min-width: 0; }
+.sr-info-v3 h4 { 
+  font-size: 0.9rem; 
+  font-weight: 800; 
+  margin: 0 0 4px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+.sr-info-v3 p { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin: 0; }
+
+.btn-add-tree {
+  background: #b56e6e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
