@@ -86,24 +86,49 @@ const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 
 ```text
 133-relovetree/
-├── index.html              # 랜딩 페이지 (V2)
+├── index.html              # 메인 랜딩 페이지
 ├── netlify.toml            # 라우팅 및 리다이렉트 설정
 ├── package.json
-├── css/                    # 페이지별 주요 CSS (home, comm, my-trees 등)
-├── assets/                 # 공통 자산 (favicon, 에디터 전용 CSS 등)
-├── pages/                  # 실제 HTML 소스 파일들
-│   ├── lovetree.html       # 제품 소개
-│   ├── community.html      # 탐색 광장
-│   ├── login.html          # 인증
-│   ├── my-trees.html       # 대시보드
-│   └── editor.html         # 트리 에디터 (예외 관리 영역)
-├── src/                    # 비즈니스 로직 및 라이브러리
-│   ├── entries/            # 페이지별 진입점 스크립트
-│   ├── shared-layout.js    # 공통 레이어 (GNB, Auth UI)
-│   ├── postgres-client-browser.js  # 브라우저용 (<script> 로드, window.postgresDB)
-│   └── ...
+├── css/                    # 페이지별 주요 스타일시트 (app, home, lovetree, community, login, my-trees 등)
+├── assets/                 # 공통 자산 (favicon, 이미지, admin 전용 CSS)
+│   ├── favicon.svg
+│   ├── css/
+│   │   └── admin.css       # Admin 페이지 전용 스타일
+│   └── image/...           # 슬라이드, 쇼케이스 이미지 등
+├── pages/                  # 서비스의 모든 HTML 페이지
+│   ├── about.html
+│   ├── admin.html
+│   ├── album-view.html
+│   ├── community-tree-detail.html
+│   ├── community.html
+│   ├── editor-desktop-empty.html
+│   ├── editor-desktop.html
+│   ├── editor.html
+│   ├── empty-state.html
+│   ├── home.html
+│   ├── login.html
+│   ├── lovetree.html
+│   ├── memory-detail.html
+│   ├── mobile-add-branch.html
+│   ├── mobile-add-memory.html
+│   ├── mobile-tree.html
+│   ├── my-trees.html
+│   ├── owner.html
+│   ├── settings.html
+│   ├── story-view.html
+│   └── video-search.html
+├── src/                    # 클라이언트 측 비즈니스 로직 및 라이브러리
+│   ├── entries/            # 페이지별 주요 진입점 스크립트 (admin, community, editor_ai, index, owner)
+│   │   ├── admin.js
+│   │   ├── community.js
+│   │   ├── editor_ai.js
+│   │   ├── index.js
+│   │   └── owner.js
+│   ├── postgres-client-browser.js  # PostgreSQL 호환 클라이언트 (브라우저용)
+│   ├── shared-layout.js    # 공통 레이아웃 관련 스크립트 (GNB, Auth UI)
+│   └── ...                 # 기타 공유 유틸리티 및 모듈
 ├── netlify/
-│   └── functions/          # 서버리스 API (PostgreSQL 연동)
+│   └── functions/          # Netlify 서버리스 함수 (PostgreSQL 연동 API)
 └── README.md
 ```
 
