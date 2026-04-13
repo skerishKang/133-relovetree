@@ -1,0 +1,165 @@
+/* Relovetree Memory System V3 (Image-aligned) */
+
+.mem-page {
+  background-color: #fdfaf4;
+  min-height: 100vh;
+  font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+  color: #2c1a1a;
+  padding-bottom: 80px;
+}
+
+/* 1. Memory Detail View (Image targets) */
+.mem-detail-shell {
+  max-width: 500px; /* Mobile-centric width as seen in Image */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.mem-video-container {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+}
+
+.mem-info-v3 h1 { font-size: 1.5rem; font-weight: 900; margin: 0 0 8px; }
+.mem-date-v3 { font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 16px; }
+
+.mem-tags-v3 { display: flex; gap: 8px; margin-bottom: 24px; }
+.mem-tag-v3 {
+  background: #fdf2f8;
+  color: #b56e6e;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+/* Emotional Memo Box */
+.mem-memo-v3 {
+  background: #fff;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  margin-bottom: 32px;
+  position: relative;
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.mem-memo-v3::after {
+  content: '✎';
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 1.2rem;
+  opacity: 0.3;
+}
+
+/* Related Memories Section */
+.related-title { font-size: 1rem; font-weight: 900; margin-bottom: 16px; }
+.related-scroll-v3 {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.rel-item-v3 {
+  flex: 0 0 160px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  text-decoration: none;
+  color: inherit;
+}
+
+.rel-thumb-v3 {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #eee;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rel-text-v3 h5 { font-size: 0.8rem; font-weight: 800; margin: 0 0 4px; }
+.rel-text-v3 span { font-size: 0.7rem; color: #94a3b8; }
+
+/* 2. Story Card View (Slider) */
+.story-page {
+  background: #e99695; /* Pinkish background from image */
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.story-card-v3 {
+  width: 90%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 40px;
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* 3. Album Grid View */
+.album-grid-v3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+.album-item-v3 {
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+  transition: transform 0.2s;
+}
+
+.album-item-v3:hover { transform: scale(1.05); }
+
+/* Bottom Action Bar (Image 1 targets) */
+.mem-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+  z-index: 100;
+}
+
+.m-action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.m-action-item.active { color: #e11d48; }
+.m-action-icon { font-size: 1.4rem; }

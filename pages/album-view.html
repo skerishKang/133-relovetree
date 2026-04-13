@@ -3,131 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>기억 보관함 - Lovetree</title>
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link rel="stylesheet" href="/assets/css/album-view.css">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>앨범 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/memory-v3.css?v=20260414_v3">
 </head>
-<body class="av-page">
-    <div class="av-frame">
-        <!-- 감상 무드 헤더 -->
-        <header class="av-header">
-            <h2>나의 기억</h2>
-            <button class="av-close-btn" aria-label="닫기">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-        </header>
-
-        <main class="av-scroll">
-            <!-- 트리에서 열린 기록 -->
-            <p class="av-context-hint">오늘의 추억</p>
-            <div class="album-grid">
-                
-                <!-- 기억 1 -->
-                <article class="av-item">
-                    <div class="av-thumb">
-                        <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="기억 1">
-                    </div>
-                    <div class="av-info">
-                        <span class="av-date">2023. 11. 15</span>
-                        <h3>첫 단독 콘서트 엔딩 무대, 우리가 공유한 눈물</h3>
-                        <div class="av-tags">
-                            <span class="av-tag">#콘서트</span>
-                            <span class="av-tag">#감동</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- 기억 2 -->
-                <article class="av-item">
-                    <div class="av-thumb">
-                        <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="기억 2">
-                    </div>
-                    <div class="av-info">
-                        <span class="av-date">2023. 12. 01</span>
-                        <h3>레전드 음악방송 직캠, 입덕의 결정적 순간</h3>
-                        <div class="av-tags">
-                            <span class="av-tag">#입덕</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- 기억 3 -->
-                <article class="av-item">
-                    <div class="av-thumb">
-                        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=400&auto=format&fit=crop" alt="기억 3">
-                    </div>
-                    <div class="av-info">
-                        <span class="av-date">2024. 01. 20</span>
-                        <h3>앵콜 무대 떼창의 전율, 그 뜨거웠던 열기</h3>
-                        <div class="av-tags">
-                            <span class="av-tag">#열광</span>
-                            <span class="av-tag">#행복</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- 기억 4 -->
-                <article class="av-item">
-                    <div class="av-thumb">
-                        <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="기억 4">
-                    </div>
-                    <div class="av-info">
-                        <span class="av-date">2024. 04. 12</span>
-                        <h3>팬미팅 첫 눈맞춤, 심장이 멈추는 줄 알았던 날</h3>
-                        <div class="av-tags">
-                            <span class="av-tag">#설렘</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- 기억 5 -->
-                <article class="av-item">
-                    <div class="av-thumb">
-                        <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=400&auto=format&fit=crop" alt="기억 5">
-                    </div>
-                    <div class="av-info">
-                        <span class="av-date">2024. 05. 05</span>
-                        <h3>가사에 울컥했던 라이브, 나를 위한 위로</h3>
-                        <div class="av-tags">
-                            <span class="av-tag">#위로</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- 기억 6 -->
-                <article class="av-item">
-                    <div class="av-thumb">
-                        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop" alt="기억 6">
-                    </div>
-                    <div class="av-info">
-                        <span class="av-date">2024. 06. 12</span>
-                        <h3>티켓팅 대성공! 소리 지르며 뛰어다닌 오후</h3>
-                        <div class="av-tags">
-                            <span class="av-tag">#일상</span>
-                        </div>
-                    </div>
-                </article>
+<body class="mem-page">
+    
+    <!-- Header with Back Button (Image 3 Style) -->
+    <nav class="gnb-v2" style="background: #b56e6e; color: #fff; border: none;">
+        <div class="gnb-inner shell">
+            <a href="javascript:history.back()" style="font-weight: 800; color: #fff; text-decoration: none;">‹ 앨범 기억</a>
+            <div style="margin-left: auto; display: flex; gap: 16px;">
+                <span>📂</span>
             </div>
-        </main>
+        </div>
+    </nav>
 
-        <!-- 정제된 내비게이션 바 -->
-        <nav class="av-nav">
-            <div class="an-item active">
-                <div class="an-dot"></div>
-                <span class="an-text">트리</span>
-            </div>
-            <div class="an-item">
-                <div class="an-dot"></div>
-                <span class="an-text">탐색</span>
-            </div>
-            <div class="an-item">
-                <div class="an-dot"></div>
-                <span class="an-text">마이</span>
-            </div>
-        </nav>
-    </div>
+    <main class="shell" style="padding: 12px;">
+        <!-- 3-Column Album Grid (Image 3 targets) -->
+        <div class="album-grid-v3" id="album-list">
+            <!-- Row 1 -->
+            <a href="/pages/memory-detail.html" class="album-item-v3">
+                <div style="font-size: 2rem; margin-bottom: 8px;">▶</div>
+                <h5 style="font-size: 0.75rem; font-weight: 800; margin-bottom: 4px;">최애 콘서트 기억</h5>
+                <div style="display: flex; gap: 4px;">
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">설렘</span>
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">행복</span>
+                </div>
+            </a>
+            <a href="/pages/memory-detail.html" class="album-item-v3">
+                <div style="font-size: 2rem; margin-bottom: 8px;">▶</div>
+                <h5 style="font-size: 0.75rem; font-weight: 800; margin-bottom: 4px;">음악 방송 직캠</h5>
+                <div style="display: flex; gap: 4px;">
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">감동</span>
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">행복</span>
+                </div>
+            </a>
+            <a href="/pages/memory-detail.html" class="album-item-v3">
+                <div style="font-size: 2rem; margin-bottom: 8px;">▶</div>
+                <h5 style="font-size: 0.75rem; font-weight: 800; margin-bottom: 4px;">최애 콘서트 기억</h5>
+                <div style="display: flex; gap: 4px;">
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">설렘</span>
+                </div>
+            </a>
+            <!-- Row 2 -->
+            <a href="/pages/memory-detail.html" class="album-item-v3">
+                <div style="font-size: 2rem; margin-bottom: 8px;">▶</div>
+                <h5 style="font-size: 0.75rem; font-weight: 800; margin-bottom: 4px;">음악 방송 직캠</h5>
+                <div style="display: flex; gap: 4px;">
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">설렘</span>
+                </div>
+            </a>
+            <a href="/pages/memory-detail.html" class="album-item-v3">
+                <div style="font-size: 2rem; margin-bottom: 8px;">▶</div>
+                <h5 style="font-size: 0.75rem; font-weight: 800; margin-bottom: 4px;">최애 콘서트 기억</h5>
+                <div style="display: flex; gap: 4px;">
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">감동</span>
+                </div>
+            </a>
+            <a href="/pages/memory-detail.html" class="album-item-v3">
+                <div style="font-size: 2rem; margin-bottom: 8px;">▶</div>
+                <h5 style="font-size: 0.75rem; font-weight: 800; margin-bottom: 4px;">음악 방송 직캠</h5>
+                <div style="display: flex; gap: 4px;">
+                    <span class="mem-tag-v3" style="font-size: 0.6rem; padding: 2px 6px;">입덕</span>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <!-- Bottom Nav Bar (Image 3 Style) -->
+    <nav class="mobile-nav-bar">
+        <a href="/" class="nav-item">🏠<span>홈</span></a>
+        <a href="/pages/memory-detail.html" class="nav-item">🎬<span>메모보기</span></a>
+        <a href="/pages/album-view.html" class="nav-item active">❤️<span>앨범</span></a>
+        <a href="/pages/settings.html" class="nav-item">👤<span>회원</span></a>
+    </nav>
+
 </body>
 </html>

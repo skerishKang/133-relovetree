@@ -3,122 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>설정 - Lovetree</title>
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link rel="stylesheet" href="/assets/css/settings.css">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>설정 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/settings-v3.css?v=20260414_v3">
 </head>
 <body class="settings-page">
-    <div class="settings-container">
+    
+    <!-- Simple GNB for Sub-pages -->
+    <nav class="gnb-v2" style="background: transparent; border: none;">
+        <div class="gnb-inner shell">
+            <a href="/pages/my-trees.html" style="font-weight: 800; color: #b56e6e; text-decoration: none;">‹ 뒤로가기</a>
+            <a href="/" class="gnb-logo" style="margin-right: auto; margin-left: 20px;">Relovetree</a>
+        </div>
+    </nav>
 
-        <header class="settings-header">
-            <a href="/" class="btn-back-home" aria-label="뒤로가기">←</a>
-            <div>
-                <h1>설정</h1>
-                <p>내 기록과 계정을 관리하는 공간</p>
-            </div>
+    <main class="settings-shell">
+        <header class="settings-header-v3">
+            <h1>공개 범위 설정</h1>
+            <p style="color: #64748b; font-size: 0.95rem;">당신의 소중한 나무를 누구와 함께 나눌지 결정하세요.</p>
         </header>
 
-        <main>
-            <section class="s-section">
-                <h2 class="s-section-title">프로필</h2>
-                <div class="profile-row">
-                    <div class="profile-initial">러</div>
-                    <div class="profile-info">
-                        <h3>러브트리 여행자</h3>
-                        <p>lovetree@example.com</p>
-                    </div>
-                    <a href="#" class="link-subtle">수정</a>
+        <!-- Visibility Selection (Image 1 targets) -->
+        <section class="visibility-group">
+            <div class="vis-card active" data-value="private">
+                <div class="vis-icon">🔒</div>
+                <div class="vis-info">
+                    <h4>나만 보기</h4>
+                    <p>본인만 LoveTree를 볼 수 있습니다.</p>
                 </div>
-            </section>
+                <div class="vis-toggle"></div>
+            </div>
 
-            <section class="s-section">
-                <h2 class="s-section-title">기록 공개 범위</h2>
-                <div class="settings-list">
-                    <label class="radio-row active">
-                        <div class="radio-row-content">
-                            <span class="radio-icon"><i class="ico-lock"></i></span>
-                            <div>
-                                <h4>나만 보기</h4>
-                                <p>비밀스러운 나만의 기록</p>
-                            </div>
-                        </div>
-                        <span class="radio-dot"></span>
-                    </label>
-                    <label class="radio-row">
-                        <div class="radio-row-content">
-                            <span class="radio-icon"><i class="ico-link"></i></span>
-                            <div>
-                                <h4>링크 공개</h4>
-                                <p>링크를 아는 사람과만</p>
-                            </div>
-                        </div>
-                        <span class="radio-dot"></span>
-                    </label>
-                    <label class="radio-row">
-                        <div class="radio-row-content">
-                            <span class="radio-icon"><i class="ico-globe"></i></span>
-                            <div>
-                                <h4>커뮤니티 공개</h4>
-                                <p>모든 팬과 함께 감상</p>
-                            </div>
-                        </div>
-                        <span class="radio-dot"></span>
-                    </label>
-                </div>
-            </section>
-
-            <section class="s-section">
-                <h2 class="s-section-title">알림</h2>
-                <div class="settings-list">
-                    <div class="setting-item">
-                        <div class="item-desc">
-                            <h4>공감 알림</h4>
-                        </div>
-                        <div class="l-switch on"></div>
-                    </div>
-                    <div class="setting-item">
-                        <div class="item-desc">
-                            <h4>댓글 알림</h4>
-                        </div>
-                        <div class="l-switch on"></div>
-                    </div>
-                    <div class="setting-item">
-                        <div class="item-desc">
-                            <h4>서비스 소식</h4>
-                        </div>
-                        <div class="l-switch"></div>
+            <div class="vis-card" data-value="link">
+                <div class="vis-icon">🔗</div>
+                <div class="vis-info">
+                    <h4>링크를 가진 사람만</h4>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <p>링크를 알고 있는 사람에게만 공개됩니다.</p>
+                        <span style="background: #b56e6e; color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800;">Copy Link</span>
                     </div>
                 </div>
-            </section>
+                <div class="vis-toggle"></div>
+            </div>
 
-            <section class="s-section">
-                <h2 class="s-section-title">계정</h2>
-                <div class="settings-list">
-                    <div class="setting-item">
-                        <div class="item-desc">
-                            <h4>프로필 공개</h4>
-                            <p>내 활동명을 다른 팬에게 보여줍니다</p>
-                        </div>
-                        <div class="l-switch"></div>
-                    </div>
+            <div class="vis-card" data-value="public">
+                <div class="vis-icon">💗</div>
+                <div class="vis-info">
+                    <h4>커뮤니티에 공개</h4>
+                    <p>모든 Relovetree 사용자가 감상할 수 있습니다.</p>
                 </div>
-            </section>
-        </main>
+                <div class="vis-toggle"></div>
+            </div>
+        </section>
 
-        <footer class="settings-footer">
-            <button class="btn-logout">로그아웃</button>
+        <!-- Secondary Toggles (Image 1 Bottom) -->
+        <section style="margin-top: 40px;">
+            <div class="setting-item-v3">
+                <div class="item-info-v3">
+                    <h4>댓글 허용</h4>
+                    <p>내 LoveTree에 다른 사용자가 댓글을 남길 수 있습니다.</p>
+                </div>
+                <div class="switch-v3 on"></div>
+            </div>
+
+            <div class="setting-item-v3">
+                <div class="item-info-v3">
+                    <h4>좋아요 허용</h4>
+                    <p>내 LoveTree에 좋아요 표현을 받을 수 있습니다.</p>
+                </div>
+                <div class="switch-v3 on"></div>
+            </div>
+
+            <div class="setting-item-v3">
+                <div class="item-info-v3">
+                    <h4>프로필 표시 이름 공개</h4>
+                    <p>LoveTree 옆에 내 프로필 표시 이름을 공개합니다.</p>
+                </div>
+                <div class="switch-v3"></div>
+            </div>
+        </section>
+
+        <!-- Action Footer -->
+        <footer class="settings-footer-v3">
+            <button class="btn-save-settings" id="btn-save">완료</button>
         </footer>
-    </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
 
     <script>
-        document.querySelectorAll('.l-switch').forEach(function(sw) {
-            sw.addEventListener('click', function() { sw.classList.toggle('on'); });
-        });
-        document.querySelectorAll('.radio-row').forEach(function(row) {
-            row.addEventListener('click', function() {
-                document.querySelectorAll('.radio-row').forEach(function(r) { r.classList.remove('active'); });
-                row.classList.add('active');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Visibility Card Toggle Logic
+            const cards = document.querySelectorAll('.vis-card');
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    cards.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                });
+            });
+
+            // Switch Logic
+            const switches = document.querySelectorAll('.switch-v3');
+            switches.forEach(sw => {
+                sw.addEventListener('click', () => {
+                    sw.classList.toggle('on');
+                });
+            });
+
+            // Save Action
+            document.getElementById('btn-save').addEventListener('click', () => {
+                alert('설정이 저장되었습니다!');
+                window.location.href = '/pages/my-trees.html';
             });
         });
     </script>

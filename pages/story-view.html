@@ -3,75 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기억의 조각 - Lovetree</title>
-        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link rel="stylesheet" href="/assets/css/story-view.css">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>스토리 감상 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/memory-v3.css?v=20260414_v3">
 </head>
 <body class="story-page">
-  <!-- 몰입형 배경: 트리 중심부 -->
-  <div class="story-bg-overlay"></div>
-  <div class="story-trunk-line"></div>
+    
+    <!-- Floating Back Button -->
+    <a href="javascript:history.back()" style="position: fixed; top: 20px; left: 20px; color: #fff; font-size: 2rem; text-decoration: none; z-index: 1000;">‹</a>
 
-  <!-- 장면 궤적: 기억이름 진행중 -->
-  <div class="story-progress-container">
-    <div class="st-bar complete"><div class="st-fill"></div></div>
-    <div class="st-bar active"><div class="st-fill"></div></div>
-    <div class="st-bar"><div class="st-fill"></div></div>
-    <div class="st-bar"><div class="st-fill"></div></div>
-  </div>
+    <!-- Single Story Card (Card Slider Target) -->
+    <div class="story-card-v3">
+        <div class="story-video-mini" style="width: 100%; aspect-ratio: 1; background: #eee; border-radius: 24px; margin-bottom: 32px; display: flex; align-items: center; justify-content: center; font-size: 3rem;">▶</div>
+        
+        <h2 style="font-weight: 900; margin-bottom: 8px;">콘서트의 전율</h2>
+        <span style="font-size: 0.9rem; color: #94a3b8; font-weight: 700;">2026.04.14</span>
 
-  <!-- 상단 내비게이션 -->
-  <header class="story-top-nav">
-    <div class="st-brand">트리 경로</div>
-    <button class="btn-story-close" onclick="window.history.back()">←</button>
-  </header>
+        <div style="display: flex; justify-content: center; gap: 8px; margin: 20px 0;">
+            <span class="mem-tag-v3">#Memorable</span>
+            <span class="mem-tag-v3">#Joyful</span>
+            <span class="mem-tag-v3">#Throwback</span>
+        </div>
 
-  <!-- 메인 콘텐츠 트리에서 이어지는 기억 -->
-  <main class="story-main">
-    <div class="slider-track" data-binding-state="empty">
-      <article class="story-card">
-        <section class="st-video-box">
-          <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=800&auto=format&fit=crop" alt="기억 장면 첫번째">
-          <div class="st-play-btn"></div>
-        </section>
+        <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-top: 24px;">
+            My first concert experience... It was amazing! [Fictional event notes]
+        </p>
 
-        <section class="st-content">
-          <span class="st-date">2023. 11. 15</span>
-          <h2 class="st-title">콘서트의 운율</h2>
-
-          <div class="st-memo-box">
-            <p class="st-memo-text">
-              "처음으로 딱딱 같은 공간에서 있었는 사실만으로도 가사가 벅찼筝.
-              머릿속의 운율이 생 생 못할 기록같다."
-            </p>
-          </div>
-        </section>
-      </article>
+        <!-- Pagination Dots (Image 2 bottom) -->
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 40px;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #e11d48;"></div>
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></div>
+        </div>
     </div>
-  </main>
 
-  <!-- 하단 액션: 제목 공유 공감 -->
-  <footer class="story-footer-actions">
-    <a href="#" class="st-action-btn">
-      <div class="st-action-ico"><i class="st-sym">♥</i></div>
-      <span class="st-action-lbl">125</span>
-    </a>
-    <a href="#" class="st-action-btn">
-      <div class="st-action-ico"><i class="st-sym">💬</i></div>
-      <span class="st-action-lbl">3</span>
-    </a>
-    <a href="#" class="st-action-btn">
-      <div class="st-action-ico"><i class="st-sym">↗</i></div>
-      <span class="st-action-lbl">공유</span>
-    </a>
-  </footer>
+    <!-- Mobile Bottom Icon Nav (Image 2 Bottom) -->
+    <nav class="mobile-nav-bar" style="background: rgba(44, 26, 26, 0.9); backdrop-filter: blur(10px); color: #fff;">
+        <a href="/" class="nav-item active" style="color: #fff;"><span class="nav-icon">🏠</span></a>
+        <a href="/pages/my-trees.html" class="nav-item" style="color: #fff;"><span class="nav-icon">📦</span></a>
+        <a href="/pages/community.html" class="nav-item" style="color: #fff;"><span class="nav-icon">🔍</span></a>
+        <a href="/pages/settings.html" class="nav-item" style="color: #fff;"><span class="nav-icon">👤</span></a>
+    </nav>
 
-  <script src="/src/concept-state.js"></script>
-  <script>
-    // 토스트 전환 액션 발생 로직 (개념 구현중)
-  </script>
 </body>
 </html>
-
-

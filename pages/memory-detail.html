@@ -1,103 +1,111 @@
-<!-- frontend-concept-v2/memory-detail.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기억 상세 - Lovetree</title>
-        <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link rel="stylesheet" href="/assets/css/memory-detail.css">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>기억 상세 - Relovetree</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Unified Design System V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/memory-v3.css?v=20260414_v3">
 </head>
-<body class="detail-page" data-concept-page="memory-detail">
-    <div class="mob-frame" id="concept-main">
-        <!-- 단일 비디오 -->
-        <header class="detail-header">
-            <button class="btn-header" onclick="window.history.back()">←</button>
-            <span class="header-brand">러브트리 기록</span>
-            <button class="btn-header">⋮</button>
-        </header>
+<body class="mem-page">
+    
+    <!-- Slim Sub-page Header -->
+    <nav class="gnb-v2" style="background: transparent; border: none;">
+        <div class="gnb-inner shell" style="max-width: 500px;">
+            <a href="javascript:history.back()" style="font-weight: 800; color: #b56e6e; text-decoration: none; font-size: 1.2rem;">‹</a>
+            <a href="/" class="gnb-logo" style="margin: 0 auto;">Relovetree</a>
+            <button style="background: none; border: none; font-size: 1.2rem; color: #64748b;">···</button>
+        </div>
+    </nav>
 
-        <main class="detail-scroll">
-            <!-- 메인 비디오 플레이어 -->
-            <section class="hero-player" id="video-skeleton">
-                <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=800&auto=format&fit=crop" alt="기억 영상">
-                <div class="play-btn-large"></div>
-                <!-- 스keleton 로더 -->
-                <div class="skeleton-loader" data-skeleton="video"></div>
-            </section>
+    <main class="mem-detail-shell">
+        <!-- Main Video Container (Image 1 top) -->
+        <section class="mem-video-container">
+            <div id="player" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; color: #fff;">
+                <span style="font-size: 3rem;">▶</span>
+            </div>
+        </section>
 
-            <!-- 기록 상세 정보 -->
-            <section class="detail-info">
-                <span class="detail-date">2023. 11. 15</span>
-                <h2>콘서트의 전율</h2>
-                
-                <div class="detail-tags" id="tags-skeleton">
-                    <span class="detail-tag">#설렘</span>
-                    <span class="detail-tag">#감동</span>
-                    <span class="detail-tag">#첫콘</span>
-                    <!-- 스keleton -->
-                    <div class="skeleton-loader" data-skeleton="tags"></div>
-                </div>
+        <!-- Memory Content Information -->
+        <section class="mem-info-v3">
+            <h1>첫 콘서트의 전율</h1>
+            <div class="mem-date-v3">2026.04.14</div>
+            
+            <div class="mem-tags-v3">
+                <span class="mem-tag-v3">설렘</span>
+                <span class="mem-tag-v3">감동</span>
+                <span class="mem-tag-v3">행복</span>
+            </div>
 
-                <!-- 스크랩북 감정 메모 -->
-                <div class="memo-box">
-                    첫 디아웃 콘서트에 다녀왔다. 그 현장의 압도감에 몸이 떨렸다. 정말 잊지 못할 밤이었다.
-                </div>
+            <div style="font-size: 0.85rem; font-weight: 800; margin-bottom: 12px; color: #64748b;">Memo</div>
+            <!-- Handwriting Style Memo Box (Image 1 targets) -->
+            <div class="mem-memo-v3">
+                오늘 드디어 첫 콘서트에 갔다...!!! 현장 분위기가 정말 대박이었고 오프닝 곡 나올 때 온몸에 소름이 쫙 돋았다. 떼창할 때 그 전율은 평생 못 잊을 것 같다. 너무 행복했다 ㅠㅠ 다음에 또 가고 싶다.
+            </div>
+        </section>
 
-                <!-- 연결 경로: 이어지는 기억 -->
-                <div class="related-section">
-                    <h3>그날의 연결 경로</h3>
-                    <div class="related-path">
-                        <a href="#" class="r-item">
-                            <div class="r-thumb">
-                                <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=200&auto=format&fit=crop" alt="이전 기억">
-                            </div>
-                            <div class="r-info">
-                                <span class="r-title">첫 만남의 기록</span>
-                                <span class="r-date">2023. 11. 15</span>
-                            </div>
-                        </a>
-                        <a href="#" class="r-item active">
-                            <div class="r-thumb">
-                                <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" alt="현재 기억">
-                            </div>
-                            <div class="r-info">
-                                <span class="r-title">콘서트의 전율</span>
-                                <span class="r-date">현재 머물러 있는 기록</span>
-                            </div>
-                        </a>
-                        <a href="#" class="r-item">
-                            <div class="r-thumb">
-                                <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=200&auto=format&fit=crop" alt="다음 기억">
-                            </div>
-                            <div class="r-info">
-                                <span class="r-title">공연 종료 후의 여운</span>
-                                <span class="r-date">2023. 11. 15</span>
-                            </div>
-                        </a>
+        <!-- Related Memories (Image 1 Bottom) -->
+        <section class="related-section-v3">
+            <h3 class="related-title">이 순간과 이어진 기억</h3>
+            <div class="related-scroll-v3" id="related-memories">
+                <a href="#" class="rel-item-v3">
+                    <div class="rel-thumb-v3">🖼️</div>
+                    <div class="rel-text-v3">
+                        <h5>콘서트 티켓 수령</h5>
+                        <span>2026.04.14</span>
                     </div>
-                </div>
-            </section>
-        </main>
+                </a>
+                <a href="#" class="rel-item-v3">
+                    <div class="rel-thumb-v3">🎬</div>
+                    <div class="rel-text-v3">
+                        <h5>굿즈 줄서기</h5>
+                        <span>2026.04.14</span>
+                    </div>
+                </a>
+                <a href="#" class="rel-item-v3">
+                    <div class="rel-thumb-v3">📸</div>
+                    <div class="rel-text-v3">
+                        <h5>나눔 포카 인증</h5>
+                        <span>2026.04.14</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
 
-        <!-- 감상 중심 액션 바 -->
-        <footer class="bottom-bar">
-            <a href="#" class="bottom-item">
-                <span class="b-ico">♥</span>
-                <span class="b-num">125</span>
-            </a>
-            <a href="#" class="bottom-item">
-                <span class="b-ico">💬</span>
-                <span class="b-num">3</span>
-            </a>
-            <a href="#" class="bottom-item">
-                <span class="b-ico">↗</span>
-                <span class="b-num">공유</span>
-            </a>
-        </footer>
-    </div>
-    <script src="/src/api.js"></script>
-    <script src="/src/concept-state.js"></script>
+    <!-- Emotional Bottom Bar (Image 1 Bottom Fixed) -->
+    <footer class="mem-bottom-bar">
+        <a href="#" class="m-action-item">
+            <span class="m-action-icon">❤️</span>
+            <span>125</span>
+        </a>
+        <a href="#" class="m-action-item">
+            <span class="m-action-icon">💬</span>
+            <span>3</span>
+        </a>
+        <a href="#" class="m-action-item">
+            <span class="m-action-icon">↗️</span>
+            <span>Share</span>
+        </a>
+        <a href="#" class="m-action-item">
+            <span class="m-action-icon">✎</span>
+            <span>Edit</span>
+        </a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="/src/runtime-config.js"></script>
+    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared.js"></script>
+    <script src="/src/auth.js"></script>
 </body>
 </html>
