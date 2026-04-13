@@ -205,12 +205,53 @@
         }
     }
 
+    /**
+     * Standard Auth UI Initialization
+     * Consolidates auth wiring from all standard pages.
+     * Handles: onAuthReady callback, currentUser check, logout button binding
+     * 
+     * @param {Object} options - Configuration options
+     * @param {boolean} options.skipOnAuthReady - Skip onAuthReady callback registration
+     * @param {boolean} options.skipCurrentUserCheck - Skip setTimeout currentUser check
+     * @param {boolean} options.skipLogoutBinding - Skip nav-logout-btn click binding
+     */
+    function initStandardAuthUI(options) {
+        options = options || {};
+        
+        // 1. Register onAuthReady callback (if not skipped)
+        if (!options.skipOnAuthReady) {
+            window.onAuthReady = function(user) {
+                if (window.updateLTAuthUI) window.updateLTAuthUI(user);
+            };
+        }
+        
+        // 2. Fallback currentUser check after 1s (if not skipped)
+        if (!options.skipCurrentUserCheck) {
+            setTimeout(function() {
+                if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
+                    window.updateLTAuthUI(firebase.auth().currentUser);
+                }
+            }, 1000);
+        }
+        
+        // 3. Bind logout button (if not skipped)
+        if (!options.skipLogoutBinding) {
+            var logoutBtn = document.getElementById('nav-logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (window.signOut) window.signOut();
+                });
+            }
+        }
+    }
+
     const api = {
         shouldInjectGlobalLayout: shouldInjectGlobalLayout,
         buildGlobalHeaderHTML: buildGlobalHeaderHTML,
         buildGlobalMyModalHTML: buildGlobalMyModalHTML,
         ensureGlobalLayoutInjected: ensureGlobalLayoutInjected,
-        updateLTAuthUI: updateLTAuthUI
+        updateLTAuthUI: updateLTAuthUI,
+        initStandardAuthUI: initStandardAuthUI
     };
 
     window.ReloveSharedLayout = api;
@@ -219,4 +260,5 @@
     window.buildGlobalMyModalHTML = buildGlobalMyModalHTML;
     window.ensureGlobalLayoutInjected = ensureGlobalLayoutInjected;
     window.updateLTAuthUI = updateLTAuthUI;
+    window.initStandardAuthUI = initStandardAuthUI;
 })();
