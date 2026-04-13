@@ -52,6 +52,7 @@ Lovetree는 단순 저장 앱이 아니다.
 - ⚠️ 신규 코드에서 `firebase-firestore-compat.js` 직접 참조 금지
 - 새 페이지나 새 기능을 만들 때는 “이게 첫 순간 기록과 사랑의 경로 연결에 실제 도움이 되나”를 먼저 따진다.
 - **editor 영역은 별도 정리 트랙으로 관리됩니다. editor.html과 관련 파일들은 복잡성과 의존성으로 인해 일반 페이지 구조 정리 대상에서 제외됩니다.**
+- **editor 아키텍처**: [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md) - 로드 순서, 데이터 흐름, FieldValue 사용처, 위험 지점 포함
 
 ## Data / Architecture Reminder
 

@@ -108,6 +108,7 @@ const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 ```
 
 **주의**: `editor.html`과 관련 파일들은 복잡성과 의존성으로 인해 별도 정리 트랙으로 관리됩니다. 일반 페이지 구조 정리 시 editor 영역은 제외됩니다.
+자세한 아키텍처와 운영 가이드는 [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)를 참조하세요.
 
 ## 로컬 실행
 
