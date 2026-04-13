@@ -29,9 +29,6 @@ const { httpError } = require('./http');
 
 const DELETE_SENTINEL = Symbol('delete_field');
 
-// Export DELETE_SENTINEL for testing
-exports.DELETE_SENTINEL = DELETE_SENTINEL;
-
 const TABLE_CONFIG = {
   users: {
     table: 'users',
@@ -570,7 +567,4 @@ module.exports = {
   getUserRole,
   TABLE_CONFIG,
   getConfigByTableName,
-  // ⚠️ Internal functions exported for backend unit testing
-  applyTransform,
-  applyPatch,
 };
