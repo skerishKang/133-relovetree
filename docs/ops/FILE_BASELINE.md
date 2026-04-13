@@ -246,7 +246,7 @@
 | `pages/empty-state.html` | ⚠️ INACTIVE | 빈 상태, 운영 미사용 |
 | `pages/album-view.html` | ⚠️ INACTIVE | 앨범 뷰, 운영 미사용 |
 | `pages/memory-detail.html` | ⚠️ INACTIVE | `mobile-tree.html`로 리다이렉트 |
-| `pages/mobile-add-memory.html` | ⚠️ INACTIVE | 레거시 페이지 – redirect to `/pages/mobile-tree.html` 유지 |
+| `pages/mobile-add-memory.html` | ⚠️ INACTIVE | 레거시 페이지 - 아카이브 또는 리다이렉트 필요 |
 | `pages/mobile-add-branch.html` | ⚠️ INACTIVE | 레거시 페이지 - 아카이브 또는 리다이렉트 필요 |
 | `pages/editor-desktop.html` | ⚠️ INACTIVE | `editor.html`로 리다이렉트 |
 | `pages/editor-desktop-empty.html` | ⚠️ INACTIVE | 에디터 데스크톱 빈, 미사용 |
