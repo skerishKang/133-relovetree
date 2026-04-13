@@ -1,0 +1,191 @@
+/* Relovetree Dashboard V3 (Image-aligned) */
+
+.my-trees-page {
+  background-color: #fdfaf4; /* Warm beige background from Image */
+  min-height: 100vh;
+  font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+}
+
+/* Dashboard Layout Shell */
+.dash-shell {
+  display: flex;
+  gap: 40px;
+  padding: 40px 0;
+  align-items: flex-start;
+}
+
+/* Main Content Area */
+.dash-main {
+  flex: 1;
+}
+
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.dash-header h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #2c1a1a;
+  margin: 0;
+}
+
+.btn-create-tree {
+  background: #b56e6e; /* Reddish tone from Image */
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(181, 110, 110, 0.2);
+  transition: transform 0.2s;
+}
+
+.btn-create-tree:hover { transform: translateY(-2px); }
+
+/* Tree Cards Grid */
+.trees-grid-v3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.tree-card-v3 {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.tree-card-v3:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+
+.tc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tc-title h3 {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin: 0 0 4px;
+}
+
+.tc-meta {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.tc-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.tc-badge.public { background: #cbd5e1; color: #334155; }
+
+/* 3-Thumbnail Row */
+.tc-thumbs {
+  display: flex;
+  gap: 8px;
+  height: 80px;
+}
+
+.tc-thumb-item {
+  flex: 1;
+  background: #fdf2f8; /* Placeholder tint */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  overflow: hidden;
+}
+
+.tc-thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Action Buttons Footer */
+.tc-actions {
+  display: flex;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+  justify-content: space-between;
+}
+
+.btn-tc-action {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-tc-action:hover { color: #b56e6e; }
+
+/* Sidebar */
+.dash-sidebar {
+  width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.side-title {
+  font-size: 1rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  color: #2c1a1a;
+}
+
+.recent-moments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.moment-item-mini {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  transition: background 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.moment-item-mini:hover { background: #fdfaf4; }
+
+.mini-thumb {
+  width: 48px;
+  height: 48px;
+  background: #fdf2f8;
+  border-radius: 8px;
+}
+
+.mini-text h4 { font-size: 0.85rem; font-weight: 800; margin: 0 0 4px; }
+.mini-text span { font-size: 0.7rem; color: #94a3b8; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dash-shell { flex-direction: column; }
+  .dash-sidebar { width: 100%; order: -1; }
+}

@@ -112,7 +112,7 @@
     return tree && (tree.visibility || tree.isPublic || 'private');
   }
 
-function renderTreeList(trees) {
+  function renderTreeList(trees) {
     var list = document.getElementById('tree-list');
     if (!list) return;
 
@@ -123,37 +123,45 @@ function renderTreeList(trees) {
       if (!treeId) return;
 
       var nodeCount = getNodeCount(tree);
-      var lastUpdated = (tree.lastUpdated || tree.updatedAt || tree.createdAt || '');
+      var lastUpdated = tree.updatedAt || tree.createdAt || '';
       var dateStr = F.formatKoreanDate(lastUpdated);
       var treeName = tree.name || '이름 없는 트리';
       var visibility = getTreeVisibility(tree);
       var isPublic = visibility === 'public';
 
-      var firstThumb = '';
-      var nodes = tree.nodes;
-      if (nodes && nodes.length > 0 && nodes[0].videoId) {
-        firstThumb = F.getYouTubeThumb(nodes[0].videoId);
+      // Get up to 3 thumbnails
+      var thumbs = [];
+      if (tree.nodes && Array.isArray(tree.nodes)) {
+        tree.nodes.slice(0, 3).forEach(function(node) {
+          if (node.videoId) thumbs.push(F.getYouTubeThumb(node.videoId));
+        });
       }
 
       var card = document.createElement('div');
-      card.className = 'my-tree-card';
+      card.className = 'tree-card-v3';
+
+      var thumbsHtml = '';
+      for (var i = 0; i < 3; i++) {
+        thumbsHtml += '<div class="tc-thumb-item">' + 
+          (thumbs[i] ? '<img src="' + escapeHtml(thumbs[i]) + '" alt="">' : '🌱') + 
+          '</div>';
+      }
 
       card.innerHTML = 
-        '<div class="card-top">' +
-        '<h3>' + escapeHtml(treeName) + '</h3>' +
-        '<span class="status-badge ' + (isPublic ? 'public' : 'private') + '">' + (isPublic ? 'Public' : 'Private') + '</span>' +
+        '<div class="tc-header">' +
+        '    <div class="tc-title">' +
+        '        <h3>' + escapeHtml(treeName) + '</h3>' +
+        '        <span class="tc-meta">마지막 업데이트 ' + escapeHtml(dateStr) + '</span>' +
+        '    </div>' +
+        '    <span class="tc-badge ' + (isPublic ? 'public' : '') + '">' + (isPublic ? 'Public' : 'Private') + '</span>' +
         '</div>' +
-        '<div class="card-meta">' +
-        '<p>' + nodeCount + '개의 순간 • ' + escapeHtml(dateStr) + '</p>' +
-        '</div>' +
-        '<div class="card-thumbnails">' +
-        (firstThumb ? '<div class="thumb-box"><img src="' + escapeHtml(firstThumb) + '" alt=""></div>' : '<div class="thumb-box">🌱</div>') +
-        '<div class="thumb-box"></div>' +
-        '<div class="thumb-box"></div>' +
-        '</div>' +
-        '<div class="card-actions">' +
-        '<button class="action-item action-primary" data-action="add" data-tree-id="' + escapeHtml(treeId) + '"><span class="action-icon">✏️</span> 순간 추가</button>' +
-        '<button class="action-item" data-action="view" data-tree-id="' + escapeHtml(treeId) + '"><span class="action-icon">🌳</span> 트리 보기</button>' +
+        '<div style="font-size: 0.85rem; color: #64748b;">' + nodeCount + ' 순간들</div>' +
+        '<div class="tc-thumbs">' + thumbsHtml + '</div>' +
+        '<div class="tc-actions">' +
+        '    <button class="btn-tc-action" data-action="edit" data-tree-id="' + escapeHtml(treeId) + '"><span>✎</span>편집</button>' +
+        '    <button class="btn-tc-action" data-action="share" data-tree-id="' + escapeHtml(treeId) + '"><span>↗</span>공유</button>' +
+        '    <button class="btn-tc-action" data-action="duplicate" data-tree-id="' + escapeHtml(treeId) + '"><span>❐</span>복제</button>' +
+        '    <button class="btn-tc-action" data-action="delete" data-tree-id="' + escapeHtml(treeId) + '"><span>🗑</span>삭제</button>' +
         '</div>';
 
       list.appendChild(card);
@@ -165,8 +173,8 @@ function renderTreeList(trees) {
     }
   }
 
-function handleTreeActionClick(e) {
-    var btn = e.target.closest('.action-item');
+  function handleTreeActionClick(e) {
+    var btn = e.target.closest('.btn-tc-action');
     if (!btn) return;
 
     var action = btn.getAttribute('data-action');
@@ -174,11 +182,34 @@ function handleTreeActionClick(e) {
 
     if (!treeId) return;
 
-    if (action === 'add') {
+    if (action === 'edit') {
+      // Editor for this tree
       window.location.href = '/pages/mobile-add-memory.html?treeId=' + encodeURIComponent(treeId);
-    } else if (action === 'view') {
-      window.location.href = '/pages/mobile-tree.html?treeId=' + encodeURIComponent(treeId);
+    } else if (action === 'share') {
+      // Direct link to the tree detail
+      var shareUrl = window.location.origin + '/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId);
+      if (navigator.share) {
+        navigator.share({ title: '나의 러브트리', url: shareUrl });
+      } else {
+        copyToClipboard(shareUrl);
+        alert('공유 링크가 복사되었습니다!');
+      }
+    } else if (action === 'delete') {
+      if (confirm('정말 이 트리를 삭제하시겠습니까?')) {
+        F.deleteTree(currentUser, treeId).then(function() {
+          loadTrees();
+        });
+      }
     }
+  }
+
+  function copyToClipboard(text) {
+    var input = document.createElement('textarea');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
   }
 
   function escapeHtml(str) {

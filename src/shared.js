@@ -55,7 +55,7 @@ function setupGlobalErrorHandling() {
  */
 function initFirebase() {
     if (typeof firebase === 'undefined') {
-        console.error('Firebase SDK not loaded');
+        
         return false;
     }
 
@@ -69,9 +69,8 @@ function initFirebase() {
                 return false;
             }
             
-            firebase.initializeApp(config);
-            console.log('Firebase initialized successfully');
-            return true;
+firebase.initializeApp(config);
+    return true;
         } catch (error) {
             if (error.code === 'app/duplicate-app') {
                 return true;

@@ -1,4 +1,14 @@
 (function () {
+    // Ensure a minimal Firebase config exists to avoid initialization errors in environments without real config
+    window.APP_CONFIG = window.APP_CONFIG || {};
+    window.APP_CONFIG.firebase = window.APP_CONFIG.firebase || {
+        apiKey: "FAKE_API_KEY",
+        authDomain: "fake-app.firebaseapp.com",
+        projectId: "fake-project",
+        storageBucket: "fake-app.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:fakeid"
+    };
     var paymentMeta = document.querySelector('meta[name="relovetree-payment-client-key"]');
     var appCheckMeta = document.querySelector('meta[name="relovetree-app-check-site-key"]');
 
