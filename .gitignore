@@ -40,3 +40,8 @@ test-results/
 tmp/
 nul
 relovetree.local.fossil
+
+# IDE‑전용 설정
+.vscode/
+# 에이전트 워크플로우
+.agent/workflows/
