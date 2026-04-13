@@ -228,6 +228,7 @@ npx playwright test tests/editor-smoke.spec.js --config ./config/playwright.conf
 ## 주의
 
 - 결제는 `window.RELOVETREE_PAYMENT_CONFIG`가 실제로 주입될 때만 활성화됩니다.
+<!-- Updated entrypoint guidance and ops baselines -->
 - App Check는 `window.RELOVETREE_APP_CHECK_CONFIG.siteKey`가 실제로 주입될 때만 활성화됩니다.
 - 서버 환경변수는 Netlify Dashboard의 Environment variables가 source of truth입니다.
 
