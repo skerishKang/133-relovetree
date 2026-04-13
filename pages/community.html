@@ -80,24 +80,24 @@
         </div>
 
         <!-- Loading / Status States -->
-        <div id="community-loading" class="comm-status state-loading" style="display: none;">
-            <div class="loading-spinner"></div>
-            <p>커뮤니티를 불러오는 중...</p>
-        </div>
+<div id="community-loading" class="comm-status state-loading" style="display: none;">
+    <div class="loading-spinner"></div>
+    <p>커뮤니티를 불러오는 중입니다...</p>
+</div>
 
-        <div id="community-error" class="comm-status comm-error" style="display: none;">
-            <div class="error-icon">⚠️</div>
-            <h3>불러오기 실패</h3>
-            <p id="community-error-msg">데이터를 불러오는 중 오류가 발생했습니다.</p>
-            <button id="btn-retry-community" class="btn-retry">다시 시도</button>
-        </div>
+<div id="community-error" class="comm-status comm-error" style="display: none;">
+    <div class="error-icon">⚠️</div>
+    <h3>불러오기 실패</h3>
+    <p id="community-error-msg">잠시 후 다시 시도해주세요.</p>
+    <button id="btn-retry-community" class="btn-retry">다시 시도</button>
+</div>
 
-        <div id="community-empty" class="comm-status comm-empty" style="display: none;">
-            <div class="empty-icon">🌱</div>
-            <h3>아직 공개된 트리가 없습니다</h3>
-            <p>첫 번째 러브트리를 공개해보세요!</p>
-            <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
-        </div>
+<div id="community-empty" class="comm-status comm-empty" style="display: none;">
+    <div class="empty-icon">🌱</div>
+    <h3>아직 공개된 트리가 없습니다</h3>
+    <p>첫 번째 러브트리를 공개해보세요!</p>
+    <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
+</div>
 
         <!-- Dynamic Discovery Plaza Grid -->
         <div id="discovery-grid" class="discovery-grid" style="display: none;">
@@ -214,8 +214,14 @@
         document.getElementById('discovery-grid').style.display = 'none';
         document.getElementById('discovery-grid-demo').style.display = 'none';
         document.getElementById('featured-spotlight').style.display = 'none';
+        
         if (msg) {
-          document.getElementById('community-error-msg').textContent = msg;
+          // QA Requirement: Mask technical terms like 'Firestore' from end users
+          let cleanMsg = String(msg);
+          if (cleanMsg.includes('Firestore') || cleanMsg.includes('firebase')) {
+            cleanMsg = '현재 데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.';
+          }
+          document.getElementById('community-error-msg').textContent = cleanMsg;
         }
       }
 

@@ -5,8 +5,8 @@
 
     function getDb() {
         const runtime = getRuntime();
-        return runtime && typeof runtime.getFirestoreForCommunity === 'function'
-            ? runtime.getFirestoreForCommunity()
+        return runtime && typeof runtime.getPostgresForCommunity === 'function'
+            ? runtime.getPostgresForCommunity()
             : null;
     }
 

@@ -10,8 +10,8 @@
 
 // ================== DATA ORCHESTRATION (Delegated to index-runtime.js) ==================
 // loadRecentTrees -> window.IndexRuntime.loadRecentTrees
-// loadUserTreesFromFirestore -> window.IndexRuntime.loadUserTreesFromFirestore
-// loadRecentCreatedTrees -> window.IndexRuntime.loadRecentCreatedTrees
+// loadUserTrees -> window.IndexRuntime.loadUserTrees
+// loadRecentTrees -> window.IndexRuntime.loadRecentTreesFromDb
 // Mobile menu helpers -> window.IndexRuntime
 
 /**
@@ -36,7 +36,7 @@ async function migrateLocalTreesToAccount() {
 
     if (migratedNames.length > 0) {
         showError(window.IndexI18n.formatMessage('importLocalTreesSuccess', migratedNames.length), 4000);
-        await window.IndexRuntime.loadUserTreesFromFirestore(user);
+        await window.IndexRuntime.loadUserTrees(user);
     } else {
         showError(window.IndexI18n.getMessage('importLocalTreesEmpty'), 3000);
     }
@@ -162,7 +162,7 @@ Object.assign(window, {
 // Auth 모듈에서 호출하는 전역 콜백: 로그인/로그아웃 시점에 최근 트리 목록을 갱신
 window.onAuthReady = function (user) {
     if (user) {
-        window.IndexRuntime.loadUserTreesFromFirestore(user);
+        window.IndexRuntime.loadUserTrees(user);
     } else {
         window.IndexRuntime.loadRecentTrees();
     }

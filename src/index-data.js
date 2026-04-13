@@ -72,8 +72,8 @@
         return myTrees;
     }
 
-    // compat API 응답(doc)을 내부 트리 객체로 변환. 실제 데이터는 Neon/Postgres에서 옴.
-    function buildTreeFromFirestoreDoc(doc, data) {
+    // PostgreSQL 응답(doc)을 내부 트리 객체로 변환
+    function buildTreeFromDbDoc(doc, data) {
         let lastUpdated = data.lastUpdated;
         if (lastUpdated && typeof lastUpdated.toDate === 'function') {
             lastUpdated = lastUpdated.toDate().toISOString();
@@ -101,8 +101,8 @@
         };
     }
 
-    // compat API를 통해 Neon/Postgres trees 테이블에서 현재 사용자 소유 트리 조회
-    async function loadUserTreesFromFirestore(user) {
+    // PostgreSQL trees 테이블에서 현재 사용자 소유 트리 조회
+    async function loadUserTrees(user) {
         if (!user) return null;
 
 if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
@@ -119,7 +119,7 @@ try {
             const myTrees = [];
             snapshot.forEach((doc) => {
                 const data = doc.data() || {};
-                myTrees.push(buildTreeFromFirestoreDoc(doc, data));
+                myTrees.push(buildTreeFromDbDoc(doc, data));
             });
 
             myTrees.sort(function (a, b) {
@@ -133,8 +133,8 @@ try {
         }
     }
 
-    // compat API를 통해 Neon/Postgres trees 테이블에서 최근 생성 트리 조회
-    async function loadRecentCreatedTreesFromFirestore() {
+    // PostgreSQL trees 테이블에서 최근 생성 트리 조회
+    async function loadRecentTrees() {
   if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) {
     return [];
   }
@@ -151,7 +151,7 @@ try {
             const trees = [];
             snapshot.forEach((doc) => {
                 const data = doc.data() || {};
-                trees.push(buildTreeFromFirestoreDoc(doc, data));
+                trees.push(buildTreeFromDbDoc(doc, data));
             });
 
             return trees;
@@ -240,11 +240,11 @@ async function migrateLocalTrees(user) {
 
     window.IndexDataLoader = {
         loadRecentTreesFromLocalStorage,
-        loadUserTreesFromFirestore,
-        loadRecentCreatedTreesFromFirestore,
+        loadUserTrees: loadUserTrees,
+        loadRecentTrees: loadRecentTrees,
         countLocalOnlyTrees,
         migrateLocalTrees,
-        buildTreeFromFirestoreDoc,
+        buildTreeFromDbDoc,
         normalizeTreeDisplayName
     };
 })();

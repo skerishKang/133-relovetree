@@ -23,15 +23,15 @@ window.IndexRuntime = (function() {
     }
 
     /**
-     * Firestore에서 현재 사용자(ownerId 기준) 트리를 불러오기
+     * PostgreSQL에서 현재 사용자(ownerId 기준) 트리를 불러오기
      */
-    async function loadUserTreesFromFirestore(user) {
+    async function loadUserTrees(user) {
         if (!user) {
             loadRecentTrees();
             return;
         }
 
-        const myTrees = await window.IndexDataLoader.loadUserTreesFromFirestore(user);
+        const myTrees = await window.IndexDataLoader.loadUserTrees(user);
         if (!myTrees) {
             loadRecentTrees();
             return;
@@ -68,7 +68,7 @@ window.IndexRuntime = (function() {
 
         section.classList.add('is-hidden');
 
-        const trees = await window.IndexDataLoader.loadRecentCreatedTreesFromFirestore();
+        const trees = await window.IndexDataLoader.loadRecentTrees();
         if (!trees || trees.length === 0) return;
 
         window.recentCreatedTreesCache = trees.slice();
@@ -128,8 +128,8 @@ window.IndexRuntime = (function() {
 
     return {
         loadRecentTrees,
-        loadUserTreesFromFirestore,
-        loadRecentCreatedTrees,
+        loadUserTrees: loadUserTrees,
+        loadRecentTreesFromDb: loadRecentTrees,
         setMobileMenuVisible,
         toggleMobileMenu,
         navigateToHome,

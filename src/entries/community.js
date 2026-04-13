@@ -28,7 +28,7 @@ let communityTreePickerBound = false;
 if (typeof window !== 'undefined') {
     window.__communityRuntime = {
         getCurrentUserForCommunity: getCurrentUserForCommunity,
-        getFirestoreForCommunity: getFirestoreForCommunity,
+        getPostgresForCommunity: getPostgresForCommunity,
         escapeHtml: escapeHtml,
         getCreateMediaUrl: function () {
             return communityCreateMediaUrl;
@@ -81,7 +81,7 @@ function getCurrentUserForCommunity() {
 
 async function logCommunityModerationEvent(eventType, payload) {
     try {
-        const db = getFirestoreForCommunity();
+        const db = getPostgresForCommunity();
         if (!db) return;
         await db.collection('community_moderation_logs').add({
             eventType: String(eventType || ''),
@@ -95,7 +95,7 @@ async function logCommunityModerationEvent(eventType, payload) {
 
 function getCommunityEntryContext() {
     return {
-        getDb: getFirestoreForCommunity,
+        getDb: getPostgresForCommunity,
         getCurrentUser: getCurrentUserForCommunity,
         setCurrentUser: function (user) {
             communityCurrentUser = user || null;
@@ -205,9 +205,9 @@ function renderCommunityPostList() {
 }
 
 /**
- * Firestore 인스턴스를 안전하게 가져오는 헬퍼
+ * PostgreSQL community_posts 테이블을 사용하여 글/댓글을 관리한다.
  */
-function getFirestoreForCommunity() {
+function getPostgresForCommunity() {
     if (!window.postgresDB) {
         console.error('PostgreSQL Compat Layer 미초기화 상태입니다.');
         return null;
@@ -233,7 +233,7 @@ function escapeHtml(text) {
 }
 
 /**
- * Firestore Timestamp 또는 Date를 사람이 읽기 좋은 문자열로 변환
+ * PostgreSQL Timestamp 또는 Date를 사람이 읽기 좋은 문자열로 변환
  */
 function formatCommunityDate(value) {
     try {
@@ -256,7 +256,7 @@ function formatCommunityDate(value) {
 }
 
 /**
- * Firestore에서 커뮤니티 게시글 목록을 불러와 렌더링
+ * PostgreSQL에서 커뮤니티 게시글 목록을 불러와 렌더링
  */
 async function loadCommunityPosts() {
     return window.CommunityEntryFlowHelpers.loadCommunityPosts(getCommunityEntryContext());

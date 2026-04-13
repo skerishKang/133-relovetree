@@ -51,36 +51,36 @@
 
 ### 데이터 저장소 정책 (중요)
 
-> **Firebase Firestore는 사용하지 않습니다.**
+> **Firebase Firestore는 데이터 저장소로 사용하지 않습니다.** (Firebase Auth는 로그인에 사용)
 
 | 서비스 | 용도 | 실제 저장소 |
 |--------|------|-----------|
 | **Firebase Auth** | 로그인/세션 관리 | ✅ 사용 (Firebase) |
-| **Firebase Firestore** | 데이터 저장 | ❌ 사용 안 함 (2024년 이전 레거시) |
+| **Firebase Firestore** | 데이터 저장 | ❌ 사용 안 함 (레거시 shim이 대체) |
 | **Neon/PostgreSQL** | 앱 데이터 저장 | ✅ 사용 (실제 데이터) |
 
-**왜 "Firestore"라는 이름이 남아 있는가?**
+**왜 "Firestore"라는 이름이 코드에 남아 있는가?**
 
-기존 클라이언트 코드가 Firestore 스타일 API (`collection().get()`, `doc().set()` 등)를 사용하고 있어, 하위 호환을 위해 `src/firebase-firestore-compat.js` shim이 이를 PostgreSQL로 라우팅합니다. 이 shim의 엔드포인트 이름이 `/api/firestore`로 남아있는 것은 이러한 역사적 이유 때문입니다.
-
-**신규 코드 작성 규칙**
+1. 기존 클라이언트 코드가 Firestore 스타일 API (`collection().get()`, `doc().set()` 등)를 사용함
+2. `src/firebase-firestore-compat.js` shim이 이 API를 PostgreSQL로 라우팅함
+3. `window.firebase.firestore()`는 shim을 실행하므로 작동함 (실제 Firestore가 아님)
+4. `/api/firestore` 엔드포인트도 하위 호환을 위해 유지
 
 ```javascript
-// ✅ 권장: postgres-client-browser.js 로드 후 사용
+// ✅ 권장: postgres-client-browser.js 로드 후 window.postgresDB 사용
 const db = window.postgresDB;
 const snapshot = await db.collection('trees').where('isPublic', '==', true).get();
 
-// ✅ 작동함 (레거시): firebase.firestore()는 shim을 통과하여 PostgreSQL로 연결
-const db = firebase.firestore(); // window.firebase.firestore() 사용
+// ✅ 작동함: firebase.firestore()를 shim이 가로채어 PostgreSQL로 연결
+const db = firebase.firestore(); // shim을 통과하므로 작동
 
-// ❌ 금지: firebase.firestore.FieldValue는 shim이 제공하는 호환 레이어
-//         실제 Firestore SDK가 아니라 shim의 구현을 사용합니다
+// ❌ 주의: firebase.firestore.FieldValue는 shim의 구현임
+//         실제 Firestore SDK가 아님
 ```
 
-- ✅ `src/postgres-client-browser.js` 로드
-- ✅ `window.postgresDB` 사용
-- ❌ 함수명/주석에 "Firestore" 추가 금지 (legacy shim과 구분하기 위해)
-- ⚠️ `/api/firestore` 엔드포인트는 하위 호환을 위해 유지 (즉시 제거 대상 아님)
+- ✅ `src/postgres-client-browser.js` 로드 후 `window.postgresDB` 사용
+- ⚠️ 레거시: `firebase.firestore()`는 shim이 가로채어 PostgreSQL로 연결 (작동은 함)
+- ❌ 함수명/주석에 "Firestore" 추가 금지
 
 ## 프로젝트 구조
 

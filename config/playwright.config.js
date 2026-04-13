@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: '../tests',
   testMatch: '*.spec.js',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -10,7 +10,7 @@ export default defineConfig({
     ['list']
   ],
   use: {
-    baseURL: 'https://lovetree.limone.dev',
+    baseURL: 'http://localhost:3133',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     viewport: { width: 1280, height: 720 },
