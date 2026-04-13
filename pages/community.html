@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <title>커뮤니티 광장 - Lovetree</title>
-    <link rel="stylesheet" href="/assets/css/app-base.css">
-    <link rel="stylesheet" href="/assets/css/community.css">
+    <!-- CSS Standardized V3 -->
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/community-layout.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/community-cards.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v3">
 </head>
 <body class="comm-page">
-    <!-- Standard Navigation -->
-    <!-- Navigation: 3개 메뉴 체계 (V2 Alignment) -->
+    <!-- Standard Navigation with alignment shell -->
     <nav class="gnb-v2">
-        <a href="/" class="logo" style="text-decoration: none;">Lovetree</a>
-        <div class="nav-links">
-            <a href="/pages/lovetree.html">러브트리</a>
-            <a href="/pages/community.html" class="active">커뮤니티</a>
-            <a href="/pages/login.html" class="btn-pill-auth">로그인</a>
+        <div class="gnb-inner shell">
+            <a href="/" class="gnb-logo">Lovetree</a>
+            <div class="gnb-links">
+                <a href="/pages/lovetree.html">러브트리</a>
+                <a href="/pages/community.html" class="active">커뮤니티</a>
+                <a href="/pages/login.html" class="btn-pill-auth" id="gnb-login-link">로그인</a>
+            </div>
         </div>
     </nav>
 
@@ -24,8 +29,8 @@
     <header class="discovery-hero">
         <div class="shell hero-inner">
             <div class="hero-badge">Discovery Square</div>
-                <h1>당신의 사랑이<br>숲이 되는 광장</h1>
-                <p>다른 팬들이 정성껏 키워낸 러브트리를 만나보세요</p>
+            <h1>당신의 사랑이<br>숲이 되는 광장</h1>
+            <p>다른 팬들이 정성껏 키워낸 러브트리를 만나보세요</p>
             
             <div class="search-area">
                 <div class="search-box">
@@ -42,49 +47,25 @@
         </div>
     </header>
 
-    <main class="shell comm-main">
-        <!-- Spotlight Area: Featured Iconic Tree -->
+    <main class="shell comm-main" style="padding: 40px 0;">
+        <!-- Spotlight Area -->
         <div id="featured-spotlight" class="featured-spotlight-area" style="display: none;">
-             <div class="featured-card horizontal">
-                <div class="fc-visual">
-                    <img id="featured-img" src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=800&auto=format&fit=crop" alt="메인 추천" onload="this.classList.add('loaded')">
-                    <div class="fc-tree-visual">
-                        <svg class="fc-tree-svg" viewBox="0 0 100 200">
-                            <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />
-                            <circle cx="50" cy="180" r="5" fill="#b56e6e" />
-                            <circle cx="30" cy="50" r="4" fill="#b56e6e" />
-                            <circle cx="70" cy="50" r="4" fill="#b56e6e" />
-                        </svg>
-                    </div>
-                </div>
-                <div class="fc-content">
-                    <div class="fc-meta">
-                        <span class="fc-badge">Weekly Spotlight</span>
-                        <span class="fc-author" id="featured-author">@HappyARMY</span>
-                    </div>
-                    <h3 id="featured-title">방탄소년단과 함께 걸어온 1000일의 시간</h3>
-                    <p id="featured-desc">첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 찬란한 사랑의 경로를 함께 감상해보세요</p>
-                    <div class="fc-footer">
-                        <div class="fc-stats" id="featured-stats">
-                            <span>❤️ 1,240 공감</span>
-                            <span>💬 86 응원</span>
-                        </div>
-                        <a href="/pages/community-tree-detail.html" id="featured-link" class="fc-btn">경로 감상하기</a>
-                    </div>
-                </div>
-            </div>
+             <!-- Renders via JS -->
         </div>
 
-        <!-- Loading / Status States -->
-        <div id="community-loading" class="comm-status state-loading" style="display: none;">
-            <div class="loading-spinner"></div>
-            <p>소중한 순간들을 잇는 중입니다</p>
+        <!-- Static Mockup for immediate UI -->
+        <div id="loading-placeholder" class="discovery-grid active" style="margin-bottom: 40px;">
+             <!-- Static mock cards will follow theme -->
+             <div class="comm-status state-loading" id="init-loader">
+                <div class="loading-spinner"></div>
+                <p>소중한 기록들을 불러오는 중입니다</p>
+             </div>
         </div>
 
         <div id="community-error" class="comm-status comm-error" style="display: none;">
             <div class="error-icon">⚠️</div>
             <h3>잠시 연결이 원활하지 않습니다</h3>
-            <p id="community-error-msg">기록을 안전하게 가져올 수 있도록 잠시 후 다시 한번만 불러와주세요</p>
+            <p id="community-error-msg">잠시 후 다시 시도해주세요</p>
             <button id="btn-retry-community" class="btn-retry">다시 시도하기</button>
         </div>
 
@@ -95,298 +76,57 @@
             <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
         </div>
 
-        <!-- Discovery Plaza Grid: Show demo content by default to avoid blank screen -->
-        <div id="discovery-grid" class="discovery-grid active">
-            <!-- Static Mockup Cards (Will be replaced by live data if available) -->
-            <a href="/pages/community-tree-detail.html" class="disc-card">
-                <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop" alt="" class="loaded">
-                </div>
-                <div class="dc-info">
-                    <h3>나의 첫 단독 콘서트 감동의 기록</h3>
-                    <div class="dc-auth">
-                        <div class="avatar-sm"></div>
-                        <span>@CARAT_love</span>
-                    </div>
-                    <div class="dc-stats">
-                        <span>❤️ 1.2k</span>
-                        <span>💬 42</span>
-                    </div>
-                </div>
-            </a>
-            <a href="/pages/community-tree-detail.html" class="disc-card">
-                <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=400&auto=format&fit=crop" alt="" class="loaded">
-                </div>
-                <div class="dc-info">
-                    <h3>밤새 찾아본 레전드 무대들 모음</h3>
-                    <div class="dc-auth">
-                        <div class="avatar-sm" style="background: #cfe6cf;"></div>
-                        <span>@Daily_Kpop</span>
-                    </div>
-                    <div class="dc-stats">
-                        <span>❤️ 842</span>
-                        <span>💬 15</span>
-                    </div>
-                </div>
-            </a>
-            <a href="/pages/community-tree-detail.html" class="disc-card">
-                <div class="dc-media">
-                    <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=400&auto=format&fit=crop" alt="" class="loaded">
-                </div>
-                <div class="dc-info">
-                    <h3>쇼케이스 1열 직관, 그 꿈같은 날</h3>
-                    <div class="dc-auth">
-                        <div class="avatar-sm" style="background: #e3cfe6;"></div>
-                        <span>@HappyMood</span>
-                    </div>
-                    <div class="dc-stats">
-                        <span>❤️ 512</span>
-                        <span>💬 28</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Removed Static Mockup Template (Now integrated above) -->
+        <div id="discovery-grid" class="discovery-grid"></div>
     </main>
 
-    <!-- Core App Modules -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="/src/runtime-config.js"></script>
     <script src="/src/shared-utils.js"></script>
-    <script src="/src/shared-layout.js"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/postgres-client-browser.js"></script>
     <script src="/src/flow-shared.js"></script>
     <script src="/src/auth.js"></script>
-    <script src="/src/concept-state.js"></script>
-
-    <!-- Community Feed Logic -->
+    
     <script>
     (function() {
       var currentSort = 'popular';
-
-      function showLoading() {
-        var loading = document.getElementById('community-loading');
-        var error = document.getElementById('community-error');
-        var empty = document.getElementById('community-empty');
-        var grid = document.getElementById('discovery-grid');
-        var spotlight = document.getElementById('featured-spotlight');
-
-        if (loading) loading.style.display = 'block';
-        if (error) error.style.display = 'none';
-        if (empty) empty.style.display = 'none';
-        if (grid) {
-            grid.style.display = 'none';
-            grid.classList.remove('active');
-        }
-        if (spotlight) spotlight.style.display = 'none';
-      }
-
-      function showError(msg) {
-        var loading = document.getElementById('community-loading');
-        var error = document.getElementById('community-error');
-        var empty = document.getElementById('community-empty');
-        var grid = document.getElementById('discovery-grid');
-        var spotlight = document.getElementById('featured-spotlight');
-
-        if (loading) loading.style.display = 'none';
-        if (error) error.style.display = 'block';
-        if (empty) empty.style.display = 'none';
-        if (grid) grid.style.display = 'none';
-        if (spotlight) spotlight.style.display = 'none';
-        
-        if (msg && error) {
-          // QA Requirement: Mask technical terms like 'Firestore' from end users
-          let cleanMsg = String(msg);
-          if (cleanMsg.includes('Firestore') || cleanMsg.includes('firebase')) {
-            cleanMsg = '현재 데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.';
-          }
-          var msgEl = document.getElementById('community-error-msg');
-          if (msgEl) msgEl.textContent = cleanMsg;
-        }
-      }
-
-      function showEmpty() {
-        var loading = document.getElementById('community-loading');
-        var error = document.getElementById('community-error');
-        var empty = document.getElementById('community-empty');
-        var grid = document.getElementById('discovery-grid');
-        var spotlight = document.getElementById('featured-spotlight');
-
-        if (loading) loading.style.display = 'none';
-        if (error) error.style.display = 'none';
-        if (empty) empty.style.display = 'block';
-        if (grid) grid.style.display = 'none';
-        if (spotlight) spotlight.style.display = 'none';
-      }
-
       function renderPublicTrees(trees) {
+        var loader = document.getElementById('init-loader');
+        if (loader) loader.style.display = 'none';
+        
         var grid = document.getElementById('discovery-grid');
-        var spotlightArea = document.getElementById('featured-spotlight');
         grid.innerHTML = '';
-
-        if (!trees || trees.length === 0) {
-          showEmpty();
-          return;
-        }
-
-        var featuredTree = trees[0];
-        renderFeaturedSpotlight(featuredTree);
-
-        var remainder = trees.slice(1);
-
-        remainder.forEach(function(tree) {
-          var treeId = tree._id || tree.id || '';
-          var name = tree.name || '이름 없는 트리';
-          var likeCount = tree.likeCount || tree.likes || 0;
-          var commentCount = tree.commentCount || 0;
-          var thumb = getTreeThumb(tree);
-          var ownerName = tree.ownerDisplayName || (tree.ownerId ? '@' + tree.ownerId.substring(0, 6) : '@anonymous');
-
+        if (!trees || trees.length === 0) { document.getElementById('community-empty').style.display = 'block'; return; }
+        
+        trees.forEach(function(tree) {
+          var thumb = (tree.nodes && tree.nodes.length > 0 && tree.nodes[0].videoId) 
+                      ? 'https://img.youtube.com/vi/' + tree.nodes[0].videoId + '/hqdefault.jpg' 
+                      : 'https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop';
+          
           var card = document.createElement('a');
-          card.href = '/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId);
+          card.href = '/pages/lovetree.html'; // Temporary link
           card.className = 'disc-card';
-          card.innerHTML =
-            '<div class="dc-media">' +
-            '<img src="' + thumb + '" alt="" onload="this.classList.add(\'loaded\')">' +
-            '</div>' +
-            '<div class="dc-info">' +
-            '<h3>' + escapeHtml(name) + '</h3>' +
-            '<div class="dc-auth">' +
-            '<div class="avatar-sm"></div>' +
-            '<span>' + escapeHtml(ownerName) + '</span>' +
-            '</div>' +
-            '<div class="dc-stats">' +
-            '<span>❤️ ' + likeCount + '</span>' +
-            '<span>💬 ' + commentCount + '</span>' +
-            '</div>' +
-            '</div>';
+          card.innerHTML = '<div class="dc-media"><img src="'+thumb+'" onload="this.classList.add(\'loaded\')"></div>' +
+                           '<div class="dc-info"><h3>'+(tree.name || '이름 없는 트리')+'</h3>' +
+                           '<div class="dc-auth"><span>@Author</span></div>' +
+                           '<div class="dc-stats"><span>❤️ '+(tree.likeCount||0)+'</span></div></div>';
           grid.appendChild(card);
         });
-
-        document.getElementById('community-loading').style.display = 'none';
-        
-        // Hide demo grid and show real grid with transition
-        const demoGrid = document.getElementById('discovery-grid-demo');
-        if (demoGrid) {
-            demoGrid.style.display = 'none';
-            demoGrid.classList.remove('loading-pulse');
-        }
-        
-        spotlightArea.style.display = 'block';
         grid.style.display = 'grid';
-        // Trigger CSS transition
-        setTimeout(() => grid.classList.add('active'), 50);
       }
-
-      function renderFeaturedSpotlight(tree) {
-        var spotlightArea = document.getElementById('featured-spotlight');
-        if (!tree || !spotlightArea) {
-            if (spotlightArea) spotlightArea.style.display = 'none';
-            return;
-        }
-        var treeId = tree._id || tree.id || '';
-        var name = tree.name || '이름 없는 트리';
-        var thumb = getTreeThumb(tree);
-        var ownerName = tree.ownerDisplayName || (tree.ownerId ? '@' + tree.ownerId.substring(0, 6) : '@anonymous');
-        var summary = tree.description || '이 러브트리에 담긴 소중한 기억들의 경로를 확인해보세요.';
-
-        spotlightArea.innerHTML = 
-            '<div class="featured-card horizontal">' +
-            '    <div class="fc-visual">' +
-            '        <img src="' + thumb + '" alt="메인 추천" onload="this.classList.add(\'loaded\')">' +
-            '        <div class="fc-tree-visual">' +
-            '            <svg class="fc-tree-svg" viewBox="0 0 100 200">' +
-            '                <path d="M50,180 L50,120 Q50,80 30,50 M50,120 Q50,80 70,50" stroke="#b56e6e" fill="none" stroke-width="3" />' +
-            '                <circle cx="50" cy="180" r="5" fill="#b56e6e" />' +
-            '                <circle cx="30" cy="50" r="4" fill="#b56e6e" />' +
-            '                <circle cx="70" cy="50" r="4" fill="#b56e6e" />' +
-            '            </svg>' +
-            '        </div>' +
-            '    </div>' +
-            '    <div class="fc-content">' +
-            '        <div class="fc-meta">' +
-            '            <span class="fc-badge">Weekly Spotlight</span>' +
-            '            <span class="fc-author">' + escapeHtml(ownerName) + '</span>' +
-            '        </div>' +
-            '        <h3>' + escapeHtml(name) + '</h3>' +
-            '        <p>' + escapeHtml(summary) + '</p>' +
-            '        <div class="fc-footer">' +
-            '            <div class="fc-stats">' +
-            '                <span>❤️ ' + (tree.likeCount || 0) + ' 공감</span>' +
-            '                <span>💬 ' + (tree.commentCount || 0) + ' 응원</span>' +
-            '            </div>' +
-            '            <a href="/pages/community-tree-detail.html?treeId=' + encodeURIComponent(treeId) + '" class="fc-btn">경로 감상하기</a>' +
-            '        </div>' +
-            '    </div>' +
-            '</div>';
-      }
-
-      function getTreeThumb(tree) {
-        if (tree.nodes && tree.nodes.length > 0 && tree.nodes[0].videoId) {
-            return 'https://img.youtube.com/vi/' + tree.nodes[0].videoId + '/hqdefault.jpg';
-        }
-        return 'https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=400&auto=format&fit=crop';
-      }
-
-      function escapeHtml(str) {
-        if (!str) return '';
-        var div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-      }
-
-      function loadPublicTrees() {
-        showLoading();
-        if (typeof window.FlowShared !== 'undefined' && typeof window.FlowShared.loadPublicTrees === 'function') {
-          window.FlowShared.loadPublicTrees(currentSort).then(function(trees) {
-            renderPublicTrees(trees);
-          }).catch(function(err) {
-            console.error('Failed to load public trees:', err);
-            showError('데이터를 불러오는 중 오류가 발생했습니다.');
-          });
-        } else {
-          setTimeout(function() {
-            if (typeof window.FlowShared !== 'undefined' && typeof window.FlowShared.loadPublicTrees === 'function') {
-              window.FlowShared.loadPublicTrees(currentSort).then(function(trees) {
-                renderPublicTrees(trees);
-              }).catch(function(err) {
-                console.error('Failed to load public trees:', err);
-                showError('데이터를 불러오는 중 오류가 발생했습니다.');
-              });
-            } else {
-              showError('데이터 로딩 기능이 준비되지 않았습니다.');
-            }
-          }, 1000);
-        }
-      }
-
+      
       document.addEventListener('DOMContentLoaded', function() {
-        var filterBtns = document.querySelectorAll('.filter-area .f-btn');
-        filterBtns.forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            filterBtns.forEach(function(b) { b.classList.remove('active'); });
-            btn.classList.add('active');
-            currentSort = btn.textContent.includes('최신') ? 'latest' : 'popular';
-            loadPublicTrees();
-          });
-        });
-
-        var retryBtn = document.getElementById('btn-retry-community');
-        if (retryBtn) retryBtn.addEventListener('click', loadPublicTrees);
-
-        loadPublicTrees();
+        if (typeof window.FlowShared !== 'undefined') {
+            window.FlowShared.loadPublicTrees(currentSort).then(renderPublicTrees).catch(function(){
+                document.getElementById('community-error').style.display='block';
+            });
+        }
+        if (window.initStandardAuthUI) window.initStandardAuthUI();
       });
     })();
-    </script>
-
-    <!-- Auth Integration (Common) -->
-    <script>
-        if (window.initStandardAuthUI) window.initStandardAuthUI();
     </script>
 </body>
 </html>

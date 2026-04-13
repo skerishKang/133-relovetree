@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lovetree - 사랑을 기록하고 잇는 공간</title>
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v1">
-    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260414_v1">
-    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260414_v1">
-    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v1">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v3">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
@@ -16,18 +16,21 @@
 <body class="home-v2-active">
     <div class="page-wrapper">
         <!-- Navigation: 3개 메뉴 체계 -->
-        <nav class="gnb-v2">
-            <div class="logo">Lovetree</div>
-            <div class="nav-links">
+    <nav class="gnb-v2">
+        <div class="gnb-inner shell">
+            <a href="/" class="gnb-logo">Lovetree</a>
+            <div class="gnb-links">
                 <a href="/pages/lovetree.html">러브트리</a>
                 <a href="/pages/community.html">커뮤니티</a>
                 <a href="/pages/login.html" class="btn-pill-auth">로그인</a>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <!-- Hero Section -->
-        <section class="hero-v2">
-            <div class="hero-left">
+    <!-- Hero Section -->
+    <section class="hero-v2">
+        <div class="shell hero-inner" style="display: flex; align-items: center; gap: 40px; padding: 40px 0;">
+            <div class="hero-left" style="flex: 1;">
                 <h1>사랑에 빠진<br>모든 순간을<br>연결하세요</h1>
                 <p>
                     영상, 날짜, 감정, 메모가 아름답게 이어져<br>
@@ -39,109 +42,50 @@
                 </div>
             </div>
 
-            <div class="hero-right">
-                <div class="tree-container">
+            <div class="hero-right" style="flex: 1.2; position: relative; height: 420px;">
+                <div class="tree-container" style="position: relative; width: 100%; height: 100%;">
                     <!-- Organic Branch SVG -->
-                    <svg class="tree-svg" viewBox="0 0 600 500" preserveAspectRatio="none">
-                        <!-- Main Trunk -->
+                    <svg class="tree-svg" viewBox="0 0 600 500" preserveAspectRatio="none" style="position: absolute; width: 100%; height: 100%;">
                         <path d="M500,500 C480,400 520,300 480,0" stroke="#ebdcd0" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6" />
-                        <!-- Branch to Node 1 -->
                         <path d="M495,350 Q400,320 65,185" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <!-- Branch to Node 2 -->
                         <path d="M490,250 Q350,200 225,115" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <!-- Branch to Node 3 -->
                         <path d="M490,280 Q350,280 245,285" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <!-- Branch to Node 4 -->
                         <path d="M485,150 Q420,100 405,80" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <!-- Branch to Node 5 -->
                         <path d="M485,220 Q440,240 425,245" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
                     </svg>
 
                     <!-- Memory Nodes -->
-                    <div class="memory-node n1">
-                        <div class="node-thumb">
-                            <img src="/docs/image/slide/home-slide-01-empty-tree_bts.png" alt="Mem" class="is-blurred">
-                            <div class="play-ico">▶</div>
-                        </div>
-                        <div class="node-meta">
-                            2023.03.08 <span class="badge-memo">심쿵</span>
-                        </div>
-                    </div>
-
-                    <div class="memory-node n2">
-                        <div class="node-thumb">
-                            <img src="/docs/image/slide/home-slide-02-first-memory_bts.png" alt="Mem">
-                            <div class="play-ico">▶</div>
-                        </div>
-                        <div class="node-meta">
-                            2023.09.20 <span class="badge-memo">심쿵</span>
-                        </div>
-                    </div>
-
-                    <div class="memory-node n3">
-                        <div class="node-thumb">
-                            <img src="/docs/image/slide/slide1.png" alt="Mem">
-                            <div class="play-ico">▶</div>
-                        </div>
-                        <div class="node-meta">
-                            2023.06.17 <span class="badge-memo">감동</span>
-                        </div>
-                    </div>
-
-                    <div class="memory-node n4">
-                        <div class="node-thumb">
-                            <img src="/docs/image/slide/slide2.png" alt="Mem">
-                            <div class="play-ico">▶</div>
-                        </div>
-                        <div class="node-meta">
-                            2023.08.10 <span class="badge-memo">기록</span>
-                        </div>
-                    </div>
-
-                    <div class="memory-node n5">
-                        <div class="node-thumb">
-                            <img src="/docs/image/slide/Gemini_Generated_Image_z8g408z8g408z8g4.png" alt="Mem">
-                            <div class="play-ico">▶</div>
-                        </div>
-                        <div class="node-meta">
-                            2023.01.07 <span class="badge-memo">기억</span>
-                        </div>
-                    </div>
+                    <div class="memory-node n1"><div class="node-thumb"><img src="/docs/image/slide/home-slide-01-empty-tree_bts.png" alt="Mem" class="is-blurred"><div class="play-ico">▶</div></div><div class="node-meta">2023.03.08 <span class="badge-memo">심쿵</span></div></div>
+                    <div class="memory-node n2"><div class="node-thumb"><img src="/docs/image/slide/home-slide-02-first-memory_bts.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.09.20 <span class="badge-memo">심쿵</span></div></div>
+                    <div class="memory-node n3"><div class="node-thumb"><img src="/docs/image/slide/slide1.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.06.17 <span class="badge-memo">감동</span></div></div>
+                    <div class="memory-node n4"><div class="node-thumb"><img src="/docs/image/slide/slide2.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.08.10 <span class="badge-memo">기록</span></div></div>
+                    <div class="memory-node n5"><div class="node-thumb"><img src="/docs/image/slide/Gemini_Generated_Image_z8g408z8g408z8g4.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.01.07 <span class="badge-memo">기억</span></div></div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Bottom Features -->
-        <section class="features-v2">
+    <!-- Bottom Features -->
+    <section class="features-v2">
+        <div class="shell feat-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; padding: 40px 0;">
             <div class="feat-card">
                 <div class="feat-icon">📸</div>
-                <div class="feat-text">
-                    <h3>순간 포착</h3>
-                    <p>좋아하게 된 장면을<br>영상과 함께 남깁니다</p>
-                </div>
+                <div class="feat-text"><h3>순간 포착</h3><p>좋아하게 된 장면을<br>영상과 함께 남깁니다</p></div>
             </div>
             <div class="feat-card">
                 <div class="feat-icon">🔗</div>
-                <div class="feat-text">
-                    <h3>경로 연결</h3>
-                    <p>날짜와 감정이 이어져<br>하나의 흐름이 됩니다</p>
-                </div>
+                <div class="feat-text"><h3>경로 연결</h3><p>날짜와 감정이 이어져<br>하나의 흐름이 됩니다</p></div>
             </div>
             <div class="feat-card">
                 <div class="feat-icon">🌱</div>
-                <div class="feat-text">
-                    <h3>트리 완성</h3>
-                    <p>기록이 모여 당신만의<br>러브트리가 자랍니다</p>
-                </div>
+                <div class="feat-text"><h3>트리 완성</h3><p>기록이 모여 당신만의<br>러브트리가 자랍니다</p></div>
             </div>
             <div class="feat-card">
                 <div class="feat-icon">📢</div>
-                <div class="feat-text">
-                    <h3>공유하기</h3>
-                    <p>완성된 트리를 다른<br>팬과 나눌 수 있습니다</p>
-                </div>
+                <div class="feat-text"><h3>공유하기</h3><p>완성된 트리를 다른<br>팬과 나눌 수 있습니다</p></div>
             </div>
-        </section>
+        </div>
+    </section>
     </div>
 
     <!-- Scripts -->

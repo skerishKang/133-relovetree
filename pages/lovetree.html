@@ -5,186 +5,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>러브트리 소개 - Lovetree</title>
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v1">
-    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260414_v1">
-    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260414_v1">
-    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v1">
-    <!-- Firebase SDK (External) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v3">
 </head>
 <body class="home-page lovetree-page">
-    <div class="page-container">
-        <!-- Navigation -->
-        <!-- Navigation: 3개 메뉴 체계 (V2 Alignment) -->
-        <nav class="gnb-v2">
-            <a href="/" class="logo" style="text-decoration: none;">Lovetree</a>
-            <div class="nav-links">
+    <!-- Navigation: Standardized GNB with shell -->
+    <nav class="gnb-v2">
+        <div class="gnb-inner shell">
+            <a href="/" class="gnb-logo">Lovetree</a>
+            <div class="gnb-links">
                 <a href="/pages/lovetree.html" class="active">러브트리</a>
                 <a href="/pages/community.html">커뮤니티</a>
                 <a href="/pages/login.html" class="btn-pill-auth">로그인</a>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <!-- Hero Section -->
-        <header class="lt-hero">
-            <div class="hero-badge">🌿 사랑이 자라나는 기록</div>
-            <h1>러브트리는 사랑에 빠진<br>모든 순간들이 자라난 기록입니다</h1>
-            <p>우리가 좋아하는 아티스트와 함께한 시간들이 흩어지지 않도록,<br>영상과 감정의 실을 엮어 하나의 줄기로 만들어 보세요</p>
-            <div class="lt-hero-btns">
-                <a href="/pages/login.html" class="btn-brick">내 러브트리 시작하기</a>
-                <a href="#examples" class="btn-outline">다른 트리 둘러보기</a>
+    <!-- Hero Section -->
+    <header class="lt-hero" style="padding: 80px 0 60px; background: linear-gradient(180deg, #fdfaf4 0%, #ffffff 100%);">
+        <div class="shell" style="text-align: center;">
+            <div class="hero-badge" style="display: inline-block; background: #fff1f2; color: #e11d48; padding: 6px 16px; border-radius: 99px; font-weight: 800; font-size: 0.85rem; margin-bottom: 24px;">🌿 사랑이 자라나는 기록</div>
+            <h1 style="font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; color: #0f172a; line-height: 1.2; margin-bottom: 24px;">러브트리는 사랑에 빠진<br>모든 순간들이 자라난 기록입니다</h1>
+            <p style="font-size: 1.2rem; color: #475569; max-width: 800px; margin: 0 auto 40px; line-height: 1.8;">우리가 좋아하는 아티스트와 함께한 시간들이 흩어지지 않도록<br>영상과 감정의 실을 엮어 하나의 줄기로 만들어 보세요</p>
+            <div class="lt-hero-btns" style="display: flex; gap: 16px; justify-content: center;">
+                <a href="/pages/login.html" class="btn-main" style="padding: 16px 32px; background: #e11d48; color: #fff; border-radius: 12px; font-weight: 800; text-decoration: none;">내 러브트리 시작하기</a>
+                <a href="/pages/community.html" class="btn-sub" style="padding: 16px 32px; background: #fff; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 12px; font-weight: 800; text-decoration: none;">다른 트리 둘러보기</a>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Concept: How it works -->
-        <section class="lt-section">
-            <div class="section-header">
-                <h2>러브트리는 어떻게 만드나요?</h2>
-                <p>좋아하는 마음을 기록하는 가장 아름다운 방법</p>
+    <!-- Concept: How it works -->
+    <section class="lt-section" style="padding: 80px 0; background: #fff;">
+        <div class="shell">
+            <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: #0f172a; margin-bottom: 16px;">러브트리는 어떻게 만드나요?</h2>
+                <p style="font-size: 1.1rem; color: #64748b;">좋아하는 마음을 기록하는 가장 아름다운 방법</p>
             </div>
-            <div class="concept-grid">
-                <div class="concept-card">
-                    <div class="lt-icon-box"><span>📷</span></div>
-                    <h3>순간 포착</h3>
-                    <p>기억하고 싶은 영상과 그날의 감정을 메모로 남깁니다</p>
+            <div class="concept-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px;">
+                <div class="concept-card" style="background: #f8fafc; padding: 40px 32px; border-radius: 24px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 20px;">📸</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px;">순간 포착</h3>
+                    <p style="font-size: 0.95rem; color: #64748b; line-height: 1.6;">기억하고 싶은 영상과 그날의 감정을 메모로 남깁니다</p>
                 </div>
-                <div class="concept-card">
-                    <div class="lt-icon-box"><span>🔗</span></div>
-                    <h3>경로 연결</h3>
-                    <p>기록들이 시간 순서대로 이어져 하나의 줄기가 됩니다</p>
+                <div class="concept-card" style="background: #f8fafc; padding: 40px 32px; border-radius: 24px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 20px;">🔗</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px;">경로 연결</h3>
+                    <p style="font-size: 0.95rem; color: #64748b; line-height: 1.6;">기록들이 시간 순서대로 이어져 하나의 줄기가 됩니다</p>
                 </div>
-                <div class="concept-card">
-                    <div class="lt-icon-box"><span>🌳</span></div>
-                    <h3>트리 완성</h3>
-                    <p>모인 순간들이 자라나 당신만의 러브트리가 됩니다</p>
+                <div class="concept-card" style="background: #f8fafc; padding: 40px 32px; border-radius: 24px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 20px;">🌳</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px;">트리 완성</h3>
+                    <p style="font-size: 0.95rem; color: #64748b; line-height: 1.6;">모인 순간들이 자라나 당신만의 러브트리가 됩니다</p>
                 </div>
-                <div class="concept-card">
-                    <div class="lt-icon-box"><span>✨</span></div>
-                    <h3>감동 공유</h3>
-                    <p>완성된 추억의 경로를 다른 팬들과 함께 나눕니다</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Featured Path Section -->
-        <section class="lt-section lt-section-top">
-            <div class="featured-path-section">
-                <div class="path-info">
-                    <div class="hero-badge badge-no-margin">러브트리 미리보기</div>
-                    <h2>감정의 흐름을<br>한눈에 보세요</h2>
-                    <p>러브트리는 단순한 목록이 아닙니다 <br>어떤 영상에서 시작해 어떤 감정으로 깊어졌는지, <br>사랑의 경로가 줄기가 되어 한눈에 펼쳐집니다</p>
-                    <a href="/pages/community.html" class="btn-outline">실제 트리 탐색하기</a>
-                </div>
-                <div class="path-visual">
-                    <div class="visual-line"></div>
-                    <!-- Node 1: Origin -->
-                    <div class="v-node vn-1">
-                        <img src="/assets/image/lovetree/path-node-1.png" alt="첫 영상" onerror="this.src='/assets/image/lovetree/showcase-default.png'">
-                        <span>2023.11.15</span>
-                        <p>첫 단독 콘서트의 전율</p>
-                    </div>
-                    <!-- Node 2: Connection -->
-                    <div class="v-node vn-2">
-                        <img src="/assets/image/lovetree/path-node-2.png" alt="기록 2" onerror="this.src='/assets/image/lovetree/showcase-default.png'">
-                        <span>2024.01.20</span>
-                        <p>입덕 1주년 축하</p>
-                    </div>
-                    <!-- Node 3: Growth -->
-                    <div class="v-node vn-3">
-                        <img src="/assets/image/lovetree/path-node-3.png" alt="기록 3" onerror="this.src='/assets/image/lovetree/showcase-default.png'">
-                        <span>2024.04.12</span>
-                        <p>새 앨범 쇼케이스 현장</p>
-                    </div>
+                <div class="concept-card" style="background: #f8fafc; padding: 40px 32px; border-radius: 24px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 20px;">📢</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px;">감동 공유</h3>
+                    <p style="font-size: 0.95rem; color: #64748b; line-height: 1.6;">완성된 추억의 경로를 다른 팬들과 함께 나눕니다</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Examples Showcase -->
-        <section id="examples" class="lt-section">
-            <div class="section-header">
-                <h2>다양한 팬들의 러브트리</h2>
-                <p>다른 팬들은 어떤 순간들을 연결하고 있을까요?</p>
-            </div>
-            <div class="showcase-grid">
-                <!-- Showcase 1: BTS -->
-                <a href="/pages/community.html" class="tree-card">
-                    <div class="tree-thumb">
-                        <img src="/assets/image/lovetree/showcase-bts.png" alt="BTS" onerror="this.src='/assets/image/lovetree/showcase-default.png'">
-                    </div>
-                    <div class="tree-meta">
-                        <h4>BTS와 함께한 10년의 기록</h4>
-                        <p class="tree-desc">데뷔부터 지금까지, 방탄과 함께 울고 웃었던 모든 순간들</p>
-                        <div class="tree-stats">
-                            <span>🎥 324개의 순간</span>
-                            <span>🌳 52개의 줄기</span>
-                        </div>
-                        <div class="tree-tags">
-                            <span class="tree-tag">#아미</span><span class="tree-tag">#10주년</span>
-                        </div>
-                    </div>
-                </a>
-                <!-- Showcase 2: Stray Kids -->
-                <a href="/pages/community.html" class="tree-card">
-                    <div class="tree-thumb">
-                        <img src="/assets/image/lovetree/showcase-skz.png" alt="Stray Kids" onerror="this.src='/assets/image/lovetree/showcase-default.png'">
-                    </div>
-                    <div class="tree-meta">
-                        <h4>첫 단독 콘서트의 전율</h4>
-                        <p class="tree-desc">스키즈 첫 콘서트 티켓팅부터 퇴근길까지의 풀스토리</p>
-                        <div class="tree-stats">
-                            <span>🎥 48개의 순간</span>
-                            <span>🌳 5개의 줄기</span>
-                        </div>
-                        <div class="tree-tags">
-                            <span class="tree-tag">#콘서트</span><span class="tree-tag">#스테이</span>
-                        </div>
-                    </div>
-                </a>
-                <!-- Showcase 3: TWICE -->
-                <a href="/pages/community.html" class="tree-card">
-                    <div class="tree-thumb">
-                        <img src="/assets/image/lovetree/showcase-twice.png" alt="TWICE" onerror="this.src='/assets/image/lovetree/showcase-default.png'">
-                    </div>
-                    <div class="tree-meta">
-                        <h4>최애 생일 투어 기록</h4>
-                        <p class="tree-desc">전국 각지의 생일 카페와 광고 투어 인증샷 모음</p>
-                        <div class="tree-stats">
-                            <span>🎥 25개의 순간</span>
-                            <span>🌳 8개의 줄기</span>
-                        </div>
-                        <div class="tree-tags">
-                            <span class="tree-tag">#생일축하</span><span class="tree-tag">#원스</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </section>
+    <!-- Final CTA -->
+    <section class="lt-footer-cta" style="padding: 100px 0; background: #0f172a; color: #fff; text-align: center;">
+        <div class="shell">
+            <h2 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 20px;">이제 당신의 러브트리를<br>심어볼 차례입니다</h2>
+            <p style="font-size: 1.2rem; color: #94a3b8; margin-bottom: 48px;">기록되지 않은 순간은 사라지지만, 연결된 추억은 나무가 됩니다</p>
+            <a href="/pages/login.html" class="btn-main" style="padding: 20px 48px; background: #e11d48; color: #fff; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 1.2rem;">첫 시작하기</a>
+        </div>
+    </section>
 
-        <!-- Final CTA -->
-        <section class="lt-footer-cta">
-            <h2>이제 당신의 러브트리를<br>심어볼 차례입니다.</h2>
-            <p>기록되지 않은 순간은 사라지지만, 연결된 추억은 나무가 됩니다</p>
-            <a href="/pages/login.html" class="btn-brick btn-brick-xl">첫 시작하기</a>
-        </section>
+    <footer style="padding: 40px 0; text-align: center; background: #f8fafc; color: #64748b; font-size: 0.9rem; border-top: 1px solid #e2e8f0;">
+        <div class="shell">
+            <p style="font-weight: 700; color: #0f172a; margin-bottom: 8px;">Lovetree와 함께 사랑의 순간을 기록하세요</p>
+            <p>&copy; 2026 Lovetree 사랑의 모든 순간을 연결합니다</p>
+        </div>
+    </footer>
 
-        <!-- Footer -->
-        <footer class="lovetree-footer">
-            <p class="footer-title">Lovetree와 함께 사랑의 순간을 기록하세요</p>
-            <p class="footer-copy">&copy; 2026 Lovetree. 사랑의 모든 순간을 연결합니다</p>
-        </footer>
-    </div>
-
-    <!-- Core App Modules -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="/src/runtime-config.js"></script>
     <script src="/src/shared-utils.js"></script>
-    <script src="/src/shared-layout.js"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
-
-    <!-- Auth State Integration (Common) -->
     <script>
         if (window.initStandardAuthUI) window.initStandardAuthUI();
     </script>
