@@ -100,8 +100,8 @@ const db = firebase.firestore(); // shim을 통과하므로 작동
 ├── src/                    # 비즈니스 로직 및 라이브러리
 │   ├── entries/            # 페이지별 진입점 스크립트
 │   ├── shared-layout.js    # 공통 레이어 (GNB, Auth UI)
-│   ├── postgres-client-browser.js  # 브라우저용 데이터 클라이언트
-│   ├── postgres-client.js  # ES 모듈용 데이터 클라이언트
+│   ├── postgres-client-browser.js  # 브라우저용 (<script> 로드, window.postgresDB)
+│   ├── postgres-client.js  # ES 모듈용 (import 문법, 빌드 환경)
 │   └── ...
 ├── netlify/
 │   └── functions/          # 서버리스 API (PostgreSQL 연동)

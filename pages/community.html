@@ -80,24 +80,24 @@
         </div>
 
         <!-- Loading / Status States -->
-<div id="community-loading" class="comm-status state-loading" style="display: none;">
-    <div class="loading-spinner"></div>
-    <p>커뮤니티를 불러오는 중입니다...</p>
-</div>
+        <div id="community-loading" class="comm-status state-loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>소중한 순간들을 잇는 중입니다...</p>
+        </div>
 
-<div id="community-error" class="comm-status comm-error" style="display: none;">
-    <div class="error-icon">⚠️</div>
-    <h3>불러오기 실패</h3>
-    <p id="community-error-msg">잠시 후 다시 시도해주세요.</p>
-    <button id="btn-retry-community" class="btn-retry">다시 시도</button>
-</div>
+        <div id="community-error" class="comm-status comm-error" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <h3>잠시 연결이 원활하지 않습니다</h3>
+            <p id="community-error-msg">기록을 안전하게 가져올 수 있도록 잠시 후 다시 한번만 불러와주세요.</p>
+            <button id="btn-retry-community" class="btn-retry">다시 시도하기</button>
+        </div>
 
-<div id="community-empty" class="comm-status comm-empty" style="display: none;">
-    <div class="empty-icon">🌱</div>
-    <h3>아직 공개된 트리가 없습니다</h3>
-    <p>첫 번째 러브트리를 공개해보세요!</p>
-    <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
-</div>
+        <div id="community-empty" class="comm-status comm-empty" style="display: none;">
+            <div class="empty-icon">🌱</div>
+            <h3>아직 광장이 평온하네요</h3>
+            <p>당신의 첫 번째 러브트리를 가장 먼저 심어보시겠어요?</p>
+            <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
+        </div>
 
         <!-- Dynamic Discovery Plaza Grid -->
         <div id="discovery-grid" class="discovery-grid" style="display: none;">
@@ -203,7 +203,14 @@
         document.getElementById('community-error').style.display = 'none';
         document.getElementById('community-empty').style.display = 'none';
         document.getElementById('discovery-grid').style.display = 'none';
-        document.getElementById('discovery-grid-demo').style.display = 'none';
+        document.getElementById('discovery-grid').classList.remove('active');
+        
+        // Add pulse effect to demo grid while loading real data
+        const demoGrid = document.getElementById('discovery-grid-demo');
+        if (demoGrid) {
+            demoGrid.classList.add('loading-pulse');
+        }
+        
         document.getElementById('featured-spotlight').style.display = 'none';
       }
 
@@ -279,8 +286,18 @@
         });
 
         document.getElementById('community-loading').style.display = 'none';
+        
+        // Hide demo grid and show real grid with transition
+        const demoGrid = document.getElementById('discovery-grid-demo');
+        if (demoGrid) {
+            demoGrid.style.display = 'none';
+            demoGrid.classList.remove('loading-pulse');
+        }
+        
         spotlightArea.style.display = 'block';
         grid.style.display = 'grid';
+        // Trigger CSS transition
+        setTimeout(() => grid.classList.add('active'), 50);
       }
 
       function renderFeaturedSpotlight(tree) {

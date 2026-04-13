@@ -87,7 +87,7 @@ test.describe('Standard Architecture (V2) Checks', () => {
         expect(text).not.toContain('firebase');
         
         // Assert user-friendly message is present (either our masked one or the fallback one)
-        const isFriendly = text.includes('다시 시도') || text.includes('로딩 기능');
+        const isFriendly = text.includes('다시 시도') || text.includes('로딩 기능') || text.includes('원활하지 않습니다');
         expect(isFriendly).toBe(true);
     });
 
