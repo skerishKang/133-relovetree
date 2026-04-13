@@ -567,4 +567,7 @@ module.exports = {
   getUserRole,
   TABLE_CONFIG,
   getConfigByTableName,
+  applyTransform,
+  applyPatch,
+  DELETE_SENTINEL,
 };
