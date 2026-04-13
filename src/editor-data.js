@@ -1,4 +1,25 @@
 (function () {
+    /**
+     * Editor Data Module
+     * 
+     * Data Flow for read/write operations:
+     * - runtime.db (assigned in editor-bootstrap.js as window.postgresDB)
+     * - Goes through shim (firebase-firestore-compat.js) → /api/firestore → document-store.js → PostgreSQL
+     * 
+     * FieldValue Operations:
+     * - viewCount: FieldValue.increment(1) → shim transforms to {__firestoreTransform: true, type: 'increment', operand: 1}
+     * - lastOpened: FieldValue.serverTimestamp() → shim transforms to {__firestoreTransform: true, type: 'serverTimestamp'}
+     * - document-store.js: applyTransform() converts these to actual values:
+     *   - increment: currentValue + operand (arithmetic addition)
+     *   - serverTimestamp: nowIso (current server time)
+     * 
+     * This file uses runtime.firebase.firestore.FieldValue which is the shim's implementation,
+     * NOT the actual Firebase Firestore SDK.
+     * 
+     * Security Note: The guard (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+     * ensures we only try FieldValue operations when the shim is loaded.
+     */
+
     function debounce(func, wait) {
         let timeout;
         return function () {
@@ -33,6 +54,10 @@
                     };
 
                     try {
+                        // Note: firebase.firestore.FieldValue is actually the shim's implementation
+                        // - increment: transforms to {__firestoreTransform: true, type: 'increment', operand: 1}
+                        // - serverTimestamp: transforms to {__firestoreTransform: true, type: 'serverTimestamp'}
+                        // document-store.js applies these transforms on the server side
                         if (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) {
                             await docRef.update({
                                 viewCount: firebase.firestore.FieldValue.increment(1),
