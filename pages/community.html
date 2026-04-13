@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <title>커뮤니티 광장 - Lovetree</title>
-    <link rel="stylesheet" href="/assets/css/app-base.css">
-    <link rel="stylesheet" href="/assets/css/community-layout.css">
-    <link rel="stylesheet" href="/assets/css/community-cards.css">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v1">
+    <link rel="stylesheet" href="/assets/css/community-layout.css?v=20260414_v1">
+    <link rel="stylesheet" href="/assets/css/community-cards.css?v=20260414_v1">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v1">
 </head>
 <body class="comm-page">
     <!-- Standard Navigation -->
-    <nav class="gnb">
-        <a href="/" class="gnb-brand">Lovetree</a>
+    <!-- Navigation: 3개 메뉴 체계 (V2 Alignment) -->
+    <nav class="gnb-v2">
+        <a href="/" class="logo" style="text-decoration: none;">Lovetree</a>
         <div class="nav-links">
-            <a href="/pages/lovetree.html" id="nav-lovtree-item">러브트리</a>
+            <a href="/pages/lovetree.html">러브트리</a>
             <a href="/pages/community.html" class="active">커뮤니티</a>
-            <div class="auth-box">
-                <a href="/pages/login.html" id="nav-auth-item" class="nav-login">로그인</a>
-                <button id="nav-logout-btn" class="logout-minimal is-hidden">로그아웃</button>
-            </div>
+            <a href="/pages/login.html" class="btn-pill-auth">로그인</a>
         </div>
     </nav>
 
@@ -29,7 +28,7 @@
             <div class="hero-badge">Discovery Square</div>
             <div class="comm-title">
                 <h1>사랑이 모여 자라나는 광장</h1>
-                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요.</p>
+                <p>지금 다른 팬들이 가장 많이 머문 러브트리를 구경해보세요</p>
             </div>
             
             <div class="search-area">
@@ -68,7 +67,7 @@
                         <span class="fc-author" id="featured-author">@HappyARMY</span>
                     </div>
                     <h3 id="featured-title">방탄소년단과 함께 걸어온 1000일의 시간</h3>
-                    <p id="featured-desc">첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 찬란한 사랑의 경로를 함께 감상해보세요.</p>
+                    <p id="featured-desc">첫 만남의 전율부터 오늘까지, 한 팬의 소중한 입덕 여정이 하나의 나무로 자라났습니다. 그 찬란한 사랑의 경로를 함께 감상해보세요</p>
                     <div class="fc-footer">
                         <div class="fc-stats" id="featured-stats">
                             <span>❤️ 1,240 공감</span>
@@ -83,20 +82,20 @@
         <!-- Loading / Status States -->
         <div id="community-loading" class="comm-status state-loading" style="display: none;">
             <div class="loading-spinner"></div>
-            <p>소중한 순간들을 잇는 중입니다...</p>
+            <p>소중한 순간들을 잇는 중입니다</p>
         </div>
 
         <div id="community-error" class="comm-status comm-error" style="display: none;">
             <div class="error-icon">⚠️</div>
             <h3>잠시 연결이 원활하지 않습니다</h3>
-            <p id="community-error-msg">기록을 안전하게 가져올 수 있도록 잠시 후 다시 한번만 불러와주세요.</p>
+            <p id="community-error-msg">기록을 안전하게 가져올 수 있도록 잠시 후 다시 한번만 불러와주세요</p>
             <button id="btn-retry-community" class="btn-retry">다시 시도하기</button>
         </div>
 
         <div id="community-empty" class="comm-status comm-empty" style="display: none;">
             <div class="empty-icon">🌱</div>
             <h3>아직 광장이 평온하네요</h3>
-            <p>당신의 첫 번째 러브트리를 가장 먼저 심어보시겠어요?</p>
+            <p>당신의 첫 번째 러브트리를 가장 먼저 심어보시겠어요</p>
             <a href="/pages/login.html" class="btn-start">러브트리 시작하기</a>
         </div>
 
