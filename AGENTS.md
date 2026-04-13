@@ -51,8 +51,16 @@ Lovetree는 단순 저장 앱이 아니다.
   - 서버(Netlify Functions): `netlify/functions/_lib/db-api.js`
 - ⚠️ 신규 코드에서 `firebase-firestore-compat.js` 직접 참조 금지
 - 새 페이지나 새 기능을 만들 때는 “이게 첫 순간 기록과 사랑의 경로 연결에 실제 도움이 되나”를 먼저 따진다.
-- **editor 영역은 별도 정리 트랙으로 관리됩니다. editor.html과 관련 파일들은 복잡성과 의존성으로 인해 일반 페이지 구조 정리 대상에서 제외됩니다.**
-- **editor 아키텍처**: [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md) - 로드 순서, 데이터 흐름, FieldValue 사용처, 위험 지점 포함
+- **editor 전용 아키텍처 및 안전 가이드**:
+  - 작업을 시작하기 전 반드시 [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)를 숙독한다.
+  - **editor 영역**은 복잡성과 의존성으로 인해 일반 페이지 구조 정리 트랙에서 **제외**되어 관리된다.
+  - `shared.js`, `runtime-config.js` 등 공통(shared) 로직 수정 시, 반드시 `tests/editor-smoke.spec.js`를 실행하여 에디터 쉘의 무결성을 검증해야 한다.
+  - 다음 핵심 파일들은 에디터의 근간이므로 수정 시 극도로 주의한다:
+    - `src/editor-bootstrap.js` (DB 할당)
+    - `src/editor-data.js` (FieldValue 사용)
+    - `src/editor-comments.js` (FieldValue 사용)
+    - `src/editor-actions.js` (FieldValue 사용)
+    - `src/editor-runtime.js` (DB 인터페이스)
 
 ## Data / Architecture Reminder
 

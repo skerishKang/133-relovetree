@@ -107,8 +107,11 @@ const db = window.firebase.firestore(); // shim이 가로채어 라우팅
 └── README.md
 ```
 
-**주의**: `editor.html`과 관련 파일들은 복잡성과 의존성으로 인해 별도 정리 트랙으로 관리됩니다. 일반 페이지 구조 정리 시 editor 영역은 제외됩니다.
-자세한 아키텍처와 운영 가이드는 [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)를 참조하세요.
+> [!IMPORTANT]
+> **Editor 운영 주의사항**:
+> - `editor.html`과 관련 파일들은 별도 정리 트랙으로 관리됩니다. (일반 페이지 리팩터링 대상에서 제외)
+> - 아키텍처 및 위험 파일 가이드: [docs/ops/EDITOR_ARCHITECTURE.md](docs/ops/EDITOR_ARCHITECTURE.md)
+> - **Shared 로직 수정 시** 반드시 `tests/editor-smoke.spec.js`를 실행하여 에디터 무결성을 확인해야 합니다.
 
 ## 로컬 실행
 
@@ -157,11 +160,16 @@ npm run test
 ## 테스트
 
 ```bash
+# 전체 연동 테스트
 npm run test
 npx playwright test --config ./config/playwright.config.js
+
+# Editor 전용 Smoke Test (V1/V2 Shared 무결성 확인)
+npx playwright test tests/editor-smoke.spec.js --config ./config/playwright.config.js
 ```
 
 - Playwright smoke는 핵심 페이지 회귀 확인용입니다.
+- **Editor Smoke**: 공통 script(`shared.js`) 변경이 에디터 쉘을 깨뜨리는지 집중 검증합니다.
 - 최종 QA는 실도메인 `https://lovetree.limone.dev` 기준 수동 확인도 병행합니다.
 
 ## 운영 문서
