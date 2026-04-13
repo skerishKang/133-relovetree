@@ -153,8 +153,8 @@
 | 파일 | 상태 | 설명 |
 |------|------|------|
 | `src/mobile-tree.js` | ✅ KEEP | mobile-tree.html에서 사용 |
-| `src/mobile-add-memory.js` | 📦 ARCHIVE | archive/recovered-legacy/로 이동 |
-| `src/mobile-add-branch.js` | 📦 ARCHIVE | archive/recovered-legacy/로 이동 |
+| `src/mobile-add-memory.js` | 📦 ARCHIVE | archive/recovered-legacy/로 이동 - 더 이상 사용되지 않음 |
+| `src/mobile-add-branch.js` | 📦 ARCHIVE | archive/recovered-legacy/로 이동 - 더 이상 사용되지 않음 |
 
 ### 2.2 src/editor - 에디터 모듈 (별도 트랙)
 
@@ -217,16 +217,16 @@
 
 > **Archive 정책**: 삭제보다 archive 우선. 단, `old-ui`는 정리 대상이며 정기적으로 검토.
 
-### 3.2 상태 용어 정의 (Archive vs 비활성 vs 레거시 구분)
+### 3.2 상태 용어 및 분류 정의
 
-| 용어 | 기준 | 실제 파일 예시 |
-|------|------|---------------|
-| **운영 (Active)** | 현재 프로덕션에서 사용 중 | `index.html`, `pages/community.html`, `src/shared.js` |
-| **비활성 (Inactive)** | 파일은 존재하지만 리다이렉트/미사용 상태 | `pages/editor-desktop.html`, `pages/mobile-add-memory.html` |
-| **레거시 (Legacy)** | 과거 버전, 새 코드에서 참조 안 함 | `src/add-memory.js`, `src/postgres-client.js` |
-| **Archive** | 파일系统中移动, 참조 불가 | `archive/recovered-legacy/` |
+| 용어 | 상세 기준 | 대응 상태 |
+|------|-----------|-----------|
+| **Active (운영)** | 현재 프로덕션에서 로드 및 사용됨 | ✅ KEEP |
+| **INACTIVE (비활성)** | 파일은 존재하나 참조/리다이렉트 안 됨 | ⚠️ INACTIVE |
+| **Legacy (레거시)** | 사용 중이나 대체 대상 (Shim 의존 등) | 🗑️ DEPRECATED |
+| **Archive (아카이브)** | `archive/` 폴더로 이동되어 참조 불가 | 📦 ARCHIVE |
 
-> **핵심 구분**: 비활성은 "파일은 있지만谁来도 안 씀", 레거시는 "새 코드에서 참조 안 함 but 파일系统中 있음", Archive는 "파일系统中移动됨".
+> **Archive 4분류**: `recovered-legacy` (복구본) / `prototype` (초기안) / `old-ui` (이전디자인) / `reference-only` (참고문서)
 
 ### 3.3 css/ - 레거시 CSS (이미 ARCHIVE로 이동)
 
@@ -246,8 +246,8 @@
 | `pages/empty-state.html` | ⚠️ INACTIVE | 빈 상태, 운영 미사용 |
 | `pages/album-view.html` | ⚠️ INACTIVE | 앨범 뷰, 운영 미사용 |
 | `pages/memory-detail.html` | ⚠️ INACTIVE | `mobile-tree.html`로 리다이렉트 |
-| `pages/mobile-add-memory.html` | ⚠️ INACTIVE | `mobile-tree.html`로 리다이렉트 |
-| `pages/mobile-add-branch.html` | ⚠️ INACTIVE | 리다이렉트 전용 |
+| `pages/mobile-add-memory.html` | ⚠️ INACTIVE | 레거시 페이지 - 아카이브 또는 리다이렉트 필요 |
+| `pages/mobile-add-branch.html` | ⚠️ INACTIVE | 레거시 페이지 - 아카이브 또는 리다이렉트 필요 |
 | `pages/editor-desktop.html` | ⚠️ INACTIVE | `editor.html`로 리다이렉트 |
 | `pages/editor-desktop-empty.html` | ⚠️ INACTIVE | 에디터 데스크톱 빈, 미사용 |
 

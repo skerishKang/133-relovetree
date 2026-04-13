@@ -15,12 +15,10 @@
 이 저장소에서 "Firestore"라는 이름이 코드에 남아 있지만, 실제 데이터는 **Neon/PostgreSQL**에 저장된다.
 코드를 작성하기 전에 이 규칙을 먼저 읽는다.
 
-### 뭘 쓰면 되는가 (공식 진입점)
-
-| 환경 | 공식 진입점 | 사용법 |
-|------|------------|--------|
-| 브라우저 | `src/postgres-client-browser.js` | `<script src="/src/postgres-client-browser.js">` 후 `window.postgresDB` |
-| 서버 | `netlify/functions/_lib/db-api.js` | `const { queryPostgresCollection, getPostgresDoc } = require('./db-api');` |
+| 환경 | 공식 진입점 | 사용법 (Simple Rule) |
+|------|------------|-----------------------|
+| 브라우저 | `src/postgres-client-browser.js` | `window.postgresDB` 사용 |
+| 서버 | `netlify/functions/_lib/db-api.js` | `db-api.js` 내부 함수 사용 |
 
 ### 뭘 쓰면 안 되는가 (금지)
 

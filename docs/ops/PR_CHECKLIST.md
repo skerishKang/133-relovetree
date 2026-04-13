@@ -147,12 +147,12 @@ npx playwright test tests/architecture-v2.spec.js
 
 > ⚠️ smoke.spec.js와 architecture-v2.spec.js는 서로 다른 것을 검증합니다. 혼동하지 마세요.
 
-| 파일 | 검증 대상 | 통과 기준 | mergeGate |
+| 파일 | 검증 대상 | 통과 기준 | 역할 구분 |
 |------|-----------|-----------|-----------|
-| `smoke.spec.js` | **표준 페이지 UI 요소 presence** (버튼, 그리드, 모달 존재 여부) | 모든 선택자가 실제 HTML 구조와 일치 | ❌ blocking |
-| `architecture-v2.spec.js` | **아키텍처 준수** (app-loaded 플래그, auth UI 텍스트, Firestore 에러 마스킹, 인증 안 된 상태 shell 안정성) | app-loaded + auth 텍스트 + 에러 마스킹 검증 | ❌ blocking |
-| `editor-smoke.spec.js` | **에디터 쉘 무결성** (초기화, 읽기전용 배지, 내비게이션) | shell 로드 + 에디터 요소可见 | ❌ blocking |
-| `editor-fieldvalue.spec.js` | **FieldValue shim 변환** (소스 패턴 존재 + 런타임 네트워크 payload) | 소스 패턴 존재 + shim output 구조 + network __firestoreTransform 검증 | ⚠️ 확인 후 진행 |
+| `smoke.spec.js` | **표준 페이지 UI 존재 확인** | 모든 CSS 선택자가 실제 HTML과 일치 | E2E/UI Presence |
+| `architecture-v2.spec.js` | **아키텍처/보안 검증** | app-loaded 플래그 + auth 중복 방지 + 에러 마스킹 | System Guard |
+| `editor-smoke.spec.js` | **에디터 쉘 무결성** | 초기화 + 읽기전용 배지 + 상단 내비게이션 | Editor Shell Integrity |
+| `editor-fieldvalue.spec.js` | **FieldValue Shim 변환** | 소스 패턴(Layer A) + 네트워크 Payload(Layer B) | Data Consistency Shim |
 
 ### 테스트 실행 시나리오별 분류
 

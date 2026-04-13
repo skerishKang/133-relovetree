@@ -274,14 +274,12 @@ editor-data.js: saveData(runtime)
 | **FieldValue 관련 코드 수정 시** | `npx playwright test tests/editor-fieldvalue.spec.js` | shim 변환 검증 (아래 2개 레이어) |
 | **에디터 초기화 변경 시** | `npx playwright test tests/editor-smoke.spec.js` + `tests/editor-fieldvalue.spec.js` | 전체 무결성 |
 
-#### editor-fieldvalue.spec.js 검증 레이어 (2개)
+#### editor-fieldvalue.spec.js 검증 레이어 (Data Integrity)
 
-> ⚠️ 이 테스트 파일은 단일 목적 테스트가 아니라 **2개 레이어**를 검증합니다.
-
-| 레이어 | 테스트 번호 | 검증 내용 | 범위 |
-|--------|-------------|-----------|------|
-| **A) 소스 패턴 존재** | Test 1-4 | FieldValue.increment/serverTimestamp 호출이 editor-*.js 소스에 실제로 존재하는지 확인 | 소스 코드 문자열 패턴 (리팩터링 중 실수 방지) |
-| **B) Shim 런타임 변환** | Test 5-9 | shim이 `__firestoreTransform: true, type: "increment", operand: N` 형태의 객체를 생성하는지, network payload에 포함되는지 확인 | 브라우저 런타임 + 네트워크 요청 |
+| 레이어 | 검증 방식 | 검증 내용 | 목적 |
+|--------|-----------|-----------|------|
+| **Layer A: 소스 패턴** | Static Check (fetch) | `FieldValue.increment` 등의 호출이 소스에 있는지 확인 | 의도치 않은 코드 제거 방지 |
+| **Layer B: 런타임 Payload** | Network Intercept | `__firestoreTransform` 객체가 포함된 POST 요청 캡처 | Shim 변환 및 소켓 무결성 보장 |
 
 **보증 범위:**
 - ✅ 소스에서 FieldValue 호출 존재 확인 (리팩터링 중 제거 방지)
