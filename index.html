@@ -13,24 +13,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="home-v2-active">
+<body class="home-v2-active" data-page="home">
     <div class="page-wrapper">
-        <!-- Navigation: 3개 메뉴 체계 -->
-    <nav class="gnb-v2">
-        <div class="gnb-inner shell">
-            <a href="/" class="gnb-logo">Lovetree</a>
-            <div class="gnb-links">
-                <a href="/pages/lovetree.html">러브트리</a>
-                <a href="/pages/community.html">커뮤니티</a>
-                <!-- Auth State UI -->
-                <a href="/pages/login.html" class="btn-pill-auth" id="login-btn">로그인</a>
-                <div id="user-menu" class="is-hidden" style="display: flex; align-items: center; gap: 12px;">
-                    <a href="/pages/my-trees.html" style="font-weight: 800; color: #e11d48;">내 트리</a>
-                    <button id="logout-btn" style="font-size: 0.8rem; color: #64748b;">로그아웃</button>
-                </div>
-            </div>
-        </div>
-    </nav>
+        <!-- Hardcoded nav removed - now injected by shared-layout.js -->
 
     <!-- Hero Section -->
     <section class="hero-v2">
@@ -109,6 +94,11 @@
     <script src="/src/concept-state.js?v=20260414_v3"></script>
 
     <script>
+        // Inject shared GNB
+        if (window.sharedLayout && window.sharedLayout.ensureGlobalLayoutInjected) {
+            window.sharedLayout.ensureGlobalLayoutInjected();
+        }
+
         // Auth State Integration (Common)
         // index.html has no nav-logout-btn, so skip logout binding
         if (window.initStandardAuthUI) window.initStandardAuthUI({

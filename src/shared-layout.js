@@ -30,15 +30,16 @@
      * This section handles dynamic injection of top navigation and settings modal
      * into pages that request it via data-page attribute.
      * 
-     * Currently affected pages:
+     * Affected pages:
+     * - Pages with data-page="home" → gets standard GNB (index.html)
+     * - Pages with data-page="lovetree" → gets standard GNB (lovetree.html)
      * - Pages with data-page="community" → gets community-style header
      * - Pages with data-page="owner" → gets owner-style header
      * 
-     * This is DIFFERENT from the standard GNB (global navigation bar) used in
-     * most pages like lovetree.html, community.html, my-trees.html.
+     * This provides a unified GNB across all standard pages without hardcoding.
      */
 
-    const LAYOUT_PAGE_ALLOWLIST = new Set(['community', 'owner']);
+    const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner']);
 
     function shouldInjectGlobalLayout() {
         try {
@@ -52,16 +53,37 @@
 
     function buildGlobalHeaderHTML(active) {
         const a = active || '';
+        const isHome = a === 'home';
+        const isLovetree = a === 'lovetree';
         const isCommunity = a === 'community';
         const isOwner = a === 'owner';
 
-        const communityClass = isCommunity
-            ? 'ui-link-nav ui-link-nav-active'
-            : 'ui-link-nav';
-        const ownerClass = isOwner
-            ? 'ui-link-nav ui-link-nav-active'
-            : 'ui-link-nav';
+        const homeClass = isHome ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
+        const lovetreeClass = isLovetree ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
+        const communityClass = isCommunity ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
+        const ownerClass = isOwner ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
 
+        // Standard GNB for home/lovetree (no search area)
+        if (isHome || isLovetree) {
+            return `
+    <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
+        <div class="gnb-inner shell">
+            <a href="/" class="gnb-logo">Lovetree</a>
+            <div class="gnb-links">
+                <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
+                <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+                <a href="/pages/login.html" class="btn-pill-auth" id="nav-auth-item">로그인</a>
+                <div id="user-menu" class="is-hidden" style="display: flex; align-items: center; gap: 12px;">
+                    <a href="/pages/my-trees.html" style="font-weight: 800; color: #e11d48;">내 트리</a>
+                    <button id="nav-logout-btn" style="font-size: 0.8rem; color: #64748b;">로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+            `;
+        }
+
+        // Community/Owner style header (with search area)
         return `
     <nav data-global-header="1" class="top-nav" role="navigation" aria-label="메인 네비게이션">
         <div class="top-nav-inner">
@@ -157,7 +179,11 @@
             if (document.querySelector('nav[data-global-header="1"]')) return;
 
             const page = document.body ? String(document.body.getAttribute('data-page') || '') : '';
-            const active = page === 'community' ? 'community' : (page === 'owner' ? 'owner' : '');
+            // Map data-page to active state for GNB
+            let active = '';
+            if (page === 'home' || page === 'lovetree' || page === 'community' || page === 'owner') {
+                active = page;
+            }
 
             const headerHTML = buildGlobalHeaderHTML(active);
             const temp = document.createElement('div');

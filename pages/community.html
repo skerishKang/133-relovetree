@@ -15,31 +15,8 @@
     <link rel="stylesheet" href="/assets/css/community-layout.css?v=20260414_v3">
     <link rel="stylesheet" href="/assets/css/community-cards.css?v=20260414_v3">
 </head>
-<body class="comm-page">
-    
-    <!-- Standard Navigation with Search (Image 1 Style) -->
-    <nav class="gnb-v2">
-        <div class="gnb-inner shell">
-            <a href="/" class="gnb-logo">Lovetree</a>
-            
-            <div class="search-area-gnb" style="flex: 1; max-width: 400px; margin: 0 40px;">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <span class="search-placeholder">팬심 가득한 러브트리 검색...</span>
-                </div>
-            </div>
-
-            <div class="gnb-links">
-                <a href="/pages/lovetree.html">러브트리</a>
-                <a href="/pages/community.html" class="active">커뮤니티</a>
-                <a href="/pages/login.html" class="btn-pill-auth" id="login-btn">로그인</a>
-                <div id="user-menu" class="is-hidden" style="display: flex; align-items: center; gap: 12px;">
-                    <a href="/pages/my-trees.html" style="font-weight: 800; color: #e11d48;">내 트리</a>
-                    <button id="logout-btn" style="font-size: 0.8rem; color: #64748b;">로그아웃</button>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body class="comm-page" data-page="community">
+    <!-- Hardcoded nav removed - now injected by shared-layout.js -->
 
     <main class="shell comm-main">
         <div style="text-align: center; margin: 40px 0 60px;">
@@ -68,12 +45,16 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="/src/runtime-config.js?v=20260414_v3"></script>
     <script src="/src/shared-utils.js?v=20260414_v3"></script>
+    <script src="/src/shared-layout.js?v=20260414_v3"></script>
     <script src="/src/shared.js?v=20260414_v3"></script>
     <script src="/src/auth.js?v=20260414_v3"></script>
     <script src="/src/api.js?v=20260414_v3"></script>
     <script src="/src/flow-shared.js?v=20260414_v3"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
+            if (window.sharedLayout && window.sharedLayout.ensureGlobalLayoutInjected) {
+                window.sharedLayout.ensureGlobalLayoutInjected();
+            }
             if (window.initStandardAuthUI) window.initStandardAuthUI();
             
             const grid = document.getElementById('discovery-grid');
