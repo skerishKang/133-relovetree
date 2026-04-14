@@ -9,147 +9,32 @@
  * Architecture:
  *   Client (via firebase-firestore-compat.js) → POST /api/firestore → This Handler → PostgreSQL
  * 
- * What this does:
- *   - Receives Firestore-style operations (getDoc, setDoc, updateDoc, deleteDoc, queryCollection)
- *   - Validates Firebase ID Token (Auth only, via firebase-auth.js)
- *   - Checks permissions (assertAuthorized)
- *   - Delegates to document-store.js for actual PostgreSQL operations
- * 
- * What this does NOT do:
- *   - No Firestore database operations
- *   - All data goes to Neon PostgreSQL
- * 
- * Key concept:
- *   - Firebase Auth = Real (login/session)
- *   - Firestore API = Compatibility layer (API shape only)
- *   - PostgreSQL = Real data storage
+ * This file is now a thin wrapper that delegates to modular sub-components.
  */
 const { getUserFromEvent } = require('./firebase-auth');
 const { httpError } = require('./http');
 const documentStore = require('./document-store');
+const { isAdminUser } = require('./api/auth');
+const { 
+  getPathRoot, 
+  getPathSegments, 
+  isDocumentPath, 
+  isWriteOp, 
+  isPublicTreeCounterMutation,
+  getCommentAuthorId,
+  normalizeCommentPayload,
+  sanitizeSelfUserPayload 
+} = require('./api/validation');
 
-const SELF_MUTABLE_USER_FIELDS = new Set([
-  'displayName',
-  'photoURL',
-  'createdAt',
-  'lastLogin',
-  'updatedAt',
-]);
-
-async function isAdminUser(user) {
-  if (!user || !user.uid) return false;
-  const role = await documentStore.getUserRole(user.uid);
-  return role === 'admin';
-}
-
-function getPathRoot(path) {
-  const segments = String(path || '')
-    .split('/')
-    .filter(Boolean);
-  return segments[0] || '';
-}
-
-function isPublicTreeCounterMutation(payload) {
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return false;
-  const keys = Object.keys(payload);
-  if (!keys.length) return false;
-  const allowed = new Set(['viewCount', 'shareCount', 'lastOpened']);
-  return keys.every((key) => allowed.has(key));
-}
-
-function isPlainObject(value) {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
-
-function cloneValue(value) {
-  if (value === undefined) return undefined;
-  return JSON.parse(JSON.stringify(value));
-}
-
-function getPathSegments(path) {
-  return String(path || '')
-    .split('/')
-    .filter(Boolean);
-}
-
-function isDocumentPath(path) {
-  return getPathSegments(path).length % 2 === 0;
-}
-
-function isWriteOp(op) {
-  return op === 'setDoc' || op === 'updateDoc' || op === 'addDoc';
-}
-
-function getCommentAuthorId(payload, existing, fallbackUid) {
-  return (
-    (payload && (payload.authorId || payload.userId)) ||
-    (existing && (existing.authorId || existing.userId)) ||
-    fallbackUid ||
-    ''
-  );
-}
-
-function normalizeCommentPayload(root, path, payload, existing) {
-  if (!isPlainObject(payload)) return payload;
-
-  const segments = getPathSegments(path);
-  const isTreeComments =
-    root === 'trees' &&
-    ((segments.length === 3 && segments[2] === 'comments') ||
-      (segments.length === 4 && segments[2] === 'comments'));
-  const isCommunityComments =
-    root === 'community_posts' &&
-    ((segments.length === 3 && segments[2] === 'comments') ||
-      (segments.length === 4 && segments[2] === 'comments'));
-
-  if (!isTreeComments && !isCommunityComments) return payload;
-
-  const next = Object.assign({}, payload);
-  const authorId =
-    next.authorId || next.userId || (existing && (existing.authorId || existing.userId)) || '';
-  const authorDisplayName =
-    next.authorDisplayName ||
-    next.userName ||
-    (existing && (existing.authorDisplayName || existing.userName)) ||
-    '';
-
-  if (authorId) {
-    next.authorId = authorId;
-    if (isTreeComments && !Object.prototype.hasOwnProperty.call(next, 'userId')) {
-      next.userId = authorId;
+async function safeGetExisting(path) {
+  try {
+    return await documentStore.getDoc(path);
+  } catch (error) {
+    if (error && typeof error.status === 'number') {
+      throw error;
     }
+    throw httpError(503, 'Failed to verify existing document');
   }
-
-  if (authorDisplayName) {
-    next.authorDisplayName = authorDisplayName;
-    if (isTreeComments && !Object.prototype.hasOwnProperty.call(next, 'userName')) {
-      next.userName = authorDisplayName;
-    }
-  }
-
-  return next;
-}
-
-function sanitizeSelfUserPayload(payload, existing, user) {
-  const input = isPlainObject(payload) ? payload : {};
-  const next = isPlainObject(existing) ? cloneValue(existing) : {};
-
-  if (!Object.prototype.hasOwnProperty.call(next, 'role')) next.role = 'free';
-  if (!Object.prototype.hasOwnProperty.call(next, 'isDemo')) next.isDemo = false;
-  if (!Object.prototype.hasOwnProperty.call(next, 'isAiBot')) next.isAiBot = false;
-  if (!Object.prototype.hasOwnProperty.call(next, 'isPro')) next.isPro = false;
-
-  if (user && typeof user.email === 'string' && user.email) {
-    next.email = user.email;
-  }
-
-  SELF_MUTABLE_USER_FIELDS.forEach((field) => {
-    if (Object.prototype.hasOwnProperty.call(input, field)) {
-      next[field] = input[field];
-    }
-  });
-
-  return next;
 }
 
 async function assertAuthorized(op, path, user, payload) {
@@ -197,16 +82,14 @@ async function assertAuthorized(op, path, user, payload) {
 
     const targetUid = segments[1];
     if (!isAdmin && user.uid !== targetUid) throw httpError(403, 'Forbidden');
+  }
 
-    if (op === 'setDoc' || op === 'updateDoc') {
-      if (isAdmin) return { isAdmin, payload: normalizedPayload };
-      return {
-        isAdmin: false,
-        payload: sanitizeSelfUserPayload(normalizedPayload, existing, user),
-      };
-    }
-
-    return { isAdmin, payload: normalizedPayload };
+  if (op === 'setDoc' || op === 'updateDoc') {
+    if (isAdmin) return { isAdmin, payload: normalizedPayload };
+    return {
+      isAdmin: false,
+      payload: sanitizeSelfUserPayload(normalizedPayload, existing, user),
+    };
   }
 
   if (root === 'trees') {
@@ -245,17 +128,6 @@ async function assertAuthorized(op, path, user, payload) {
   }
 
   throw httpError(400, 'Unsupported collection');
-}
-
-async function safeGetExisting(path) {
-  try {
-    return await documentStore.getDoc(path);
-  } catch (error) {
-    if (error && typeof error.status === 'number') {
-      throw error;
-    }
-    throw httpError(503, 'Failed to verify existing document');
-  }
 }
 
 async function executeFirestoreApi(event, body) {
