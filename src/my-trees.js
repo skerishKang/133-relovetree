@@ -173,6 +173,7 @@
         '<div class="tc-thumbs">' + thumbsHtml + '</div>' +
         '<div class="tc-actions">' +
         '    <button class="btn-tc-action" data-action="edit" data-tree-id="' + escapeHtml(treeId) + '"><span>✎</span>편집</button>' +
+        '    <button class="btn-tc-action" data-action="toggle-public" data-tree-id="' + escapeHtml(treeId) + '"><span>' + (isPublic ? '🔒' : '🌐') + '</span>' + (isPublic ? '비공개' : '공개') + '</button>' +
         '    <button class="btn-tc-action" data-action="share" data-tree-id="' + escapeHtml(treeId) + '"><span>↗</span>공유</button>' +
         '    <button class="btn-tc-action" data-action="duplicate" data-tree-id="' + escapeHtml(treeId) + '"><span>❐</span>복제</button>' +
         '    <button class="btn-tc-action" data-action="delete" data-tree-id="' + escapeHtml(treeId) + '"><span>🗑</span>삭제</button>' +
@@ -238,6 +239,18 @@
         copyToClipboard(shareUrl);
         alert('공유 링크가 복사되었습니다!');
       }
+    } else if (action === 'toggle-public') {
+      var tree = trees.find(function(t) { return getTreeId(t) === treeId; });
+      if (!tree) return;
+      var newVisibility = !tree.isPublic;
+      var db = window.postgresDB;
+      if (!db) return;
+      db.collection('trees').doc(treeId).set({ isPublic: newVisibility }, { merge: true }).then(function() {
+        loadTrees();
+      }).catch(function(err) {
+        console.error('Failed to update visibility:', err);
+        alert('공개 설정 변경에 실패했습니다.');
+      });
     } else if (action === 'delete') {
       if (confirm('정말 이 트리를 삭제하시겠습니까?')) {
         F.deleteTree(currentUser, treeId).then(function() {

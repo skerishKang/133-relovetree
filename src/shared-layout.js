@@ -39,13 +39,19 @@
      * This provides a unified GNB across all standard pages without hardcoding.
      */
 
-    const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner']);
+    const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail']);
 
     function shouldInjectGlobalLayout() {
         try {
             if (typeof document === 'undefined') return false;
             const page = document.body ? String(document.body.getAttribute('data-page') || '') : '';
-            return LAYOUT_PAGE_ALLOWLIST.has(page);
+            if (LAYOUT_PAGE_ALLOWLIST.has(page)) return true;
+            
+            // Fallback for subpages
+            const path = window.location.pathname;
+            if (path.includes('community.html') || path.includes('my-trees.html') || path.includes('settings.html')) return true;
+            
+            return false;
         } catch (e) {
             return false;
         }
@@ -53,83 +59,45 @@
 
     function buildGlobalHeaderHTML(active) {
         const a = active || '';
-        const isHome = a === 'home';
-        const isLovetree = a === 'lovetree';
-        const isCommunity = a === 'community';
-        const isOwner = a === 'owner';
+        const isLovetree = a === 'lovetree' || window.location.pathname.includes('lovetree.html');
+        const isCommunity = a === 'community' || window.location.pathname.includes('community.html');
 
-        const homeClass = isHome ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
         const lovetreeClass = isLovetree ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
         const communityClass = isCommunity ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
-        const ownerClass = isOwner ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
 
-// Standard GNB for home/lovetree/community/owner (with avatar dropdown support)
-  // Auth buttons are hidden until Firebase confirms auth state (two-phase render - prevents flash)
-  if (isHome || isLovetree || isCommunity || isOwner) {
-    return `
-    <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
-      <div class="gnb-inner shell">
-        <a href="/" class="gnb-logo">Lovetree</a>
-        <div class="gnb-links">
-          <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
-          <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+        // Flicker Fix: Check if we have a cached login state
+        let cachedUser = null;
+        try {
+            const stored = sessionStorage.getItem('lt_auth_cache');
+            if (stored) cachedUser = JSON.parse(stored);
+        } catch(e) {}
 
-          <div id="nav-auth-container" class="auth-pending">
-            <!-- Login Button (Shown when logged out, revealed after Firebase confirms no user) -->
-            <a href="/pages/login.html" class="btn-pill-auth is-hidden" id="nav-login-btn">로그인</a>
+        const userGroupClass = cachedUser ? 'gnb-user-group' : 'gnb-user-group is-hidden';
+        const loginBtnClass = cachedUser ? 'btn-pill-auth is-hidden' : 'btn-pill-auth';
+        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : '/assets/image/default-avatar.png';
 
-            <!-- User Group (Shown when logged in, revealed after Firebase confirms user) -->
-            <div id="nav-user-group" class="gnb-user-group is-hidden">
-                        <a href="/pages/my-trees.html" class="btn-pill-auth" style="background: #e11d48;">내 트리</a>
-                        
-                        <div class="avatar-container" style="position: relative;">
-                            <button id="nav-avatar-btn" class="avatar-btn" aria-label="사용자 메뉴">
-                                <img id="nav-avatar-img" src="/assets/image/default-avatar.png" alt="Profile">
-                            </button>
-                            
-                            <div id="nav-dropdown" class="gnb-dropdown">
-                                <a href="/pages/settings.html" class="dropdown-item">⚙️ 설정</a>
-                                <button id="nav-logout-btn" class="dropdown-item dropdown-item-logout">🚪 로그아웃</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-            `;
-        }
-
-        // Community/Owner style header (with search area)
+        // Unified Modern GNB (Flicker-free via cache)
         return `
-    <nav data-global-header="1" class="top-nav" role="navigation" aria-label="메인 네비게이션">
-        <div class="top-nav-inner">
-            <div class="top-nav-group">
-                <a href="/index.html" class="brand-link">
-                    <div class="brand-mark brand-mark-sm" aria-hidden="true">L</div>
-                    <div class="brand-copy">
-                        <span class="brand-title">LoveTree</span>
-                        <span class="brand-subtitle">나의 덕질 타임라인</span>
-                    </div>
-                </a>
-                <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
-                <a href="/pages/owner.html" class="${ownerClass}">내 트리 관리</a>
-            </div>
-            <div class="top-nav-actions">
-                <a href="/index.html#search" class="ui-btn-icon" title="검색" aria-label="검색">
-                    <svg class="ui-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </a>
-                <button id="global-settings-btn" type="button" class="nav-user-btn" title="로그인 및 설정" aria-label="로그인 및 설정">
-                    <svg class="ui-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <span class="is-hidden ui-inline-desktop">로그인</span>
-                </button>
-            </div>
-        </div>
-    </nav>
+        <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
+          <div class="gnb-inner shell">
+            <a href="/" class="gnb-logo">Lovetree</a>
+            <div class="gnb-links">
+              <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
+              <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+
+              <div id="nav-auth-container" class="${cachedUser ? '' : 'auth-pending'}">
+                <!-- Login Button -->
+                <a href="/pages/login.html" class="${loginBtnClass}" id="nav-login-btn">로그인</a>
+
+                <!-- User Group (Pathway Restored: Settings, My Trees) -->
+                <div id="nav-user-group" class="${userGroupClass}">
+                    <a href="/pages/my-trees.html" class="btn-pill-auth" style="background: #e11d48;">내 트리</a>
+                    
+                    <div class="avatar-container" style="position: relative;">
+                        <button id="nav-avatar-btn" class="avatar-btn" aria-label="사용자 메뉴">
+                            <img id="nav-avatar-img" src="${avatarSrc}" alt="Profile" onerror="this.src='/assets/image/default-avatar.png'">
+                        </button>
+                        
     `;
     }
 
@@ -193,16 +161,12 @@
         try {
             if (!shouldInjectGlobalLayout()) return;
             if (!document.body) return;
-            if (document.querySelector('nav[data-global-header="1"]')) return;
+            
+            // Unification: Ensure we don't have multiple headers
+            const existing = document.querySelector('nav[data-global-header="1"]');
+            if (existing) existing.remove();
 
-            const page = document.body ? String(document.body.getAttribute('data-page') || '') : '';
-            // Map data-page to active state for GNB
-            let active = '';
-            if (page === 'home' || page === 'lovetree' || page === 'community' || page === 'owner') {
-                active = page;
-            }
-
-            const headerHTML = buildGlobalHeaderHTML(active);
+            const headerHTML = buildGlobalHeaderHTML();
             const temp = document.createElement('div');
             temp.innerHTML = headerHTML;
             const nav = temp.firstElementChild;
@@ -210,51 +174,20 @@
                 document.body.insertBefore(nav, document.body.firstChild);
             }
 
-            if (!document.getElementById('settings-modal')) {
-                const modalWrap = document.createElement('div');
-                modalWrap.innerHTML = buildGlobalMyModalHTML();
-                const modalEl = modalWrap.firstElementChild;
-                if (modalEl) {
-                    document.body.appendChild(modalEl);
+            // Bind Dropdown Toggle (Pathway Fixed)
+            document.addEventListener('click', function(e) {
+                const btn = document.getElementById('nav-avatar-btn');
+                const menu = document.getElementById('nav-dropdown');
+                if (btn && btn.contains(e.target)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (menu) menu.classList.toggle('active');
+                } else if (menu && menu.classList.contains('active')) {
+                    if (!menu.contains(e.target)) {
+                        menu.classList.remove('active');
+                    }
                 }
-            }
-
-            const btn = document.getElementById('global-settings-btn');
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    const modal = document.getElementById('settings-modal');
-                    if (!modal) return;
-                    try {
-                        if (typeof modal.showModal === 'function') {
-                            modal.showModal();
-                        } else {
-                            modal.setAttribute('open', 'open');
-                        }
-                    } catch (e) {
-                    }
-                });
-            }
-
-            const myModal = document.getElementById('settings-modal');
-            if (myModal && !myModal.dataset.outsideClickBound) {
-                myModal.dataset.outsideClickBound = '1';
-                myModal.addEventListener('click', function (e) {
-                    try {
-                        const rect = myModal.getBoundingClientRect();
-                        const x = e.clientX;
-                        const y = e.clientY;
-                        const isOutside = x < rect.left || x > rect.right || y < rect.top || y > rect.bottom;
-                        if (isOutside) {
-                            if (typeof myModal.close === 'function') {
-                                myModal.close();
-                            } else {
-                                myModal.removeAttribute('open');
-                            }
-                        }
-                    } catch (err) {
-                    }
-                });
-            }
+            });
         } catch (e) {
         }
     }
@@ -291,23 +224,23 @@
         const loginBtn = document.getElementById('nav-login-btn');
         const userGroup = document.getElementById('nav-user-group');
         const avatarImg = document.getElementById('nav-avatar-img');
-        const avatarBtn = document.getElementById('nav-avatar-btn');
-        const dropdown = document.getElementById('nav-dropdown');
         const logoutBtn = document.getElementById('nav-logout-btn');
 
         if (user) {
+            // Flicker Fix: Cache the successful auth state
+            try {
+                sessionStorage.setItem('lt_auth_cache', JSON.stringify({
+                    uid: user.uid,
+                    photoURL: user.photoURL
+                }));
+            } catch(e) {}
+
             if (loginBtn) loginBtn.classList.add('is-hidden');
             if (userGroup) {
                 userGroup.classList.remove('is-hidden');
-                // Bind dropdown events when user logs in and element becomes visible
-                if (avatarBtn && dropdown) {
-                    avatarBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        dropdown.classList.toggle('active');
-                    };
-                }
                 if (logoutBtn) {
                     logoutBtn.onclick = function() {
+                        sessionStorage.removeItem('lt_auth_cache');
                         if (window.signOut) window.signOut();
                     };
                 }
@@ -316,19 +249,10 @@
                 avatarImg.src = user.photoURL;
             }
         } else {
+            sessionStorage.removeItem('lt_auth_cache');
             if (loginBtn) loginBtn.classList.remove('is-hidden');
             if (userGroup) userGroup.classList.add('is-hidden');
-            if (dropdown) dropdown.classList.remove('active');
         }
-        
-        // Global outside click handler (always active)
-        document.onclick = function(e) {
-            if (dropdown && dropdown.classList.contains('active')) {
-                if (!dropdown.contains(e.target) && (!avatarBtn || !avatarBtn.contains(e.target))) {
-                    dropdown.classList.remove('active');
-                }
-            }
-        };
     }
 
     /**
