@@ -171,6 +171,12 @@
   display: none;
 }
 
+/* Auth Pending State - Hide auth buttons until auth confirmed */
+#nav-auth-container.auth-pending #nav-login-btn,
+#nav-auth-container.auth-pending #nav-user-group {
+  display: none !important;
+}
+
 @media (min-width: 1024px) {
   .nav-user-btn {
     width: auto;

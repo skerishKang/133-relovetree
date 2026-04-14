@@ -66,19 +66,21 @@
         }
         
         // Check sessionStorage first for instant auth (prevents redirect flash)
-        let isLoggedIn = false;
+        let cachedUser = null;
         try {
-            isLoggedIn = sessionStorage.getItem('lovetree_auth') === 'logged_in';
+            const stored = sessionStorage.getItem('lt_auth_cache');
+            if (stored) cachedUser = JSON.parse(stored);
         } catch (e) {}
+        const isLoggedIn = cachedUser !== null;
         
         firebase.auth().onAuthStateChanged(function (user) {
-            // If not logged in AND no sessionStorage hint, redirect
+            // If not logged in AND no cached user, redirect
             if (!user && !isLoggedIn) {
                 window.location.href = '/pages/login.html';
                 return;
             }
             
-            // If sessionStorage said logged in but Firebase says not yet, wait briefly
+            // If we have a cached user but Firebase says not yet, wait briefly
             // This prevents "flash before data loads" issue
             if (!user && isLoggedIn) {
                 // Show loading, wait for next auth change

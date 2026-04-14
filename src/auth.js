@@ -197,9 +197,8 @@ async function signOut() {
         await firebase.auth().signOut();
         clearStaleFirebaseAuthState();
         
-        // Clear all auth-related cache keys
+        // Clear auth cache
         try { 
-            sessionStorage.removeItem('lovetree_auth'); 
             sessionStorage.removeItem('lt_auth_cache');
         } catch (e) {}
         

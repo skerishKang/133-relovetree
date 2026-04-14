@@ -77,29 +77,52 @@
         const loginBtnClass = cachedUser ? 'btn-pill-auth is-hidden' : 'btn-pill-auth';
         const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : '/assets/image/default-avatar.png';
 
-        // Unified Modern GNB (Flicker-free via cache)
-        return `
-        <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
-          <div class="gnb-inner shell">
-            <a href="/" class="gnb-logo">Lovetree</a>
-            <div class="gnb-links">
-              <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
-              <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+// Unified Modern GNB (Flicker-free via cache)
+return `
+<nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
+  <div class="gnb-inner shell">
+    <a href="/" class="gnb-logo">Lovetree</a>
+    <div class="gnb-links">
+      <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
+      <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
 
-              <div id="nav-auth-container" class="${cachedUser ? '' : 'auth-pending'}">
-                <!-- Login Button -->
-                <a href="/pages/login.html" class="${loginBtnClass}" id="nav-login-btn">로그인</a>
+      <div id="nav-auth-container" class="auth-pending">
+        <!-- Login Button -->
+        <a href="/pages/login.html" class="${loginBtnClass}" id="nav-login-btn">로그인</a>
 
-                <!-- User Group (Pathway Restored: Settings, My Trees) -->
-                <div id="nav-user-group" class="${userGroupClass}">
-                    <a href="/pages/my-trees.html" class="btn-pill-auth" style="background: #e11d48;">내 트리</a>
-                    
-                    <div class="avatar-container" style="position: relative;">
-                        <button id="nav-avatar-btn" class="avatar-btn" aria-label="사용자 메뉴">
-                            <img id="nav-avatar-img" src="${avatarSrc}" alt="Profile" onerror="this.src='/assets/image/default-avatar.png'">
-                        </button>
-                        
-    `;
+        <!-- User Group (Pathway Restored: Settings, My Trees) -->
+        <div id="nav-user-group" class="${userGroupClass}">
+            <a href="/pages/my-trees.html" class="btn-pill-auth" style="background: #e11d48;">내 트리</a>
+            
+            <div class="avatar-container" style="position: relative;">
+                <button id="nav-avatar-btn" class="avatar-btn" aria-label="사용자 메뉴">
+                    <img id="nav-avatar-img" src="${avatarSrc}" alt="Profile" onerror="this.src='/assets/image/default-avatar.png'">
+                </button>
+                
+                <div class="dropdown-menu" id="nav-dropdown">
+                    <div class="dropdown-header">
+                        <img id="dropdown-avatar" src="" alt="Profile" class="dropdown-avatar">
+                        <div class="dropdown-header-info">
+                            <span id="dropdown-name" class="dropdown-name"></span>
+                            <span class="dropdown-email">profile@lovetree.com</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-action" id="dropdown-settings">
+                        <svg class="ui-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 001.334 1.317h1.61c1.054 0 1.934.715 2.166 1.699 0 0 1.178-2.316 2.644-3.634a1.724 1.724 0 003.35 0c0 0 1.739 2.42 2.644 3.634 0 0 1.112-.685 2.166-1.699 0 0 1.61 0 1.334 1.317 0 0 2.924 1.756 3.35 0 0 0 0 0"></path></svg>
+                        설정
+                    </div>
+                    <div class="dropdown-action" id="dropdown-logout">
+                        <svg class="ui-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4L8 8m4 4l4 4"></path></svg>
+                        로그아웃
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
     }
 
     function buildGlobalMyModalHTML() {
@@ -293,10 +316,9 @@
             if (userGroup) {
                 userGroup.classList.remove('is-hidden');
                 if (logoutBtn) {
-                    logoutBtn.onclick = function() {
-                        sessionStorage.removeItem('lt_auth_cache');
-                        if (window.signOut) window.signOut();
-                    };
+logoutBtn.onclick = function() {
+    if (window.signOut) window.signOut();
+};
                 }
             }
             if (avatarImg && user.photoURL) {
