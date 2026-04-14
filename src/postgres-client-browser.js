@@ -29,26 +29,51 @@
 (function () {
   if (typeof window === 'undefined') return;
 
-  function ensureCompatLoaded() {
-    if (window.postgresDB || (window.firebase && typeof window.firebase.firestore === 'function')) {
+  // Initialize a global promise for other scripts to wait on
+  let resolveDB;
+  window.postgresDBReady = new Promise(resolve => {
+    resolveDB = resolve;
+  });
+
+  function initDB() {
+    if (window.postgresDB) {
+      resolveDB(window.postgresDB);
       return;
     }
 
-    const existing = document.querySelector('script[data-relovetree-compat="true"]');
-    if (existing) return;
+    if (window.firebase && typeof window.firebase.firestore === 'function') {
+      window.postgresDB = window.firebase.firestore();
+      
+      window.LovetreeDataLayer = Object.assign({}, window.LovetreeDataLayer, {
+        auth: 'firebase',
+        data: 'neon-postgres',
+        transport: 'compat-layer',
+        initializedAt: new Date().toISOString()
+      });
 
-    document.write('<script src="/src/firebase-firestore-compat.js" data-relovetree-compat="true"><\\/script>');
+      console.log('[Lovetree] PostgresDB Initialized.');
+      window.dispatchEvent(new CustomEvent('lovetree-db-ready', { detail: window.postgresDB }));
+      resolveDB(window.postgresDB);
+    }
   }
 
-  ensureCompatLoaded();
+  function loadCompat() {
+    if (window.postgresDB || (window.firebase && typeof window.firebase.firestore === 'function')) {
+      initDB();
+      return;
+    }
 
-  if (!window.postgresDB && window.firebase && typeof window.firebase.firestore === 'function') {
-    window.postgresDB = window.firebase.firestore();
+    const script = document.createElement('script');
+    script.src = '/src/firebase-firestore-compat.js?v=20260414_v3';
+    script.dataset.relovetreeCompat = 'true';
+    script.onload = initDB;
+    document.head.appendChild(script);
   }
 
-  window.LovetreeDataLayer = Object.assign({}, window.LovetreeDataLayer, {
-    auth: 'firebase',
-    data: 'neon-postgres',
-    transport: 'compat-layer',
-  });
+  // Handle case where it might already be loaded (DOMContentLoaded)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadCompat);
+  } else {
+    loadCompat();
+  }
 })();

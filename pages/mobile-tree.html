@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <title>사랑의 흐름 - Relovetree</title>
+    <title>사랑의 흐름 - Lovetree</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,11 +26,11 @@
     <header class="ctd-header" style="background: rgba(253, 250, 244, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0;">
         <a href="/pages/my-trees.html" class="back-link">‹</a>
         <div class="header-center-info">
-            <h1 style="font-size: 1.1rem; font-weight: 900;">테스트 러버 A의 러브트리</h1>
-            <p style="font-size: 0.75rem; color: #b56e6e;">사랑의 성장 기록</p>
+            <h1 id="tree-name-display" style="font-size: 1.1rem; font-weight: 900;">러브트리</h1>
+            <p id="tree-author-display" style="font-size: 0.75rem; color: #b56e6e;">사랑의 성장 기록</p>
         </div>
         <div class="header-logo" style="margin-left: 0;">
-            <a href="/" style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">Relovetree</a>
+            <a href="/" style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">Lovetree</a>
         </div>
     </header>
 
@@ -38,40 +38,10 @@
         <!-- Vertical Trunk (Image 3) -->
         <div class="trunk-line-v3"></div>
 
-        <section class="tree-canvas-inner">
-            <!-- Zigzag Nodes will be rendered here by JS. 
-                 Below are Mock Nodes for immediate visual alignment check -->
-            
-            <!-- Left Branch -->
-            <div class="ctd-node pos-1" style="position: relative; margin-bottom: 40px; justify-content: flex-start; padding-left: 5%;">
-                <div class="node-card" style="width: 42%; transform: rotate(-1deg);">
-                    <img src="https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=200&auto=format&fit=crop" style="width: 100%; border-radius: 8px;">
-                    <h4 style="font-size: 0.8rem; margin-top: 8px;">첫 만남의 기록</h4>
-                </div>
-                <div class="node-dot" style="left: 50%; top: 50%;"></div>
-            </div>
-
-            <!-- Right Branch -->
-            <div class="ctd-node pos-2" style="position: relative; margin-bottom: 40px; justify-content: flex-end; padding-right: 5%;">
-                <div class="node-dot" style="left: 50%; top: 50%;"></div>
-                <div class="node-card" style="width: 42%; transform: rotate(1deg);">
-                    <img src="https://images.unsplash.com/photo-1493225255766-d9584f8606e9?q=80&w=200&auto=format&fit=crop" style="width: 100%; border-radius: 8px;">
-                    <h4 style="font-size: 0.8rem; margin-top: 8px;">첫 앨범 언박싱</h4>
-                </div>
-            </div>
-
-            <!-- Left Branch -->
-            <div class="ctd-node pos-3" style="position: relative; margin-bottom: 60px; justify-content: flex-start; padding-left: 5%;">
-                <div class="node-card" style="width: 42%; transform: rotate(-2deg);">
-                    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a74a2?q=80&w=200&auto=format&fit=crop" style="width: 100%; border-radius: 8px;">
-                    <h4 style="font-size: 0.8rem; margin-top: 8px;">콘서트의 전율</h4>
-                </div>
-                <div class="node-dot" style="left: 50%; top: 50%;"></div>
-            </div>
-
-            <!-- Share CTA at bottom -->
-            <div style="display: flex; justify-content: center; padding: 40px 20px;">
-                <button style="width: 100%; max-width: 320px; height: 56px; background: #b56e6e; color: #fff; border-radius: 12px; font-weight: 800; border: none;">이 러브트리 성장 기록 공유하기</button>
+        <section class="tree-canvas-inner" id="tree-canvas">
+            <!-- Zigzag Nodes will be rendered here by JS. -->
+            <div id="loading-spinner" style="text-align: center; padding: 100px 0;">
+                <p style="font-weight: 800; color: #b56e6e;">사랑의 기억을 불러오는 중...</p>
             </div>
         </section>
     </main>
@@ -79,11 +49,11 @@
     <!-- Navigation Guard & App Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/runtime-config.js"></script>
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/shared.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/api.js"></script>
-    <script src="/src/mobile-tree.js"></script>
+    <script src="/src/runtime-config.js?v=20260414_v3"></script>
+    <script src="/src/shared-utils.js?v=20260414_v3"></script>
+    <script src="/src/shared.js?v=20260414_v3"></script>
+    <script src="/src/auth.js?v=20260414_v3"></script>
+    <script src="/src/api.js?v=20260414_v3"></script>
+    <script src="/src/mobile-tree.js?v=20260414_v3"></script>
 </body>
 </html>

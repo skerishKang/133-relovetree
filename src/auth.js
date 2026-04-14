@@ -218,7 +218,15 @@ async function signOut() {
  * @param {number} maxRetries - Maximum retry attempts
  */
 async function syncUserToDatabase(user, retryCount = 0, maxRetries = 2) {
+  // Wait for the global database promise to resolve
+  await window.postgresDBReady;
   const db = window.postgresDB;
+  
+  if (!db) {
+    console.warn('PostgresDB not available after waiting. Skipping sync.');
+    return;
+  }
+
   const userRef = db.collection('users').doc(user.uid);
   const fallbackDisplayName = user.displayName || user.email || '사용자';
 
@@ -301,7 +309,9 @@ function updateLoginUI(user) {
  */
 async function checkAdminRole(user) {
     try {
+        await window.postgresDBReady;
         const db = window.postgresDB;
+        if (!db) return false;
         const doc = await db.collection('users').doc(user.uid).get();
         return doc.exists && doc.data().role === 'admin';
     } catch (e) {
