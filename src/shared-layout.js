@@ -39,8 +39,14 @@
      * This provides a unified GNB across all standard pages without hardcoding.
      */
 
-    const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail']);
+    const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail', 'login']);
     const ASSET_VERSION = '20260414_v10';
+
+    function getLayoutContext() {
+        const page = document.body ? String(document.body.getAttribute('data-page') || '') : '';
+        const minimalPages = ['owner', 'settings', 'admin', 'login'];
+        return minimalPages.includes(page) ? 'minimal' : 'standard';
+    }
 
     function shouldInjectGlobalLayout() {
         try {
@@ -50,7 +56,7 @@
             
             // Fallback for subpages
             const path = window.location.pathname;
-            if (path.includes('community.html') || path.includes('my-trees.html') || path.includes('settings.html')) return true;
+            if (path.includes('community.html') || path.includes('my-trees.html') || path.includes('settings.html') || path.includes('login.html')) return true;
             
             return false;
         } catch (e) {
@@ -58,7 +64,8 @@
         }
     }
 
-    function buildGlobalHeaderHTML(active) {
+    function buildGlobalHeaderHTML(active, context) {
+        const ctx = context || getLayoutContext();
         const a = active || '';
         const isLovetree = a === 'lovetree' || window.location.pathname.includes('lovetree.html');
         const isCommunity = a === 'community' || window.location.pathname.includes('community.html');
@@ -78,14 +85,23 @@
         const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : '/assets/image/default-avatar.png';
         const authContainerClass = cachedUser ? '' : 'auth-pending';
 
+        const gnbClass = ctx === 'minimal' ? 'gnb-v2 gnb-minimal' : 'gnb-v2';
+
 // Unified Modern GNB (Flicker-free via cache)
 return `
-<nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
+<nav data-global-header="1" class="${gnbClass}" role="navigation" aria-label="메인 네비게이션">
   <div class="gnb-inner">
     <a href="/" class="gnb-logo">Lovetree</a>
     <div class="gnb-links">
+      ${ctx === 'standard' ? `
       <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
       <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+      ` : `
+      <a href="/" class="gnb-exit-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14" style="margin-right:2px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        종료
+      </a>
+      `}
 
       <div id="nav-auth-container" class="${authContainerClass}">
         <!-- Login Button -->

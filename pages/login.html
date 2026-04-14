@@ -5,20 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>환영합니다 - Lovetree</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
-    <link rel="stylesheet" href="/assets/css/login.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v10">
+    <link rel="stylesheet" href="/assets/css/login.css?v=20260414_v10">
 </head>
 <body class="login-page" data-page="login">
+    <!-- GNB will be injected by shared-layout.js -->
+    <div class="page-wrapper">
     <div class="login-shell">
         <div class="login-card">
-            <!-- Brand -->
-            <div class="login-brand">
-                <div class="login-brand-mark">🌱</div>
-                <div class="login-title">Lovetree</div>
-            </div>
-
-            <!-- Header -->
-            <div class="login-stack-sm" style="text-align: center;">
+            <!-- Header (Logo handled by GNB) -->
+            <div class="login-stack-sm" style="text-align: center; margin-top: 20px;">
                 <h1 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.3;">다시, 당신의 사랑을<br>기록할 시간입니다</h1>
                 <p class="login-muted">흩어진 순간들을 모아 하나의 나무로 완성하세요<br>로그인하면 모든 기록이 안전하게 보관됩니다</p>
             </div>
@@ -52,6 +48,7 @@
             <a href="/" class="login-link-btn" style="text-align: center; font-size: 0.75rem; margin-top: 10px;">나중에 기록할게요 (홈으로)</a>
         </div>
     </div>
+    </div> <!-- Close page-wrapper -->
 
     <!-- Email Auth Modal -->
     <div id="email-auth-modal" class="auth-modal is-hidden">
@@ -98,12 +95,13 @@
     <!-- firebase-firestore.js removed: login page only needs auth, not DB -->
 
     <!-- App Scripts -->
-    <script src="/src/runtime-config.js?v=20260414_v3"></script>
-    <script src="/src/postgres-client-browser.js?v=20260414_v3"></script>
-    <script src="/src/shared-utils.js?v=20260414_v3"></script>
-    <script src="/src/shared.js?v=20260414_v3"></script>
-    <script src="/src/auth.js?v=20260414_v3"></script>
-    <script src="/src/concept-state.js?v=20260414_v3"></script>
+    <script src="/src/runtime-config.js?v=20260414_v10"></script>
+    <script src="/src/postgres-client-browser.js?v=20260414_v10"></script>
+    <script src="/src/shared-layout.js?v=20260414_v10"></script>
+    <script src="/src/shared-utils.js?v=20260414_v10"></script>
+    <script src="/src/shared.js?v=20260414_v10"></script>
+    <script src="/src/auth.js?v=20260414_v10"></script>
+    <script src="/src/concept-state.js?v=20260414_v10"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -70,10 +70,49 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(226, 232, 240, 0.4);
-  position: sticky;
+  position: fixed; /* Always fixed to top */
   top: 0;
-  z-index: 1000;
+  left: 0;
+  z-index: 2000;
   width: 100%;
+  height: 68px; /* Standardize height */
+  display: flex;
+  align-items: center;
+}
+
+/* Page Wrapper - Offset for fixed GNB */
+.page-wrapper {
+  padding-top: 68px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Minimal GNB Overrides */
+.gnb-v2.gnb-minimal .gnb-links {
+  gap: 12px;
+}
+.gnb-v2.gnb-minimal .gnb-links a:not(.gnb-exit-btn) {
+  display: none;
+}
+
+.gnb-exit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.gnb-exit-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
 .gnb-inner {
