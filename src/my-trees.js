@@ -114,7 +114,7 @@
   }
 
   function getTreeVisibility(tree) {
-    return tree && (tree.visibility || tree.isPublic || 'private');
+    return tree && tree.isPublic === true ? 'public' : 'private';
   }
 
   function renderTreeList(trees) {

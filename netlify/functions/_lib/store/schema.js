@@ -27,6 +27,7 @@ const TABLE_CONFIG = {
       ownerId: { column: 'owner_id', type: 'text' },
       isDemo: { column: 'is_demo', type: 'boolean' },
       isAiBot: { column: 'is_ai_bot', type: 'boolean' },
+      isPublic: { column: 'is_public', type: 'boolean' },
       nodeCount: { column: 'node_count', type: 'number' },
       viewCount: { column: 'view_count', type: 'number' },
       likeCount: { column: 'like_count', type: 'number' },

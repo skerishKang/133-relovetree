@@ -63,28 +63,23 @@
         const communityClass = isCommunity ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
         const ownerClass = isOwner ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
 
-        // Check sessionStorage for instant auth state (prevents flash)
-        let isLoggedIn = false;
-        try {
-            isLoggedIn = sessionStorage.getItem('lovetree_auth') === 'logged_in';
-        } catch (e) { /* ignore */ }
-
-        // Standard GNB for home/lovetree/community/owner (with avatar dropdown support)
-        if (isHome || isLovetree || isCommunity || isOwner) {
-            return `
+// Standard GNB for home/lovetree/community/owner (with avatar dropdown support)
+  // Auth buttons are hidden until Firebase confirms auth state (two-phase render - prevents flash)
+  if (isHome || isLovetree || isCommunity || isOwner) {
+    return `
     <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
-        <div class="gnb-inner shell">
-            <a href="/" class="gnb-logo">Lovetree</a>
-            <div class="gnb-links">
-                <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
-                <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
-                
-                <div id="nav-auth-container">
-                    <!-- Login Button (Shown when logged out) -->
-                    <a href="/pages/login.html" class="btn-pill-auth" id="nav-login-btn" ${isLoggedIn ? 'style="display:none"' : ''}>로그인</a>
-                    
-                    <!-- User Group (Shown when logged in) - rendered instantly from sessionStorage -->
-                    <div id="nav-user-group" class="gnb-user-group ${isLoggedIn ? '' : 'is-hidden'}">
+      <div class="gnb-inner shell">
+        <a href="/" class="gnb-logo">Lovetree</a>
+        <div class="gnb-links">
+          <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
+          <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
+
+          <div id="nav-auth-container" class="auth-pending">
+            <!-- Login Button (Shown when logged out, revealed after Firebase confirms no user) -->
+            <a href="/pages/login.html" class="btn-pill-auth is-hidden" id="nav-login-btn">로그인</a>
+
+            <!-- User Group (Shown when logged in, revealed after Firebase confirms user) -->
+            <div id="nav-user-group" class="gnb-user-group is-hidden">
                         <a href="/pages/my-trees.html" class="btn-pill-auth" style="background: #e11d48;">내 트리</a>
                         
                         <div class="avatar-container" style="position: relative;">

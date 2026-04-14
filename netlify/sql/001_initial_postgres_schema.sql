@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS trees (
   name text,
   is_demo boolean NOT NULL DEFAULT false,
   is_ai_bot boolean NOT NULL DEFAULT false,
+  is_public boolean NOT NULL DEFAULT false,
   node_count integer NOT NULL DEFAULT 0,
   view_count integer NOT NULL DEFAULT 0,
   like_count integer NOT NULL DEFAULT 0,

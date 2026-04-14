@@ -114,6 +114,7 @@
             comments: [],
             ownerId: user.uid,
             nodeCount: 0,
+            isPublic: false,
             lastUpdated: new Date().toISOString(),
             // serverTimestamp() is handled by the Postgres compat layer
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
