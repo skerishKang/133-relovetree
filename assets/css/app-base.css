@@ -17,7 +17,33 @@ body {
   margin: 0;
   background-color: #fdfaf4;
   color: #0f172a;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
+
+/* --- Global Brand Watermark: Soft Tree (Diverse Positioning) --- */
+body::before {
+  content: "";
+  position: absolute;
+  width: 450px;
+  height: 600px;
+  background: url('/assets/image/bg-tree-soft.png') no-repeat;
+  background-size: contain;
+  opacity: 0.05; /* Extremely subtle for brand feel */
+  pointer-events: none;
+  z-index: 0;
+  transition: all 0.5s ease;
+}
+
+/* Specific Positions per Page */
+body[data-page="home"]::before { top: 0; right: -150px; transform: rotate(-15deg); }
+body[data-page="community"]::before { top: 100px; left: -100px; }
+body[data-page="my-trees"]::before { bottom: 0; right: -100px; transform: rotate(15deg); }
+body[data-page="lovetree"]::before { top: 300px; left: -150px; transform: rotate(-10deg); }
+body:not([data-page])::before,
+body[data-page="settings"]::before { bottom: -100px; left: -100px; }
+/* ----------------------------------------------------------------- */
 
 /* Typography Reset */
 h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; margin: 0; }

@@ -107,14 +107,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Proactive redirect if already logged in
-  if (typeof firebase !== 'undefined') {
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        window.location.href = '/';
-      }
-    });
-  }
+  // Proactive redirect removed: Allow users to see the login options even if a session exists.
+  // This allows the 'prompt: select_account' in auth.js to function correctly when the user clicks Login.
 
   var googleBtn = document.getElementById('login-btn');
   var emailBtn = document.getElementById('login-btn-email');

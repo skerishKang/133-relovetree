@@ -193,14 +193,21 @@ async function signOut() {
     try {
         if (!firebase.apps || !firebase.apps.length || typeof firebase.auth !== 'function') {
             clearStaleFirebaseAuthState();
+            try { 
+                sessionStorage.removeItem('lovetree_auth'); 
+                sessionStorage.removeItem('lt_auth_cache');
+            } catch(e) {}
             window.location.reload();
             return;
         }
         await firebase.auth().signOut();
         clearStaleFirebaseAuthState();
         
-        // Clear login state
-        try { sessionStorage.removeItem('lovetree_auth'); } catch (e) {}
+        // Clear all auth-related cache keys
+        try { 
+            sessionStorage.removeItem('lovetree_auth'); 
+            sessionStorage.removeItem('lt_auth_cache');
+        } catch (e) {}
         
         window.location.reload();
     } catch (error) {
