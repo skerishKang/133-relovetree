@@ -85,6 +85,7 @@ module.exports = {
   DELETE_SENTINEL,
   isPlainObject,
   clone,
+  cloneValue: clone,
   isTransform,
   applyTransform,
   applyPatch,

@@ -40,7 +40,7 @@
      */
 
     const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail', 'login']);
-    const ASSET_VERSION = '20260414_v14_final';
+    const ASSET_VERSION = '20260414_v15_absolute_zero';
 
     /**
      * Layout Purge Observer: Real-time monitoring of legacy elements.
@@ -105,7 +105,7 @@
 
         const userGroupClass = cachedUser ? 'gnb-user-group' : 'gnb-user-group is-hidden';
         const loginBtnClass = cachedUser ? 'btn-pill-auth is-hidden' : 'btn-pill-auth';
-        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : `/assets/image/lt-profile-v14.png?v=${ASSET_VERSION}`;
+        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : `/assets/image/lt-profile-v15.png?v=${ASSET_VERSION}`;
         const authContainerClass = cachedUser ? '' : 'auth-pending';
 
         const gnbClass = ctx === 'minimal' ? 'gnb-v2 gnb-minimal' : 'gnb-v2';

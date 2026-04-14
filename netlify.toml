@@ -20,128 +20,128 @@
 [[redirects]]
   from = "/home.html"
   to = "/index.html"
-  status = 301
+  status = 200
   force = true
 
 [[redirects]]
   from = "/about.html"
   to = "/pages/about.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/album-view.html"
   to = "/pages/album-view.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/community-tree-detail.html"
   to = "/pages/community-tree-detail.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/community.html"
   to = "/pages/community.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/editor-desktop-empty.html"
   to = "/pages/editor-desktop-empty.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/editor-desktop.html"
   to = "/pages/editor-desktop.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/editor.html"
   to = "/pages/editor.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/empty-state.html"
   to = "/pages/empty-state.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/login.html"
   to = "/pages/login.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/lovetree.html"
   to = "/pages/lovetree.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/memory-detail.html"
   to = "/pages/memory-detail.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/mobile-add-branch.html"
   to = "/pages/mobile-add-branch.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/mobile-add-memory.html"
   to = "/pages/mobile-add-memory.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/mobile-tree.html"
   to = "/pages/mobile-tree.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/my-trees.html"
   to = "/pages/my-trees.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/settings.html"
   to = "/pages/settings.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/story-view.html"
   to = "/pages/story-view.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/video-search.html"
   to = "/pages/video-search.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/admin.html"
   to = "/pages/admin.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/owner.html"
   to = "/pages/owner.html"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/admin.js"
   to = "/src/entries/admin.js"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/community.js"
   to = "/src/entries/community.js"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/owner.js"
   to = "/src/entries/owner.js"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/editor_ai.js"
   to = "/src/entries/editor_ai.js"
-  status = 301
+  status = 200
 
 [[redirects]]
   from = "/admin.css"
