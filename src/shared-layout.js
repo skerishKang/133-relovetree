@@ -290,11 +290,27 @@
         const loginBtn = document.getElementById('nav-login-btn');
         const userGroup = document.getElementById('nav-user-group');
         const avatarImg = document.getElementById('nav-avatar-img');
+        const avatarBtn = document.getElementById('nav-avatar-btn');
         const dropdown = document.getElementById('nav-dropdown');
+        const logoutBtn = document.getElementById('nav-logout-btn');
 
         if (user) {
             if (loginBtn) loginBtn.classList.add('is-hidden');
-            if (userGroup) userGroup.classList.remove('is-hidden');
+            if (userGroup) {
+                userGroup.classList.remove('is-hidden');
+                // Bind dropdown events when user logs in and element becomes visible
+                if (avatarBtn && dropdown) {
+                    avatarBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        dropdown.classList.toggle('active');
+                    };
+                }
+                if (logoutBtn) {
+                    logoutBtn.onclick = function() {
+                        if (window.signOut) window.signOut();
+                    };
+                }
+            }
             if (avatarImg && user.photoURL) {
                 avatarImg.src = user.photoURL;
             }
@@ -303,6 +319,15 @@
             if (userGroup) userGroup.classList.add('is-hidden');
             if (dropdown) dropdown.classList.remove('active');
         }
+        
+        // Global outside click handler (always active)
+        document.onclick = function(e) {
+            if (dropdown && dropdown.classList.contains('active')) {
+                if (!dropdown.contains(e.target) && (!avatarBtn || !avatarBtn.contains(e.target))) {
+                    dropdown.classList.remove('active');
+                }
+            }
+        };
     }
 
     /**
@@ -352,30 +377,13 @@
             }, 1000);
         }
         
-        // 3. Bind navigation events
+        // 3. Bind navigation events (legacy - now handled in updateLTAuthUI after login)
         if (!options.skipLogoutBinding) {
-            // Logout
+            // Old logout binding - kept for compatibility
             var logoutBtn = document.getElementById('nav-logout-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', function() {
                     if (window.signOut) window.signOut();
-                });
-            }
-
-            // Dropdown Toggle
-            var avatarBtn = document.getElementById('nav-avatar-btn');
-            var dropdown = document.getElementById('nav-dropdown');
-            if (avatarBtn && dropdown) {
-                avatarBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    dropdown.classList.toggle('active');
-                });
-                
-                // Close on outside click
-                document.addEventListener('click', function(e) {
-                    if (!avatarBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                        dropdown.classList.remove('active');
-                    }
                 });
             }
         }
