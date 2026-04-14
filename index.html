@@ -1,103 +1,91 @@
-<!-- index.html - Main Home -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <title>Lovetree - 사랑을 기록하고 잇는 공간</title>
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v15_absolute_zero">
-    <link rel="stylesheet" href="/assets/css/home-v3.css?v=20260414_v15_absolute_zero">
-    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260414_v15_absolute_zero">
-    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v15_absolute_zero">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Layout Guardian V15: Absolute Zero Sync -->
-    <script>
-        (function() {
-            const v = "V15_ABSOLUTE_ZERO_20260414";
-            console.log("[Lovetree] HTML Version: " + v);
-            const purge = () => {
-                const legacy = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"]), .brand-link, .brand-title');
-                legacy.forEach(el => el.remove());
-            };
-            purge();
-            if (window.MutationObserver) {
-                const observer = new MutationObserver(purge);
-                observer.observe(document.documentElement, { childList: true, subtree: true });
-                setTimeout(() => observer.disconnect(), 5000);
-            }
-        })();
-    </script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v16">
+    <link rel="stylesheet" href="/assets/css/index-hero.css?v=20260414_v16">
+    <link rel="stylesheet" href="/assets/css/index-sections.css?v=20260414_v16">
+    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v16">
+
 </head>
-<body class="home-v2-active" data-page="home">
+<body class="home-page index-page" data-page="home">
     <div class="page-wrapper">
-        <!-- Hardcoded nav removed - now injected by shared-layout.js -->
+        <!-- Hero Section: 2-column (Screenshot 2 Alignment) -->
+        <section class="hero-v2">
+            <div class="shell hero-inner" style="display: flex; align-items: center; gap: 40px; padding: 40px 0;">
+                <div class="hero-left" style="flex: 1;">
+                    <div class="hero-badge" style="display: inline-block; background: #fff1f2; color: #e11d48; padding: 6px 16px; border-radius: 99px; font-weight: 800; font-size: 0.85rem; margin-bottom: 24px;">🌿 사랑이 자라나는 기록</div>
+                    <h1 style="font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900; color: #0f172a; line-height: 1.2; margin-bottom: 24px;">러브트리는 사랑에 빠진<br>모든 순간들이 자라난 기록입니다</h1>
+                    <p style="font-size: 1.2rem; color: #475569; margin-bottom: 40px; line-height: 1.8;">우리가 좋아하는 아티스트와 함께한 시간들이 흩어지지 않도록<br>영상과 감정의 실을 엮어 하나의 줄기로 만들어 보세요</p>
+                    <div class="hero-btns">
+                        <a href="/pages/login.html" class="btn-main">내 러브트리 시작하기</a>
+                        <a href="/pages/community.html" class="btn-sub">다른 트리 둘러보기</a>
+                    </div>
+                </div>
 
-    <!-- Hero Section -->
-    <section class="hero-v2">
-        <div class="shell hero-inner" style="display: flex; align-items: center; gap: 40px; padding: 40px 0;">
-            <div class="hero-left" style="flex: 1;">
-                <h1>사랑에 빠진<br>모든 순간을<br>연결하세요</h1>
-                <p>
-                    영상, 날짜, 감정, 메모가 아름답게 이어져<br>
-                    당신만의 러브트리가 자라납니다
-                </p>
-                <div class="hero-btns">
-                    <a href="/pages/login.html" class="btn-main">내 러브트리 시작하기</a>
-                    <a href="/pages/community.html" class="btn-sub">다른 트리 둘러보기</a>
+                <div class="hero-right" style="flex: 1.2; position: relative; height: 420px;">
+                    <div class="tree-container" style="position: relative; width: 100%; height: 100%;">
+                        <svg class="tree-svg" viewBox="0 0 600 500" preserveAspectRatio="none" style="position: absolute; width: 100%; height: 100%;">
+                            <path d="M500,500 C480,400 520,300 480,0" stroke="#ebdcd0" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6" />
+                            <path d="M495,350 Q400,320 65,185" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
+                            <path d="M490,250 Q350,200 225,115" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
+                            <path d="M490,280 Q350,280 245,285" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
+                            <path d="M485,150 Q420,100 405,80" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
+                        </svg>
+                        <div class="memory-node n1" style="position: absolute; top: 185px; left: 10%;"><div class="node-thumb"><img src="/docs/image/slide/home-slide-01-empty-tree_bts.png" alt="Mem"></div></div>
+                        <div class="memory-node n2" style="position: absolute; top: 115px; left: 35%;"><div class="node-thumb"><img src="/docs/image/slide/home-slide-02-first-memory_bts.png" alt="Mem"></div></div>
+                        <div class="memory-node n3" style="position: absolute; top: 285px; left: 40%;"><div class="node-thumb"><img src="/docs/image/slide/slide1.png" alt="Mem"></div></div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div class="hero-right" style="flex: 1.2; position: relative; height: 420px;">
-                <div class="tree-container" style="position: relative; width: 100%; height: 100%;">
-                    <!-- Organic Branch SVG -->
-                    <svg class="tree-svg" viewBox="0 0 600 500" preserveAspectRatio="none" style="position: absolute; width: 100%; height: 100%;">
-                        <path d="M500,500 C480,400 520,300 480,0" stroke="#ebdcd0" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6" />
-                        <path d="M495,350 Q400,320 65,185" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <path d="M490,250 Q350,200 225,115" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <path d="M490,280 Q350,280 245,285" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <path d="M485,150 Q420,100 405,80" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                        <path d="M485,220 Q440,240 425,245" stroke="#ebdcd0" stroke-width="2" fill="none" opacity="0.8" />
-                    </svg>
-
-                    <!-- Memory Nodes -->
-                    <div class="memory-node n1"><div class="node-thumb"><img src="/docs/image/slide/home-slide-01-empty-tree_bts.png" alt="Mem" class="is-blurred"><div class="play-ico">▶</div></div><div class="node-meta">2023.03.08 <span class="badge-memo">심쿵</span></div></div>
-                    <div class="memory-node n2"><div class="node-thumb"><img src="/docs/image/slide/home-slide-02-first-memory_bts.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.09.20 <span class="badge-memo">심쿵</span></div></div>
-                    <div class="memory-node n3"><div class="node-thumb"><img src="/docs/image/slide/slide1.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.06.17 <span class="badge-memo">감동</span></div></div>
-                    <div class="memory-node n4"><div class="node-thumb"><img src="/docs/image/slide/slide2.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.08.10 <span class="badge-memo">기록</span></div></div>
-                    <div class="memory-node n5"><div class="node-thumb"><img src="/docs/image/slide/Gemini_Generated_Image_z8g408z8g408z8g4.png" alt="Mem"><div class="play-ico">▶</div></div><div class="node-meta">2023.01.07 <span class="badge-memo">기억</span></div></div>
+        <!-- Concept: Features Grid -->
+        <section class="lt-section" style="padding: 100px 0;">
+            <div class="shell">
+                <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                    <h2 style="font-size: 2.2rem; font-weight: 900; color: #0f172a; margin-bottom: 16px;">러브트리는 어떻게 만드나요?</h2>
+                    <p style="font-size: 1.1rem; color: #64748b;">좋아하는 마음을 기록하는 가장 아름다운 방법</p>
+                </div>
+                <div class="feat-grid">
+                    <div class="feat-card">
+                        <div class="feat-icon">📸</div>
+                        <h3>순간 포착</h3>
+                        <p>기억하고 싶은 영상과 그날의 감정을 메모로 남깁니다</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">🔗</div>
+                        <h3>경로 연결</h3>
+                        <p>기록들이 시간 순서대로 이어져 하나의 줄기가 됩니다</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">🌱</div>
+                        <h3>트리 완성</h3>
+                        <p>모인 순간들이 자라나 당신만의 러브트리가 됩니다</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">📢</div>
+                        <h3>공유하기</h3>
+                        <p>완성된 추억의 경로를 다른 팬들과 함께 나눕니다</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Bottom Features (Universal Grid) -->
-    <section class="features-v2">
-        <div class="shell feat-grid">
-            <div class="feat-card">
-                <div class="feat-icon">📸</div>
-                <h3>순간 포착</h3>
-                <p>좋아하게 된 장면을<br>영상과 함께 남깁니다</p>
+        <footer style="padding: 60px 0; text-align: center; color: #64748b; font-size: 0.9rem; border-top: 1px solid rgba(226, 232, 240, 0.4);">
+            <div class="shell">
+                <p style="font-weight: 700; color: #0f172a; margin-bottom: 8px;">Lovetree와 함께 사랑의 순간을 기록하세요</p>
+                <p>&copy; 2026 Lovetree 사랑의 모든 순간을 연결합니다</p>
             </div>
-            <div class="feat-card">
-                <div class="feat-icon">🔗</div>
-                <h3>경로 연결</h3>
-                <p>날짜와 감정이 이어져<br>하나의 흐름이 됩니다</p>
-            </div>
-            <div class="feat-card">
-                <div class="feat-icon">🌱</div>
-                <h3>트리 완성</h3>
-                <p>기록이 모여 당신만의<br>러브트리가 자랍니다</p>
-            </div>
-            <div class="feat-card">
-                <div class="feat-icon">📢</div>
-                <h3>공유하기</h3>
-                <p>완성된 트리를 다른<br>팬과 나눌 수 있습니다</p>
-            </div>
-        </div>
-    </section>
+        </footer>
     </div>
 
     <!-- Scripts -->
@@ -112,22 +100,7 @@
     <script src="/src/concept-state.js?v=20260414_v15_absolute_zero"></script>
 
     <script>
-        // Auth State Integration (Common)
-        // index.html has no nav-logout-btn, so skip logout binding
-        if (window.initStandardAuthUI) window.initStandardAuthUI({
-            skipLogoutBinding: true
-        });
-
-        // Simple entry animation
-        document.querySelectorAll('.memory-node').forEach((el, idx) => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                el.style.transition = 'all 0.6s ease';
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            }, 300 + (idx * 150));
-        });
+        if (window.initStandardAuthUI) window.initStandardAuthUI();
     </script>
 </body>
 </html>

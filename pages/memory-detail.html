@@ -11,52 +11,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- CSS Unified Design System V3 -->
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v7">
-    <link rel="stylesheet" href="/assets/css/memory-detail-v3.css?v=20260414_v7">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v15_absolute_zero">
+    <link rel="stylesheet" href="/assets/css/memory-v3.css?v=20260414_v15_absolute_zero">
+
+    <!-- Layout Guardian V15: Absolute Zero Sync -->
+    <script>
+        (function() {
+            const v = "V15_ABSOLUTE_ZERO_20260414";
+            console.log("[Lovetree] HTML Version: " + v);
+            const purge = () => {
+                const legacy = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"]), .brand-link, .brand-title');
+                legacy.forEach(el => el.remove());
+            };
+            purge();
+            if (window.MutationObserver) {
+                const observer = new MutationObserver(purge);
+                observer.observe(document.documentElement, { childList: true, subtree: true });
+                setTimeout(() => observer.disconnect(), 5000);
+            }
+        })();
+    </script>
 </head>
 <body class="memory-page" data-page="memory-detail">
+    <!-- Navbar injected by shared-layout.js -->
     
-    <!-- Slim Sub-page Header -->
-    <nav class="gnb-v2" style="background: transparent; border: none;">
-        <div class="gnb-inner shell" style="max-width: 500px;">
-            <a href="javascript:void(0)" id="btn-back" style="font-weight: 800; color: #b56e6e; text-decoration: none; font-size: 1.2rem;">‹</a>
-            <a href="/" class="gnb-logo" style="margin: 0 auto;">Lovetree</a>
-            <button style="background: none; border: none; font-size: 1.2rem; color: #64748b;">···</button>
-        </div>
-    </nav>
-
     <!-- Loading State -->
     <div id="loading-area" style="text-align: center; padding: 100px 0;">
-        <p>기억의 조각을 맞추는 중...</p>
+        <p style="font-weight: 800; color: #b56e6e;">기억의 조각을 맞추는 중...</p>
     </div>
 
     <main class="mem-detail-shell" id="detail-content" style="display: none;">
         <!-- Main Video Container -->
         <section class="mem-video-container">
-            <div id="player-container" style="width: 100%; height: 100%; background: #000; overflow: hidden;">
+            <div id="player-container" style="width: 100%; height: 100%; background: #000; overflow: hidden; border-radius: 12px;">
                 <div id="video-area" style="width: 100%; height: 100%;"></div>
             </div>
         </section>
 
         <!-- Memory Content Information -->
         <section class="mem-info-v3">
-            <h1 id="detail-title">기억을 불러오는 중</h1>
-            <div class="mem-date-v3" id="detail-date">----.--.--</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                <div>
+                    <h1 id="detail-title" style="font-size: 1.8rem; font-weight: 900; color: #0f172a;">기억을 불러오는 중</h1>
+                    <div class="mem-date-v3" id="detail-date" style="font-weight: 700; color: #94a3b8; margin-top: 4px;">----.--.--</div>
+                </div>
+            </div>
             
-            <div class="mem-tags-v3" id="detail-tags">
+            <div class="mem-tags-v3" id="detail-tags" style="margin-bottom: 32px;">
                 <!-- Rendered by JS -->
             </div>
 
-            <div style="font-size: 0.85rem; font-weight: 800; margin-bottom: 12px; color: #64748b;">Memo</div>
+            <div style="font-size: 0.85rem; font-weight: 900; margin-bottom: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Your Memo</div>
             <!-- Handwriting Style Memo Box -->
             <div class="mem-memo-v3" id="memo-card">
-                <p id="detail-memo" style="white-space: pre-wrap;">기록된 내용이 없습니다.</p>
+                <p id="detail-memo" style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.8; color: #334155;">기록된 내용이 없습니다.</p>
             </div>
         </section>
 
         <!-- Related Memories -->
         <section class="related-section-v3">
-            <h3 class="related-title">이 순간과 이어진 기억</h3>
+            <h3 class="related-title" style="font-size: 1.2rem; font-weight: 900; margin-bottom: 24px;">이 순간과 이어진 기억</h3>
             <div class="related-scroll-v3" id="connected-list">
                 <!-- Rendered by JS -->
             </div>
@@ -65,11 +79,11 @@
 
     <!-- Emotional Bottom Bar -->
     <footer class="mem-bottom-bar">
-        <a href="#" class="m-action-item">
+        <a href="javascript:void(0)" class="m-action-item">
             <span class="m-action-icon">❤️</span>
             <span id="like-count">0</span>
         </a>
-        <a href="#" class="m-action-item">
+        <a href="javascript:void(0)" class="m-action-item">
             <span class="m-action-icon">💬</span>
             <span id="comment-count">0</span>
         </a>
@@ -86,17 +100,20 @@
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/runtime-config.js?v=20260414_v3"></script>
-    <script src="/src/shared-layout.js?v=20260414_v7"></script>
-    <script src="/src/shared.js?v=20260414_v7"></script>
-    <script src="/src/auth.js?v=20260414_v7"></script>
+    <script src="/src/runtime-config.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/shared-layout.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/shared.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/auth.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/api.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/flow-shared.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/memory-detail.js?v=20260414_v15_absolute_zero"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (window.initStandardAuthUI) window.initStandardAuthUI();
         });
     </script>
-    <script src="/src/api.js?v=20260414_v3"></script>
-    <script src="/src/flow-shared.js?v=20260414_v3"></script>
-    <script src="/src/memory-detail.js?v=20260414_v3"></script>
 </body>
+</html>
+
 </html>

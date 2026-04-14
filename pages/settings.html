@@ -40,7 +40,7 @@
             <p style="color: #64748b; font-size: 0.95rem;">당신의 소중한 나무를 누구와 함께 나눌지 결정하세요.</p>
         </header>
 
-        <!-- Visibility Selection (Image 1 targets) -->
+        <!-- Visibility Selection -->
         <section class="visibility-group">
             <div class="vis-card active" data-value="private">
                 <div class="vis-icon">🔒</div>
@@ -57,7 +57,7 @@
                     <h4>링크를 가진 사람만</h4>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <p>링크를 알고 있는 사람에게만 공개됩니다.</p>
-                        <span style="background: #b56e6e; color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800;">Copy Link</span>
+                        <span style="background: #b56e6e; color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 900; letter-spacing: 0.05em;">LINK</span>
                     </div>
                 </div>
                 <div class="vis-toggle"></div>
@@ -73,7 +73,7 @@
             </div>
         </section>
 
-        <!-- Secondary Toggles (Image 1 Bottom) -->
+        <!-- Secondary Toggles -->
         <section style="margin-top: 40px;">
             <div class="setting-item-v3">
                 <div class="item-info-v3">
@@ -91,7 +91,7 @@
                 <div class="switch-v3 on"></div>
             </div>
 
-            <div class="setting-item-v3">
+            <div class="setting-item-v3" style="border-bottom: none;">
                 <div class="item-info-v3">
                     <h4>프로필 표시 이름 공개</h4>
                     <p>LoveTree 옆에 내 프로필 표시 이름을 공개합니다.</p>
@@ -102,7 +102,7 @@
 
         <!-- Action Footer -->
         <footer class="settings-footer-v3">
-            <button class="btn-save-settings" id="btn-save">완료</button>
+            <button class="btn-save-settings" id="btn-save">설정 완료</button>
         </footer>
     </main>
     </div>
@@ -119,6 +119,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (window.initStandardAuthUI) window.initStandardAuthUI();
+            
             // Visibility Card Toggle Logic
             const cards = document.querySelectorAll('.vis-card');
             cards.forEach(card => {
@@ -137,10 +138,16 @@
             });
 
             // Save Action
-            document.getElementById('btn-save').addEventListener('click', () => {
-                alert('설정이 저장되었습니다!');
-                window.location.href = '/pages/my-trees.html';
-            });
+            const saveBtn = document.getElementById('btn-save');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    saveBtn.textContent = '저장 중...';
+                    saveBtn.disabled = true;
+                    setTimeout(() => {
+                        window.location.href = '/pages/my-trees.html';
+                    }, 800);
+                });
+            }
         });
     </script>
 </body>

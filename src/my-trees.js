@@ -54,12 +54,12 @@
 
   function showLoading() {
     var loading = document.getElementById('loading-area');
-    var content = document.getElementById('content-area');
+    var list = document.getElementById('tree-list');
     var empty = document.getElementById('empty-state');
     var error = document.getElementById('error-state');
     
     if (loading) loading.style.display = 'block';
-    if (content) content.style.display = 'none';
+    if (list) list.style.display = 'none';
     if (empty) empty.style.display = 'none';
     if (error) error.style.display = 'none';
   }
@@ -71,21 +71,21 @@
 
   function showEmptyState() {
     var empty = document.getElementById('empty-state');
-    var content = document.getElementById('content-area');
+    var list = document.getElementById('tree-list');
     var error = document.getElementById('error-state');
     
     if (empty) empty.style.display = 'block';
-    if (content) content.style.display = 'none';
+    if (list) list.style.display = 'none';
     if (error) error.style.display = 'none';
   }
 
   function showContentArea() {
-    var content = document.getElementById('content-area');
+    var list = document.getElementById('tree-list');
     var empty = document.getElementById('empty-state');
     var error = document.getElementById('error-state');
     var loading = document.getElementById('loading-area');
     
-    if (content) content.style.display = 'block';
+    if (list) list.style.display = 'grid'; // Grid layout for cards
     if (empty) empty.style.display = 'none';
     if (error) error.style.display = 'none';
     if (loading) loading.style.display = 'none';
@@ -94,7 +94,7 @@
   function showErrorState(message) {
     var error = document.getElementById('error-state');
     var empty = document.getElementById('empty-state');
-    var content = document.getElementById('content-area');
+    var list = document.getElementById('tree-list');
     var msgEl = document.getElementById('error-message');
     
     if (error) {
@@ -104,7 +104,7 @@
       }
     }
     if (empty) empty.style.display = 'none';
-    if (content) content.style.display = 'none';
+    if (list) list.style.display = 'none';
   }
 
   function getTreeId(tree) {

@@ -5,15 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <title>나의 러브트리 - Lovetree</title>
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- CSS Unified Design System V3 -->
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v10">
-    <link rel="stylesheet" href="/assets/css/app-nav.css?v=20260414_v10">
-    <link rel="stylesheet" href="/assets/css/dashboard-v3.css?v=20260414_v10">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v15_absolute_zero">
+    <link rel="stylesheet" href="/assets/css/app-nav.css?v=20260414_v15_absolute_zero">
+    <link rel="stylesheet" href="/assets/css/dashboard-v3.css?v=20260414_v15_absolute_zero">
+    
+    <!-- Layout Guardian V15: Absolute Zero Sync -->
+    <script>
+        (function() {
+            const v = "V15_ABSOLUTE_ZERO_20260414";
+            console.log("[Lovetree] HTML Version: " + v);
+            const purge = () => {
+                const legacy = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"]), .brand-link, .brand-title');
+                legacy.forEach(el => el.remove());
+            };
+            purge();
+            if (window.MutationObserver) {
+                const observer = new MutationObserver(purge);
+                observer.observe(document.documentElement, { childList: true, subtree: true });
+                setTimeout(() => observer.disconnect(), 5000);
+            }
+        })();
+    </script>
+
     <style>
         .loading-spinner {
             width: 40px; height: 40px;
@@ -24,60 +44,75 @@
             margin: 0 auto 16px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loading-area p { color: #64748b; font-weight: 700; }
+        
+        .side-nav { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+        .side-link { 
+            padding: 12px 16px; border-radius: 12px; font-weight: 700; color: #64748b; 
+            text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+        }
+        .side-link:hover { background: #f1f5f9; color: #0f172a; }
+        .side-link.active { background: #fff1f2; color: #e11d48; }
     </style>
 </head>
 <body class="my-trees-page" data-page="my-trees">
     <!-- Navbar injected by shared-layout.js -->
 
     <main class="shell dash-shell" id="content-area">
-        <!-- Main Dashboard Area (Left) -->
-        <div class="dash-main">
+        <!-- Dashboard Sidebar (Left) -->
+        <aside class="dash-sidebar">
+            <h3 class="side-title">관리</h3>
+            <nav class="side-nav">
+                <a href="/pages/my-trees.html" class="side-link active">🌱 나의 러브트리</a>
+                <a href="/pages/settings.html" class="side-link">⚙️ 설정 정보</a>
+            </nav>
+
+            <h3 class="side-title">최근 수정한 순간</h3>
+            <div class="recent-moments-list" id="recent-moments">
+                <div class="moment-item-mini" style="opacity: 0.5; font-size: 0.8rem; padding: 20px 0;">최근 활동이 없습니다.</div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Area (Right) -->
+        <div class="dash-main" id="dash-main-area">
             <header class="dash-header">
                 <h1>나의 러브트리</h1>
                 <button id="btn-new-tree" class="btn-create-tree">새 러브트리 만들기</button>
             </header>
 
-            <!-- Trees Grid (Rendered by JS) -->
-            <section class="trees-grid-v3" id="tree-list">
-                <!-- Example Card for immediate visual feedback (Will be replaced by JS) -->
-            </section>
-
-            <!-- Loading/Empty State Managed by JS -->
+            <!-- Status Zones -->
             <div id="loading-area" style="text-align: center; padding: 100px 0; display: none;">
                 <div class="loading-spinner"></div>
-                <p>소중한 나무들을 불러오는 중...</p>
+                <p style="color: #64748b; font-weight: 700;">소중한 나무들을 불러오는 중...</p>
             </div>
-            <div id="empty-state" style="display: none; text-align: center; padding: 100px 0;">
+
+            <div id="empty-state" style="display: none; text-align: center; padding: 80px 0;">
                 <div style="font-size: 4rem; margin-bottom: 24px;">🌱</div>
                 <h2 style="font-weight: 900; margin-bottom: 12px;">아직 정원이 비어있네요</h2>
                 <p style="color: #64748b; margin-bottom: 32px;">첫 번째 사랑의 기억을 심어보시겠어요?</p>
                 <button id="btn-first-tree" class="btn-create-tree">첫 트리 만들기</button>
             </div>
-            <div id="error-state" style="display: none; text-align: center; padding: 100px 0; color: #b56e6e;">
-                <p id="error-message">데이터를 불러오지 못했습니다.</p>
-                <button id="btn-retry-load" style="margin-top: 20px; text-decoration: underline;">다시 시도</button>
-            </div>
-        </div>
 
-        <!-- Dashboard Sidebar (Right) -->
-        <aside class="dash-sidebar">
-            <h3 class="side-title">최근 수정한 순간</h3>
-            <div class="recent-moments-list" id="recent-moments">
-                <!-- Mock Recent Items -->
-                <div class="moment-item-mini" style="opacity: 0.5; font-size: 0.8rem; padding: 20px 0;">최근 활동이 없습니다.</div>
+            <div id="error-state" style="display: none; text-align: center; padding: 100px 0; color: #b56e6e;">
+                <p id="error-message" style="font-weight: 800;">데이터를 불러오지 못했습니다.</p>
+                <button id="btn-retry-load" style="margin-top: 20px; text-decoration: underline; font-weight: 700;">다시 시도</button>
             </div>
-        </aside>
+
+            <!-- Trees Grid -->
+            <section class="trees-grid-v3" id="tree-list">
+                <!-- Rendered by JS -->
+            </section>
+        </div>
     </main>
 
-    <!-- New Tree Modal (Image-aligned) -->
+    <!-- New Tree Modal -->
     <div id="new-tree-modal" class="modal-overlay is-hidden">
-        <div class="modal-content" style="background: #fff; padding: 32px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);">
-            <h3 style="font-weight: 900; margin-bottom: 24px;">새 러브트리 만들기</h3>
-            <input type="text" id="new-tree-name" placeholder="트리의 이름을 지어주세요" style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+        <div class="modal-content" style="background: #fff; padding: 32px; border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.12); max-width: 400px; width: 90%;">
+            <h3 style="font-weight: 900; margin-bottom: 8px; font-size: 1.4rem;">새 러브트리 만들기</h3>
+            <p style="font-size: 0.95rem; color: #64748b; margin-bottom: 24px;">사랑의 테마를 정하고 기록을 시작하세요</p>
+            <input type="text" id="new-tree-name" placeholder="트리의 이름을 지어주세요" style="width: 100%; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 24px; font-weight: 700; font-size: 1rem;">
             <div class="modal-actions" style="display: flex; gap: 12px;">
-                <button id="btn-cancel-tree" style="flex: 1; padding: 14px; border-radius: 12px; background: #f1f5f9; border: none; font-weight: 700;">취소</button>
-                <button id="btn-create-confirm" style="flex: 2; padding: 14px; border-radius: 12px; background: #b56e6e; color: #fff; border: none; font-weight: 800;">트리 생성</button>
+                <button id="btn-cancel-tree" style="flex: 1; padding: 16px; border-radius: 16px; background: #f1f5f9; border: none; font-weight: 700; color: #475569;">취소</button>
+                <button id="btn-create-confirm" style="flex: 2; padding: 16px; border-radius: 16px; background: #b56e6e; color: #fff; border: none; font-weight: 800;">트리 생성</button>
             </div>
         </div>
     </div>
@@ -85,16 +120,15 @@
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/runtime-config.js?v=20260414_v10"></script>
-    <script src="/src/shared-utils.js?v=20260414_v10"></script>
-    <script src="/src/shared-layout.js?v=20260414_v10"></script>
-    <script src="/src/shared.js?v=20260414_v10"></script>
-    <script src="/src/postgres-client-browser.js?v=20260414_v10"></script>
-    <script src="/src/auth.js?v=20260414_v10"></script>
-    <script src="/src/api.js?v=20260414_v10"></script>
-    <script src="/src/flow-shared.js?v=20260414_v10"></script>
-    <!-- Updated JS for modern rendering -->
-    <script src="/src/my-trees.js?v=20260414_v10"></script>
+    <script src="/src/runtime-config.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/shared-utils.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/shared-layout.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/shared.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/postgres-client-browser.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/auth.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/api.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/flow-shared.js?v=20260414_v15_absolute_zero"></script>
+    <script src="/src/my-trees.js?v=20260414_v15_absolute_zero"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

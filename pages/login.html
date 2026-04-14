@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>환영합니다 - Lovetree</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v15_absolute_zero">
-    <link rel="stylesheet" href="/assets/css/settings-v3.css?v=20260414_v15_absolute_zero">
+    <link rel="stylesheet" href="/assets/css/login-v3.css?v=20260414_v15_absolute_zero">
 
     <!-- Layout Guardian V15: Absolute Zero Sync -->
     <script>
@@ -27,53 +33,47 @@
     </script>
 </head>
 <body class="login-page" data-page="login">
-    <!-- GNB will be injected by shared-layout.js -->
     <div class="page-wrapper">
-    <div class="login-shell">
-        <div class="login-card">
-            <!-- Header (Logo handled by GNB) -->
-            <div class="login-stack-sm" style="text-align: center; margin-top: 20px;">
-                <h1 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.3;">다시, 당신의 사랑을<br>기록할 시간입니다</h1>
-                <p class="login-muted">흩어진 순간들을 모아 하나의 나무로 완성하세요<br>로그인하면 모든 기록이 안전하게 보관됩니다</p>
-            </div>
-
-            <!-- Actions -->
-            <div class="login-stack-md">
-                <!-- Google Login: ID synced with auth.js -->
-                <button id="login-btn" class="login-google-btn">
-                   <div class="login-google-mark">G</div>
-                   구글 계정으로 시작하기
-                </button>
-
-                <div class="login-divider">또는 이메일로 계속하기</div>
-
-                <!-- Email Login Toggle -->
-                <button id="login-btn-email" class="login-submit-btn">
-                    이메일 주소로 계속하기
-                </button>
-            </div>
-
-            <!-- Benefits -->
-            <div class="login-footer">
-                <p style="margin-bottom: 8px; font-weight: 700;">로그인 후의 즐거움</p>
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;">
-                    <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem;">기억의 영구 보존</span>
-                    <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem;">트리 동기화</span>
-                    <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem;">비밀 기록 관리</span>
+        <div class="login-shell">
+            <div class="login-card">
+                <div class="login-stack-sm">
+                    <h1>다시, 당신의 사랑을<br>기록할 시간입니다</h1>
+                    <p class="login-muted">흩어진 순간들을 모아 하나의 나무로 완성하세요<br>로그인하면 모든 기록이 안전하게 보관됩니다</p>
                 </div>
-            </div>
 
-            <a href="/" class="login-link-btn" style="text-align: center; font-size: 0.75rem; margin-top: 10px;">나중에 기록할게요 (홈으로)</a>
+                <div class="login-stack-md">
+                    <button id="login-btn" class="login-google-btn">
+                        <div class="login-google-mark">G</div>
+                        구글 계정으로 시작하기
+                    </button>
+
+                    <div class="login-divider">또는 이메일로 계속하기</div>
+
+                    <button id="login-btn-email" class="login-submit-btn" style="background: #f1f5f9; color: #475569;">
+                        이메일 주소로 계속하기
+                    </button>
+                </div>
+
+                <div class="login-footer">
+                    <p style="font-weight: 800; margin-bottom: 12px; font-size: 0.85rem;">로그인 후의 즐거움</p>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+                        <span class="login-badge">기억의 영구 보존</span>
+                        <span class="login-badge">트리 동기화</span>
+                        <span class="login-badge">비밀 기록 관리</span>
+                    </div>
+                </div>
+
+                <a href="/" class="login-link-btn">나중에 기록할게요 (홈으로)</a>
+            </div>
         </div>
     </div>
-    </div> <!-- Close page-wrapper -->
 
     <!-- Email Auth Modal -->
     <div id="email-auth-modal" class="auth-modal is-hidden">
         <div class="auth-modal-content">
             <button class="auth-modal-close" id="email-auth-close">&times;</button>
-            <h2 id="email-auth-title" class="login-section-title" style="margin-bottom: 10px;">이메일로 로그인</h2>
-            <p id="email-auth-helper" class="login-muted" style="margin-bottom: 20px;">이미 만든 이메일 계정으로 로그인합니다</p>
+            <h2 id="email-auth-title" class="login-section-title" style="font-size: 1.4rem; font-weight: 900; margin-bottom: 8px;">이메일로 로그인</h2>
+            <p id="email-auth-helper" class="login-muted" style="margin-bottom: 24px;">이미 만든 이메일 계정으로 로그인합니다</p>
             <form id="email-auth-form" class="login-form">
                 <div class="login-field">
                     <label class="login-label">이메일 주소</label>
@@ -85,32 +85,13 @@
                 </div>
                 <button type="submit" id="email-auth-submit" class="login-submit-btn">로그인</button>
             </form>
-            <button id="email-auth-toggle" class="login-toggle-btn" style="margin-top: 20px; width: 100%;">계정이 없나요? 회원가입으로 전환</button>
+            <button id="email-auth-toggle" class="login-link-btn" style="margin-top: 24px; width: 100%; display: block;">계정이 없나요? 회원가입으로 전환</button>
         </div>
     </div>
-
-    <style>
-        .auth-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6); display: flex;
-            align-items: center; justify-content: center; z-index: 1000;
-        }
-        .auth-modal.is-hidden { display: none; }
-        .auth-modal-content {
-            background: white; padding: 32px; border-radius: 20px;
-            width: 90%; max-width: 360px; position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .auth-modal-close {
-            position: absolute; top: 20px; right: 20px;
-            background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;
-        }
-    </style>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <!-- firebase-firestore.js removed: login page only needs auth, not DB -->
 
     <!-- App Scripts -->
     <script src="/src/runtime-config.js?v=20260414_v15_absolute_zero"></script>
@@ -121,44 +102,35 @@
     <script src="/src/auth.js?v=20260414_v15_absolute_zero"></script>
     <script src="/src/concept-state.js?v=20260414_v15_absolute_zero"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Proactive redirect removed: Allow users to see the login options even if a session exists.
-  // This allows the 'prompt: select_account' in auth.js to function correctly when the user clicks Login.
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var googleBtn = document.getElementById('login-btn');
+            var emailBtn = document.getElementById('login-btn-email');
+            var emailModal = document.getElementById('email-auth-modal');
+            var emailClose = document.getElementById('email-auth-close');
 
-  var googleBtn = document.getElementById('login-btn');
-  var emailBtn = document.getElementById('login-btn-email');
-  var emailModal = document.getElementById('email-auth-modal');
-  var emailClose = document.getElementById('email-auth-close');
+            if (googleBtn) {
+                googleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.signInWithGoogle) window.signInWithGoogle();
+                });
+            }
 
-  if (googleBtn) {
-    googleBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      if (window.signInWithGoogle) {
-        window.signInWithGoogle();
-      }
-    });
-  }
+            if (emailBtn) {
+                emailBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (emailModal) emailModal.classList.remove('is-hidden');
+                });
+            }
 
-  if (emailBtn) {
-    emailBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      if (emailModal) emailModal.classList.remove('is-hidden');
-    });
-  }
-
-  if (emailClose) {
-    emailClose.addEventListener('click', function() {
-      if (emailModal) emailModal.classList.add('is-hidden');
-    });
-  }
-
-  if (emailModal) {
-    emailModal.addEventListener('click', function(e) {
-      if (e.target === emailModal) emailModal.classList.add('is-hidden');
-    });
-  }
-});
-</script>
+            if (emailClose) {
+                emailClose.addEventListener('click', function() {
+                    if (emailModal) emailModal.classList.add('is-hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>
