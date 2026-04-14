@@ -41,7 +41,7 @@ async function deleteDoc(path) {
 
 async function queryCollection(path, constraints) {
   const { config, parentIds } = crud.resolveCollectionPath(path);
-  const { query } = require('../db');
+  const { query } = require('./db');
   const params = [];
   const where = [];
 
