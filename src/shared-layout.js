@@ -63,8 +63,8 @@
         const communityClass = isCommunity ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
         const ownerClass = isOwner ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
 
-        // Standard GNB for home/lovetree/community (with avatar dropdown support)
-        if (isHome || isLovetree || isCommunity) {
+        // Standard GNB for home/lovetree/community/owner (with avatar dropdown support)
+        if (isHome || isLovetree || isCommunity || isOwner) {
             return `
     <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
         <div class="gnb-inner shell">
