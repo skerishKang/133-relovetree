@@ -11,26 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- CSS Unified Design System V3 -->
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
-    <link rel="stylesheet" href="/assets/css/dashboard-v3.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v10">
+    <link rel="stylesheet" href="/assets/css/dashboard-v3.css?v=20260414_v10">
 </head>
-<body class="my-trees-page" data-page="owner">
-    
-    <!-- Standard GNB (V3 Centered Style) -->
-    <nav class="gnb-v2">
-        <div class="gnb-inner shell">
-            <a href="/" class="gnb-logo">Lovetree</a>
-            <div class="gnb-links">
-                <a href="/pages/lovetree.html">러브트리</a>
-                <a href="/pages/community.html">커뮤니티</a>
-                <div id="user-menu" style="display: flex; align-items: center; gap: 16px;">
-                    <a href="/pages/my-trees.html" class="active" style="font-weight: 800;">내 트리</a>
-                    <button id="logout-btn" style="font-size: 0.85rem; color: #64748b;">로그아웃</button>
-                    <div class="user-avatar-mini" style="width: 32px; height: 32px; background: #eee; border-radius: 50%;"></div>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body class="my-trees-page" data-page="my-trees">
+    <!-- Navbar injected by shared-layout.js -->
 
     <main class="shell dash-shell" id="content-area">
         <!-- Main Dashboard Area (Left) -->
@@ -87,15 +72,16 @@
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="/src/runtime-config.js?v=20260414_v3"></script>
-    <script src="/src/shared-utils.js?v=20260414_v3"></script>
-    <script src="/src/shared.js?v=20260414_v3"></script>
-    <script src="/src/postgres-client-browser.js?v=20260414_v3"></script>
-    <script src="/src/auth.js?v=20260414_v3"></script>
-    <script src="/src/api.js?v=20260414_v3"></script>
-    <script src="/src/flow-shared.js?v=20260414_v3"></script>
+    <script src="/src/runtime-config.js?v=20260414_v10"></script>
+    <script src="/src/shared-utils.js?v=20260414_v10"></script>
+    <script src="/src/shared-layout.js?v=20260414_v10"></script>
+    <script src="/src/shared.js?v=20260414_v10"></script>
+    <script src="/src/postgres-client-browser.js?v=20260414_v10"></script>
+    <script src="/src/auth.js?v=20260414_v10"></script>
+    <script src="/src/api.js?v=20260414_v10"></script>
+    <script src="/src/flow-shared.js?v=20260414_v10"></script>
     <!-- Updated JS for modern rendering -->
-    <script src="/src/my-trees.js?v=20260414_v3"></script>
+    <script src="/src/my-trees.js?v=20260414_v10"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

@@ -103,11 +103,6 @@ if (user) {
       updateLoginUI(user);
       await syncUserToDatabase(user); // Saves to Neon PostgreSQL via compat layer, NOT Firestore
 
-      // Save login state for instant GNB rendering (prevents flash)
-      try {
-        sessionStorage.setItem('lovetree_auth', user ? 'logged_in' : '');
-      } catch (e) { console.warn('sessionStorage save failed:', e); }
-
       // Handle redirect after successful login
       if (typeof handleAuthSuccessRedirect === 'function') {
         handleAuthSuccessRedirect();
@@ -194,7 +189,6 @@ async function signOut() {
         if (!firebase.apps || !firebase.apps.length || typeof firebase.auth !== 'function') {
             clearStaleFirebaseAuthState();
             try { 
-                sessionStorage.removeItem('lovetree_auth'); 
                 sessionStorage.removeItem('lt_auth_cache');
             } catch(e) {}
             window.location.reload();

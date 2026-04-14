@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- CSS Unified Design System V3 -->
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
-    <link rel="stylesheet" href="/assets/css/settings-v3.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v10">
+    <link rel="stylesheet" href="/assets/css/settings-v3.css?v=20260414_v10">
     <style>
         .add-page { background: #fdfaf4; min-height: 100vh; padding-bottom: 100px; }
         .step-container { max-width: 500px; margin: 0 auto; padding: 40px 20px; }
@@ -105,8 +105,15 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="/src/runtime-config.js?v=20260414_v3"></script>
     <script src="/src/shared-utils.js?v=20260414_v3"></script>
-    <script src="/src/shared.js?v=20260414_v3"></script>
-    <script src="/src/auth.js?v=20260414_v3"></script>
+    <script src="/src/shared-layout.js?v=20260414_v10"></script>
+    <script src="/src/shared.js?v=20260414_v10"></script>
+    <script src="/src/auth.js?v=20260414_v10"></script>
+    <script src="/src/add-memory.js?v=20260414_v10"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.initStandardAuthUI) window.initStandardAuthUI();
+        });
+    </script>
     <script src="/src/api.js?v=20260414_v3"></script>
     <script src="/src/flow-shared.js?v=20260414_v3"></script>
     <script src="/src/add-memory.js?v=20260414_v3"></script>

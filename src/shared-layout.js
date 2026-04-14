@@ -40,6 +40,7 @@
      */
 
     const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail']);
+    const ASSET_VERSION = '20260414_v10';
 
     function shouldInjectGlobalLayout() {
         try {
@@ -157,21 +158,73 @@
     `;
     }
 
+    function buildMobileBottomNavHTML() {
+        const path = window.location.pathname;
+        const isHome = path === '/' || path.includes('index.html');
+        const isComm = path.includes('community.html');
+        const isMy = path.includes('my-trees.html');
+        const isSet = path.includes('settings.html');
+
+        return `
+        <nav class="gnb-mobile-bottom" role="navigation" aria-label="모바일 하단 네비게이션">
+          <div class="mob-nav-inner">
+            <a href="/" class="mob-nav-item ${isHome ? 'active' : ''}">
+              <span class="nav-icon">🏠</span><span class="nav-label">홈</span>
+            </a>
+            <a href="/pages/community.html" class="mob-nav-item ${isComm ? 'active' : ''}">
+              <span class="nav-icon">🧭</span><span class="nav-label">탐색</span>
+            </a>
+            <a href="/pages/my-trees.html" class="mob-nav-item ${isMy ? 'active' : ''}">
+              <span class="nav-icon">🌱</span><span class="nav-label">내 트리</span>
+            </a>
+            <a href="/pages/settings.html" class="mob-nav-item ${isSet ? 'active' : ''}">
+              <span class="nav-icon">⚙️</span><span class="nav-label">설정</span>
+            </a>
+          </div>
+        </nav>
+        `;
+    }
+
     function ensureGlobalLayoutInjected() {
         try {
+            // Intelligent Redirect for Mobile Users
+            if (window.isMobileDevice && window.isMobileDevice()) {
+                const path = window.location.pathname;
+                if (path.includes('community-tree-detail.html')) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const treeId = urlParams.get('treeId');
+                    if (treeId) {
+                        window.location.href = `/pages/mobile-tree.html?treeId=${encodeURIComponent(treeId)}&v=20260414_v10`;
+                        return;
+                    }
+                }
+            }
+
             if (!shouldInjectGlobalLayout()) return;
             if (!document.body) return;
             
             // Unification: Ensure we don't have multiple headers
-            const existing = document.querySelector('nav[data-global-header="1"]');
-            if (existing) existing.remove();
+            const existingHeader = document.querySelector('nav[data-global-header="1"]');
+            if (existingHeader) existingHeader.remove();
 
             const headerHTML = buildGlobalHeaderHTML();
-            const temp = document.createElement('div');
-            temp.innerHTML = headerHTML;
-            const nav = temp.firstElementChild;
+            const tempHeader = document.createElement('div');
+            tempHeader.innerHTML = headerHTML;
+            const nav = tempHeader.firstElementChild;
             if (nav) {
                 document.body.insertBefore(nav, document.body.firstChild);
+            }
+
+            // Mobile specific: Inject Bottom Tab Bar
+            if (window.isMobileDevice && window.isMobileDevice()) {
+                const existingBottom = document.querySelector('.gnb-mobile-bottom');
+                if (!existingBottom) {
+                    const bottomHTML = buildMobileBottomNavHTML();
+                    const tempBottom = document.createElement('div');
+                    tempBottom.innerHTML = bottomHTML;
+                    const bnav = tempBottom.firstElementChild;
+                    if (bnav) document.body.appendChild(bnav);
+                }
             }
 
             // Bind Dropdown Toggle (Pathway Fixed)
@@ -189,6 +242,7 @@
                 }
             });
         } catch (e) {
+            console.warn('Layout injection failed:', e);
         }
     }
 
@@ -308,16 +362,8 @@ window.onAuthReady = function(user) {
     }, 1000);
   }
         
-        // 3. Bind navigation events (legacy - now handled in updateLTAuthUI after login)
-        if (!options.skipLogoutBinding) {
-            // Old logout binding - kept for compatibility
-            var logoutBtn = document.getElementById('nav-logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function() {
-                    if (window.signOut) window.signOut();
-                });
-            }
-        }
+        // 3. Logout binding is handled in updateLTAuthUI (single source of truth)
+  // No separate binding needed here
     }
 
     const api = {

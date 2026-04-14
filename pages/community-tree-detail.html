@@ -11,13 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- CSS Standardized V3 -->
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v3">
-    <link rel="stylesheet" href="/assets/css/community-tree-detail.css?v=20260414_v3">
-    <link rel="stylesheet" href="/assets/css/index-responsive.css?v=20260414_v3">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v7">
+    <link rel="stylesheet" href="/assets/css/app-nav.css?v=20260414_v7">
+    <link rel="stylesheet" href="/assets/css/app-utils.css?v=20260414_v7">
 </head>
-<body class="ctd-page">
+<body class="detail-page" data-page="community">
     
-    <!-- Slim Header (Image 2 Style) -->
+    <!-- Navbar injected by shared-layout.js -->
     <header class="ctd-header">
         <a href="/pages/community.html" class="back-link">
             <span style="font-size: 1.5rem;">‹</span> Discovery Square
@@ -130,18 +130,11 @@
         </aside>
     </main>
 
-    <!-- 📱 MOBILE NAVIGATION BAR (Image 3 Bottom) -->
-    <nav class="mobile-nav-bar">
-        <a href="/" class="nav-item"><span class="nav-icon">🏠</span><span>홈</span></a>
-        <a href="/pages/community.html" class="nav-item active"><span class="nav-icon">🧭</span><span>탐색</span></a>
-        <a href="/pages/my-trees.html" class="nav-item"><span class="nav-icon">👤</span><span>내 트리</span></a>
-    </nav>
-
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="/src/runtime-config.js"></script>
-    <script src="/src/shared-utils.js"></script>
+    <script src="/src/shared-layout.js?v=20260414_v7"></script>
     <script src="/src/shared.js"></script>
     <script src="/src/auth.js"></script>
     <script>
