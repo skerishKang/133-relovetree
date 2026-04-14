@@ -81,6 +81,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   color: #e11d48;
 }
 
+/* Auth pending state - hide auth buttons until Firebase confirms */
+#nav-auth-container.auth-pending #nav-login-btn,
+#nav-auth-container.auth-pending #nav-user-group {
+  display: none !important;
+}
+
 .btn-pill-auth {
   background: #0f172a;
   color: #fff !important;

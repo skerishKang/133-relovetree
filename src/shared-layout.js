@@ -364,19 +364,25 @@
         
         // 1. Register onAuthReady callback (if not skipped)
         if (!options.skipOnAuthReady) {
-            window.onAuthReady = function(user) {
-                if (window.updateLTAuthUI) window.updateLTAuthUI(user);
-            };
+window.onAuthReady = function(user) {
+    // Remove auth-pending class to reveal auth buttons
+    var authContainer = document.getElementById('nav-auth-container');
+    if (authContainer) authContainer.classList.remove('auth-pending');
+    if (window.updateLTAuthUI) window.updateLTAuthUI(user);
+  };
         }
         
-        // 2. Fallback currentUser check after 1s (if not skipped)
-        if (!options.skipCurrentUserCheck) {
-            setTimeout(function() {
-                if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
-                    window.updateLTAuthUI(firebase.auth().currentUser);
-                }
-            }, 1000);
-        }
+// 2. Fallback currentUser check after 1s (if not skipped)
+  // Also removes auth-pending to reveal auth buttons regardless of auth state
+  if (!options.skipCurrentUserCheck) {
+    setTimeout(function() {
+      var authContainer = document.getElementById('nav-auth-container');
+      if (authContainer) authContainer.classList.remove('auth-pending');
+      if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
+        window.updateLTAuthUI(firebase.auth().currentUser);
+      }
+    }, 1000);
+  }
         
         // 3. Bind navigation events (legacy - now handled in updateLTAuthUI after login)
         if (!options.skipLogoutBinding) {
