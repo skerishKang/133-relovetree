@@ -40,20 +40,29 @@
      */
 
     const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail', 'login']);
-    const ASSET_VERSION = '20260414_v12_final';
+    const ASSET_VERSION = '20260414_v13_ultimate';
 
     /**
-     * Layout Sentinel: Repeatedly check and purge legacy headers for 2 seconds
-     * to prevent design fragmentation from late-loading scripts.
+     * Layout Purge Observer: Real-time monitoring of legacy elements.
+     * Uses MutationObserver to catch and kill old headers instantly.
      */
-    function startHeaderSentinel() {
-        let count = 0;
-        const interval = setInterval(() => {
+    function startLayoutPurgeObserver() {
+        const purge = () => {
             const legacyItems = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"])');
             legacyItems.forEach(el => el.remove());
-            count++;
-            if (count > 20) clearInterval(interval);
-        }, 100);
+        };
+        
+        try {
+            const observer = new MutationObserver(purge);
+            observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+            purge(); // Initial purge
+            
+            // Auto-disconnect after 3 seconds to save resources
+            setTimeout(() => observer.disconnect(), 3000);
+        } catch (e) {
+            // Fallback for older browsers
+            setInterval(purge, 200);
+        }
     }
 
     function getLayoutContext() {
@@ -96,7 +105,7 @@
 
         const userGroupClass = cachedUser ? 'gnb-user-group' : 'gnb-user-group is-hidden';
         const loginBtnClass = cachedUser ? 'btn-pill-auth is-hidden' : 'btn-pill-auth';
-        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : `/assets/image/default-avatar.png?v=${ASSET_VERSION}`;
+        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : `/assets/image/lt-avatar-v13.png?v=${ASSET_VERSION}`;
         const authContainerClass = cachedUser ? '' : 'auth-pending';
 
         const gnbClass = ctx === 'minimal' ? 'gnb-v2 gnb-minimal' : 'gnb-v2';
@@ -240,7 +249,7 @@ return `
     }
 
     function ensureGlobalLayoutInjected(activeLayout) {
-        startHeaderSentinel();
+        startLayoutPurgeObserver();
         if (!shouldInjectGlobalLayout()) return;
         try {
             // Intelligent Redirect for Mobile Users

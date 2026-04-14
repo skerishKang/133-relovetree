@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>환영합니다 - Lovetree</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v12_final">
-    <link rel="stylesheet" href="/assets/css/login.css?v=20260414_v12_final">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v13_ultimate">
+    <link rel="stylesheet" href="/assets/css/login.css?v=20260414_v13_ultimate">
+
+    <!-- Immediate Layout Purge (Prevention) -->
+    <script>
+        (function() {
+            const purge = () => {
+                const legacy = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"])');
+                legacy.forEach(el => el.remove());
+            };
+            purge();
+            if (window.MutationObserver) {
+                const observer = new MutationObserver(purge);
+                observer.observe(document.documentElement, { childList: true, subtree: true });
+                setTimeout(() => observer.disconnect(), 3000);
+            }
+        })();
+    </script>
 </head>
 <body class="login-page" data-page="login">
     <!-- GNB will be injected by shared-layout.js -->
@@ -95,13 +111,13 @@
     <!-- firebase-firestore.js removed: login page only needs auth, not DB -->
 
     <!-- App Scripts -->
-    <script src="/src/runtime-config.js?v=20260414_v12_final"></script>
-    <script src="/src/postgres-client-browser.js?v=20260414_v12_final"></script>
-    <script src="/src/shared-layout.js?v=20260414_v12_final"></script>
-    <script src="/src/shared-utils.js?v=20260414_v12_final"></script>
-    <script src="/src/shared.js?v=20260414_v12_final"></script>
-    <script src="/src/auth.js?v=20260414_v12_final"></script>
-    <script src="/src/concept-state.js?v=20260414_v12_final"></script>
+    <script src="/src/runtime-config.js?v=20260414_v13_ultimate"></script>
+    <script src="/src/postgres-client-browser.js?v=20260414_v13_ultimate"></script>
+    <script src="/src/shared-layout.js?v=20260414_v13_ultimate"></script>
+    <script src="/src/shared-utils.js?v=20260414_v13_ultimate"></script>
+    <script src="/src/shared.js?v=20260414_v13_ultimate"></script>
+    <script src="/src/auth.js?v=20260414_v13_ultimate"></script>
+    <script src="/src/concept-state.js?v=20260414_v13_ultimate"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
