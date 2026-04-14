@@ -94,11 +94,6 @@
     <script src="/src/concept-state.js?v=20260414_v3"></script>
 
     <script>
-        // Inject shared GNB
-        if (window.sharedLayout && window.sharedLayout.ensureGlobalLayoutInjected) {
-            window.sharedLayout.ensureGlobalLayoutInjected();
-        }
-
         // Auth State Integration (Common)
         // index.html has no nav-logout-btn, so skip logout binding
         if (window.initStandardAuthUI) window.initStandardAuthUI({

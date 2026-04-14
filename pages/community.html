@@ -52,9 +52,6 @@
     <script src="/src/flow-shared.js?v=20260414_v3"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            if (window.sharedLayout && window.sharedLayout.ensureGlobalLayoutInjected) {
-                window.sharedLayout.ensureGlobalLayoutInjected();
-            }
             if (window.initStandardAuthUI) window.initStandardAuthUI();
             
             const grid = document.getElementById('discovery-grid');
