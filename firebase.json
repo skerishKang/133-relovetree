@@ -10,6 +10,32 @@
             "**/*.bat",
             "**/*.cmd",
             "**/*.sh"
+        ],
+        "rewrites": [
+            { "source": "/index.js", "destination": "/src/entries/index.js" },
+            { "source": "/about.html", "destination": "/pages/about.html" },
+            { "source": "/album-view.html", "destination": "/pages/album-view.html" },
+            { "source": "/community-tree-detail.html", "destination": "/pages/community-tree-detail.html" },
+            { "source": "/community.html", "destination": "/pages/community.html" },
+            { "source": "/editor-desktop-empty.html", "destination": "/pages/editor-desktop-empty.html" },
+            { "source": "/editor-desktop.html", "destination": "/pages/editor-desktop.html" },
+            { "source": "/editor.html", "destination": "/pages/editor.html" },
+            { "source": "/empty-state.html", "destination": "/pages/empty-state.html" },
+            { "source": "/login.html", "destination": "/pages/login.html" },
+            { "source": "/lovetree.html", "destination": "/pages/lovetree.html" },
+            { "source": "/memory-detail.html", "destination": "/pages/memory-detail.html" },
+            { "source": "/mobile-add-branch.html", "destination": "/pages/mobile-add-branch.html" },
+            { "source": "/mobile-add-memory.html", "destination": "/pages/mobile-add-memory.html" },
+            { "source": "/mobile-tree.html", "destination": "/pages/mobile-tree.html" },
+            { "source": "/my-trees.html", "destination": "/pages/my-trees.html" },
+            { "source": "/settings.html", "destination": "/pages/settings.html" },
+            { "source": "/story-view.html", "destination": "/pages/story-view.html" },
+            { "source": "/video-search.html", "destination": "/pages/video-search.html" },
+            { "source": "/admin.html", "destination": "/pages/admin.html" },
+            { "source": "/owner.html", "destination": "/pages/owner.html" },
+            { "source": "/admin.js", "destination": "/src/entries/admin.js" },
+            { "source": "/community.js", "destination": "/src/entries/community.js" },
+            { "source": "/owner.js", "destination": "/src/entries/owner.js" }
         ]
     },
     "firestore": {
