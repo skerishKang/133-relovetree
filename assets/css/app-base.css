@@ -25,14 +25,14 @@ body {
 /* --- Global Brand Watermark: Soft Tree (Diverse Positioning) --- */
 body::before {
   content: "";
-  position: absolute;
+  position: fixed;
   width: 450px;
   height: 600px;
   background: url('/assets/image/bg-tree-soft.png') no-repeat;
   background-size: contain;
-  opacity: 0.05; /* Extremely subtle for brand feel */
+  opacity: 0.07;
   pointer-events: none;
-  z-index: 0;
+  z-index: 9999;
   transition: all 0.5s ease;
 }
 
@@ -43,6 +43,9 @@ body[data-page="my-trees"]::before { bottom: 0; right: -100px; transform: rotate
 body[data-page="lovetree"]::before { top: 300px; left: -150px; transform: rotate(-10deg); }
 body:not([data-page])::before,
 body[data-page="settings"]::before { bottom: -100px; left: -100px; }
+body[data-page="owner"]::before { top: 200px; right: -120px; transform: rotate(12deg); }
+body[data-page="memory-detail"]::before { top: 50px; left: -80px; transform: rotate(-5deg); }
+body[data-page="login"]::before { top: 100px; right: -100px; transform: rotate(8deg); }
 /* ----------------------------------------------------------------- */
 
 /* Typography Reset */
@@ -74,10 +77,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .gnb-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0;
+  width: 100%;
 }
 
 .gnb-logo {
@@ -245,6 +251,39 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+.gnb-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.dropdown-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dropdown-header-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dropdown-name {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #0f172a;
+}
+
+.dropdown-email {
+  font-size: 0.7rem;
+  color: #94a3b8;
 }
 
 .dropdown-item {

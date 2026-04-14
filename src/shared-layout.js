@@ -76,17 +76,18 @@
         const userGroupClass = cachedUser ? 'gnb-user-group' : 'gnb-user-group is-hidden';
         const loginBtnClass = cachedUser ? 'btn-pill-auth is-hidden' : 'btn-pill-auth';
         const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : '/assets/image/default-avatar.png';
+        const authContainerClass = cachedUser ? '' : 'auth-pending';
 
 // Unified Modern GNB (Flicker-free via cache)
 return `
 <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
-  <div class="gnb-inner shell">
+  <div class="gnb-inner">
     <a href="/" class="gnb-logo">Lovetree</a>
     <div class="gnb-links">
       <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
       <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
 
-      <div id="nav-auth-container" class="auth-pending">
+      <div id="nav-auth-container" class="${authContainerClass}">
         <!-- Login Button -->
         <a href="/pages/login.html" class="${loginBtnClass}" id="nav-login-btn">로그인</a>
 
@@ -99,22 +100,22 @@ return `
                     <img id="nav-avatar-img" src="${avatarSrc}" alt="Profile" onerror="this.src='/assets/image/default-avatar.png'">
                 </button>
                 
-                <div class="dropdown-menu" id="nav-dropdown">
-                    <div class="dropdown-header">
+                <div class="gnb-dropdown" id="nav-dropdown">
+                    <div class="gnb-dropdown-header">
                         <img id="dropdown-avatar" src="" alt="Profile" class="dropdown-avatar">
                         <div class="dropdown-header-info">
                             <span id="dropdown-name" class="dropdown-name"></span>
                             <span class="dropdown-email">profile@lovetree.com</span>
                         </div>
                     </div>
-                    <div class="dropdown-action" id="dropdown-settings">
-                        <svg class="ui-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 001.334 1.317h1.61c1.054 0 1.934.715 2.166 1.699 0 0 1.178-2.316 2.644-3.634a1.724 1.724 0 003.35 0c0 0 1.739 2.42 2.644 3.634 0 0 1.112-.685 2.166-1.699 0 0 1.61 0 1.334 1.317 0 0 2.924 1.756 3.35 0 0 0 0 0"></path></svg>
+                    <a href="/pages/settings.html" class="dropdown-item" id="dropdown-settings">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 001.334 1.317h1.61c1.054 0 1.934.715 2.166 1.699l.042.145a1.724 1.724 0 001.334 1.317l.145.042c.984.232 1.699 1.112 1.699 2.166v1.61a1.724 1.724 0 001.317 1.334c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.317 1.334v1.61c0 1.054-.715 1.934-1.699 2.166l-.145.042a1.724 1.724 0 00-1.334 1.317c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.334-1.317h-1.61c-1.054 0-1.934-.715-2.166-1.699l-.042-.145a1.724 1.724 0 00-1.317-1.334c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.317-1.334v-1.61c0-1.054.715-1.934 1.699-2.166l.145-.042a1.724 1.724 0 001.334-1.317z"/><circle cx="12" cy="12" r="3"/></svg>
                         설정
-                    </div>
-                    <div class="dropdown-action" id="dropdown-logout">
-                        <svg class="ui-icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4L8 8m4 4l4 4"></path></svg>
+                    </a>
+                    <button class="dropdown-item dropdown-item-logout" id="dropdown-logout">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         로그아웃
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -264,6 +265,15 @@ return `
                     }
                 }
             });
+
+            // Bind dropdown logout
+            var dropdownLogout = document.getElementById('dropdown-logout');
+            if (dropdownLogout) {
+                dropdownLogout.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.signOut) window.signOut();
+                });
+            }
         } catch (e) {
             console.warn('Layout injection failed:', e);
         }
@@ -302,9 +312,10 @@ return `
         const userGroup = document.getElementById('nav-user-group');
         const avatarImg = document.getElementById('nav-avatar-img');
         const logoutBtn = document.getElementById('nav-logout-btn');
+        const dropdownAvatar = document.getElementById('dropdown-avatar');
+        const dropdownName = document.getElementById('dropdown-name');
 
         if (user) {
-            // Flicker Fix: Cache the successful auth state
             try {
                 sessionStorage.setItem('lt_auth_cache', JSON.stringify({
                     uid: user.uid,
@@ -323,6 +334,12 @@ logoutBtn.onclick = function() {
             }
             if (avatarImg && user.photoURL) {
                 avatarImg.src = user.photoURL;
+            }
+            if (dropdownAvatar && user.photoURL) {
+                dropdownAvatar.src = user.photoURL;
+            }
+            if (dropdownName) {
+                dropdownName.textContent = user.displayName || user.email || '사용자';
             }
         } else {
             sessionStorage.removeItem('lt_auth_cache');
@@ -372,7 +389,7 @@ window.onAuthReady = function(user) {
   };
         }
         
-// 2. Fallback currentUser check after 1s (if not skipped)
+// 2. Fallback currentUser check after 200ms (if not skipped)
   // Also removes auth-pending to reveal auth buttons regardless of auth state
   if (!options.skipCurrentUserCheck) {
     setTimeout(function() {
@@ -381,7 +398,7 @@ window.onAuthReady = function(user) {
       if (window.firebase && firebase.auth().currentUser && window.updateLTAuthUI) {
         window.updateLTAuthUI(firebase.auth().currentUser);
       }
-    }, 1000);
+    }, 200);
   }
         
         // 3. Logout binding is handled in updateLTAuthUI (single source of truth)

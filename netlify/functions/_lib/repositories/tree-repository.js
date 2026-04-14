@@ -45,8 +45,14 @@ async function updateTree(treeId, updates) {
   return documentStore.setDoc(`trees/${treeId}`, updates, { merge: true });
 }
 
+async function createTree(data) {
+  // Ensure we are adding to the 'trees' collection
+  return documentStore.addDoc('trees', data);
+}
+
 module.exports = {
   listTrees,
   getTree,
   updateTree,
+  createTree,
 };

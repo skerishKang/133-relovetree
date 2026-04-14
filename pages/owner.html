@@ -6,21 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>내 트리 관리 - Lovetree</title>
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-    <link rel="stylesheet" href="/assets/css/app.css">
-    <link rel="stylesheet" href="/assets/css/owner.css">
+    <link rel="stylesheet" href="/assets/css/app-base.css?v=20260414_v10">
+    <link rel="stylesheet" href="/assets/css/owner.css?v=20260414_v10">
 
-    <meta name="relovetree-app-check-site-key" content="">
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <!-- Auth: Firebase / Data: Neon Postgres via compat layer -->
-    <script src="/src/postgres-client-browser.js"></script>
+    <script src="/src/postgres-client-browser.js?v=20260414_v10"></script>
 </head>
 
-<body data-page="owner">
+<body data-page="owner" class="owner-v2-active">
+    <!-- GNB will be injected by shared-layout.js -->
+    <div class="page-wrapper">
     <div class="owner-shell">
-        <div class="owner-page-header">
+        <div class="owner-page-header" style="padding-top: 80px;">
             <h1 class="owner-page-title">내 트리 관리</h1>
             <p class="owner-page-subtitle" id="owner-subtitle">로그인한 계정의 트리만 표시됩니다.</p>
         </div>
@@ -154,25 +153,26 @@
 
         <p class="owner-console-note">Lovetree Owner Console</p>
     </div>
+    </div>
 
-    <script src="/src/runtime-config.js"></script>
-    <script src="/src/shared-storage.js"></script>
-    <script src="/src/shared-dom.js"></script>
-    <script src="/src/shared-theme.js"></script>
-    <script src="/src/shared-layout.js?v=20260414_v5"></script>
-    <script src="/src/shared-utils.js"></script>
-    <script src="/src/shared.js"></script>
-    <script src="/src/auth.js"></script>
-    <script src="/src/owner-ui-state.js"></script>
-    <script src="/src/owner-api-client.js"></script>
-    <script src="/src/owner-fork-cache.js"></script>
-    <script src="/src/owner-runtime.js"></script>
-    <script src="/src/owner-render-helpers.js"></script>
-    <script src="/src/owner-list-ui.js"></script>
-    <script src="/src/owner-fork-auto-check.js"></script>
-    <script src="/src/owner-dialogs.js"></script>
-    <script src="/src/owner-bindings.js"></script>
-    <script src="/src/entries/owner.js"></script>
+    <script src="/src/runtime-config.js?v=20260414_v10"></script>
+    <script src="/src/shared-storage.js?v=20260414_v10"></script>
+    <script src="/src/shared-dom.js?v=20260414_v10"></script>
+    <script src="/src/shared-theme.js?v=20260414_v10"></script>
+    <script src="/src/shared-layout.js?v=20260414_v10"></script>
+    <script src="/src/shared-utils.js?v=20260414_v10"></script>
+    <script src="/src/shared.js?v=20260414_v10"></script>
+    <script src="/src/auth.js?v=20260414_v10"></script>
+    <script src="/src/owner-ui-state.js?v=20260414_v10"></script>
+    <script src="/src/owner-api-client.js?v=20260414_v10"></script>
+    <script src="/src/owner-fork-cache.js?v=20260414_v10"></script>
+    <script src="/src/owner-runtime.js?v=20260414_v10"></script>
+    <script src="/src/owner-render-helpers.js?v=20260414_v10"></script>
+    <script src="/src/owner-list-ui.js?v=20260414_v10"></script>
+    <script src="/src/owner-fork-auto-check.js?v=20260414_v10"></script>
+    <script src="/src/owner-dialogs.js?v=20260414_v10"></script>
+    <script src="/src/owner-bindings.js?v=20260414_v10"></script>
+    <script src="/src/entries/owner.js?v=20260414_v10"></script>
 </body>
 
 </html>

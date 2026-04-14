@@ -319,6 +319,12 @@
         return 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
     }
 
+    function deleteTree(user, treeId) {
+        var db = getDb();
+        if (!db || !user || !treeId) return Promise.reject(new Error('Not initialized'));
+        return db.collection('trees').doc(treeId).delete();
+    }
+
     if (typeof window !== 'undefined') {
         window.FlowShared = {
             getEmotionTags: getEmotionTags,
@@ -333,6 +339,7 @@
             loadUserTrees: loadUserTrees,
             loadPublicTrees: loadPublicTrees,
             addMemoryToTree: addMemoryToTree,
+            deleteTree: deleteTree,
             getRootNode: getRootNode,
             getChildrenOf: getChildrenOf,
             getConnectedNodes: getConnectedNodes,

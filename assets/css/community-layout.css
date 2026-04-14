@@ -8,8 +8,8 @@
 
 /* Background ornament moved to global app-base.css for diverse page-specific positioning */
 
-.shell {
-  max-width: 1400px; /* Wider for 5-column layout */
+.comm-main.shell {
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 40px;
   position: relative;

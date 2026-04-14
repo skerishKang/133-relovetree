@@ -231,8 +231,13 @@ async function syncUserToDatabase(user, retryCount = 0, maxRetries = 2) {
   await window.postgresDBReady;
   const db = window.postgresDB;
   
-  if (!db) {
-    console.warn('PostgresDB not available after waiting. Skipping sync.');
+  if (!db || typeof db.collection !== 'function') {
+    console.warn('[Lovetree Auth] PostgresDB or collection method not available. Skipping sync.');
+    return;
+  }
+
+  if (!user || !user.uid) {
+    console.warn('[Lovetree Auth] User object or UID missing. Skipping sync.');
     return;
   }
 
@@ -320,7 +325,9 @@ async function checkAdminRole(user) {
     try {
         await window.postgresDBReady;
         const db = window.postgresDB;
-        if (!db) return false;
+        if (!db || typeof db.collection !== 'function') return false;
+        if (!user || !user.uid) return false;
+        
         const doc = await db.collection('users').doc(user.uid).get();
         return doc.exists && doc.data().role === 'admin';
     } catch (e) {

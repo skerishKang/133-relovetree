@@ -106,13 +106,20 @@ async function putDoc(client, path, data, options) {
   
   const { columns, values, placeholders } = buildSetParams(resolved.config, payload, resolved.parentIds);
   
-  if (!options.merge && columns.length === 0) {
-    throw httpError(400, 'No valid fields to write');
-  }
-  
   const columnsToUpsert = [...columns];
   const valuesToUpsert = [...values];
   const placeholdersToUpsert = [...placeholders];
+
+  // ALWAYS include payload column for document storage consistency
+  if (!columnsToUpsert.includes('payload')) {
+    columnsToUpsert.push('payload');
+    valuesToUpsert.push(JSON.stringify(payload));
+    placeholdersToUpsert.push(`$${valuesToUpsert.length}`);
+  }
+  
+  if (!options.merge && columns.length === 0 && !columnsToUpsert.includes('payload')) {
+    throw httpError(400, 'No valid fields to write');
+  }
   
   if (resolved.config.fields.createdAt) {
     if (!merged) {

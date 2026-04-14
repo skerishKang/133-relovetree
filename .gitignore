@@ -45,3 +45,6 @@ relovetree.local.fossil
 .vscode/
 # 에이전트 워크플로우
 .agent/workflows/
+
+# 제품 보안 및 테스트 계정
+docs/ops/QA_CREDENTIALS.txt

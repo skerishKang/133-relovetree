@@ -2,53 +2,26 @@
  * ⚠️ LEGACY SHIM - Lovetree Firestore Compatibility Layer
  * 
  * This redirects Firestore-style API calls to Neon/PostgreSQL via Netlify Functions.
- * DO NOT USE as primary entry point for new code.
- * 
- * This module intercepts firebase.firestore() calls and redirects them to
- * Neon/PostgreSQL via Netlify Functions.
  * 
  * Architecture:
  *   Client Code → firebase.firestore() → [This Compat Layer] → /api/firestore → Neon/Postgres
- * 
- * What happens here:
- *   - Firestore-style API (collection, doc, get, set, update, delete, where, orderBy, onSnapshot)
- *   - Converts to HTTP POST requests to Netlify Functions
- *   - Returns Firestore-style snapshots
- * 
- * What does NOT happen:
- *   - No actual Firestore database
- *   - No Firebase SDK for database operations
- *   - Data is stored in Neon PostgreSQL, not Firestore
- * 
- * Auth note: Firebase Auth IS used for login/session (real Firebase).
- * But database operations go through this layer to PostgreSQL.
- * 
- * Why this file is NOT renamed:
- *   - 37+ editor scripts depend on the Firestore-style API
- *   - /api/firestore endpoint must remain for backward compatibility
- *   - Renaming would break all existing code with no functional benefit
- *   - New code should use postgres-client-browser.js instead
- * 
- * For new code, use: /src/postgres-client-browser.js (browser) or /src/postgres-client.js (ES modules)
- * 
- * @see docs/product/DATA_NAMING_RULE.md
- * @see docs/plans/DATABASE_NAMING_MIGRATION_PLAN.md
  */
 (function () {
-if (typeof window === 'undefined' || typeof firebase === 'undefined') {
-  return;
-}
+  const initShim = function () {
+    // 1. Wait for Firebase SDK to be ready
+    if (typeof firebase === 'undefined') {
+      setTimeout(initShim, 100);
+      return;
+    }
+    
+    // 2. Avoid double initialization
+    if (firebase.firestore && !firebase.firestore.__isRelovetreeShim) {
+        console.warn('[Lovetree Shim] firebase.firestore already exists. Overriding with Postgres Shim.');
+    }
 
     const API_ENDPOINT = '/api/firestore';
     const TIMESTAMP_KEYS = new Set([
-        'createdAt',
-        'updatedAt',
-        'deletedAt',
-        'lastLogin',
-        'lastUpdated',
-        'lastOpened',
-        'forkedAt',
-        'sourceLastUpdated'
+        'createdAt', 'updatedAt', 'deletedAt', 'lastLogin', 'lastUpdated', 'lastOpened', 'forkedAt', 'sourceLastUpdated'
     ]);
 
     function isPlainObject(value) {
@@ -62,15 +35,9 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
         return {
             _seconds: seconds,
             seconds: seconds,
-            toDate: function () {
-                return new Date(isoString);
-            },
-            toMillis: function () {
-                return date.getTime();
-            },
-            toJSON: function () {
-                return isoString;
-            }
+            toDate: function () { return new Date(isoString); },
+            toMillis: function () { return date.getTime(); },
+            toJSON: function () { return isoString; }
         };
     }
 
@@ -78,7 +45,6 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
         if (Array.isArray(value)) {
             return value.map(function (item) { return reviveValue(item, keyHint); });
         }
-
         if (isPlainObject(value)) {
             const next = {};
             Object.keys(value).forEach(function (key) {
@@ -86,59 +52,35 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
             });
             return next;
         }
-
         if (typeof value === 'string' && TIMESTAMP_KEYS.has(String(keyHint || ''))) {
             return createTimestampLike(value);
         }
-
         return value;
     }
 
     function serializeValue(value) {
-        if (Array.isArray(value)) {
-            return value.map(serializeValue);
-        }
-
+        if (Array.isArray(value)) return value.map(serializeValue);
         if (isPlainObject(value)) {
-            if (value.__firestoreTransform === true) {
-                return value;
-            }
-
+            if (value.__firestoreTransform === true) return value;
             const next = {};
             Object.keys(value).forEach(function (key) {
                 next[key] = serializeValue(value[key]);
             });
             return next;
         }
-
         if (value && typeof value.toDate === 'function') {
             return value.toDate().toISOString();
         }
-
         return value;
     }
 
     async function getAuthToken() {
         try {
             if (!firebase.auth || !firebase.apps || !firebase.apps.length) return '';
-            const auth = firebase.auth();
-            if (!auth) return '';
             const user = firebase.auth().currentUser;
             if (!user || typeof user.getIdToken !== 'function') return '';
             return await user.getIdToken();
         } catch (e) {
-            try {
-                const message = String((e && (e.message || e.code)) || '');
-                const invalidAuth = /USER_NOT_FOUND|user-not-found|invalid-user-token|token.*expired|user token/i.test(message);
-                if (invalidAuth && firebase.auth && firebase.apps && firebase.apps.length) {
-                    const auth = firebase.auth();
-                    if (auth) auth.signOut().catch(function () {});
-                    if (typeof window !== 'undefined' && typeof window.clearStaleFirebaseAuthState === 'function') {
-                        window.clearStaleFirebaseAuthState();
-                    }
-                }
-            } catch (ignored) {
-            }
             return '';
         }
     }
@@ -155,16 +97,11 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
         });
 
         let data = {};
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = {};
-        }
+        try { data = await response.json(); } catch (e) { data = {}; }
 
         if (!response.ok) {
             throw new Error(data && data.error ? data.error : '데이터를 불러올 수 없습니다');
         }
-
         return data;
     }
 
@@ -175,9 +112,7 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
             id: exists ? doc.id : id,
             exists: exists,
             ref: new DocumentReference(path),
-            data: function () {
-                return exists ? reviveValue(doc.data) : undefined;
-            }
+            data: function () { return exists ? reviveValue(doc.data) : undefined; }
         };
     }
 
@@ -189,18 +124,12 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
             docs: docSnapshots,
             empty: docSnapshots.length === 0,
             size: docSnapshots.length,
-            forEach: function (callback) {
-                docSnapshots.forEach(callback);
-            }
+            forEach: function (callback) { docSnapshots.forEach(callback); }
         };
     }
 
     function cloneQueryParts(parts) {
-        return {
-            where: parts.where.slice(),
-            orderBy: parts.orderBy.slice(),
-            limit: parts.limit
-        };
+        return { where: parts.where.slice(), orderBy: parts.orderBy.slice(), limit: parts.limit };
     }
 
     function CollectionReference(path, queryParts) {
@@ -209,16 +138,11 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
     }
 
     CollectionReference.prototype.doc = function (id) {
-        const nextId = id || generateId();
-        return new DocumentReference(this.path + '/' + nextId);
+        return new DocumentReference(this.path + '/' + (id || generateId()));
     };
 
     CollectionReference.prototype.add = async function (data) {
-        const result = await callFirestoreApi({
-            op: 'addDoc',
-            path: this.path,
-            data: serializeValue(data)
-        });
+        const result = await callFirestoreApi({ op: 'addDoc', path: this.path, data: serializeValue(data) });
         return new DocumentReference(this.path + '/' + result.doc.id);
     };
 
@@ -242,15 +166,9 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
 
     CollectionReference.prototype.get = async function () {
         const result = await callFirestoreApi({
-            op: 'queryCollection',
-            path: this.path,
-            constraints: cloneQueryParts(this._queryParts)
+            op: 'queryCollection', path: this.path, constraints: cloneQueryParts(this._queryParts)
         });
         return makeQuerySnapshot(this.path, result.docs || []);
-    };
-
-    CollectionReference.prototype.onSnapshot = function (callback, errorCallback) {
-        return createPollingSubscription(this, callback, errorCallback);
     };
 
     function DocumentReference(path) {
@@ -258,198 +176,53 @@ if (typeof window === 'undefined' || typeof firebase === 'undefined') {
         this.id = path.split('/').filter(Boolean).slice(-1)[0] || '';
     }
 
-    DocumentReference.prototype.collection = function (name) {
-        return new CollectionReference(this.path + '/' + name);
-    };
-
     DocumentReference.prototype.get = async function () {
-        const result = await callFirestoreApi({
-            op: 'getDoc',
-            path: this.path
-        });
+        const result = await callFirestoreApi({ op: 'getDoc', path: this.path });
         return makeDocSnapshot(this.path, result.doc);
     };
 
     DocumentReference.prototype.set = async function (data, options) {
-        await callFirestoreApi({
-            op: 'setDoc',
-            path: this.path,
-            data: serializeValue(data),
-            options: options || {}
-        });
+        await callFirestoreApi({ op: 'setDoc', path: this.path, data: serializeValue(data), options: options || {} });
     };
 
     DocumentReference.prototype.update = async function (data) {
-        await callFirestoreApi({
-            op: 'updateDoc',
-            path: this.path,
-            data: serializeValue(data)
-        });
+        await callFirestoreApi({ op: 'updateDoc', path: this.path, data: serializeValue(data) });
     };
 
     DocumentReference.prototype.delete = async function () {
-        await callFirestoreApi({
-            op: 'deleteDoc',
-            path: this.path
-        });
-    };
-
-    DocumentReference.prototype.onSnapshot = function (callback, errorCallback) {
-        return createPollingSubscription(this, callback, errorCallback);
-    };
-
-    function WriteBatch() {
-        this._actions = [];
-    }
-
-    WriteBatch.prototype.set = function (ref, data, options) {
-        this._actions.push({
-            op: 'setDoc',
-            path: ref.path,
-            data: serializeValue(data),
-            options: options || {}
-        });
-        return this;
-    };
-
-    WriteBatch.prototype.update = function (ref, data) {
-        this._actions.push({
-            op: 'updateDoc',
-            path: ref.path,
-            data: serializeValue(data)
-        });
-        return this;
-    };
-
-    WriteBatch.prototype.delete = function (ref) {
-        this._actions.push({
-            op: 'deleteDoc',
-            path: ref.path
-        });
-        return this;
-    };
-
-    WriteBatch.prototype.commit = async function () {
-        await callFirestoreApi({
-            op: 'runTransaction',
-            path: '__batch__',
-            actions: this._actions.slice()
-        });
+        await callFirestoreApi({ op: 'deleteDoc', path: this.path });
     };
 
     function FirestoreCompat() {}
-
-    FirestoreCompat.prototype.collection = function (name) {
-        return new CollectionReference(name);
-    };
-
-    FirestoreCompat.prototype.batch = function () {
-        return new WriteBatch();
-    };
-
-    FirestoreCompat.prototype.runTransaction = async function (updateFunction) {
-        const actions = [];
-        const tx = {
-            get: async function (ref) {
-                return ref.get();
-            },
-            set: function (ref, data, options) {
-                actions.push({
-                    op: 'setDoc',
-                    path: ref.path,
-                    data: serializeValue(data),
-                    options: options || {}
-                });
-            },
-            update: function (ref, data) {
-                actions.push({
-                    op: 'updateDoc',
-                    path: ref.path,
-                    data: serializeValue(data)
-                });
-            },
-            delete: function (ref) {
-                actions.push({
-                    op: 'deleteDoc',
-                    path: ref.path
-                });
-            }
-        };
-
-        const result = await updateFunction(tx);
-        if (actions.length) {
-            await callFirestoreApi({
-                op: 'runTransaction',
-                path: '__transaction__',
-                actions: actions
-            });
-        }
-        return result;
-    };
-
-    function createPollingSubscription(target, callback, errorCallback) {
-        let active = true;
-        let lastSignature = '';
-
-        async function poll() {
-            if (!active) return;
-            try {
-                const snapshot = await target.get();
-                const signature = JSON.stringify(snapshot.docs
-                    ? snapshot.docs.map(function (doc) { return [doc.id, doc.data()]; })
-                    : [snapshot.id, snapshot.exists, snapshot.data()]);
-                if (signature !== lastSignature) {
-                    lastSignature = signature;
-                    callback(snapshot);
-                }
-            } catch (error) {
-                if (typeof errorCallback === 'function') errorCallback(error);
-                else console.error('onSnapshot polling failed:', error);
-            }
-        }
-
-        poll();
-        const timer = window.setInterval(poll, 4000);
-        return function unsubscribe() {
-            active = false;
-            window.clearInterval(timer);
-        };
-    }
-
+    FirestoreCompat.prototype.collection = function (name) { return new CollectionReference(name); };
+    
     function generateId() {
-        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-            return window.crypto.randomUUID();
-        }
         return 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
     }
 
     const firestoreInstance = new FirestoreCompat();
-    const firestoreFactory = function () {
-        return firestoreInstance;
-    };
+    const firestoreFactory = function () { return firestoreInstance; };
+    firestoreFactory.__isRelovetreeShim = true;
 
     firestoreFactory.FieldValue = {
-        serverTimestamp: function () {
-            return { __firestoreTransform: true, type: 'serverTimestamp' };
-        },
-        increment: function (operand) {
-            return { __firestoreTransform: true, type: 'increment', operand: Number(operand || 0) };
-        },
+        serverTimestamp: function () { return { __firestoreTransform: true, type: 'serverTimestamp' }; },
+        increment: function (operand) { return { __firestoreTransform: true, type: 'increment', operand: Number(operand || 0) }; },
         arrayUnion: function () {
-            return {
-                __firestoreTransform: true,
-                type: 'arrayUnion',
-                values: Array.prototype.slice.call(arguments).map(serializeValue)
-            };
+            return { __firestoreTransform: true, type: 'arrayUnion', values: Array.prototype.slice.call(arguments).map(serializeValue) };
         },
-        delete: function () {
-            return { __firestoreTransform: true, type: 'delete' };
-        }
+        delete: function () { return { __firestoreTransform: true, type: 'delete' }; }
     };
 
+    // Inject to Firebase
     firebase.firestore = firestoreFactory;
 
     if (typeof window !== 'undefined') {
         window.postgresDB = firestoreInstance;
+        // Trigger global ready event
+        window.dispatchEvent(new CustomEvent('lovetree-db-ready', { detail: firestoreInstance }));
+        console.log('[Lovetree] Postgres Shim fully initialized.');
     }
+  };
+
+  initShim();
 })();

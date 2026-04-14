@@ -130,6 +130,50 @@ async function assertAuthorized(op, path, user, payload) {
   throw httpError(400, 'Unsupported collection');
 }
 
+async function getDoc(user, path) {
+  await assertAuthorized('getDoc', path, user, null);
+  return await documentStore.getDoc(path);
+}
+
+async function setDoc(user, path, data, options = {}) {
+  const auth = await assertAuthorized('setDoc', path, user, data || {});
+  return await documentStore.setDoc(path, auth.payload || {}, options);
+}
+
+async function updateDoc(user, path, data) {
+  const auth = await assertAuthorized('updateDoc', path, user, data || {});
+  return await documentStore.updateDoc(path, auth.payload || {});
+}
+
+async function deleteDoc(user, path) {
+  await assertAuthorized('deleteDoc', path, user, null);
+  return await documentStore.deleteDoc(path);
+}
+
+async function queryCollection(path, constraints = {}, user = null) {
+  // Pass user for authorization check
+  await assertAuthorized('queryCollection', path, user, null);
+  return await documentStore.queryCollection(path, constraints);
+}
+
+async function addDoc(user, path, data) {
+  const auth = await assertAuthorized('addDoc', path, user, data || {});
+  return await documentStore.addDoc(path, auth.payload || {});
+}
+
+async function runTransaction(user, actions = []) {
+  const normalizedActions = [];
+  for (const action of actions) {
+    const auth = await assertAuthorized(action.op, action.path, user, action.data || null);
+    normalizedActions.push(
+      auth && auth.payload !== undefined
+        ? Object.assign({}, action, { data: auth.payload })
+        : action
+    );
+  }
+  return await documentStore.runTransaction(normalizedActions);
+}
+
 async function executeFirestoreApi(event, body) {
   const user = await getUserFromEvent(event);
   const op = String(body && body.op ? body.op : '');
@@ -147,52 +191,36 @@ async function executeFirestoreApi(event, body) {
   if (!path && op !== 'runTransaction') throw httpError(400, 'path is required');
 
   if (op === 'getDoc') {
-    await assertAuthorized(op, path, user, null);
-    const doc = await documentStore.getDoc(path);
+    const doc = await getDoc(user, path);
     return { doc };
   }
 
   if (op === 'setDoc') {
-    const auth = await assertAuthorized(op, path, user, body.data || {});
-    const doc = await documentStore.setDoc(path, auth.payload || {}, body.options || {});
+    const doc = await setDoc(user, path, body.data || {}, body.options || {});
     return { doc };
   }
 
   if (op === 'updateDoc') {
-    const auth = await assertAuthorized(op, path, user, body.data || {});
-    const doc = await documentStore.updateDoc(path, auth.payload || {});
+    const doc = await updateDoc(user, path, body.data || {});
     return { doc };
   }
 
   if (op === 'deleteDoc') {
-    await assertAuthorized(op, path, user, null);
-    return await documentStore.deleteDoc(path);
+    return await deleteDoc(user, path);
   }
 
   if (op === 'queryCollection') {
-    await assertAuthorized(op, path, user, null);
-    const docs = await documentStore.queryCollection(path, body.constraints || {});
+    const docs = await queryCollection(path, body.constraints || {}, user);
     return { docs };
   }
 
   if (op === 'addDoc') {
-    const auth = await assertAuthorized(op, path, user, body.data || {});
-    const doc = await documentStore.addDoc(path, auth.payload || {});
+    const doc = await addDoc(user, path, body.data || {});
     return { doc };
   }
 
   if (op === 'runTransaction') {
-    const actions = Array.isArray(body.actions) ? body.actions : [];
-    const normalizedActions = [];
-    for (const action of actions) {
-      const auth = await assertAuthorized(action.op, action.path, user, action.data || null);
-      normalizedActions.push(
-        auth && auth.payload !== undefined
-          ? Object.assign({}, action, { data: auth.payload })
-          : action
-      );
-    }
-    const results = await documentStore.runTransaction(normalizedActions);
+    const results = await runTransaction(user, body.actions);
     return { results };
   }
 
@@ -202,4 +230,12 @@ async function executeFirestoreApi(event, body) {
 module.exports = {
   executeFirestoreApi,
   isAdminUser,
+  assertAuthorized,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  queryCollection,
+  addDoc,
+  runTransaction
 };

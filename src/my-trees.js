@@ -5,6 +5,7 @@
 (function () {
   var F = window.FlowShared;
   var currentUser = null;
+  var loadedTrees = [];
   var listenersAttached = false;
 
   function init() {
@@ -35,6 +36,7 @@
     showLoading();
     
     F.loadUserTrees(currentUser).then(function (trees) {
+      loadedTrees = trees || [];
       hideLoading();
       
       if (!trees || trees.length === 0) {
@@ -81,10 +83,12 @@
     var content = document.getElementById('content-area');
     var empty = document.getElementById('empty-state');
     var error = document.getElementById('error-state');
+    var loading = document.getElementById('loading-area');
     
     if (content) content.style.display = 'block';
     if (empty) empty.style.display = 'none';
     if (error) error.style.display = 'none';
+    if (loading) loading.style.display = 'none';
   }
 
   function showErrorState(message) {
@@ -240,7 +244,7 @@
         alert('공유 링크가 복사되었습니다!');
       }
     } else if (action === 'toggle-public') {
-      var tree = trees.find(function(t) { return getTreeId(t) === treeId; });
+      var tree = loadedTrees.find(function(t) { return getTreeId(t) === treeId; });
       if (!tree) return;
       var newVisibility = !tree.isPublic;
       var db = window.postgresDB;
@@ -250,6 +254,25 @@
       }).catch(function(err) {
         console.error('Failed to update visibility:', err);
         alert('공개 설정 변경에 실패했습니다.');
+      });
+    } else if (action === 'duplicate') {
+      var tree = loadedTrees.find(function(t) { return getTreeId(t) === treeId; });
+      if (!tree) return;
+      if (!confirm('이 트리를 복제하시겠습니까?')) return;
+      var db = window.postgresDB;
+      if (!db) { alert('데이터베이스 연결 오류'); return; }
+      var newDocRef = db.collection('trees').doc();
+      var cloneData = Object.assign({}, tree);
+      delete cloneData._id;
+      delete cloneData.id;
+      cloneData.name = (cloneData.name || '러브트리') + ' (복제)';
+      cloneData.isPublic = false;
+      cloneData.lastUpdated = new Date().toISOString();
+      newDocRef.set(cloneData, { merge: true }).then(function() {
+        loadTrees();
+      }).catch(function(err) {
+        console.error('Duplicate failed:', err);
+        alert('트리 복제에 실패했습니다.');
       });
     } else if (action === 'delete') {
       if (confirm('정말 이 트리를 삭제하시겠습니까?')) {
