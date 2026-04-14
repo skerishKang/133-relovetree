@@ -40,7 +40,7 @@
      */
 
     const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail', 'login']);
-    const ASSET_VERSION = '20260414_v13_ultimate';
+    const ASSET_VERSION = '20260414_v14_final';
 
     /**
      * Layout Purge Observer: Real-time monitoring of legacy elements.
@@ -48,7 +48,7 @@
      */
     function startLayoutPurgeObserver() {
         const purge = () => {
-            const legacyItems = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"])');
+            const legacyItems = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"]), .brand-link, .brand-title');
             legacyItems.forEach(el => el.remove());
         };
         
@@ -105,7 +105,7 @@
 
         const userGroupClass = cachedUser ? 'gnb-user-group' : 'gnb-user-group is-hidden';
         const loginBtnClass = cachedUser ? 'btn-pill-auth is-hidden' : 'btn-pill-auth';
-        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : `/assets/image/lt-avatar-v13.png?v=${ASSET_VERSION}`;
+        const avatarSrc = (cachedUser && cachedUser.photoURL) ? cachedUser.photoURL : `/assets/image/lt-profile-v14.png?v=${ASSET_VERSION}`;
         const authContainerClass = cachedUser ? '' : 'auth-pending';
 
         const gnbClass = ctx === 'minimal' ? 'gnb-v2 gnb-minimal' : 'gnb-v2';

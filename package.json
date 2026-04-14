@@ -2,7 +2,7 @@
   "name": "133-relovetree",
   "version": "1.0.0",
   "main": "src/entries/index.js",
-  "description": "Relovetree - 나의 덕질 기록 앱",
+  "description": "Lovetree - 사랑의 모든 순간을 연결하는 기록 앱",
   "scripts": {
     "dev": "python -m http.server 3133",
     "build": "node -e \"console.log('Plain CSS mode: no build required. Edit assets/css/app.css directly.')\"",
