@@ -40,30 +40,7 @@
      */
 
     const LAYOUT_PAGE_ALLOWLIST = new Set(['home', 'lovetree', 'community', 'owner', 'my-trees', 'settings', 'admin', 'memory-detail', 'login']);
-    const ASSET_VERSION = '20260414_v15_absolute_zero';
-
-    /**
-     * Layout Purge Observer: Real-time monitoring of legacy elements.
-     * Uses MutationObserver to catch and kill old headers instantly.
-     */
-    function startLayoutPurgeObserver() {
-        const purge = () => {
-            const legacyItems = document.querySelectorAll('.top-nav, .header, #header, .gnb:not([data-global-header="1"]), nav:not([data-global-header="1"]), .brand-link, .brand-title');
-            legacyItems.forEach(el => el.remove());
-        };
-        
-        try {
-            const observer = new MutationObserver(purge);
-            observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
-            purge(); // Initial purge
-            
-            // Auto-disconnect after 3 seconds to save resources
-            setTimeout(() => observer.disconnect(), 3000);
-        } catch (e) {
-            // Fallback for older browsers
-            setInterval(purge, 200);
-        }
-    }
+    const ASSET_VERSION = '20260414_v16';
 
     function getLayoutContext() {
         const page = document.body ? String(document.body.getAttribute('data-page') || '') : '';
@@ -249,7 +226,6 @@ return `
     }
 
     function ensureGlobalLayoutInjected(activeLayout) {
-        startLayoutPurgeObserver();
         if (!shouldInjectGlobalLayout()) return;
         try {
             // Intelligent Redirect for Mobile Users
