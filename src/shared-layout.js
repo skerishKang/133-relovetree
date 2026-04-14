@@ -63,7 +63,7 @@
         const communityClass = isCommunity ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
         const ownerClass = isOwner ? 'ui-link-nav ui-link-nav-active' : 'ui-link-nav';
 
-        // Standard GNB for home/lovetree (no search area)
+        // Standard GNB for home/lovetree (with avatar dropdown support)
         if (isHome || isLovetree) {
             return `
     <nav data-global-header="1" class="gnb-v2" role="navigation" aria-label="메인 네비게이션">
@@ -72,10 +72,26 @@
             <div class="gnb-links">
                 <a href="/pages/lovetree.html" class="${lovetreeClass}">러브트리</a>
                 <a href="/pages/community.html" class="${communityClass}">커뮤니티</a>
-                <a href="/pages/login.html" class="btn-pill-auth" id="nav-auth-item">로그인</a>
-                <div id="user-menu" class="is-hidden" style="display: flex; align-items: center; gap: 12px;">
-                    <a href="/pages/my-trees.html" style="font-weight: 800; color: #e11d48;">내 트리</a>
-                    <button id="nav-logout-btn" style="font-size: 0.8rem; color: #64748b;">로그아웃</button>
+                
+                <div id="nav-auth-container">
+                    <!-- Login Button (Shown when logged out) -->
+                    <a href="/pages/login.html" class="btn-pill-auth" id="nav-login-btn">로그인</a>
+                    
+                    <!-- User Group (Shown when logged in) -->
+                    <div id="nav-user-group" class="gnb-user-group is-hidden">
+                        <a href="/pages/my-trees.html" class="btn-pill-auth" style="background: #e11d48;">내 트리</a>
+                        
+                        <div class="avatar-container" style="position: relative;">
+                            <button id="nav-avatar-btn" class="avatar-btn" aria-label="사용자 메뉴">
+                                <img id="nav-avatar-img" src="/assets/image/default-avatar.png" alt="Profile">
+                            </button>
+                            
+                            <div id="nav-dropdown" class="gnb-dropdown">
+                                <a href="/pages/settings.html" class="dropdown-item">⚙️ 설정</a>
+                                <button id="nav-logout-btn" class="dropdown-item dropdown-item-logout">🚪 로그아웃</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,26 +287,21 @@
      * - .btn-pill-auth: Alternative selector for auth link (fallback)
      */
     function updateLTAuthUI(user) {
-        const authItem = document.getElementById('nav-auth-item') || document.querySelector('.btn-pill-auth');
-        const logoutBtn = document.getElementById('nav-logout-btn');
-        if (!authItem) return;
+        const loginBtn = document.getElementById('nav-login-btn');
+        const userGroup = document.getElementById('nav-user-group');
+        const avatarImg = document.getElementById('nav-avatar-img');
+        const dropdown = document.getElementById('nav-dropdown');
 
         if (user) {
-            authItem.textContent = '내 트리';
-            authItem.href = '/pages/my-trees.html';
-            authItem.classList.add('logged-in');
-            if (logoutBtn) logoutBtn.classList.remove('is-hidden');
-            
-            // For community page active state
-            const commItem = document.getElementById('nav-community-item');
-            if (commItem && window.location.pathname.includes('community')) {
-                commItem.classList.add('active');
+            if (loginBtn) loginBtn.classList.add('is-hidden');
+            if (userGroup) userGroup.classList.remove('is-hidden');
+            if (avatarImg && user.photoURL) {
+                avatarImg.src = user.photoURL;
             }
         } else {
-            authItem.textContent = '로그인';
-            authItem.href = '/pages/login.html';
-            authItem.classList.remove('logged-in');
-            if (logoutBtn) logoutBtn.classList.add('is-hidden');
+            if (loginBtn) loginBtn.classList.remove('is-hidden');
+            if (userGroup) userGroup.classList.add('is-hidden');
+            if (dropdown) dropdown.classList.remove('active');
         }
     }
 
@@ -341,12 +352,30 @@
             }, 1000);
         }
         
-        // 3. Bind logout button (if not skipped)
+        // 3. Bind navigation events
         if (!options.skipLogoutBinding) {
+            // Logout
             var logoutBtn = document.getElementById('nav-logout-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', function() {
                     if (window.signOut) window.signOut();
+                });
+            }
+
+            // Dropdown Toggle
+            var avatarBtn = document.getElementById('nav-avatar-btn');
+            var dropdown = document.getElementById('nav-dropdown');
+            if (avatarBtn && dropdown) {
+                avatarBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+                
+                // Close on outside click
+                document.addEventListener('click', function(e) {
+                    if (!avatarBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.classList.remove('active');
+                    }
                 });
             }
         }
