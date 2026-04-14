@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
     // 4. Query Public Trees
     // Use a dummy user (null) since this is public, 
     // but the API handles internal authorization logic if needed.
-    const docs = await queryPostgresCollection(null, 'trees', {
+    const docs = await queryPostgresCollection('trees', {
       where: [
         { field: 'isPublic', op: '==', value: true }
       ],
@@ -33,7 +33,7 @@ exports.handler = async (event, context) => {
         { field: sort === 'popular' ? 'viewCount' : 'updatedAt', direction: 'desc' }
       ],
       limit: limit
-    });
+    }, null);
 
     // 5. Transform & Return
     const trees = docs.map(doc => ({

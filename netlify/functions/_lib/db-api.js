@@ -85,14 +85,6 @@ module.exports = {
   deletePostgresDoc: require('./firestore-api').deleteDoc,
 
   /**
-   * Run a batch operation on PostgreSQL via the compat layer
-   * @param {Object} user - Authenticated user
-   * @param {Array} writes - Array of write operations
-   * @returns {Promise<void>}
-   */
-  batchPostgresWrite: require('./firestore-api').batchWrite,
-
-  /**
    * Run a transaction on PostgreSQL via the compat layer
    * @param {Object} user - Authenticated user
    * @param {Array} operations - Transaction operations

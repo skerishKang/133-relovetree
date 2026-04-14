@@ -76,4 +76,21 @@
   } else {
     loadCompat();
   }
+
+  // Fallback: listen for the custom event dispatched by firebase-firestore-compat.js
+  // when initialization is delayed (firebase SDK not yet available at script load time)
+  window.addEventListener('lovetree-db-ready', function (e) {
+    if (!window.postgresDB && e.detail) {
+      window.postgresDB = e.detail;
+      resolveDB(window.postgresDB);
+    }
+  });
+
+  // Safety timeout: resolve with null after 10s to prevent permanent hang
+  setTimeout(function () {
+    if (!window.postgresDB) {
+      console.warn('[Lovetree] PostgresDB initialization timed out after 10s');
+      resolveDB(null);
+    }
+  }, 10000);
 })();

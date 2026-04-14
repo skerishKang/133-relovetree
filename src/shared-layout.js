@@ -243,7 +243,14 @@ return `
             if (!shouldInjectGlobalLayout()) return;
             if (!document.body) return;
             
-            // Unification: Ensure we don't have multiple headers
+            // Unification: Force purge ANY existing navigation elements to prevent design inconsistency
+            const allNavs = document.querySelectorAll('nav, header, .gnb, #header, .header, [role="navigation"]');
+            allNavs.forEach(el => {
+                if (el.getAttribute('data-global-header') !== '1') {
+                    el.remove();
+                }
+            });
+
             const existingHeader = document.querySelector('nav[data-global-header="1"]');
             if (existingHeader) existingHeader.remove();
 
