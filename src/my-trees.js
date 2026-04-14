@@ -8,11 +8,16 @@
   var listenersAttached = false;
 
   function init() {
+    // Show loading state first (prevents "flash of empty content")
+    showLoading();
+    
     F.requireAuth(function (user) {
       currentUser = user;
       if (window.updateLTAuthUI) window.updateLTAuthUI(user);
       showUserAvatar(user);
       attachEventListeners();
+      
+      // Now load trees after auth is confirmed
       loadTrees();
     });
   }

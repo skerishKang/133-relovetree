@@ -64,11 +64,28 @@
             window.location.href = '/pages/login.html';
             return;
         }
+        
+        // Check sessionStorage first for instant auth (prevents redirect flash)
+        let isLoggedIn = false;
+        try {
+            isLoggedIn = sessionStorage.getItem('lovetree_auth') === 'logged_in';
+        } catch (e) {}
+        
         firebase.auth().onAuthStateChanged(function (user) {
-            if (!user) {
+            // If not logged in AND no sessionStorage hint, redirect
+            if (!user && !isLoggedIn) {
                 window.location.href = '/pages/login.html';
                 return;
             }
+            
+            // If sessionStorage said logged in but Firebase says not yet, wait briefly
+            // This prevents "flash before data loads" issue
+            if (!user && isLoggedIn) {
+                // Show loading, wait for next auth change
+                console.log('Waiting for auth confirmation...');
+                return;
+            }
+            
             if (typeof window.onAuthReady === 'function') {
                 window.onAuthReady(user);
             }
